@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "MagicKD.h"
+#include "MagicKDDlg.h"
 #include "MainFrm.h"
 
 
@@ -37,7 +38,7 @@ BOOL CMagicKDApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
-	// 標準初始設定
+/*	// 標準初始設定
 	// 如果您不使用這些功能並且想減少最後完成的可執行檔大小，您可以從下列
 	// 程式碼移除不需要的初始化常式，變更儲存設定值的登錄機碼
 	// TODO: 您應該適度修改此字串 (例如，公司名稱或組織名稱)
@@ -55,6 +56,12 @@ BOOL CMagicKDApp::InitInstance()
 	// 僅初始化一個視窗，所以顯示並更新該視窗
 	pFrame->ShowWindow(SW_SHOW);
 	pFrame->UpdateWindow();
+*/
+
+	CMagicKDDlg dlg;
+	m_pMainWnd = &dlg;
+
+	dlg.DoModal();
 	// 只有在 SDI 應用程式中有後置字元時，才呼叫 DragAcceptFiles
 	// 這會發生於 ProcessShellCommand 之後
 	return TRUE;

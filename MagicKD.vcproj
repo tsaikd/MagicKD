@@ -128,7 +128,13 @@
 				RelativePath=".\ChildView.cpp">
 			</File>
 			<File
+				RelativePath=".\KDTabCtrl.cpp">
+			</File>
+			<File
 				RelativePath=".\MagicKD.cpp">
+			</File>
+			<File
+				RelativePath=".\MagicKDDlg.cpp">
 			</File>
 			<File
 				RelativePath=".\MainFrm.cpp">
@@ -148,6 +154,13 @@
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="WallChanger"
+				Filter="">
+				<File
+					RelativePath=".\WallChanger.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="¼ÐÀYÀÉ"
@@ -157,7 +170,13 @@
 				RelativePath=".\ChildView.h">
 			</File>
 			<File
+				RelativePath=".\KDTabCtrl.h">
+			</File>
+			<File
 				RelativePath=".\MagicKD.h">
+			</File>
+			<File
+				RelativePath=".\MagicKDDlg.h">
 			</File>
 			<File
 				RelativePath=".\MainFrm.h">
@@ -168,6 +187,13 @@
 			<File
 				RelativePath=".\stdafx.h">
 			</File>
+			<Filter
+				Name="WallChanger"
+				Filter="">
+				<File
+					RelativePath=".\WallChanger.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="¸ê·½ÀÉ"
@@ -188,5 +214,8 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="MagicKD.rc"/>
 	</Globals>
 </VisualStudioProject>
