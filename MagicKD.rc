@@ -68,56 +68,6 @@ IDR_MAINFRAME           ICON                    "res\\MagicKD.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDR_MAINFRAME MENU 
-BEGIN
-    POPUP "檔案(&F)"
-    BEGIN
-        MENUITEM "結束(&X)",                    ID_APP_EXIT
-    END
-    POPUP "編輯(&E)"
-    BEGIN
-        MENUITEM "復原(&U)\tCtrl+Z",            ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "剪下(&T)\tCtrl+X",            ID_EDIT_CUT
-        MENUITEM "複製(&C)\tCtrl+C",            ID_EDIT_COPY
-        MENUITEM "貼上(&P)\tCtrl+V",            ID_EDIT_PASTE
-    END
-    POPUP "檢視(&V)"
-    BEGIN
-        MENUITEM "狀態列(&S)",                  ID_VIEW_STATUS_BAR
-    END
-    POPUP "說明(&H)"
-    BEGIN
-        MENUITEM "關於 MagicKD(&A)...",         ID_APP_ABOUT
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
-
-IDR_MAINFRAME ACCELERATORS 
-BEGIN
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog
 //
 
@@ -133,13 +83,24 @@ BEGIN
     DEFPUSHBUTTON   "確定",IDOK,178,7,50,16,WS_GROUP
 END
 
-IDD_MAGICKDDLG DIALOGEX 0, 0, 327, 195
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | 
-    WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_MAGICKD_DIALOG DIALOGEX 0, 0, 323, 239
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
 CAPTION "MagicKD"
-FONT 9, "MS Shell Dlg", 0, 0, 0x0
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_TAB2,"SysTabControl32",0x0,7,7,313,181
+    CONTROL         "",IDC_MAINTAB,"SysTabControl32",0x0,7,7,309,225
+END
+
+IDD_WALLCHANGER DIALOGEX 0, 0, 295, 228
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_TREE1,"SysTreeView32",TVS_NOSCROLL | WS_BORDER | 
+                    WS_TABSTOP,7,7,126,214
+    CONTROL         "",IDC_LIST1,"SysListView32",LVS_ALIGNLEFT | WS_BORDER | 
+                    WS_TABSTOP,147,7,141,214
 END
 
 
@@ -198,12 +159,20 @@ BEGIN
         BOTTOMMARGIN, 48
     END
 
-    IDD_MAGICKDDLG, DIALOG
+    IDD_MAGICKD_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 320
+        RIGHTMARGIN, 316
         TOPMARGIN, 7
-        BOTTOMMARGIN, 188
+        BOTTOMMARGIN, 232
+    END
+
+    IDD_WALLCHANGER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 288
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 221
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -216,77 +185,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDR_MAINFRAME           "MagicKD"
-END
-
-STRINGTABLE 
-BEGIN
-    AFX_IDS_APP_TITLE       "MagicKD"
-    AFX_IDS_IDLEMESSAGE     "就緒"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_INDICATOR_EXT        "EXT"
-    ID_INDICATOR_CAPS       "CAP"
-    ID_INDICATOR_NUM        "NUM"
-    ID_INDICATOR_SCRL       "SCRL"
-    ID_INDICATOR_OVR        "OVR"
-    ID_INDICATOR_REC        "REC"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_APP_ABOUT            "顯示程式資訊、版本號碼及著作權\n關於"
-    ID_APP_EXIT             "結束應用程式; 提示使用者儲存文件\n結束"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_NEXT_PANE            "切換至下一窗格\n下一個窗格"
-    ID_PREV_PANE            "切換至上一個窗格\n上一個窗格"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_WINDOW_SPLIT         "將使用中視窗切割成窗格\n分割視窗"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_EDIT_CLEAR           "清除選取範圍\n清除"
-    ID_EDIT_CLEAR_ALL       "清除所有的項目\n全部清除"
-    ID_EDIT_COPY            "複製選取項目並放到剪貼簿\n複製"
-    ID_EDIT_CUT             "剪下選取項目並放到剪貼簿\n剪下"
-    ID_EDIT_FIND            "尋找指定的文字\n尋找"
-    ID_EDIT_PASTE           "插入剪貼簿的內容\n貼上"
-    ID_EDIT_REPEAT          "重複上次的動作\n重複"
-    ID_EDIT_REPLACE         "用不同的文字取代指定文字\n取代"
-    ID_EDIT_SELECT_ALL      "選取整份文件\n全選"
-    ID_EDIT_UNDO            "復原上次的動作\n復原"
-    ID_EDIT_REDO            "取消復原上次的動作\n取消復原"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_STATUS_BAR      "顯示或隱藏狀態列\n切換狀態列"
-END
-
-STRINGTABLE 
-BEGIN
-    AFX_IDS_SCSIZE          "變更視窗大小"
-    AFX_IDS_SCMOVE          "變更視窗位置"
-    AFX_IDS_SCMINIMIZE      "將視窗縮成一個圖示"
-    AFX_IDS_SCMAXIMIZE      "將視窗放到最大"
-    AFX_IDS_SCNEXTWINDOW    "切換至下一個文件視窗"
-    AFX_IDS_SCPREVWINDOW    "切換至上一個文件視窗"
-    AFX_IDS_SCCLOSE         "關閉使用中的視窗並提示使用者儲存文件"
-END
-
-STRINGTABLE 
-BEGIN
-    AFX_IDS_SCRESTORE       "將視窗還原成標準大小"
-    AFX_IDS_SCTASKLIST      "啟動工作清單"
+    IDS_ABOUTBOX            "關於 MagicKD(&A)..."
 END
 
 #endif    // 中文 (台灣) resources

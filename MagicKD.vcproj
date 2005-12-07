@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="MagicKD"
-	ProjectGUID="{DB58D623-9AD6-440D-9A52-3D474D3BAAF4}"
+	ProjectGUID="{BB1F58D7-FA3D-4015-8F09-94E64E651B3A}"
 	Keyword="MFCProj">
 	<Platforms>
 		<Platform
@@ -125,19 +125,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\ChildView.cpp">
-			</File>
-			<File
-				RelativePath=".\KDTabCtrl.cpp">
-			</File>
-			<File
 				RelativePath=".\MagicKD.cpp">
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\MainFrm.cpp">
 			</File>
 			<File
 				RelativePath=".\stdafx.cpp">
@@ -154,24 +145,14 @@
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
-			<Filter
-				Name="WallChanger"
-				Filter="">
-				<File
-					RelativePath=".\WallChanger.cpp">
-				</File>
-			</Filter>
+			<File
+				RelativePath=".\WallChanger.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="¼ÐÀYÀÉ"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
-			<File
-				RelativePath=".\ChildView.h">
-			</File>
-			<File
-				RelativePath=".\KDTabCtrl.h">
-			</File>
 			<File
 				RelativePath=".\MagicKD.h">
 			</File>
@@ -179,21 +160,14 @@
 				RelativePath=".\MagicKDDlg.h">
 			</File>
 			<File
-				RelativePath=".\MainFrm.h">
-			</File>
-			<File
 				RelativePath=".\Resource.h">
 			</File>
 			<File
 				RelativePath=".\stdafx.h">
 			</File>
-			<Filter
-				Name="WallChanger"
-				Filter="">
-				<File
-					RelativePath=".\WallChanger.h">
-				</File>
-			</Filter>
+			<File
+				RelativePath=".\WallChanger.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="¸ê·½ÀÉ"
@@ -214,8 +188,5 @@
 		</File>
 	</Files>
 	<Globals>
-		<Global
-			Name="RESOURCE_FILE"
-			Value="MagicKD.rc"/>
 	</Globals>
 </VisualStudioProject>
