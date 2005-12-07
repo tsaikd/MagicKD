@@ -14,8 +14,19 @@ public:
 // 對話方塊資料
 	enum { IDD = IDD_WALLCHANGER };
 
+	bool m_bInit;
+
+private:
+	CTreeCtrl m_FileTree;
+	CListCtrl m_FileList;
+	CStatic m_TreeStatic;
+	CStatic m_ListStatic;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	virtual BOOL OnInitDialog();
 };

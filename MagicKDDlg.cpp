@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
+#include ".\magickddlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,7 +47,7 @@ END_MESSAGE_MAP()
 
 
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMagicKDDlg::IDD, pParent)
+	: CDialog(CMagicKDDlg::IDD, pParent), m_bInit(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -63,6 +64,8 @@ BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
+	ON_WM_SIZE()
+	ON_WM_MOVE()
 END_MESSAGE_MAP()
 
 
@@ -96,11 +99,11 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO: 在此加入額外的初始設定
-//	m_WallChanger.Create(_T("CWallChanger"), this);
-//	m_WallChanger.ShowWindow(SW_SHOW);
 	m_MainTab.InsertItem(TCIF_PARAM | TCIF_TEXT, 1, _T("WallChanger"), 0, (LPARAM) NULL);
-	m_WallChanger.DoModal();
-	
+	m_WallChanger.Create(IDD_WALLCHANGER, this);
+	m_WallChanger.ShowWindow(SW_SHOW);
+
+	m_bInit = true;
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -149,4 +152,29 @@ void CMagicKDDlg::OnPaint()
 HCURSOR CMagicKDDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialog::OnSize(nType, cx, cy);
+	if ( !m_bInit )
+		return;
+
+	OnMove(cx, cy);
+}
+
+void CMagicKDDlg::OnMove(int x, int y)
+{
+	CDialog::OnMove(x, y);
+	if ( !m_bInit )
+		return;
+
+	CRect rcWin;
+	GetClientRect(rcWin);
+	m_MainTab.MoveWindow(rcWin);
+	m_MainTab.GetClientRect(rcWin);
+	rcWin.top += 35;
+	rcWin.right -= 10;
+	rcWin.bottom -= 10;
+	m_WallChanger.MoveWindow(rcWin);
 }
