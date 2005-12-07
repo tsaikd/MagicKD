@@ -1,4 +1,6 @@
 #pragma once
+#include "afxwin.h"
+#include "KDListBox.h"
 
 
 // CWallChanger 對話方塊
@@ -14,19 +16,39 @@ public:
 // 對話方塊資料
 	enum { IDD = IDD_WALLCHANGER };
 
-	bool m_bInit;
-
 private:
-	CTreeCtrl m_FileTree;
-	CListCtrl m_FileList;
-	CStatic m_TreeStatic;
-	CStatic m_ListStatic;
+	static DWORD WINAPI ThreadProc(LPVOID pParam)
+	{
+		CWallChanger *pThis = (CWallChanger *) pParam;
+		return pThis->ThreadProc();
+	}
+	bool ChangeList(int iListID);
+	UINT m_uWaitTime;
+	bool m_bEnableWallChanger;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
+	HANDLE m_hThread;
+	DWORD m_dwThreadId;
 
 	DECLARE_MESSAGE_MAP()
 public:
+	void CreateThread()
+	{ VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, 0, &m_dwThreadId) ); }
+	virtual DWORD ThreadProc();
+
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnLbnSelchangeWallclasslist();
 	virtual BOOL OnInitDialog();
+	CButton m_EnableWallChanger;
+	CKDListBox m_ClassList;
+	CKDListBox m_DirList;
+	CKDListBox m_FileList;
+	CEdit m_WaitTime;
+	CStatic m_Static1;
+	CStatic m_Static2;
+	CStatic m_Static3;
+	CStatic m_Static4;
+	bool m_bInit;
+	afx_msg void OnBnClickedWallchangercheck();
 };

@@ -125,6 +125,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\KDListBox.cpp">
+			</File>
+			<File
 				RelativePath=".\MagicKD.cpp">
 			</File>
 			<File
@@ -145,14 +148,21 @@
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\WallChanger.cpp">
-			</File>
+			<Filter
+				Name="WallChanger"
+				Filter="">
+				<File
+					RelativePath=".\WallChanger.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="¼ÐÀYÀÉ"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\KDListBox.h">
+			</File>
 			<File
 				RelativePath=".\MagicKD.h">
 			</File>
@@ -165,9 +175,13 @@
 			<File
 				RelativePath=".\stdafx.h">
 			</File>
-			<File
-				RelativePath=".\WallChanger.h">
-			</File>
+			<Filter
+				Name="WallChanger"
+				Filter="">
+				<File
+					RelativePath=".\WallChanger.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="¸ê·½ÀÉ"
