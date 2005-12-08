@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
-#include ".\magickddlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

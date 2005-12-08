@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "WallChanger.h"
-#include ".\wallchanger.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -59,7 +58,7 @@ void CWallChanger::OnSize(UINT nType, int cx, int cy)
 	rcWin.top = 0;
 	rcWin.bottom = rcWin.top + 20;
 	rcWin.left = 20;
-	rcWin.right = rcParWin.right/2 - 10;
+	rcWin.right = rcWin.left + 110;
 	m_EnableWallChanger.MoveWindow(rcWin);
 
 	// Reset Wait Time String Position
