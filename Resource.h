@@ -12,7 +12,7 @@
 #define IDC_WALLSTATIC1                 1003
 #define IDC_WALLSTATIC2                 1004
 #define IDC_WALLCLASSLIST               1005
-#define IDC_WALLFILELIST                1006
+#define IDC_WALLENABLECLASS             1006
 #define IDC_WALLSTATIC3                 1007
 #define IDC_WALLDIRLIST                 1008
 #define IDC_WALLCHANGERCHECK            1009

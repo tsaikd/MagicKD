@@ -43,7 +43,7 @@ public:
 	CButton m_EnableWallChanger;
 	CKDListBox m_ClassList;
 	CKDListBox m_DirList;
-	CKDListBox m_FileList;
+	CKDListBox m_EnableClass;
 	CEdit m_WaitTime;
 	CStatic m_Static1;
 	CStatic m_Static2;

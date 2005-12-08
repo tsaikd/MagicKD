@@ -28,7 +28,7 @@ void CWallChanger::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_WALLSTATIC2, m_Static2);
 	DDX_Control(pDX, IDC_WALLDIRLIST, m_DirList);
 	DDX_Control(pDX, IDC_WALLSTATIC3, m_Static3);
-	DDX_Control(pDX, IDC_WALLFILELIST, m_FileList);
+	DDX_Control(pDX, IDC_WALLENABLECLASS, m_EnableClass);
 	DDX_Control(pDX, IDC_WALLSTATIC4, m_Static4);
 	DDX_Control(pDX, IDC_WALLCHANGETIMEEDIT, m_WaitTime);
 }
@@ -83,7 +83,7 @@ void CWallChanger::OnSize(UINT nType, int cx, int cy)
 	rcWin.top = rcWin.bottom;
 	rcWin.bottom = rcParWin.bottom/2 - 30 + rcWin.top/2;
 	rcWin.right = rcParWin.right/2 - 10;
-	m_ClassList.MoveWindow(rcWin);
+	m_EnableClass.MoveWindow(rcWin);
 
 	// Reset Directory List String Position
 	rcWin.top = rcWin.bottom + 10;
@@ -95,7 +95,7 @@ void CWallChanger::OnSize(UINT nType, int cx, int cy)
 	rcWin.top = rcWin.bottom;
 	rcWin.bottom = rcParWin.bottom - 10;
 	rcWin.right = rcParWin.right/2 - 10;
-	m_DirList.MoveWindow(rcWin);
+	m_ClassList.MoveWindow(rcWin);
 
 	// Reset File List String Position
 	rcWin.top = 40;
@@ -107,7 +107,7 @@ void CWallChanger::OnSize(UINT nType, int cx, int cy)
 	rcWin.top = rcWin.bottom;
 	rcWin.bottom = rcParWin.bottom - 10;
 	rcWin.right = rcParWin.right - 10;
-	m_FileList.MoveWindow(rcWin);
+	m_DirList.MoveWindow(rcWin);
 
 }
 
@@ -138,16 +138,16 @@ bool CWallChanger::ChangeList(int iListID)
 	switch (iListID) {
 	case 0:
 		{
-			m_FileList.DeleteAllString();
-			m_FileList.InsertString(0, _T("A0"));
-			m_FileList.InsertString(1, _T("A1"));
+			m_DirList.DeleteAllString();
+			m_DirList.InsertString(0, _T("A0"));
+			m_DirList.InsertString(1, _T("A1"));
 		}
 		break;
 	case 1:
 		{
-			m_FileList.DeleteAllString();
-			m_FileList.InsertString(0, _T("B0"));
-			m_FileList.InsertString(1, _T("B1"));
+			m_DirList.DeleteAllString();
+			m_DirList.InsertString(0, _T("B0"));
+			m_DirList.InsertString(1, _T("B1"));
 		}
 		break;
 	default:
