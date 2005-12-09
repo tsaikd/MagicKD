@@ -12,6 +12,7 @@ public:
 	virtual ~CKDListBox();
 
 	void DeleteAllString();
+	int MouseInItem();			// return LB_ERR if no match, else return nItemID
 
 protected:
 	DECLARE_MESSAGE_MAP()

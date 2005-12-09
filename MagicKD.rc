@@ -195,6 +195,12 @@ END
 STRINGTABLE 
 BEGIN
     IDS_ABOUTBOX            "關於 MagicKD(&A)..."
+    IDS_WALLADDENCLASS      "加入啟用分類(&A)"
+    IDS_WALLDELENCLASS      "刪除啟用分類(&D)"
+    IDS_WALLNEWCLASSLIST    "新增分類列表(&A)"
+    IDS_WALLDELCLASSLIST    "刪除分類列表(&D)"
+    IDS_WALLADDCLASSDIR     "加入分類目錄(&A)"
+    IDS_WALLDELCLASSDIR     "刪除分類目錄(&D)"
 END
 
 #endif    // 中文 (台灣) resources

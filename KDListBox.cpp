@@ -23,6 +23,19 @@ void CKDListBox::DeleteAllString()
 		DeleteString(i);
 }
 
+int CKDListBox::MouseInItem()
+{
+	CPoint ptBuf;
+	BOOL bOutside;
+	int iNearPos, iGuessPos, iItemH;
+
+	iNearPos = ItemFromPoint(ptBuf, bOutside);
+	iItemH = GetItemHeight(0);
+	iGuessPos = ptBuf.y / iItemH;
+
+	return LB_ERR;
+}
+
 BEGIN_MESSAGE_MAP(CKDListBox, CListBox)
 END_MESSAGE_MAP()
 

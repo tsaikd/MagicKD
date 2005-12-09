@@ -41,6 +41,9 @@ public:
 	afx_msg void OnLbnSelchangeWallclasslist();
 	afx_msg void OnBnClickedWallchangercheck();
 	virtual BOOL OnInitDialog();
+	bool AddEnableClass();
+	bool DelEnableClass();
+
 	CButton m_EnableWallChanger;
 	CWallListBox m_ClassList;
 	CWallListBox m_DirList;
@@ -51,6 +54,4 @@ public:
 	CStatic m_Static3;
 	CStatic m_Static4;
 	bool m_bInit;
-protected:
-	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

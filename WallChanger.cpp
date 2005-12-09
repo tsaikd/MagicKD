@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "WallChanger.h"
-#include ".\wallchanger.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -116,6 +115,10 @@ BOOL CWallChanger::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	m_ClassList.Init(this);
+	m_DirList.Init(this);
+	m_EnableClass.Init(this);
+
 	m_EnableWallChanger.SetCheck(1);
 	m_WaitTime.SetWindowText(_T("30"));
 	m_uWaitTime = 30;
@@ -179,7 +182,23 @@ DWORD CWallChanger::ThreadProc()
 	return 0;
 }
 
-LRESULT CWallChanger::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+bool CWallChanger::AddEnableClass()
 {
-	return CDialog::DefWindowProc(message, wParam, lParam);
+	CString sBuf;
+	int iCurSel = m_ClassList.GetCurSel();
+	if (iCurSel == LB_ERR)
+		return false;
+	m_ClassList.GetText(iCurSel, sBuf);
+	if (m_EnableClass.FindString(0, sBuf) == LB_ERR)
+		m_EnableClass.AddString(sBuf);
+	return true;
 }
+
+bool CWallChanger::DelEnableClass()
+{
+	int iCurSel = m_EnableClass.GetCurSel();
+	if (iCurSel == LB_ERR)
+		return false;
+	return (m_EnableClass.DeleteString(iCurSel) != LB_ERR);
+}
+

@@ -6,6 +6,12 @@
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
 #define IDD_MAGICKD_DIALOG              102
+#define IDS_WALLADDENCLASS              102
+#define IDS_WALLDELENCLASS              103
+#define IDS_WALLNEWCLASSLIST            104
+#define IDS_WALLDELCLASSLIST            105
+#define IDS_WALLADDCLASSDIR             106
+#define IDS_WALLDELCLASSDIR             107
 #define IDR_MAINFRAME                   128
 #define IDD_WALLCHANGER                 129
 #define IDC_MAINTAB                     1000

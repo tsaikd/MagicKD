@@ -6,8 +6,12 @@
 class CWallListBox : public CKDListBox
 {
 public:
-	CWallListBox(void);
-	virtual ~CWallListBox(void);
+	CWallListBox();
+	virtual ~CWallListBox();
+
+	void Init(void *pParent);
+
+	void *m_pParent;
 
 private:
 	CMenu m_mContextMenu;
