@@ -23,7 +23,8 @@ public:
 	public:
 	virtual BOOL InitInstance();
 
-// 程式碼實作
+	CString m_sAppPath;
+	CString m_sAppDir;
 
 	DECLARE_MESSAGE_MAP()
 };

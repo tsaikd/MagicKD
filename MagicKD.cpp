@@ -37,6 +37,22 @@ BOOL CMagicKDApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
+	TCHAR sBuffer[MAX_PATH], *ptr;
+	GetModuleFileName(NULL, sBuffer, MAX_PATH);
+	m_sAppPath = sBuffer;
+	if (ptr = _tcsrchr(sBuffer, _T('\\'))) {
+		ptr++;
+		*ptr = _T('\0');
+		SetCurrentDirectory(sBuffer);
+		m_sAppDir = sBuffer;
+		_tcscpy(ptr, _T("MagicKD.ini"));
+//		thePrefs.SetPathName(sBuffer);
+	}
+	else {
+		MessageBox(NULL, _T("Can not locate the execution file! (MagicKD.exe)"), _T("MagicKD"), MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
+
 	// 標準初始設定
 	// 如果您不使用這些功能並且想減少最後完成的可執行檔大小，您可以從下列
 	// 程式碼移除不需要的初始化常式，變更儲存設定值的登錄機碼

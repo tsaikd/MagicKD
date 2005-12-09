@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "MagicKD.h"
 #include "KDListBox.h"
 
 
@@ -28,6 +27,4 @@ BEGIN_MESSAGE_MAP(CKDListBox, CListBox)
 END_MESSAGE_MAP()
 
 
-
 // CKDListBox 訊息處理常式
-

@@ -1,6 +1,6 @@
 #pragma once
 #include "afxwin.h"
-#include "KDListBox.h"
+#include "WallListBox.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -39,16 +39,18 @@ public:
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnLbnSelchangeWallclasslist();
+	afx_msg void OnBnClickedWallchangercheck();
 	virtual BOOL OnInitDialog();
 	CButton m_EnableWallChanger;
-	CKDListBox m_ClassList;
-	CKDListBox m_DirList;
-	CKDListBox m_EnableClass;
+	CWallListBox m_ClassList;
+	CWallListBox m_DirList;
+	CWallListBox m_EnableClass;
 	CEdit m_WaitTime;
 	CStatic m_Static1;
 	CStatic m_Static2;
 	CStatic m_Static3;
 	CStatic m_Static4;
 	bool m_bInit;
-	afx_msg void OnBnClickedWallchangercheck();
+protected:
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

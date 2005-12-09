@@ -10,7 +10,7 @@
 // 如果您有必須優先選取的平台，請修改下列定義。
 // 參考 MSDN 取得不同平台對應值的最新資訊。
 #ifndef WINVER				// 允許使用 Windows 95 與 Windows NT 4 (含) 以後版本的特定功能。
-#define WINVER 0x0400		// 將它變更為針對 Windows 98 和 Windows 2000 (含) 以後版本適當的值。
+#define WINVER 0x0501		// 將它變更為針對 Windows 98 和 Windows 2000 (含) 以後版本適當的值。
 #endif
 
 #ifndef _WIN32_WINNT		// 允許使用 Windows NT 4 (含) 以後版本的特定功能。

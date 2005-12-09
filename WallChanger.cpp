@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "WallChanger.h"
+#include ".\wallchanger.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -176,4 +177,9 @@ DWORD CWallChanger::ThreadProc()
 		m_WaitTime.SetWindowText(timer);
 	}
 	return 0;
+}
+
+LRESULT CWallChanger::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return CDialog::DefWindowProc(message, wParam, lParam);
 }
