@@ -14,7 +14,7 @@
 #endif
 
 #ifndef _WIN32_WINNT		// 允許使用 Windows NT 4 (含) 以後版本的特定功能。
-#define _WIN32_WINNT 0x0400		// 將它變更為針對 Windows 98 和 Windows 2000 (含) 以後版本適當的值。
+#define _WIN32_WINNT 0x0501		// 將它變更為針對 Windows 98 和 Windows 2000 (含) 以後版本適當的值。
 #endif						
 
 #ifndef _WIN32_WINDOWS		// 允許使用 Windows 98 (含) 以後版本的特定功能。
@@ -22,7 +22,7 @@
 #endif
 
 #ifndef _WIN32_IE			// 允許使用 IE 4.0 (含) 以後版本的特定功能。
-#define _WIN32_IE 0x0400	// 將它變更為針對 IE 5.0 (含) 以後版本適當的值。
+#define _WIN32_IE 0x0500	// 將它變更為針對 IE 5.0 (含) 以後版本適當的值。
 #endif
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// 明確定義部分的 CString 建構函式

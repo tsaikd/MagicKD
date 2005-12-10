@@ -1,6 +1,6 @@
 #pragma once
 #include "afxwin.h"
-#include "WallListBox.h"
+#include "WallListCtrl.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -22,7 +22,7 @@ private:
 		CWallChanger *pThis = (CWallChanger *) pParam;
 		return pThis->ThreadProc();
 	}
-	bool ChangeList(int iListID);
+
 	UINT m_uWaitTime;
 	bool m_bEnableWallChanger;
 
@@ -38,20 +38,32 @@ public:
 	virtual DWORD ThreadProc();
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnLbnSelchangeWallclasslist();
 	afx_msg void OnBnClickedWallchangercheck();
+	afx_msg void OnBnClickedBtnNewclass();
+	afx_msg void OnLvnItemchangedWallclasslist(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnItemchangedWallenableclass(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMSetfocusWallenableclass(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMSetfocusWallclasslist(NMHDR *pNMHDR, LRESULT *pResult);
+
 	virtual BOOL OnInitDialog();
-	bool AddEnableClass();
-	bool DelEnableClass();
+	void AddClassToEnable();
+	void DelEnableClass();
+	bool SetSelClassItemToDirList(CWallListCtrl *pClassList, CWallListCtrl *pDirList);
+	void NewClassList();
+	void DelClassList();
+	void AddClassDir();
+	void DelClassDir();
 
 	CButton m_EnableWallChanger;
-	CWallListBox m_ClassList;
-	CWallListBox m_DirList;
-	CWallListBox m_EnableClass;
+	CWallListCtrl m_EnableClass;
+	CWallListCtrl m_ClassList;
+	CWallListCtrl m_DirList;
 	CEdit m_WaitTime;
 	CStatic m_Static1;
 	CStatic m_Static2;
 	CStatic m_Static3;
 	CStatic m_Static4;
 	bool m_bInit;
+	CEdit m_Edit_NewClass;
+	CButton m_BTN_NewClass;
 };

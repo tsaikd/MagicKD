@@ -8,6 +8,7 @@
 #endif
 
 #include "resource.h"		// ¥D­n²Å¸¹
+#include "Others.h"
 
 
 // CMagicKDApp:

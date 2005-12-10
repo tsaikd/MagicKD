@@ -12,6 +12,8 @@
 #define IDS_WALLDELCLASSLIST            105
 #define IDS_WALLADDCLASSDIR             106
 #define IDS_WALLDELCLASSDIR             107
+#define IDS_WALLSTRDIR                  108
+#define IDS_SEL_FOLDER                  109
 #define IDR_MAINFRAME                   128
 #define IDD_WALLCHANGER                 129
 #define IDC_MAINTAB                     1000
@@ -24,6 +26,9 @@
 #define IDC_WALLCHANGERCHECK            1009
 #define IDC_WALLCHANGETIMEEDIT          1010
 #define IDC_WALLSTATIC4                 1011
+#define IDC_NEWCLASSNAME                1015
+#define IDC_BUTTON1                     1016
+#define IDC_BTN_NEWCLASS                1016
 
 // Next default values for new objects
 // 
@@ -31,7 +36,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

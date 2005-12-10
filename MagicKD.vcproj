@@ -128,6 +128,9 @@
 				RelativePath=".\KDListBox.cpp">
 			</File>
 			<File
+				RelativePath=".\KDListCtrl.cpp">
+			</File>
+			<File
 				RelativePath=".\Language.cpp">
 			</File>
 			<File
@@ -135,6 +138,9 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.cpp">
+			</File>
+			<File
+				RelativePath=".\Others.cpp">
 			</File>
 			<File
 				RelativePath=".\stdafx.cpp">
@@ -160,6 +166,9 @@
 				<File
 					RelativePath=".\WallListBox.cpp">
 				</File>
+				<File
+					RelativePath=".\WallListCtrl.cpp">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -170,6 +179,9 @@
 				RelativePath=".\KDListBox.h">
 			</File>
 			<File
+				RelativePath=".\KDListCtrl.h">
+			</File>
+			<File
 				RelativePath=".\Language.h">
 			</File>
 			<File
@@ -177,6 +189,9 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.h">
+			</File>
+			<File
+				RelativePath=".\Others.h">
 			</File>
 			<File
 				RelativePath=".\Resource.h">
@@ -192,6 +207,9 @@
 				</File>
 				<File
 					RelativePath=".\WallListBox.h">
+				</File>
+				<File
+					RelativePath=".\WallListCtrl.h">
 				</File>
 			</Filter>
 		</Filter>

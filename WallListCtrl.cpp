@@ -1,56 +1,68 @@
-#include "StdAfx.h"
-#include "WallListBox.h"
+// WallListCtrl.cpp : 實作檔
+//
+
+#include "stdafx.h"
+#include "MagicKD.h"
+#include "WallListCtrl.h"
 #include "WallChanger.h"
 
-CWallListBox::CWallListBox()
+
+// CWallListCtrl
+
+IMPLEMENT_DYNAMIC(CWallListCtrl, CListCtrl)
+CWallListCtrl::CWallListCtrl() : m_pParent(NULL)
 {
 }
 
-CWallListBox::~CWallListBox()
+CWallListCtrl::~CWallListCtrl()
 {
 }
 
-BEGIN_MESSAGE_MAP(CWallListBox, CKDListBox)
-	ON_WM_CONTEXTMENU()
-END_MESSAGE_MAP()
-
-void CWallListBox::Init(void *pParent)
+void CWallListCtrl::Init(void *pParent)
 {
 	m_pParent = pParent;
 }
 
-void CWallListBox::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
+BEGIN_MESSAGE_MAP(CWallListCtrl, CListCtrl)
+	ON_WM_CONTEXTMENU()
+END_MESSAGE_MAP()
+
+
+// CWallListCtrl 訊息處理常式
+
+void CWallListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 {
-	int iCusSel = GetCurSel();
+	POSITION pos;
 	CPoint cpPopMenu;
+
+	pos = GetFirstSelectedItemPosition();
 	GetCursorPos(&cpPopMenu);
 	m_mContextMenu.CreatePopupMenu();
+
 	switch (GetDlgCtrlID()) {
 	case IDC_WALLENABLECLASS:
-		if (iCusSel != LB_ERR)
+		if (pos)
 			m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLDELENCLASS, GetResString(IDS_WALLDELENCLASS));
 		break;
 	case IDC_WALLCLASSLIST:
-		if (iCusSel != LB_ERR)
+		if (pos) {
 			m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLADDENCLASS, GetResString(IDS_WALLADDENCLASS));
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLNEWCLASSLIST, GetResString(IDS_WALLNEWCLASSLIST));
-		if (iCusSel != LB_ERR)
 			m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLDELCLASSLIST, GetResString(IDS_WALLDELCLASSLIST));
+		}
 		break;
 	case IDC_WALLDIRLIST:
 		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLADDCLASSDIR, GetResString(IDS_WALLADDCLASSDIR));
-		if (iCusSel != LB_ERR)
+		if (pos)
 			m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLDELCLASSDIR, GetResString(IDS_WALLDELCLASSDIR));
 		break;
-	default:
-		break;
 	}
+
 	if (m_mContextMenu.GetMenuItemCount())
 		m_mContextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, cpPopMenu.x, cpPopMenu.y, this);
 	m_mContextMenu.DestroyMenu();
 }
 
-LRESULT CWallListBox::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
 	case WM_COMMAND:
@@ -63,31 +75,29 @@ LRESULT CWallListBox::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			case IDS_WALLDELENCLASS:
 				((CWallChanger *)m_pParent)->DelEnableClass();
 				break;
+			case IDS_WALLDELCLASSLIST:
+				((CWallChanger *)m_pParent)->DelClassList();
+				break;
+			case IDS_WALLADDCLASSDIR:
+				((CWallChanger *)m_pParent)->AddClassDir();
+				break;
+			case IDS_WALLDELCLASSDIR:
+				((CWallChanger *)m_pParent)->DelClassDir();
+				break;
 			}
 		}
 		break;
 	case WM_LBUTTONDBLCLK:
 		{
-			int iItemPos = MouseInItem();
-			if (iItemPos != LB_ERR) {
+			int nID = GetDlgCtrlID();
+			switch (nID) {
+			case IDC_WALLCLASSLIST:
+				((CWallChanger *)m_pParent)->AddClassToEnable();
 				break;
-			}
-			break;
-			CPoint ptBuf;
-			BOOL bOutside;
-			int iNearPos;
-
-			iNearPos = ItemFromPoint(ptBuf, bOutside);
-			if (bOutside == FALSE) {
-				switch (GetDlgCtrlID()) {
-				case IDC_WALLCLASSLIST:
-					((CWallChanger *)m_pParent)->AddClassToEnable();
-					break;
-				}
 			}
 		}
 		break;
 	}
 
-	return CKDListBox::DefWindowProc(message, wParam, lParam);
+	return CListCtrl::DefWindowProc(message, wParam, lParam);
 }
