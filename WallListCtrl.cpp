@@ -3,8 +3,9 @@
 
 #include "stdafx.h"
 #include "MagicKD.h"
-#include "WallListCtrl.h"
 #include "WallChanger.h"
+#include "WallListCtrl.h"
+#include "WallDirListItem.h"
 
 
 // CWallListCtrl
@@ -23,10 +24,18 @@ void CWallListCtrl::Init(void *pParent)
 	m_pParent = pParent;
 }
 
+void CWallListCtrl::AddItem(LPCTSTR sPath)
+{
+	if (!sPath)
+		return;
+	CWallDirListItem *pItem = new CWallDirListItem;
+	pItem->SetFullPath(sPath);
+	InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0, I_IMAGECALLBACK, (LPARAM) pItem);
+}
+
 BEGIN_MESSAGE_MAP(CWallListCtrl, CListCtrl)
 	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
-
 
 // CWallListCtrl 訊息處理常式
 

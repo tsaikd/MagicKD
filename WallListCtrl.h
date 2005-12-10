@@ -13,6 +13,7 @@ public:
 	virtual ~CWallListCtrl();
 
 	void Init(void *pParent);
+	void AddItem(LPCTSTR sPath);
 
 	void *m_pParent;
 

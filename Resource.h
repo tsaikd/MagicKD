@@ -8,12 +8,14 @@
 #define IDD_MAGICKD_DIALOG              102
 #define IDS_WALLADDENCLASS              102
 #define IDS_WALLDELENCLASS              103
-#define IDS_WALLNEWCLASSLIST            104
 #define IDS_WALLDELCLASSLIST            105
 #define IDS_WALLADDCLASSDIR             106
 #define IDS_WALLDELCLASSDIR             107
 #define IDS_WALLSTRDIR                  108
 #define IDS_SEL_FOLDER                  109
+#define IDS_WALLERR_MULTYSELCLASS       110
+#define IDS_WALL_DIRLISTCOLUMN0         111
+#define IDS_WALL_DIRLISTCOLUMN1         112
 #define IDR_MAINFRAME                   128
 #define IDD_WALLCHANGER                 129
 #define IDC_MAINTAB                     1000
@@ -27,7 +29,6 @@
 #define IDC_WALLCHANGETIMEEDIT          1010
 #define IDC_WALLSTATIC4                 1011
 #define IDC_NEWCLASSNAME                1015
-#define IDC_BUTTON1                     1016
 #define IDC_BTN_NEWCLASS                1016
 
 // Next default values for new objects

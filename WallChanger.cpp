@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "WallChanger.h"
-#include ".\wallchanger.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -46,6 +45,7 @@ BEGIN_MESSAGE_MAP(CWallChanger, CDialog)
 	ON_BN_CLICKED(IDC_BTN_NEWCLASS, OnBnClickedBtnNewclass)
 	ON_NOTIFY(NM_SETFOCUS, IDC_WALLENABLECLASS, OnNMSetfocusWallenableclass)
 	ON_NOTIFY(NM_SETFOCUS, IDC_WALLCLASSLIST, OnNMSetfocusWallclasslist)
+	ON_NOTIFY(LVN_GETDISPINFO, IDC_WALLDIRLIST, OnLvnGetdispinfoWalldirlist)
 END_MESSAGE_MAP()
 
 
@@ -60,7 +60,8 @@ BOOL CWallChanger::OnInitDialog()
 	m_ClassList.Init(this);
 	m_ClassList.InsertColumn(0, _T(""));
 	m_DirList.Init(this);
-	m_DirList.InsertColumn(0, _T(""));
+	m_DirList.InsertColumn(0, CResString(IDS_WALL_DIRLISTCOLUMN0), LVCFMT_LEFT, 200, 0);
+	m_DirList.InsertColumn(1, CResString(IDS_WALL_DIRLISTCOLUMN1), LVCFMT_LEFT, 50, 1);
 
 	m_EnableWallChanger.SetCheck(1);
 	m_WaitTime.SetWindowText(_T("30"));
@@ -163,7 +164,6 @@ void CWallChanger::OnSize(UINT nType, int cx, int cy)
 		rcWin.top = rcWin.bottom;
 		rcWin.bottom = rcGrpWin.bottom;
 		m_DirList.MoveWindow(rcWin);
-		m_DirList.SetColumnWidth(0, rcWin.right-rcWin.left-4);
 	}
 
 	Invalidate();
@@ -208,20 +208,20 @@ void CWallChanger::OnLvnItemchangedWallclasslist(NMHDR *pNMHDR, LRESULT *pResult
 void CWallChanger::OnNMSetfocusWallenableclass(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	POSITION pos = m_EnableClass.GetFirstSelectedItemPosition();
-	if (!pos)
-		m_DirList.DeleteAllItems();
-	else
-		SetSelClassItemToDirList(&m_EnableClass, &m_DirList);
+//	if (!pos)
+//		m_DirList.DeleteAllItems();
+//	else
+//		SetSelClassItemToDirList(&m_EnableClass, &m_DirList);
 	*pResult = 0;
 }
 
 void CWallChanger::OnNMSetfocusWallclasslist(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	POSITION pos = m_ClassList.GetFirstSelectedItemPosition();
-	if (!pos)
-		m_DirList.DeleteAllItems();
-	else
-		SetSelClassItemToDirList(&m_ClassList, &m_DirList);
+//	if (!pos)
+//		m_DirList.DeleteAllItems();
+//	else
+//		SetSelClassItemToDirList(&m_ClassList, &m_DirList);
 	*pResult = 0;
 }
 
@@ -238,26 +238,26 @@ bool CWallChanger::SetSelClassItemToDirList(CWallListCtrl *pClassList, CWallList
 			switch (nItem) {
 			case 0:
 				{
-					pDirList->InsertItem(0, _T("A0"));
-					pDirList->InsertItem(1, _T("A1"));
-					pDirList->InsertItem(2, _T("A2"));
-					pDirList->InsertItem(3, _T("A3"));
+					pDirList->AddItem(_T("C:\\A0"));
+					pDirList->AddItem(_T("C:\\A1"));
+					pDirList->AddItem(_T("C:\\A2"));
+					pDirList->AddItem(_T("C:\\A3"));
 				}
 				break;
 			case 1:
 				{
-					pDirList->InsertItem(0, _T("B0"));
-					pDirList->InsertItem(1, _T("B1"));
-					pDirList->InsertItem(2, _T("B2"));
-					pDirList->InsertItem(3, _T("B3"));
+					pDirList->AddItem(_T("C:\\B0"));
+					pDirList->AddItem(_T("C:\\B1"));
+					pDirList->AddItem(_T("C:\\B2"));
+					pDirList->AddItem(_T("C:\\B3"));
 				}
 				break;
 			case 2:
 				{
-					pDirList->InsertItem(0, _T("C0"));
-					pDirList->InsertItem(1, _T("C1"));
-					pDirList->InsertItem(2, _T("C2"));
-					pDirList->InsertItem(3, _T("C3"));
+					pDirList->AddItem(_T("C:\\C0"));
+					pDirList->AddItem(_T("C:\\C1"));
+					pDirList->AddItem(_T("C:\\C2"));
+					pDirList->AddItem(_T("C:\\C3"));
 				}
 				break;
 			}
@@ -309,6 +309,10 @@ void CWallChanger::DelClassList()
 
 void CWallChanger::AddClassDir()
 {
+	if (m_ClassList.GetSelectedCount() > 1) {
+		MessageBox(CResString(IDS_WALLERR_MULTYSELCLASS));
+		return;
+	}
 	TCHAR sPath[MAX_PATH] = {0};
 	if (ChooseFolder(sPath, m_hWnd))
 		m_DirList.InsertItem(-1, sPath);
@@ -324,4 +328,25 @@ void CWallChanger::DelClassDir()
 void CWallChanger::OnBnClickedBtnNewclass()
 {
 	NewClassList();
+}
+
+void CWallChanger::OnLvnGetdispinfoWalldirlist(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
+	CString sText;
+	CWallDirListItem *pItem = (CWallDirListItem *) pDispInfo->item.lParam;
+
+	if (pDispInfo->item.mask & LVIF_TEXT) {
+		switch (pDispInfo->item.iSubItem) {
+			case 0:
+				sText = pItem->GetFullPath();
+				pDispInfo->item.pszText = sText.GetBuffer();
+				break;
+			case 1:
+				sText.Format(_T("%d"), pItem->GetFindNumber());
+				pDispInfo->item.pszText = sText.GetBuffer();
+				break;
+		}
+	}
+	*pResult = 0;
 }

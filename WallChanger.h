@@ -1,6 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "WallListCtrl.h"
+#include "WallDirListItem.h"
 
 
 // CWallChanger ¹ï¸Ü¤è¶ô
@@ -66,4 +67,5 @@ public:
 	bool m_bInit;
 	CEdit m_Edit_NewClass;
 	CButton m_BTN_NewClass;
+	afx_msg void OnLvnGetdispinfoWalldirlist(NMHDR *pNMHDR, LRESULT *pResult);
 };
