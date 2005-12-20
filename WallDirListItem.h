@@ -1,17 +1,21 @@
 #pragma once
+#include "KDListItem.h"
 
-class CWallDirListItem
+class CWallDirListItem : public CKDListItem
 {
 public:
-	CWallDirListItem();
-	virtual ~CWallDirListItem();
+	CWallDirListItem() : m_iClassNum(-1), m_iFindNum(0) {}
+	virtual ~CWallDirListItem() {}
 
-	CString GetFullPath() const { return m_sPath; }
-	void SetFullPath(CString sPath) { m_sPath = sPath; }
-	UINT GetFindNumber() const { return m_uFindNumber; }
-	void SetFindNumber(UINT uFindNumber) { m_uFindNumber = uFindNumber; }
+	int GetClassNum()  { return m_iClassNum; }
+	void SetClassNum(int iClassNum) { m_iClassNum = iClassNum; }
+	CString GetPath() { return m_sPath; }
+	void SetPath(CString sPath) { m_sPath = sPath; }
+	int GetFindNum() { return m_iFindNum; }
+	void SetFindNum(int iFindNum) { m_iFindNum = iFindNum; }
 
 private:
+	int m_iClassNum;
 	CString m_sPath;
-	UINT m_uFindNumber;
+	int m_iFindNum;
 };

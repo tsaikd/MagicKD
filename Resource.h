@@ -8,14 +8,17 @@
 #define IDD_MAGICKD_DIALOG              102
 #define IDS_WALLADDENCLASS              102
 #define IDS_WALLDELENCLASS              103
+#define IDS_WALLERR_HAVETONEWCLASS      104
 #define IDS_WALLDELCLASSLIST            105
 #define IDS_WALLADDCLASSDIR             106
 #define IDS_WALLDELCLASSDIR             107
 #define IDS_WALLSTRDIR                  108
 #define IDS_SEL_FOLDER                  109
 #define IDS_WALLERR_MULTYSELCLASS       110
+#define IDS_WALLERR_ONLYCANSELECTONECLASS 110
 #define IDS_WALL_DIRLISTCOLUMN0         111
 #define IDS_WALL_DIRLISTCOLUMN1         112
+#define IDS_WALL_DEFAULTCLASS           113
 #define IDR_MAINFRAME                   128
 #define IDD_WALLCHANGER                 129
 #define IDC_MAINTAB                     1000
@@ -25,6 +28,7 @@
 #define IDC_WALLENABLECLASS             1006
 #define IDC_WALLSTATIC3                 1007
 #define IDC_WALLDIRLIST                 1008
+#define IDC_NONE_WALLDIRLIST            1008
 #define IDC_WALLCHANGERCHECK            1009
 #define IDC_WALLCHANGETIMEEDIT          1010
 #define IDC_WALLSTATIC4                 1011

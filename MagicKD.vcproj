@@ -131,6 +131,9 @@
 				RelativePath=".\KDListCtrl.cpp">
 			</File>
 			<File
+				RelativePath=".\KDListItem.cpp">
+			</File>
+			<File
 				RelativePath=".\Language.cpp">
 			</File>
 			<File
@@ -157,14 +160,20 @@
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\WallDirListItem.cpp">
-			</File>
 			<Filter
 				Name="WallChanger"
 				Filter="">
 				<File
 					RelativePath=".\WallChanger.cpp">
+				</File>
+				<File
+					RelativePath=".\WallClassListCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\WallDirListCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\WallEnableCtrl.cpp">
 				</File>
 				<File
 					RelativePath=".\WallListCtrl.cpp">
@@ -180,6 +189,9 @@
 			</File>
 			<File
 				RelativePath=".\KDListCtrl.h">
+			</File>
+			<File
+				RelativePath=".\KDListItem.h">
 			</File>
 			<File
 				RelativePath=".\Language.h">
@@ -199,9 +211,6 @@
 			<File
 				RelativePath=".\stdafx.h">
 			</File>
-			<File
-				RelativePath=".\WallDirListItem.h">
-			</File>
 			<Filter
 				Name="WallChanger"
 				Filter="">
@@ -209,8 +218,30 @@
 					RelativePath=".\WallChanger.h">
 				</File>
 				<File
+					RelativePath=".\WallClassListCtrl.h">
+				</File>
+				<File
+					RelativePath=".\WallDirListCtrl.h">
+				</File>
+				<File
+					RelativePath=".\WallEnableCtrl.h">
+				</File>
+				<File
 					RelativePath=".\WallListCtrl.h">
 				</File>
+				<Filter
+					Name="ListItem"
+					Filter="">
+					<File
+						RelativePath=".\WallClassListItem.h">
+					</File>
+					<File
+						RelativePath=".\WallDirListItem.h">
+					</File>
+					<File
+						RelativePath=".\WallEnableItem.h">
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

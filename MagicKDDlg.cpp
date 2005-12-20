@@ -98,12 +98,13 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO: 在此加入額外的初始設定
-	m_MainTab.InsertItem(TCIF_PARAM | TCIF_TEXT, 1, _T("WallChanger"), 0, (LPARAM) NULL);
+	m_MainTab.InsertItem(TCIF_TEXT, 1, _T("WallChanger"), 0, NULL);
 	m_WallChanger.Create(IDD_WALLCHANGER, this);
 	m_WallChanger.ShowWindow(SW_SHOW);
+	m_WallChanger.m_Edit_NewClass.SetFocus();
 
 	m_bInit = true;
-	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
+	return FALSE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
 void CMagicKDDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -176,4 +177,11 @@ void CMagicKDDlg::OnMove(int x, int y)
 	rcWin.right -= 10;
 	rcWin.bottom -= 10;
 	m_WallChanger.MoveWindow(rcWin);
+}
+
+void CMagicKDDlg::OnOK()
+{
+	m_WallChanger.NewClassList();
+
+//	CDialog::OnOK();
 }

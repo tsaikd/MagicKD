@@ -1,17 +1,17 @@
 // WallListCtrl.cpp : 實作檔
 //
 
-#include "stdafx.h"
-#include "MagicKD.h"
+#include "StdAfx.h"
 #include "WallChanger.h"
 #include "WallListCtrl.h"
+#include "WallClassListItem.h"
 #include "WallDirListItem.h"
 
 
 // CWallListCtrl
 
 IMPLEMENT_DYNAMIC(CWallListCtrl, CListCtrl)
-CWallListCtrl::CWallListCtrl() : m_pParent(NULL)
+CWallListCtrl::CWallListCtrl() : m_pParent(NULL), m_bInit(false)
 {
 }
 
@@ -22,19 +22,13 @@ CWallListCtrl::~CWallListCtrl()
 void CWallListCtrl::Init(void *pParent)
 {
 	m_pParent = pParent;
-}
-
-void CWallListCtrl::AddItem(LPCTSTR sPath)
-{
-	if (!sPath)
-		return;
-	CWallDirListItem *pItem = new CWallDirListItem;
-	pItem->SetFullPath(sPath);
-	InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0, I_IMAGECALLBACK, (LPARAM) pItem);
+	m_bInit = true;
 }
 
 BEGIN_MESSAGE_MAP(CWallListCtrl, CListCtrl)
 	ON_WM_CONTEXTMENU()
+	ON_NOTIFY_REFLECT(LVN_GETDISPINFO, OnLvnGetdispinfo)
+	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
 END_MESSAGE_MAP()
 
 // CWallListCtrl 訊息處理常式
@@ -44,7 +38,7 @@ void CWallListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	POSITION pos;
 	CPoint cpPopMenu;
 
-	pos = GetFirstSelectedItemPosition();
+/*	pos = GetFirstSelectedItemPosition();
 	GetCursorPos(&cpPopMenu);
 	m_mContextMenu.CreatePopupMenu();
 
@@ -69,11 +63,12 @@ void CWallListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	if (m_mContextMenu.GetMenuItemCount())
 		m_mContextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, cpPopMenu.x, cpPopMenu.y, this);
 	m_mContextMenu.DestroyMenu();
+	Invalidate();*/
 }
 
 LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message) {
+/*	switch (message) {
 	case WM_COMMAND:
 		{
 			UINT nID = LOWORD(wParam);
@@ -107,6 +102,54 @@ LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
-
+*/
 	return CListCtrl::DefWindowProc(message, wParam, lParam);
+}
+
+void CWallListCtrl::OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
+/*	TCHAR sText[MAX_PATH] = {0};
+
+	switch (GetDlgCtrlID()) {
+	case IDC_WALLDIRLIST:
+		if (pDispInfo->item.mask & LVIF_TEXT) {
+			CWallDirListItem *pItem = (CWallDirListItem *) pDispInfo->item.lParam;
+			switch (pDispInfo->item.iSubItem) {
+				case 0:
+					_stprintf(sText, "%s", pItem->GetPath());
+					pDispInfo->item.pszText = sText;
+					break;
+				case 1:
+					_stprintf(sText, "%d", pItem->GetFindNum());
+					pDispInfo->item.pszText = sText;
+					break;
+			}
+		}
+		break;
+	case IDC_WALLCLASSLIST:
+		if (pDispInfo->item.mask & LVIF_TEXT) {
+			CWallClassListItem *pItem = (CWallClassListItem *) pDispInfo->item.lParam;
+			switch (pDispInfo->item.iSubItem) {
+				case 0:
+					_stprintf(sText, "%s", pItem->GetItemName());
+					pDispInfo->item.pszText = sText;
+					break;
+			}
+		}
+		break;
+	}
+*/
+	*pResult = 0;
+}
+
+void CWallListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+
+/*	CWallDirListItem *pItem = (CWallDirListItem *) GetItemData(pNMLV->iItem);
+	if (pItem)
+		delete pItem;
+*/
+	*pResult = 0;
 }

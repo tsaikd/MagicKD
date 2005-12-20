@@ -1,38 +1,62 @@
 #pragma once
 #include "afxwin.h"
+#include "MagicKD.h"
+#include "WallEnableCtrl.h"
+#include "WallClassListCtrl.h"
+#include "WallDirListCtrl.h"
+
 #include "WallListCtrl.h"
-#include "WallDirListItem.h"
 
 
 // CWallChanger 對話方塊
 
 class CWallChanger : public CDialog
 {
-	DECLARE_DYNAMIC(CWallChanger)
-
 public:
 	CWallChanger(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChanger();
 
-// 對話方塊資料
-	enum { IDD = IDD_WALLCHANGER };
+	void DoOnSize();
+	void AddClassToEnable();
+	void DelEnableClass();
+	bool SetSelClassItemToDirList(CWallListCtrl *pClassList, CWallDirListCtrl *pDirList);
+	void NewClassList(LPCTSTR sClassName = NULL);
+	void DelClassList();
+	void AddClassDir();
+	void DelClassDir();
+
+	CButton m_EnableWallChanger;
+	CWallEnableCtrl m_EnableClass;
+	CWallClassListCtrl m_ClassList;
+	CWallDirListCtrl m_DirList;
+	CWallDirListCtrl* m_pCurDirList;
+	CEdit m_WaitTime;
+	CStatic m_Static1;
+	CStatic m_Static2;
+	CStatic m_Static3;
+	CStatic m_Static4;
+	CEdit m_Edit_NewClass;
+	CButton m_BTN_NewClass;
 
 private:
-	static DWORD WINAPI ThreadProc(LPVOID pParam)
-	{
+	static DWORD WINAPI ThreadProc(LPVOID pParam) {
 		CWallChanger *pThis = (CWallChanger *) pParam;
 		return pThis->ThreadProc();
 	}
-
 	UINT m_uWaitTime;
 	bool m_bEnableWallChanger;
+	bool m_bInit;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
 	HANDLE m_hThread;
 	DWORD m_dwThreadId;
+	bool m_bIsThreadRunning;
 
-	DECLARE_MESSAGE_MAP()
+// 對話方塊資料
+public:
+	enum { IDD = IDD_WALLCHANGER };
+
 public:
 	void CreateThread()
 	{ VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, 0, &m_dwThreadId) ); }
@@ -47,25 +71,8 @@ public:
 	afx_msg void OnNMSetfocusWallclasslist(NMHDR *pNMHDR, LRESULT *pResult);
 
 	virtual BOOL OnInitDialog();
-	void AddClassToEnable();
-	void DelEnableClass();
-	bool SetSelClassItemToDirList(CWallListCtrl *pClassList, CWallListCtrl *pDirList);
-	void NewClassList();
-	void DelClassList();
-	void AddClassDir();
-	void DelClassDir();
+	afx_msg void OnDestroy();
 
-	CButton m_EnableWallChanger;
-	CWallListCtrl m_EnableClass;
-	CWallListCtrl m_ClassList;
-	CWallListCtrl m_DirList;
-	CEdit m_WaitTime;
-	CStatic m_Static1;
-	CStatic m_Static2;
-	CStatic m_Static3;
-	CStatic m_Static4;
-	bool m_bInit;
-	CEdit m_Edit_NewClass;
-	CButton m_BTN_NewClass;
-	afx_msg void OnLvnGetdispinfoWalldirlist(NMHDR *pNMHDR, LRESULT *pResult);
+	DECLARE_DYNAMIC(CWallChanger)
+	DECLARE_MESSAGE_MAP()
 };
