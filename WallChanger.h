@@ -16,6 +16,7 @@ public:
 	CWallChanger(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChanger();
 
+	void SetEnableWallChanger(bool bEnable);
 	void DoOnSize();
 	void AddClassToEnable();
 	void DelEnableClass();
@@ -24,12 +25,15 @@ public:
 	void DelClassList();
 	void AddClassDir();
 	void DelClassDir();
+	bool SetDirList(CWallDirListCtrl *pDirList, LPCTSTR sDirListName);
+	void SyncListSel(CWallListCtrl *pMasterList, CWallListCtrl *pSlaveList);
 
+	CIni m_cIni;
 	CButton m_EnableWallChanger;
 	CWallEnableCtrl m_EnableClass;
 	CWallClassListCtrl m_ClassList;
 	CWallDirListCtrl m_DirList;
-	CWallDirListCtrl* m_pCurDirList;
+	CWallDirListCtrl *m_pCurDirList;
 	CEdit m_WaitTime;
 	CStatic m_Static1;
 	CStatic m_Static2;
@@ -75,4 +79,5 @@ public:
 
 	DECLARE_DYNAMIC(CWallChanger)
 	DECLARE_MESSAGE_MAP()
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };

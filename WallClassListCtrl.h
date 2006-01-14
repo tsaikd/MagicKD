@@ -8,7 +8,7 @@ public:
 	CWallClassListCtrl();
 	virtual ~CWallClassListCtrl();
 
-	void Init(void *pParent);
+	void Init();
 	bool AddItem(LPCTSTR sName);
 
 private:

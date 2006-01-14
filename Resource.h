@@ -19,8 +19,10 @@
 #define IDS_WALL_DIRLISTCOLUMN0         111
 #define IDS_WALL_DIRLISTCOLUMN1         112
 #define IDS_WALL_DEFAULTCLASS           113
+#define IDS_WALL_NOTSELCLASS            114
 #define IDR_MAINFRAME                   128
 #define IDD_WALLCHANGER                 129
+#define IDD_MAIN_CONFIG_DIALOG          130
 #define IDC_MAINTAB                     1000
 #define IDC_WALLSTATIC1                 1003
 #define IDC_WALLSTATIC2                 1004
@@ -34,14 +36,15 @@
 #define IDC_WALLSTATIC4                 1011
 #define IDC_NEWCLASSNAME                1015
 #define IDC_BTN_NEWCLASS                1016
+#define IDC_CHECK_WALLCHANGER           1020
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        130
+#define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

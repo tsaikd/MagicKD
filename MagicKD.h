@@ -9,7 +9,7 @@
 
 #include "resource.h"		// 主要符號
 #include "Others.h"
-
+#include "Ini.h"
 
 // CMagicKDApp:
 // 請參閱實作此類別的 MagicKD.cpp

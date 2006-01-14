@@ -1,7 +1,7 @@
 // MagicKDDlg.cpp : 實作檔
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
@@ -46,9 +46,60 @@ END_MESSAGE_MAP()
 
 
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMagicKDDlg::IDD, pParent), m_bInit(false)
+	: CDialog(CMagicKDDlg::IDD, pParent), m_bInit(false), m_pWallChanger(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
+CMagicKDDlg::~CMagicKDDlg()
+{
+	if (m_pWallChanger)
+		delete m_pWallChanger;
+}
+
+void CMagicKDDlg::InitWindowRect()
+{
+	CRect rcWin;
+	GetClientRect(rcWin);
+	m_MainTab.MoveWindow(rcWin);
+	m_MainTab.GetClientRect(rcWin);
+	rcWin.top += 35;
+	rcWin.right -= 10;
+	rcWin.bottom -= 10;
+	m_rcTabWindow = rcWin;
+}
+
+void CMagicKDDlg::MainConfigSyncTabEnable()
+{
+	if (m_pWallChanger)
+		m_MainConfigDlg.m_cbWallChanger.SetCheck(m_pWallChanger->m_EnableWallChanger.GetCheck());
+}
+
+void CMagicKDDlg::SetEnableFunc(FuncList eFunc, bool bEnable)
+{
+	switch (eFunc) {
+	case eFunc_WallChanger:
+		if (bEnable) {
+			if (m_pWallChanger) {
+				m_pWallChanger->SetEnableWallChanger(bEnable);
+			} else {
+				m_pWallChanger = new CWallChanger;
+				m_pWallChanger->Create(IDD_WALLCHANGER, this);
+			}
+			m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChanger);
+		} else {
+			m_pWallChanger->ShowWindow(SW_HIDE);
+			m_MainTab.DeleteItem(eFunc_WallChanger);
+			m_MainTab.SetCurSel(0);
+			m_pWallChanger->DestroyWindow();
+			delete m_pWallChanger;
+			m_pWallChanger = NULL;
+			m_MainConfigDlg.ShowWindow(SW_HIDE);
+			m_MainConfigDlg.ShowWindow(SW_SHOW);
+		}
+		m_cIni.WriteBool(_T("FuncList"), _T("bWallChanger"), bEnable);
+		break;
+	}
 }
 
 void CMagicKDDlg::DoDataExchange(CDataExchange* pDX)
@@ -65,6 +116,8 @@ BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_WM_SIZE()
 	ON_WM_MOVE()
+	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnTcnSelchangeMaintab)
+	ON_NOTIFY(TCN_SELCHANGING, IDC_MAINTAB, OnTcnSelchangingMaintab)
 END_MESSAGE_MAP()
 
 
@@ -98,11 +151,25 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO: 在此加入額外的初始設定
-	m_MainTab.InsertItem(TCIF_TEXT, 1, _T("WallChanger"), 0, NULL);
-	m_WallChanger.Create(IDD_WALLCHANGER, this);
-	m_WallChanger.ShowWindow(SW_SHOW);
-	m_WallChanger.m_Edit_NewClass.SetFocus();
+	InitWindowRect();
+	m_cIni.SetPathName(_T(".\\MagicKD.ini"));
 
+	m_MainConfigDlg.Create(IDD_MAIN_CONFIG_DIALOG, this);
+	m_MainConfigDlg.MoveWindow(m_rcTabWindow);
+	m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_MainConfigDlg);
+
+	if (m_cIni.GetBool(_T("FuncList"), _T("bWallChanger"), false)) {
+		m_pWallChanger = new CWallChanger;
+		m_pWallChanger->Create(IDD_WALLCHANGER, this);
+		m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChanger);
+	}
+
+//	m_pWallChanger = new CWallChanger;
+//	m_pWallChanger->Create(IDD_WALLCHANGER, this);
+//	m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 2, _T("WallChanger2"), 0, (LPARAM)m_pWallChanger);
+
+	MainConfigSyncTabEnable();
+	m_MainConfigDlg.ShowWindow(SW_SHOW);
 	m_bInit = true;
 	return FALSE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
@@ -168,20 +235,34 @@ void CMagicKDDlg::OnMove(int x, int y)
 	CDialog::OnMove(x, y);
 	if ( !m_bInit )
 		return;
-
-	CRect rcWin;
-	GetClientRect(rcWin);
-	m_MainTab.MoveWindow(rcWin);
-	m_MainTab.GetClientRect(rcWin);
-	rcWin.top += 35;
-	rcWin.right -= 10;
-	rcWin.bottom -= 10;
-	m_WallChanger.MoveWindow(rcWin);
+	InitWindowRect();
 }
 
 void CMagicKDDlg::OnOK()
 {
-	m_WallChanger.NewClassList();
+	m_pWallChanger->NewClassList();
 
 //	CDialog::OnOK();
+}
+
+void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	CDialog *pCurDlg = (CDialog*)m_MainTab.GetCurItemLParam();
+	if (pCurDlg) {
+		pCurDlg->ShowWindow(SW_SHOW);
+		pCurDlg->SetFocus();
+		pCurDlg->MoveWindow(m_rcTabWindow);
+	}
+
+	*pResult = 0;
+}
+
+void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	CDialog *pCurDlg = (CDialog*)m_MainTab.GetCurItemLParam();
+	if (pCurDlg) {
+		pCurDlg->ShowWindow(SW_HIDE);
+	}
+
+	*pResult = 0;
 }

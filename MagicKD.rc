@@ -120,6 +120,17 @@ BEGIN
     PUSHBUTTON      "新增分類",IDC_BTN_NEWCLASS,105,206,37,15
 END
 
+IDD_MAIN_CONFIG_DIALOG DIALOGEX 0, 0, 186, 90
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "確定",IDOK,129,7,50,14
+    PUSHBUTTON      "取消",IDCANCEL,129,24,50,14
+    CONTROL         "WallChanger",IDC_CHECK_WALLCHANGER,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,14,60,13
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -191,6 +202,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 221
     END
+
+    IDD_MAIN_CONFIG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -219,6 +238,7 @@ STRINGTABLE
 BEGIN
     IDS_WALL_DIRLISTCOLUMN1 "檔案數"
     IDS_WALL_DEFAULTCLASS   "預設分類"
+    IDS_WALL_NOTSELCLASS    "尚未選擇分類"
 END
 
 #endif    // 中文 (台灣) resources

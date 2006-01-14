@@ -8,7 +8,7 @@ public:
 	CWallEnableCtrl();
 	virtual ~CWallEnableCtrl();
 
-	void Init(void *pParent);
+	void Init();
 	void AddItem(LPCTSTR sName, void *pChildList);
 
 private:

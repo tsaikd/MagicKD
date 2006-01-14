@@ -8,7 +8,7 @@ public:
 	CWallDirListCtrl();
 	virtual ~CWallDirListCtrl();
 
-	void Init(void *pParent);
+	void Init();
 	void AddItem(int iClassNum, LPCTSTR sPath, int iFindNum = 0);
 
 private:
@@ -20,8 +20,7 @@ public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-public:
-	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 };

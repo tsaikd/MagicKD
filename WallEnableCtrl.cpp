@@ -11,9 +11,9 @@ CWallEnableCtrl::~CWallEnableCtrl()
 {
 }
 
-void CWallEnableCtrl::Init(void *pParent)
+void CWallEnableCtrl::Init()
 {
-	CWallListCtrl::Init(pParent);
+	CWallListCtrl::Init();
 	InsertColumn(0, _T(""));
 
 	m_bInit = true;
@@ -61,7 +61,7 @@ LRESULT CWallEnableCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 			UINT nID = LOWORD(wParam);
 			switch (nID) {
 			case IDS_WALLDELENCLASS:
-				((CWallChanger *)m_pParent)->DelEnableClass();
+				((CWallChanger *)GetParent())->DelEnableClass();
 				break;
 			}
 		}

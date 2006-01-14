@@ -10,9 +10,9 @@ CWallDirListCtrl::~CWallDirListCtrl()
 {
 }
 
-void CWallDirListCtrl::Init(void *pParent)
+void CWallDirListCtrl::Init()
 {
-	CWallListCtrl::Init(pParent);
+	CWallListCtrl::Init();
 	InsertColumn(0, CResString(IDS_WALL_DIRLISTCOLUMN0), LVCFMT_LEFT, 200, 0);
 	InsertColumn(1, CResString(IDS_WALL_DIRLISTCOLUMN1), LVCFMT_LEFT, 50, 1);
 
@@ -66,10 +66,10 @@ LRESULT CWallDirListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 			UINT nID = LOWORD(wParam);
 			switch (nID) {
 			case IDS_WALLADDCLASSDIR:
-				((CWallChanger *)m_pParent)->AddClassDir();
+				((CWallChanger *)GetParent())->AddClassDir();
 				break;
 			case IDS_WALLDELCLASSDIR:
-				((CWallChanger *)m_pParent)->DelClassDir();
+				((CWallChanger *)GetParent())->DelClassDir();
 				break;
 			}
 		}

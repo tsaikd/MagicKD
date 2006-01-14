@@ -125,19 +125,16 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\KDListBox.cpp">
-			</File>
-			<File
-				RelativePath=".\KDListCtrl.cpp">
-			</File>
-			<File
-				RelativePath=".\KDListItem.cpp">
+				RelativePath=".\Ini.cpp">
 			</File>
 			<File
 				RelativePath=".\Language.cpp">
 			</File>
 			<File
 				RelativePath=".\MagicKD.cpp">
+			</File>
+			<File
+				RelativePath=".\MagicKDConfigDlg.cpp">
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.cpp">
@@ -179,25 +176,38 @@
 					RelativePath=".\WallListCtrl.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="KDClass"
+				Filter="">
+				<File
+					RelativePath=".\KDListBox.cpp">
+				</File>
+				<File
+					RelativePath=".\KDListCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\KDListItem.cpp">
+				</File>
+				<File
+					RelativePath=".\KDTabCtrl.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="¼ÐÀYÀÉ"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\KDListBox.h">
-			</File>
-			<File
-				RelativePath=".\KDListCtrl.h">
-			</File>
-			<File
-				RelativePath=".\KDListItem.h">
+				RelativePath=".\Ini.h">
 			</File>
 			<File
 				RelativePath=".\Language.h">
 			</File>
 			<File
 				RelativePath=".\MagicKD.h">
+			</File>
+			<File
+				RelativePath=".\MagicKDConfigDlg.h">
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.h">
@@ -242,6 +252,22 @@
 						RelativePath=".\WallEnableItem.h">
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="KDClass"
+				Filter="">
+				<File
+					RelativePath=".\KDListBox.h">
+				</File>
+				<File
+					RelativePath=".\KDListCtrl.h">
+				</File>
+				<File
+					RelativePath=".\KDListItem.h">
+				</File>
+				<File
+					RelativePath=".\KDTabCtrl.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

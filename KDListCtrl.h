@@ -9,5 +9,6 @@ public:
 	virtual ~CKDListCtrl();
 
 	void DeleteSelectItem();
+	void CancleAllSelected();
 	LPARAM GetFirstSelectedItemLParam();
 };

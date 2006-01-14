@@ -11,10 +11,21 @@ CKDListCtrl::~CKDListCtrl()
 
 void CKDListCtrl::DeleteSelectItem()
 {
+	int nItem;
 	POSITION pos = GetFirstSelectedItemPosition();
 	while (pos) {
-		DeleteItem((int)pos-1);
-		pos = GetFirstSelectedItemPosition();
+		nItem = GetNextSelectedItem(pos);
+		DeleteItem(nItem);
+	}
+}
+
+void CKDListCtrl::CancleAllSelected()
+{
+	int nItem;
+	POSITION pos = GetFirstSelectedItemPosition();
+	while (pos) {
+		nItem = GetNextSelectedItem(pos);
+		SetItemState(nItem, 0, LVIS_SELECTED);
 	}
 }
 

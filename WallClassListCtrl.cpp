@@ -10,9 +10,9 @@ CWallClassListCtrl::~CWallClassListCtrl()
 {
 }
 
-void CWallClassListCtrl::Init(void *pParent)
+void CWallClassListCtrl::Init()
 {
-	CWallListCtrl::Init(pParent);
+	CWallListCtrl::Init();
 	InsertColumn(0, _T(""));
 
 	m_bInit = true;
@@ -24,14 +24,13 @@ bool CWallClassListCtrl::AddItem(LPCTSTR sName)
 		return false;
 
 	CWallDirListCtrl *pChildList = new CWallDirListCtrl;
-	if (! pChildList->CreateEx(WS_EX_CLIENTEDGE | LVS_EX_BORDERSELECT | LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP,
-	WS_CHILD | LVS_REPORT | LVS_NOSORTHEADER | LVS_SHOWSELALWAYS,
-	CRect(), (CWnd *)m_pParent, m_iIDC_WALLDIRLISTBASE++)) {
+	if (! pChildList->CreateEx(WS_EX_CLIENTEDGE, WS_CHILD | LVS_REPORT | LVS_NOSORTHEADER | LVS_SHOWSELALWAYS,
+	CRect(), GetParent(), m_iIDC_WALLDIRLISTBASE++)) {
 		delete pChildList;
 		return false;
 	}
 	pChildList->ShowWindow(SW_HIDE);
-	pChildList->Init(m_pParent);
+	pChildList->Init();
 
 	CWallClassListItem *pItem = new CWallClassListItem;
 	pItem->SetItemName(sName);
@@ -78,10 +77,10 @@ LRESULT CWallClassListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lP
 			UINT nID = LOWORD(wParam);
 			switch (nID) {
 			case IDS_WALLADDENCLASS:
-				((CWallChanger *)m_pParent)->AddClassToEnable();
+				((CWallChanger *)GetParent())->AddClassToEnable();
 				break;
 			case IDS_WALLDELCLASSLIST:
-				((CWallChanger *)m_pParent)->DelClassList();
+				((CWallChanger *)GetParent())->DelClassList();
 				break;
 			}
 		}

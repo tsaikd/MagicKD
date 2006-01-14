@@ -1,7 +1,7 @@
 // MagicKD.cpp : 定義應用程式的類別行為。
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
