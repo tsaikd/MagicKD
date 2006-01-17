@@ -31,11 +31,30 @@ void CKDListCtrl::CancleAllSelected()
 
 LPARAM CKDListCtrl::GetFirstSelectedItemLParam()
 {
+	POSITION pos = GetFirstSelectedItemPosition();
+	return GetItemLParam(GetNextSelectedItem(pos));
+}
+
+LPARAM CKDListCtrl::GetItemLParam(int nItem)
+{
 	LVITEM lvitem = {0};
 	lvitem.mask = LVIF_PARAM;
-	lvitem.iItem = (int)GetFirstSelectedItemPosition() - 1;
+	lvitem.iItem = nItem;
 	if (GetItem(&lvitem))
 		return lvitem.lParam;
 	else
 		return NULL;
+}
+
+int CKDListCtrl::FindItemByText(LPCTSTR sText)
+{
+	LVFINDINFO itemInfo;
+	itemInfo.flags = LVFI_STRING;
+	itemInfo.psz = sText;
+	return FindItem(&itemInfo);
+}
+
+BOOL CKDListCtrl::SetItemSelected(int nItem)
+{
+	return SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED);
 }

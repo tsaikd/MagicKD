@@ -16,6 +16,21 @@ void CWallEnableCtrl::Init()
 	CWallListCtrl::Init();
 	InsertColumn(0, _T(""));
 
+	CWallChanger *pWallChanger = (CWallChanger *)GetParent();
+	CIni *pIni = &(pWallChanger->m_cIni);
+	CString sClassListName = pIni->GetString(_T("EnableClassList"), _T("0"));
+	if (sClassListName.GetLength()) {
+		int i = 1;
+		CString sBuf;
+
+		while (sClassListName.GetLength()) {
+			pWallChanger->m_ClassList.SetItemSelected(pWallChanger->m_ClassList.FindItemByText(sClassListName));
+			pWallChanger->AddClassToEnable();
+			sBuf.Format(_T("%d"), i++);
+			sClassListName = pIni->GetString(_T("EnableClassList"), sBuf);
+		}
+	}
+
 	m_bInit = true;
 }
 

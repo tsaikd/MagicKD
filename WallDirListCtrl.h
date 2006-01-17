@@ -8,11 +8,15 @@ public:
 	CWallDirListCtrl();
 	virtual ~CWallDirListCtrl();
 
-	void Init();
+	void Init(LPCTSTR sClassListName, int iClassNum);
+	void SetClassListName(LPCTSTR sClassListName);
+	LPCTSTR GetClassListName();
+
 	void AddItem(int iClassNum, LPCTSTR sPath, int iFindNum = 0);
 
 private:
 	bool m_bInit;
+	CString m_sClassListName;
 	CArray<CWallDirListItem*> m_apDirListItem;
 
 

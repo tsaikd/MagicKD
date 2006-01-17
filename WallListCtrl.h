@@ -16,13 +16,15 @@ public:
 	virtual ~CWallListCtrl();
 
 	void Init();
+	bool IsModified();
+	void SetModified(bool bModified = true);
 
 protected:
 	CMenu m_mContextMenu;
 
 private:
 	bool m_bInit;
-
+	bool m_bModified;
 };
 
 

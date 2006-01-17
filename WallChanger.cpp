@@ -4,6 +4,7 @@
 #include "StdAfx.h"
 #include "MagicKDDlg.h"
 #include "WallChanger.h"
+#include "WallDirListCtrl.h"
 
 #define DEFAULT_WAIT_TIME_PERWALLPAPER 30
 
@@ -145,65 +146,23 @@ DWORD CWallChanger::ThreadProc()
 	return 0;
 }
 
-bool CWallChanger::SetSelClassItemToDirList(CWallListCtrl *pClassList, CWallDirListCtrl *pDirList)
-{
-	if (!pClassList || !pDirList)
-		return false;
-	int iItem;
-	POSITION pos = pClassList->GetFirstSelectedItemPosition();
-	pDirList->DeleteAllItems();
-	while (pos) {
-		{
-			int nItem = PosToInt(pos);
-			CString sPathBuf;
-			switch (nItem) {
-			case 0:
-				{
-					pDirList->AddItem(nItem, _T("C:\\A0"), 0);
-					pDirList->AddItem(nItem, _T("C:\\A1"), 10);
-					pDirList->AddItem(nItem, _T("C:\\A2"), 100);
-					pDirList->AddItem(nItem, _T("C:\\A3"), 1000);
-				}
-				break;
-			case 1:
-				{
-					pDirList->AddItem(nItem, _T("C:\\B0"), 0);
-					pDirList->AddItem(nItem, _T("C:\\B1"), 10);
-					pDirList->AddItem(nItem, _T("C:\\B2"), 100);
-					pDirList->AddItem(nItem, _T("C:\\B3"), 1000);
-				}
-				break;
-			case 2:
-				{
-					pDirList->AddItem(nItem, _T("C:\\C0"), 0);
-					pDirList->AddItem(nItem, _T("C:\\C1"), 10);
-					pDirList->AddItem(nItem, _T("C:\\C2"), 100);
-					pDirList->AddItem(nItem, _T("C:\\C3"), 1000);
-				}
-				break;
-			}
-		}
-		iItem = pClassList->GetNextSelectedItem(pos);
-	}
-
-	return true;
-}
-
 void CWallChanger::AddClassToEnable()
 {
 	CString sClassName;
 	LVFINDINFO findInfo = {0};
 	findInfo.flags = LVFI_STRING;
 	POSITION pos = m_ClassList.GetFirstSelectedItemPosition();
-	CWallClassListItem *pItem = NULL;
-	void *pChildList = NULL;
+
 	if (pos) {
-		pItem = (CWallClassListItem*) m_ClassList.GetFirstSelectedItemLParam();
-		pChildList = (void*)pItem->GetChildDirList();
-		sClassName = m_ClassList.GetItemText(PosToInt(pos), 0);
+		int nItem = m_ClassList.GetNextSelectedItem(pos);
+		CWallClassListItem *pItem = (CWallClassListItem*) m_ClassList.GetFirstSelectedItemLParam();
+		sClassName = m_ClassList.GetItemText(nItem, 0);
 		findInfo.psz = sClassName;
-		if (m_EnableClass.FindItem(&findInfo) == -1)
+		void *pChildList = pItem->GetChildDirList();
+		if (m_EnableClass.FindItem(&findInfo) == -1) {
 			m_EnableClass.AddItem(sClassName, pChildList);
+			m_EnableClass.SetModified();
+		}
 	}
 	SyncListSel(&m_ClassList, &m_EnableClass);
 	Invalidate();
@@ -212,43 +171,58 @@ void CWallChanger::AddClassToEnable()
 void CWallChanger::DelEnableClass()
 {
 	m_EnableClass.DeleteSelectItem();
+	m_EnableClass.SetModified();
 	Invalidate();
 }
 
 void CWallChanger::NewClassList(LPCTSTR sClassName/* = NULL*/)
 {
-	CString sBuf;
+	CString sBuf, sPos;
+
 	if (sClassName)
 		sBuf = sClassName;
 	else if (!m_Edit_NewClass.GetWindowTextLength())
 		return;
 	else
 		m_Edit_NewClass.GetWindowText(sBuf);
+
+	sPos.Format(_T("%d"), m_ClassList.GetItemCount());
 	m_ClassList.AddItem(sBuf);
+	m_ClassList.SetModified();
+	m_cIni.WriteString(_T("ClassList"), sPos, sBuf);
 	m_Edit_NewClass.SetWindowText(_T(""));
+
 	Invalidate();
 }
 
 void CWallChanger::DelClassList()
 {
-	int iItem;
+	int nItem;
 	CString sClassName;
 	LVFINDINFO findInfo = {0};
 	findInfo.flags = LVFI_STRING;
 	POSITION pos = m_ClassList.GetFirstSelectedItemPosition();
-	void *pChildList;
-	while (pos) {
-		pChildList = (void*)m_ClassList.GetItemData(PosToInt(pos));
-		sClassName = m_ClassList.GetItemText(PosToInt(pos), 0);
-		findInfo.psz = sClassName;
-		iItem = m_EnableClass.FindItem(&findInfo);
-		if (iItem != -1)
-			m_EnableClass.DeleteItem(iItem);
-		iItem = m_ClassList.GetNextSelectedItem(pos);
+
+	if (pos) {
+		m_ClassList.SetModified();
+		CWallDirListCtrl *pChildDirList = ((CWallClassListItem *)m_ClassList.GetFirstSelectedItemLParam())->GetChildDirList();
+		pChildDirList->DeleteAllItems();
+		pChildDirList->SetModified();
 	}
-	m_ClassList.DeleteSelectItem();
+	while (pos) {
+		nItem = m_ClassList.GetNextSelectedItem(pos);
+		sClassName = m_ClassList.GetItemText(nItem, 0);
+		findInfo.psz = sClassName;
+		m_ClassList.DeleteItem(nItem);
+
+		nItem = m_EnableClass.FindItem(&findInfo);
+		if (nItem != -1)
+			m_EnableClass.DeleteItem(nItem);
+	}
+
 	m_pCurDirList = &m_DirList;
 	m_pCurDirList->ShowWindow(SW_SHOW);
+
 	DoOnSize();
 }
 
@@ -258,7 +232,9 @@ void CWallChanger::AddClassDir()
 		TCHAR sPath[MAX_PATH] = {0};
 		if (ChooseFolder(sPath, m_hWnd)) {
 			POSITION pos = m_ClassList.GetFirstSelectedItemPosition();
-			m_pCurDirList->AddItem(PosToInt(pos), sPath, 0);
+			int nItem = m_ClassList.GetNextSelectedItem(pos);
+			m_pCurDirList->AddItem(nItem, sPath, 0);
+			m_pCurDirList->SetModified();
 		}
 	} else if (m_ClassList.GetItemCount() == 0) {
 		MessageBox(CResString(IDS_WALLERR_HAVETONEWCLASS));
@@ -270,7 +246,8 @@ void CWallChanger::AddClassDir()
 
 void CWallChanger::DelClassDir()
 {
-	m_DirList.DeleteSelectItem();
+	m_pCurDirList->DeleteSelectItem();
+	m_pCurDirList->SetModified();
 	Invalidate();
 }
 
@@ -279,7 +256,8 @@ bool CWallChanger::SetDirList(CWallDirListCtrl *pDirList, LPCTSTR sDirListName)
 	if (!pDirList || !sDirListName)
 		return false;
 	m_Static3.SetWindowText(sDirListName);
-	m_pCurDirList->ShowWindow(SW_HIDE);
+	if (m_pCurDirList)
+		m_pCurDirList->ShowWindow(SW_HIDE);
 	m_pCurDirList = pDirList;
 	m_pCurDirList->ShowWindow(SW_SHOW);
 	DoOnSize();
@@ -347,28 +325,70 @@ BOOL CWallChanger::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_EnableClass.Init();
-	m_ClassList.Init();
-	m_DirList.Init();
+	m_cIni.SetPathName(_T(".\\WallChanger.ini"));
+
+	m_DirList.Init(CResString(IDS_WALL_NOTSELCLASS), -1);
 	m_DirList.EnableWindow(FALSE);
 	m_pCurDirList = &m_DirList;
+	m_ClassList.Init();
+	m_EnableClass.Init();
 
-	m_cIni.SetPathName(_T(".\\WallChanger.ini"));
 	m_uWaitTime = m_cIni.GetUInt(_T("General"), _T("uWaitTime"), DEFAULT_WAIT_TIME_PERWALLPAPER);
 	CString sBuf;
 	sBuf.Format(_T("%d"), m_uWaitTime);
 	m_WaitTime.SetWindowText(sBuf);
 
-	NewClassList(CResString(IDS_WALL_DEFAULTCLASS));
-	m_Static3.SetWindowText(CResString(IDS_WALL_DEFAULTCLASS));
 	m_EnableWallChanger.SetCheck(m_bEnableWallChanger == true ? BST_CHECKED : BST_UNCHECKED);
-
-	m_ClassList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
 	CreateThread();
 
 	m_bInit = true;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX 屬性頁應傳回 FALSE
+}
+
+void CWallChanger::OnDestroy()
+{
+	CDialog::OnDestroy();
+
+	if (m_bIsThreadRunning) {
+		m_bEnableWallChanger = false;
+		WaitForSingleObject(m_hThread, 2000);
+	}
+	if (m_hThread) {
+		CloseHandle(m_hThread);
+		m_hThread = NULL;
+		m_dwThreadId = 0;
+	}
+	if (m_EnableClass.IsModified()) {
+		m_cIni.DeleteSection(_T("EnableClassList"));
+
+		int iCount = m_EnableClass.GetItemCount();
+		if (iCount) {
+			int i;
+			CString sPos, sBuf;
+
+			for (i=0 ; i<iCount ; i++) {
+				sPos.Format(_T("%d"), i);
+				sBuf = m_EnableClass.GetItemText(i, 0);
+				m_cIni.WriteString(_T("EnableClassList"), sPos, sBuf);
+			}
+		}
+	}
+	if (m_ClassList.IsModified()) {
+		m_cIni.DeleteSection(_T("ClassList"));
+
+		int iCount = m_ClassList.GetItemCount();
+		if (iCount) {
+			int i;
+			CString sPos, sBuf;
+
+			for (i=0 ; i<iCount ; i++) {
+				sPos.Format(_T("%d"), i);
+				sBuf = m_ClassList.GetItemText(i, 0);
+				m_cIni.WriteString(_T("ClassList"), sPos, sBuf);
+			}
+		}
+	}
 }
 
 void CWallChanger::OnSize(UINT nType, int cx, int cy)
@@ -444,21 +464,6 @@ void CWallChanger::OnNMSetfocusWallclasslist(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	*pResult = 0;
-}
-
-void CWallChanger::OnDestroy()
-{
-	CDialog::OnDestroy();
-
-	if (m_bIsThreadRunning) {
-		m_bEnableWallChanger = false;
-		WaitForSingleObject(m_hThread, 2000);
-	}
-	if (m_hThread) {
-		CloseHandle(m_hThread);
-		m_hThread = NULL;
-		m_dwThreadId = 0;
-	}
 }
 
 void CWallChanger::OnShowWindow(BOOL bShow, UINT nStatus)

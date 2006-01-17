@@ -20,7 +20,6 @@ public:
 	void DoOnSize();
 	void AddClassToEnable();
 	void DelEnableClass();
-	bool SetSelClassItemToDirList(CWallListCtrl *pClassList, CWallDirListCtrl *pDirList);
 	void NewClassList(LPCTSTR sClassName = NULL);
 	void DelClassList();
 	void AddClassDir();

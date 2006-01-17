@@ -10,13 +10,42 @@ CWallDirListCtrl::~CWallDirListCtrl()
 {
 }
 
-void CWallDirListCtrl::Init()
+void CWallDirListCtrl::Init(LPCTSTR sClassListName, int iClassNum)
 {
 	CWallListCtrl::Init();
+	SetClassListName(sClassListName);
 	InsertColumn(0, CResString(IDS_WALL_DIRLISTCOLUMN0), LVCFMT_LEFT, 200, 0);
 	InsertColumn(1, CResString(IDS_WALL_DIRLISTCOLUMN1), LVCFMT_LEFT, 50, 1);
 
 	m_bInit = true;
+
+	CString sIniName;
+	sIniName.Format(_T("DirList__%s"), sClassListName);
+	CIni *pIni = &(((CWallChanger *)GetParent())->m_cIni);
+	CStringArray saItem;
+	pIni->GetArray(sIniName, _T("0"), &saItem);
+	if (saItem.GetSize()) {
+		int i = 1;
+		int iFindNum;
+		CString sBuf;
+
+		while (saItem.GetSize()) {
+			_stscanf(saItem[1], _T("%d"), &iFindNum);
+			AddItem(iClassNum, saItem[0], iFindNum);
+			sBuf.Format(_T("%d"), i++);
+			pIni->GetArray(sIniName, sBuf, &saItem);
+		}
+	}
+}
+
+void CWallDirListCtrl::SetClassListName(LPCTSTR sClassListName)
+{
+	m_sClassListName = sClassListName;
+}
+
+LPCTSTR CWallDirListCtrl::GetClassListName()
+{
+	return m_sClassListName;
 }
 
 void CWallDirListCtrl::AddItem(int iClassNum, LPCTSTR sPath, int iFindNum/* = 0*/)

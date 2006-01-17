@@ -11,4 +11,7 @@ public:
 	void DeleteSelectItem();
 	void CancleAllSelected();
 	LPARAM GetFirstSelectedItemLParam();
+	LPARAM GetItemLParam(int nItem);
+	int FindItemByText(LPCTSTR sText);
+	BOOL SetItemSelected(int nItem);
 };
