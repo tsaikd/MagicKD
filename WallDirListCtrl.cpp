@@ -2,7 +2,8 @@
 #include "WallChanger.h"
 #include "WallDirListCtrl.h"
 
-CWallDirListCtrl::CWallDirListCtrl() : m_bInit(false)
+CWallDirListCtrl::CWallDirListCtrl() : m_bInit(false), m_hThread(NULL), m_dwThreadId(0), m_bCanThreadRun(false),
+	m_ThreadParamItem(NULL), m_hThreadInit(NULL), m_pIni(NULL)
 {
 }
 
@@ -16,25 +17,19 @@ void CWallDirListCtrl::Init(LPCTSTR sClassListName, int iClassNum)
 	SetClassListName(sClassListName);
 	InsertColumn(0, CResString(IDS_WALL_DIRLISTCOLUMN0), LVCFMT_LEFT, 200, 0);
 	InsertColumn(1, CResString(IDS_WALL_DIRLISTCOLUMN1), LVCFMT_LEFT, 50, 1);
+	m_hThreadInit = CreateMutex(NULL, FALSE, NULL);
+	m_pIni = &(((CWallChanger *)GetParent())->m_cIni);
 
 	m_bInit = true;
 
-	CString sIniName;
-	sIniName.Format(_T("DirList__%s"), sClassListName);
-	CIni *pIni = &(((CWallChanger *)GetParent())->m_cIni);
-	CStringArray saItem;
-	pIni->GetArray(sIniName, _T("0"), &saItem);
-	if (saItem.GetSize()) {
-		int i = 1;
-		int iFindNum;
-		CString sBuf;
-
-		while (saItem.GetSize()) {
-			_stscanf(saItem[1], _T("%d"), &iFindNum);
-			AddItem(iClassNum, saItem[0], iFindNum);
-			sBuf.Format(_T("%d"), i++);
-			pIni->GetArray(sIniName, sBuf, &saItem);
-		}
+	CString sIniSection(_T("DirList"));
+	CStringArray saDirList;
+	CStringArray saPathList;
+	m_pIni->GetArray(sIniSection, sClassListName, &saDirList);
+	int i, iCount=saDirList.GetCount();
+	for (i=0 ; i<iCount ; i++) {
+		m_pIni->GetArray(_T("PathList"), saDirList[i], &saPathList);
+		AddItem(iClassNum, saDirList[i], &saPathList);
 	}
 }
 
@@ -48,19 +43,130 @@ LPCTSTR CWallDirListCtrl::GetClassListName()
 	return m_sClassListName;
 }
 
-void CWallDirListCtrl::AddItem(int iClassNum, LPCTSTR sPath, int iFindNum/* = 0*/)
+void CWallDirListCtrl::AddItem(int iClassNum, LPCTSTR sPath, CStringArray *saPathList/* = NULL*/)
 {
 	if (!m_bInit)
 		return;
 	CWallDirListItem *pItem = new CWallDirListItem;
 	pItem->SetClassNum(iClassNum);
 	pItem->SetPath(sPath);
-	pItem->SetFindNum(iFindNum);
+	if (saPathList)
+		pItem->SetPicPathArray(saPathList);
+	else {
+		m_ThreadParamItem = pItem;
+		CreateThread();
+	}
 	InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0, I_IMAGECALLBACK, (LPARAM) pItem);
-//	if (m_aryDirListItem.GetUpperBound() < iClassNum) {
-//		CList<CWallDirListItem*> listItem;
-//		m_aryDirListItem.Add(listItem);
-//	}
+}
+
+LPCTSTR CWallDirListCtrl::GetPicPathRand()
+{
+	int iCount = GetItemCount();
+	if (!m_bInit || iCount<=0)
+		return NULL;
+	CWallDirListItem *pItem = ((CWallDirListItem *)GetItemLParam(rand()%iCount));
+	if (pItem)
+		return pItem->GetPicPathRand();
+	else
+		return NULL;
+}
+
+void CWallDirListCtrl::UpdateItemPicNum(int nItem)
+{
+	if (!m_bInit)
+		return;
+	m_ThreadParamItem = (CWallDirListItem *)GetItemLParam(nItem);
+	CreateThread();
+}
+
+int CWallDirListCtrl::FindPicPath(CWallDirListItem *pItem, bool bRecursive/* = false*/) {
+	CStringArray saPicPath;
+	CStringList *pslPicPath = __pFindPicPath(pItem->GetPath() + _T("\\*.*"), bRecursive);
+	if (!pslPicPath->IsEmpty()) {
+		saPicPath.SetSize(pslPicPath->GetCount());
+		int i = 0;
+		POSITION pos = pslPicPath->GetHeadPosition();
+		while (pos) {
+			saPicPath[i++] = pslPicPath->GetAt(pos);
+			printf("%s\n", pslPicPath->GetAt(pos));
+			pslPicPath->GetNext(pos);
+		}
+		pItem->SetPicPathArray(&saPicPath);
+	}
+	delete pslPicPath;
+	return saPicPath.GetCount();
+}
+
+void CWallDirListCtrl::DeleteAllItemsIni()
+{
+	int i, iCount=GetItemCount();
+	CString sClassName(_T("PathList"));
+	CString sKey;
+
+	for (i=0 ; i<iCount ; i++) {
+		sKey = GetItemText(i, 0);
+		if (sKey.GetLength())
+			m_pIni->DeleteKey(sClassName, sKey);
+	}
+	m_pIni->DeleteEmptySection(sClassName);
+}
+
+bool CWallDirListCtrl::__bMatchSupport(LPCTSTR sPat) {
+	if (PathMatchSpec(sPat, _T("*.jpg")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.jpeg")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.bmp")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.gif")))
+		return true;
+	return false;
+}
+
+CStringList *CWallDirListCtrl::__pFindPicPath(LPCTSTR sPath, bool bRecursive/* = false*/) {
+	CStringList *pslPicPath = new CStringList;
+	CFileFind finder;
+	BOOL bWorking = finder.FindFile(sPath);
+	while (bWorking) {
+		bWorking = finder.FindNextFile();
+		CString ttmmpp = finder.GetFilePath();
+		if (finder.IsDots())
+			continue;
+		if (finder.IsDirectory()) {
+			if (bRecursive) {
+				CStringList *pslTmp = __pFindPicPath(finder.GetFilePath() + _T("\\*.*"), bRecursive);
+				pslPicPath->AddTail(pslTmp);
+				delete pslTmp;
+			}
+		} else if (__bMatchSupport(finder.GetFileName()))
+			pslPicPath->AddTail(finder.GetFilePath());
+	}
+	return pslPicPath;
+}
+
+DWORD CWallDirListCtrl::ThreadProc()
+{
+	if (!m_ThreadParamItem)
+		return 0;
+	CWallDirListItem *pItem = NULL;
+	DWORD dwWaitResult = WaitForSingleObject(m_hThreadInit, 1000);
+	if (dwWaitResult == WAIT_OBJECT_0)
+		pItem = m_ThreadParamItem;
+	ReleaseMutex(m_hThreadInit);
+	m_bCanThreadRun = true;
+	if (pItem) {
+		FindPicPath(pItem, true);
+
+//		CString sBuf;
+		CStringArray *pArray = pItem->GetPicPathArray();
+		//int i, iCount = pArray->GetCount();
+		//for ( i=0 ; i<iCount ; i++ ) {
+		//	sBuf += pArray[i];
+		//}
+		m_pIni->WriteArray(_T("PathList"), pItem->GetPath(), pArray);
+	}
+	Invalidate();
+	return 0;
 }
 
 BEGIN_MESSAGE_MAP(CWallDirListCtrl, CWallListCtrl)

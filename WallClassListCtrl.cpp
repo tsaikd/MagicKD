@@ -20,12 +20,10 @@ void CWallClassListCtrl::Init()
 	CString sClassListName = pIni->GetString(_T("ClassList"), _T("0"));
 	if (sClassListName.GetLength()) {
 		int i = 1;
-		CString sBuf;
 
 		while (sClassListName.GetLength()) {
 			pWallChanger->NewClassList(sClassListName);
-			sBuf.Format(_T("%d"), i++);
-			sClassListName = pIni->GetString(_T("ClassList"), sBuf);
+			sClassListName = pIni->GetString(_T("ClassList"), i++);
 		}
 	} else {
 		pWallChanger->NewClassList(CResString(IDS_WALL_DEFAULTCLASS));
@@ -135,28 +133,6 @@ void CWallClassListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 	if (pItem) {
 		pChildList = pItem->GetChildDirList();
 		if (pChildList) {
-			if (pChildList->IsModified()) {
-				int iCount = pChildList->GetItemCount();
-				CString sIniName;
-				sIniName.Format(_T("DirList__%s"), pChildList->GetClassListName());
-				CIni *pIni = &(((CWallChanger *)GetParent())->m_cIni);
-
-				if (iCount) {
-					int i;
-					CString sPos;
-					CStringArray saItem;
-					saItem.SetSize(2);
-
-					for (i=0 ; i<iCount ; i++) {
-						sPos.Format(_T("%d"), i);
-						saItem[0] = pChildList->GetItemText(i, 0);
-						saItem[1] = pChildList->GetItemText(i, 1);
-						pIni->WriteArray(sIniName, sPos, &saItem);
-					}
-				} else {
-					pIni->DeleteSection(sIniName);
-				}
-			}
 			pChildList->DeleteAllItems();
 			delete pChildList;
 		}

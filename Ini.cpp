@@ -195,6 +195,15 @@ CString CIni::GetString(LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR lpDefault) con
 	delete [] psz;
 	return str;
 }
+CString CIni::GetString(LPCTSTR lpSection, int iKey, LPCTSTR lpDefault) const
+{
+	CString str;
+	str.Format(_T("%d"), iKey);
+	LPTSTR psz = __GetStringDynamic(lpSection, str, lpDefault);
+	str = psz;
+	delete [] psz;
+	return str;
+}
 #endif
 
 // Write a string value to the ini file
@@ -205,6 +214,18 @@ BOOL CIni::WriteString(LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR lpValue) const
 
 	return ::WritePrivateProfileString(lpSection, lpKey, lpValue == NULL ? _T("") : lpValue, m_pszPathName);
 }
+
+#ifdef __AFXWIN_H__
+BOOL CIni::WriteString(LPCTSTR lpSection, int iKey, LPCTSTR lpValue) const
+{
+	if (lpSection == NULL)
+		return FALSE;
+	CString sKey;
+	sKey.Format(_T("%d"), iKey);
+
+	return ::WritePrivateProfileString(lpSection, sKey, lpValue == NULL ? _T("") : lpValue, m_pszPathName);
+}
+#endif
 
 // Read a string value from the ini file, append another string after it and then write it
 // back to the ini file
@@ -683,6 +704,25 @@ void CIni::GetSectionNames(CStringArray *pArray) const
 	GetSectionNames(psz, LEN);
 	ParseDNTString(psz, __SubStrAdd, pArray);
 	delete [] psz;
+}
+
+// if lpSection == NULL, then test all sections
+BOOL CIni::DeleteEmptySection(LPCTSTR lpSection/* = NULL*/) const
+{
+	if (lpSection) {
+		CStringArray saKeyName;
+		GetKeyNames(lpSection, &saKeyName);
+		if (saKeyName.GetCount() <= 0)
+			return DeleteSection(lpSection);
+	} else {
+		CStringArray saSectionName;
+		GetSectionNames(&saSectionName);
+		int i, iCount=saSectionName.GetCount();
+		BOOL bRes = true;
+		for (i=0 ; (i<iCount && bRes) ; i++)
+			bRes = bRes && DeleteEmptySection(saSectionName[i]);
+		return bRes;
+	}
 }
 #endif
 

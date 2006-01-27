@@ -10,6 +10,7 @@ public:
 
 	void Init();
 	void AddItem(LPCTSTR sName, void *pChildList);
+	LPCTSTR GetPicPathRand();
 
 private:
 	bool m_bInit;

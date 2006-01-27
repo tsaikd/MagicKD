@@ -45,6 +45,20 @@ void CWallEnableCtrl::AddItem(LPCTSTR sName, void *pChildList)
 	InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0, I_IMAGECALLBACK, (LPARAM) pItem);
 }
 
+LPCTSTR CWallEnableCtrl::GetPicPathRand()
+{
+	int iCount = GetItemCount();
+	if (!m_bInit || iCount<=0)
+		return NULL;
+
+	CWallEnableItem *pItem = (CWallEnableItem *)GetItemLParam(rand()%iCount);
+	CWallDirListCtrl *pDirList;
+	if (pItem && (pDirList=pItem->GetChildDirList()))
+		return pDirList->GetPicPathRand();
+	else
+		return NULL;
+}
+
 BEGIN_MESSAGE_MAP(CWallEnableCtrl, CWallListCtrl)
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(LVN_GETDISPINFO, OnLvnGetdispinfo)

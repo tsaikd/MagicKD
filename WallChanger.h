@@ -42,28 +42,31 @@ public:
 	CButton m_BTN_NewClass;
 
 private:
-	static DWORD WINAPI ThreadProc(LPVOID pParam) {
-		CWallChanger *pThis = (CWallChanger *) pParam;
-		return pThis->ThreadProc();
-	}
 	UINT m_uWaitTime;
 	bool m_bEnableWallChanger;
 	bool m_bInit;
 
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
-	HANDLE m_hThread;
-	DWORD m_dwThreadId;
-	bool m_bIsThreadRunning;
-
-// 對話方塊資料
-public:
-	enum { IDD = IDD_WALLCHANGER };
-
+// Thread Stander Code
 public:
 	void CreateThread()
 	{ VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, 0, &m_dwThreadId) ); }
 	virtual DWORD ThreadProc();
+protected:
+	HANDLE m_hThread;
+	DWORD m_dwThreadId;
+	bool m_bIsThreadRunning;
+private:
+	static DWORD WINAPI ThreadProc(LPVOID pParam) {
+		CWallChanger *pThis = (CWallChanger *) pParam;
+		return pThis->ThreadProc();
+	}
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
+
+// 對話方塊資料
+public:
+	enum { IDD = IDD_WALLCHANGER };
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBnClickedWallchangercheck();

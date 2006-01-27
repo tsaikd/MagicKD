@@ -137,8 +137,10 @@ DWORD CWallChanger::ThreadProc()
 			break;
 		m_WaitTime.GetWindowText(timer);
 		iBuf = atoi(timer) - 1;
-		if (iBuf < 0)
+		if (iBuf < 0) {
 			iBuf = m_uWaitTime;
+			MessageBox(m_EnableClass.GetPicPathRand());
+		}
 		timer.Format("%d", iBuf);
 		m_WaitTime.SetWindowText(timer);
 	}
@@ -197,29 +199,33 @@ void CWallChanger::NewClassList(LPCTSTR sClassName/* = NULL*/)
 
 void CWallChanger::DelClassList()
 {
+	CWallDirListCtrl *pChildDirList;
 	int nItem;
+	CString sIniSection(_T("DirList"));
 	CString sClassName;
 	LVFINDINFO findInfo = {0};
 	findInfo.flags = LVFI_STRING;
 	POSITION pos = m_ClassList.GetFirstSelectedItemPosition();
 
-	if (pos) {
-		m_ClassList.SetModified();
-		CWallDirListCtrl *pChildDirList = ((CWallClassListItem *)m_ClassList.GetFirstSelectedItemLParam())->GetChildDirList();
-		pChildDirList->DeleteAllItems();
-		pChildDirList->SetModified();
-	}
 	while (pos) {
 		nItem = m_ClassList.GetNextSelectedItem(pos);
+
+		m_ClassList.SetModified();
+		pChildDirList = ((CWallClassListItem *)m_ClassList.GetFirstSelectedItemLParam())->GetChildDirList();
+		pChildDirList->DeleteAllItemsIni();
+		pChildDirList->DeleteAllItems();
+		pChildDirList->SetModified();
+
 		sClassName = m_ClassList.GetItemText(nItem, 0);
 		findInfo.psz = sClassName;
+		m_cIni.DeleteKey(sIniSection, sClassName);
 		m_ClassList.DeleteItem(nItem);
-
 		nItem = m_EnableClass.FindItem(&findInfo);
 		if (nItem != -1)
 			m_EnableClass.DeleteItem(nItem);
 	}
 
+	m_cIni.DeleteEmptySection(sIniSection);
 	m_pCurDirList = &m_DirList;
 	m_pCurDirList->ShowWindow(SW_SHOW);
 
@@ -233,7 +239,7 @@ void CWallChanger::AddClassDir()
 		if (ChooseFolder(sPath, m_hWnd)) {
 			POSITION pos = m_ClassList.GetFirstSelectedItemPosition();
 			int nItem = m_ClassList.GetNextSelectedItem(pos);
-			m_pCurDirList->AddItem(nItem, sPath, 0);
+			m_pCurDirList->AddItem(nItem, sPath);
 			m_pCurDirList->SetModified();
 		}
 	} else if (m_ClassList.GetItemCount() == 0) {
@@ -348,8 +354,6 @@ BOOL CWallChanger::OnInitDialog()
 
 void CWallChanger::OnDestroy()
 {
-	CDialog::OnDestroy();
-
 	if (m_bIsThreadRunning) {
 		m_bEnableWallChanger = false;
 		WaitForSingleObject(m_hThread, 2000);
@@ -389,6 +393,25 @@ void CWallChanger::OnDestroy()
 			}
 		}
 	}
+	int i, iCount = m_ClassList.GetItemCount();
+	CWallClassListItem *pListItem;
+	CWallDirListCtrl *pDirList;
+	CString sIniSection(_T("DirList"));
+	for (i=0 ; i<iCount ; i++) {
+		pListItem = (CWallClassListItem *)m_ClassList.GetItemLParam(i);
+		pDirList = pListItem->GetChildDirList();
+		if (pDirList && pDirList->IsModified()) {
+			CStringArray saDirList;
+
+			int j, jCount = pDirList->GetItemCount();
+			for (j=0 ; j<jCount ; j++) {
+				saDirList.Add(pDirList->GetItemText(j, 0));
+			}
+			if (saDirList.GetCount())
+				m_cIni.WriteArray(sIniSection, pDirList->GetClassListName(), &saDirList);
+		}
+	}
+	CDialog::OnDestroy();
 }
 
 void CWallChanger::OnSize(UINT nType, int cx, int cy)

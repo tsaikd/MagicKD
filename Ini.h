@@ -85,8 +85,12 @@ public:
 	DWORD GetString(LPCTSTR lpSection, LPCTSTR lpKey, LPTSTR lpBuffer, DWORD dwBufSize, LPCTSTR lpDefault = NULL) const;
 #ifdef __AFXWIN_H__
 	CString GetString(LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR lpDefault = NULL) const;
+	CString GetString(LPCTSTR lpSection, int iKey, LPCTSTR lpDefault = NULL) const;
 #endif
 	BOOL WriteString(LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR lpValue) const;
+#ifdef __AFXWIN_H__
+	BOOL WriteString(LPCTSTR lpSection, int iKey, LPCTSTR lpValue) const;
+#endif
 
 	// Read a string from the ini file, append it with another string then write it
 	// back to the ini file.
@@ -153,6 +157,7 @@ public:
 	DWORD GetSectionNames(LPTSTR lpBuffer, DWORD dwBufSize) const;
 #ifdef __AFXWIN_H__
 	void GetSectionNames(CStringArray* pArray) const;
+	BOOL DeleteEmptySection(LPCTSTR lpSection = NULL) const;
 #endif
 	BOOL CopySection(LPCTSTR lpSrcSection, LPCTSTR lpDestSection, BOOL bFailIfExist) const;
 	BOOL MoveSection(LPCTSTR lpSrcSection, LPCTSTR lpDestSection, BOOL bFailIfExist = TRUE) const;
