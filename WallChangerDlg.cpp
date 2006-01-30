@@ -194,9 +194,13 @@ void CWallChangerDlg::OnBnClickedButtonAddclasslist()
 
 void CWallChangerDlg::OnBnClickedButtonRandpic()
 {
+	bool bRes = true;
 	m_sNowPicPath = ::slWallChangerEnablePicPath.GetRandPos();
-	SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
-	m_staticNowPicPath.SetWindowText(m_sNowPicPath);
+	bRes = SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
+	if (bRes)
+		m_staticNowPicPath.SetWindowText(m_sNowPicPath);
+	else
+		m_staticNowPicPath.SetWindowText(CResString(IDS_WALLSETWALLPAGERFAIL));
 
 	CString sTime;
 	sTime.Format(_T("%d"), m_uWaitTime);
