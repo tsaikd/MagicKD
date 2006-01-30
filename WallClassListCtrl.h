@@ -1,27 +1,45 @@
 #pragma once
+#include "KDListItem.h"
 #include "WallListCtrl.h"
-#include "WallClassListItem.h"
 
-class CWallClassListCtrl : public CWallListCtrl
+class CWallClassListItem :
+	public CKDListItem
 {
+public:
+	CWallClassListItem() : CKDListItem(1), m_pChildDirList(NULL) {}
+	virtual ~CWallClassListItem() {}
+
+	CString GetItemName() { return GetText(0); }
+	void SetItemName(CString sName) { SetText(0, sName); }
+	void *GetChildDirList() { return m_pChildDirList; }
+	void SetChildDirList(void *pChildDirList) { m_pChildDirList = pChildDirList; }
+
+private:
+	void *m_pChildDirList;
+};
+
+
+
+class CWallClassListCtrl :
+	public CWallListCtrl
+{
+	DECLARE_MESSAGE_MAP()
 public:
 	CWallClassListCtrl();
 	virtual ~CWallClassListCtrl();
+	virtual void SaveIni();
 
-	void Init();
-	bool AddItem(LPCTSTR sName);
+	void Init(CIni *pIni, CRect &rcChildDirList);
+	bool AddItem(LPCTSTR sClassName);
+	void SetItemEnable(int nItem, bool bEnable);
 
 private:
 	bool m_bInit;
-	CArray<CWallClassListItem*> m_apClassListItem;
 	int m_iIDC_WALLDIRLISTBASE;
-
+	CRect m_rcChildDirList;
 
 public:
-	DECLARE_MESSAGE_MAP()
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
-	afx_msg void OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
-protected:
-	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg void OnDestroy();
 };

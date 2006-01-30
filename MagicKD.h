@@ -8,8 +8,8 @@
 #endif
 
 #include "resource.h"		// 主要符號
-#include "Others.h"
 #include "Ini.h"
+
 
 // CMagicKDApp:
 // 請參閱實作此類別的 MagicKD.cpp
@@ -20,12 +20,14 @@ class CMagicKDApp : public CWinApp
 public:
 	CMagicKDApp();
 
+	CString m_sAppDir;
+	CString m_sAppPath;
+	CIni m_cIni;
 // 覆寫
-	public:
+public:
 	virtual BOOL InitInstance();
 
-	CString m_sAppPath;
-	CString m_sAppDir;
+// 程式碼實作
 
 	DECLARE_MESSAGE_MAP()
 };

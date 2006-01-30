@@ -1,7 +1,7 @@
 // MagicKD.cpp : 定義應用程式的類別行為。
 //
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
@@ -37,20 +37,20 @@ BOOL CMagicKDApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
-	TCHAR sBuffer[MAX_PATH], *ptr;
-	GetModuleFileName(NULL, sBuffer, MAX_PATH);
-	m_sAppPath = sBuffer;
-	if (ptr = _tcsrchr(sBuffer, _T('\\'))) {
-		ptr++;
-		*ptr = _T('\0');
-		SetCurrentDirectory(sBuffer);
-		m_sAppDir = sBuffer;
-		_tcscpy(ptr, _T("MagicKD.ini"));
-//		thePrefs.SetPathName(sBuffer);
-	}
-	else {
-		MessageBox(NULL, _T("Can not locate the execution file! (MagicKD.exe)"), _T("MagicKD"), MB_OK | MB_ICONERROR);
-		return FALSE;
+	{
+		TCHAR sBuffer[MAX_PATH], *ptr;
+		GetModuleFileName(NULL, sBuffer, MAX_PATH);
+		m_sAppPath = sBuffer;
+		if (ptr = _tcsrchr(sBuffer, _T('\\'))) {
+			ptr++;
+			*ptr = _T('\0');
+			SetCurrentDirectory(sBuffer);
+			m_sAppDir = sBuffer;
+			m_cIni.SetPathName(m_sAppDir + _T("MagicKD.ini"));
+		} else {
+			MessageBox(NULL, _T("Can not locate the execution file!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+			return FALSE;
+		}
 	}
 
 	// 標準初始設定

@@ -714,11 +714,13 @@ BOOL CIni::DeleteEmptySection(LPCTSTR lpSection/* = NULL*/) const
 		GetKeyNames(lpSection, &saKeyName);
 		if (saKeyName.GetCount() <= 0)
 			return DeleteSection(lpSection);
+		else
+			return FALSE;
 	} else {
 		CStringArray saSectionName;
 		GetSectionNames(&saSectionName);
-		int i, iCount=saSectionName.GetCount();
-		BOOL bRes = true;
+		INT_PTR i, iCount=saSectionName.GetCount();
+		BOOL bRes = TRUE;
 		for (i=0 ; (i<iCount && bRes) ; i++)
 			bRes = bRes && DeleteEmptySection(saSectionName[i]);
 		return bRes;

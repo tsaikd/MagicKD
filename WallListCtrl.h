@@ -1,30 +1,22 @@
 #pragma once
-#include <afxtempl.h>
-#include "Language.h"
 #include "KDListCtrl.h"
-#include "WallDirListItem.h"
+#include "KDIni.h"
+#include "Ini.h"
 
-// CWallListCtrl
-
-class CWallListCtrl : public CKDListCtrl
+class CWallListCtrl :
+	public CKDListCtrl, public CKDIni
 {
-	DECLARE_DYNAMIC(CWallListCtrl)
-	DECLARE_MESSAGE_MAP()
-
 public:
 	CWallListCtrl();
 	virtual ~CWallListCtrl();
 
-	void Init();
-	bool IsModified();
-	void SetModified(bool bModified = true);
+	void Init(CIni *pIni);
+	virtual void SaveIni();
+	CIni *m_pIni;
 
 protected:
 	CMenu m_mContextMenu;
 
 private:
 	bool m_bInit;
-	bool m_bModified;
 };
-
-

@@ -61,6 +61,24 @@ HINSTANCE LoadStringLib(LANGID lid)
 
 	for (i = 0;i < g_iLanguageCount;i++)
 		if (lid == g_aLanguages[i].lid) {
+			// Need to add (CString)m_sAppDir, (CString)m_sAppPath to MainApp class
+			// Need to add the following lines to MainApp class InitInstance()
+			/*
+	{
+		TCHAR sBuffer[MAX_PATH], *ptr;
+		GetModuleFileName(NULL, sBuffer, MAX_PATH);
+		m_sAppPath = sBuffer;
+		if (ptr = _tcsrchr(sBuffer, _T('\\'))) {
+			ptr++;
+			*ptr = _T('\0');
+			SetCurrentDirectory(sBuffer);
+			m_sAppDir = sBuffer;
+		} else {
+			MessageBox(NULL, _T("Can not locate the execution file!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+			return FALSE;
+		}
+	}
+			*/
 			sDllPath = theApp.m_sAppDir + _T("lang\\") + g_aLanguages[i].pszISOLocale + _T(".dll");
 			g_uCurrentLang = i;
 			break;

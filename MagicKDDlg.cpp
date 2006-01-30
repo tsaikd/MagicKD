@@ -1,7 +1,7 @@
 // MagicKDDlg.cpp : 實作檔
 //
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
@@ -10,112 +10,76 @@
 #endif
 
 
-// 對 App About 使用 CAboutDlg 對話方塊
-
-class CAboutDlg : public CDialog
-{
-public:
-	CAboutDlg();
-
-// 對話方塊資料
-	enum { IDD = IDD_ABOUTBOX };
-
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
-
-// 程式碼實作
-protected:
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-END_MESSAGE_MAP()
-
-
 // CMagicKDDlg 對話方塊
 
 
-
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMagicKDDlg::IDD, pParent), m_bInit(false), m_pWallChanger(NULL)
+	: CDialog(CMagicKDDlg::IDD, pParent), m_pIni(NULL), m_pWallChangerDlg(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-CMagicKDDlg::~CMagicKDDlg()
+void CMagicKDDlg::InitTabRect()
 {
-	if (m_pWallChanger)
-		delete m_pWallChanger;
+	GetClientRect(m_rcMainTab);
 }
 
-void CMagicKDDlg::InitWindowRect()
+void CMagicKDDlg::DoSize()
 {
-	CRect rcWin;
-	GetClientRect(rcWin);
-	m_MainTab.MoveWindow(rcWin);
-	m_MainTab.GetClientRect(rcWin);
-	rcWin.top += 35;
-	rcWin.right -= 10;
-	rcWin.bottom -= 10;
-	m_rcTabWindow = rcWin;
+	m_cMainTab.MoveWindow(m_rcMainTab, FALSE);
+
+	CRect rcWin = m_rcMainTab;
+	rcWin.top += 20;
+	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
+	if (pCurDlg)
+		pCurDlg->MoveWindow(rcWin, FALSE);
+
+	Invalidate();
 }
 
-void CMagicKDDlg::MainConfigSyncTabEnable()
-{
-	if (m_pWallChanger)
-		m_MainConfigDlg.m_cbWallChanger.SetCheck(m_pWallChanger->m_EnableWallChanger.GetCheck());
-}
-
-void CMagicKDDlg::SetEnableFunc(FuncList eFunc, bool bEnable)
+void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = true*/)
 {
 	switch (eFunc) {
-	case eFunc_WallChanger:
-		if (bEnable) {
-			if (m_pWallChanger) {
-				m_pWallChanger->SetEnableWallChanger(bEnable);
+		case eFunc_WallChanger:
+			if (bEnable) {
+				if (m_pWallChangerDlg)
+					SetFuncEnable(eFunc_WallChanger, false, false);
+				m_pWallChangerDlg = new CWallChangerDlg;
+				m_pWallChangerDlg->Create(IDD_WALLCHANGERDIALOG, this);
+				m_pWallChangerDlg->ShowWindow(SW_HIDE);
+				m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChangerDlg);
 			} else {
-				m_pWallChanger = new CWallChanger;
-				m_pWallChanger->Create(IDD_WALLCHANGER, this);
+				if (m_pWallChangerDlg){
+					m_cMainTab.DeleteItem(eFunc_WallChanger);
+					m_pWallChangerDlg->DestroyWindow();
+                    delete m_pWallChangerDlg;
+					m_pWallChangerDlg = NULL;
+				}
 			}
-			m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChanger);
-		} else {
-			m_pWallChanger->ShowWindow(SW_HIDE);
-			m_MainTab.DeleteItem(eFunc_WallChanger);
-			m_MainTab.SetCurSel(0);
-			m_pWallChanger->DestroyWindow();
-			delete m_pWallChanger;
-			m_pWallChanger = NULL;
-			m_MainConfigDlg.ShowWindow(SW_HIDE);
-			m_MainConfigDlg.ShowWindow(SW_SHOW);
-		}
-		m_cIni.WriteBool(_T("FuncList"), _T("bWallChanger"), bEnable);
-		break;
+			break;
 	}
+	if (bRedraw)
+		Invalidate();
+}
+
+void CMagicKDDlg::SaveIni()
+{
+	m_cMainConfigDlg.SaveIni();
+
+	CKDIni::SaveIni();
 }
 
 void CMagicKDDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-
-	DDX_Control(pDX, IDC_MAINTAB, m_MainTab);
+	DDX_Control(pDX, IDC_MAINTAB, m_cMainTab);
 }
 
 BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
-	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
-	ON_WM_SIZE()
-	ON_WM_MOVE()
+	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnTcnSelchangeMaintab)
 	ON_NOTIFY(TCN_SELCHANGING, IDC_MAINTAB, OnTcnSelchangingMaintab)
 END_MESSAGE_MAP()
@@ -127,64 +91,38 @@ BOOL CMagicKDDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// 將 "關於..." 功能表加入系統功能表。
-
-	// IDM_ABOUTBOX 必須在系統命令範圍之中。
-	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	ASSERT(IDM_ABOUTBOX < 0xF000);
-
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
-	{
-		CString strAboutMenu;
-		strAboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!strAboutMenu.IsEmpty())
-		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-		}
-	}
-
 	// 設定此對話方塊的圖示。當應用程式的主視窗不是對話方塊時，
 	// 框架會自動從事此作業
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
+	InitTabRect();
+
+	m_pIni = &theApp.m_cIni;
+	m_cMainConfigDlg.Create(IDD_MAGICCONFIGDIALOG, this);
+	m_cMainConfigDlg.ShowWindow(SW_SHOW);
+	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
+
+	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
+		SetFuncEnable(eFunc_WallChanger, true, false);
+
+	DoSize();
+	if (m_pWallChangerDlg) {
+		CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
+		if (pCurDlg)
+			pCurDlg->ShowWindow(SW_HIDE);
+		m_cMainTab.SetCurSel(eFunc_WallChanger);
+		pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
+		if (pCurDlg) {
+			pCurDlg->ShowWindow(SW_SHOW);
+			pCurDlg->SetFocus();
+
+			DoSize();
+		}
+	}
 	// TODO: 在此加入額外的初始設定
-	InitWindowRect();
-	m_cIni.SetPathName(_T(".\\MagicKD.ini"));
-
-	m_MainConfigDlg.Create(IDD_MAIN_CONFIG_DIALOG, this);
-	m_MainConfigDlg.MoveWindow(m_rcTabWindow);
-	m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_MainConfigDlg);
-
-	if (m_cIni.GetBool(_T("FuncList"), _T("bWallChanger"), false)) {
-		m_pWallChanger = new CWallChanger;
-		m_pWallChanger->Create(IDD_WALLCHANGER, this);
-		m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChanger);
-	}
-
-//	m_pWallChanger = new CWallChanger;
-//	m_pWallChanger->Create(IDD_WALLCHANGER, this);
-//	m_MainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 2, _T("WallChanger2"), 0, (LPARAM)m_pWallChanger);
-
-	MainConfigSyncTabEnable();
-	m_MainConfigDlg.ShowWindow(SW_SHOW);
-	m_bInit = true;
-	return FALSE;  // 傳回 TRUE，除非您對控制項設定焦點
-}
-
-void CMagicKDDlg::OnSysCommand(UINT nID, LPARAM lParam)
-{
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
-	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
-	}
-	else
-	{
-		CDialog::OnSysCommand(nID, lParam);
-	}
+	
+	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
 // 如果將最小化按鈕加入您的對話方塊，您需要下列的程式碼，以便繪製圖示。
@@ -221,37 +159,40 @@ HCURSOR CMagicKDDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
-{
-	CDialog::OnSize(nType, cx, cy);
-	if ( !m_bInit )
-		return;
-
-	OnMove(cx, cy);
-}
-
-void CMagicKDDlg::OnMove(int x, int y)
-{
-	CDialog::OnMove(x, y);
-	if ( !m_bInit )
-		return;
-	InitWindowRect();
-}
-
 void CMagicKDDlg::OnOK()
 {
-	m_pWallChanger->NewClassList();
+	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
 
 //	CDialog::OnOK();
 }
 
+void CMagicKDDlg::OnCancel()
+{
+	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
+
+	CDialog::OnCancel();
+}
+
+void CMagicKDDlg::OnDestroy()
+{
+	if (IsIniModify())
+		SaveIni();
+
+	CDialog::OnDestroy();
+
+	SetFuncEnable(eFunc_WallChanger, false, false);
+	// TODO: 在此加入您的訊息處理常式程式碼
+}
+
 void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	CDialog *pCurDlg = (CDialog*)m_MainTab.GetCurItemLParam();
+	// TODO: 在此加入控制項告知處理常式程式碼
+	CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg) {
 		pCurDlg->ShowWindow(SW_SHOW);
 		pCurDlg->SetFocus();
-		pCurDlg->MoveWindow(m_rcTabWindow);
+
+		DoSize();
 	}
 
 	*pResult = 0;
@@ -259,10 +200,9 @@ void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	CDialog *pCurDlg = (CDialog*)m_MainTab.GetCurItemLParam();
-	if (pCurDlg) {
+	// TODO: 在此加入控制項告知處理常式程式碼
+	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
+	if (pCurDlg)
 		pCurDlg->ShowWindow(SW_HIDE);
-	}
-
 	*pResult = 0;
 }

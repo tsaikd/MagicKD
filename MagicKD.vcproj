@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="MagicKD"
-	ProjectGUID="{BB1F58D7-FA3D-4015-8F09-94E64E651B3A}"
+	ProjectGUID="{192342B2-0496-4F02-AA80-C0A92F7F068D}"
 	Keyword="MFCProj">
 	<Platforms>
 		<Platform
@@ -16,7 +16,7 @@
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
 			UseOfMFC="1"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -27,7 +27,7 @@
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="3"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -69,9 +69,19 @@
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
 			UseOfMFC="1"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="TRUE"
+				OptimizeForProcessor="2"
+				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="0"
@@ -124,63 +134,24 @@
 			Name="原始程式檔"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
-			<File
-				RelativePath=".\Ini.cpp">
-			</File>
-			<File
-				RelativePath=".\Language.cpp">
-			</File>
-			<File
-				RelativePath=".\MagicKD.cpp">
-			</File>
-			<File
-				RelativePath=".\MagicKDConfigDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\MagicKDDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\Others.cpp">
-			</File>
-			<File
-				RelativePath=".\stdafx.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-			</File>
 			<Filter
-				Name="WallChanger"
+				Name="FuncBase"
 				Filter="">
 				<File
-					RelativePath=".\WallChanger.cpp">
+					RelativePath=".\Ini.cpp">
 				</File>
 				<File
-					RelativePath=".\WallClassListCtrl.cpp">
+					RelativePath=".\Language.cpp">
 				</File>
 				<File
-					RelativePath=".\WallDirListCtrl.cpp">
-				</File>
-				<File
-					RelativePath=".\WallEnableCtrl.cpp">
-				</File>
-				<File
-					RelativePath=".\WallListCtrl.cpp">
+					RelativePath=".\Others.cpp">
 				</File>
 			</Filter>
 			<Filter
 				Name="KDClass"
 				Filter="">
 				<File
-					RelativePath=".\KDListBox.cpp">
+					RelativePath=".\KDIni.cpp">
 				</File>
 				<File
 					RelativePath=".\KDListCtrl.cpp">
@@ -192,72 +163,77 @@
 					RelativePath=".\KDTabCtrl.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="WallChanger"
+				Filter="">
+				<File
+					RelativePath=".\WallChangerDlg.cpp">
+				</File>
+				<File
+					RelativePath=".\WallClassListCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\WallDirListCtrl.cpp">
+				</File>
+				<Filter
+					Name="FuncBase"
+					Filter="">
+					<File
+						RelativePath=".\WallListCtrl.cpp">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Main"
+				Filter="">
+				<File
+					RelativePath=".\MagicKD.cpp">
+				</File>
+				<File
+					RelativePath=".\MagicKDDlg.cpp">
+				</File>
+				<File
+					RelativePath=".\MainConfigDlg.cpp">
+				</File>
+				<File
+					RelativePath=".\stdafx.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="1"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="1"/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="標頭檔"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
-			<File
-				RelativePath=".\Ini.h">
-			</File>
-			<File
-				RelativePath=".\Language.h">
-			</File>
-			<File
-				RelativePath=".\MagicKD.h">
-			</File>
-			<File
-				RelativePath=".\MagicKDConfigDlg.h">
-			</File>
-			<File
-				RelativePath=".\MagicKDDlg.h">
-			</File>
-			<File
-				RelativePath=".\Others.h">
-			</File>
-			<File
-				RelativePath=".\Resource.h">
-			</File>
-			<File
-				RelativePath=".\stdafx.h">
-			</File>
 			<Filter
-				Name="WallChanger"
+				Name="FuncBase"
 				Filter="">
 				<File
-					RelativePath=".\WallChanger.h">
+					RelativePath=".\Ini.h">
 				</File>
 				<File
-					RelativePath=".\WallClassListCtrl.h">
+					RelativePath=".\Language.h">
 				</File>
 				<File
-					RelativePath=".\WallDirListCtrl.h">
+					RelativePath=".\Others.h">
 				</File>
-				<File
-					RelativePath=".\WallEnableCtrl.h">
-				</File>
-				<File
-					RelativePath=".\WallListCtrl.h">
-				</File>
-				<Filter
-					Name="ListItem"
-					Filter="">
-					<File
-						RelativePath=".\WallClassListItem.h">
-					</File>
-					<File
-						RelativePath=".\WallDirListItem.h">
-					</File>
-					<File
-						RelativePath=".\WallEnableItem.h">
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="KDClass"
 				Filter="">
 				<File
-					RelativePath=".\KDListBox.h">
+					RelativePath=".\KDIni.h">
 				</File>
 				<File
 					RelativePath=".\KDListCtrl.h">
@@ -267,6 +243,48 @@
 				</File>
 				<File
 					RelativePath=".\KDTabCtrl.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="WallChanger"
+				Filter="">
+				<File
+					RelativePath=".\WallChangerDlg.h">
+				</File>
+				<File
+					RelativePath=".\WallChangerEnablePicPath.h">
+				</File>
+				<File
+					RelativePath=".\WallClassListCtrl.h">
+				</File>
+				<File
+					RelativePath=".\WallDirListCtrl.h">
+				</File>
+				<Filter
+					Name="FuncBase"
+					Filter="">
+					<File
+						RelativePath=".\WallListCtrl.h">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Main"
+				Filter="">
+				<File
+					RelativePath=".\MagicKD.h">
+				</File>
+				<File
+					RelativePath=".\MagicKDDlg.h">
+				</File>
+				<File
+					RelativePath=".\MainConfigDlg.h">
+				</File>
+				<File
+					RelativePath=".\Resource.h">
+				</File>
+				<File
+					RelativePath=".\stdafx.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -284,9 +302,6 @@
 				RelativePath=".\res\MagicKD.rc2">
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt">
-		</File>
 	</Files>
 	<Globals>
 		<Global

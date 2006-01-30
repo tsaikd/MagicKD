@@ -33,8 +33,10 @@
 #include <afxwin.h>         // MFC 核心與標準元件
 #include <afxext.h>         // MFC 擴充功能
 
+#include <wininet.h>
 #include <afxdtctl.h>		// MFC 支援的 Internet Explorer 4 通用控制項
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>			// MFC 支援的 Windows 通用控制項
 #endif // _AFX_NO_AFXCMN_SUPPORT
+#include <afxdhtml.h>
 

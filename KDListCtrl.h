@@ -4,6 +4,7 @@
 
 class CKDListCtrl : public CListCtrl
 {
+	DECLARE_MESSAGE_MAP()
 public:
 	CKDListCtrl();
 	virtual ~CKDListCtrl();
@@ -11,7 +12,14 @@ public:
 	void DeleteSelectItem();
 	void CancleAllSelected();
 	LPARAM GetFirstSelectedItemLParam();
-	LPARAM GetItemLParam(int nItem);
+#if (_WIN32_IE >= 0x0300)
+	void SetSelectItemCheckState(bool bCheck);
+#endif
+
 	int FindItemByText(LPCTSTR sText);
+	LPARAM GetItemLParam(int nItem);
 	BOOL SetItemSelected(int nItem);
+
+public:
+	afx_msg void OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult);
 };

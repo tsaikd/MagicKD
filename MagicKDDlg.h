@@ -3,56 +3,57 @@
 
 #pragma once
 
+#include "afxcmn.h"
+#include "MainConfigDlg.h"
+#include "Ini.h"
 #include "KDTabCtrl.h"
-#include "MagicKDConfigDlg.h"
-#include "WallChanger.h"
+#include "KDIni.h"
 
+#include "WallChangerDlg.h"
 
 // CMagicKDDlg 對話方塊
-class CMagicKDDlg : public CDialog
+class CMagicKDDlg : public CDialog, public CKDIni
 {
-	DECLARE_MESSAGE_MAP()
 // 建構
 public:
 	CMagicKDDlg(CWnd* pParent = NULL);	// 標準建構函式
-	virtual ~CMagicKDDlg();
 
 // 對話方塊資料
 	enum { IDD = IDD_MAGICKD_DIALOG };
+	typedef enum { eFunc_WallChanger = 1 } FuncList;
 
 public:
-	void MainConfigSyncTabEnable();
+	void InitTabRect();
+	void DoSize();
+	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
+	virtual void SaveIni();
 
-	typedef enum { eFunc_WallChanger = 1 } FuncList;
-	void SetEnableFunc(FuncList eFunc, bool bEnable);
-
-	CIni m_cIni;
+	CIni *m_pIni;
+	CKDTabCtrl m_cMainTab;
+	CMainConfigDlg m_cMainConfigDlg;
+	CWallChangerDlg *m_pWallChangerDlg;
+protected:
+private:
+	CRect m_rcMainTab;
+	bool m_bIniModify;
 
 protected:
-	CKDTabCtrl m_MainTab;
-	CMagicKDConfigDlg m_MainConfigDlg;
-	CWallChanger *m_pWallChanger;
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支援
 
-private:
-	bool m_bInit;
-	CRect m_rcTabWindow;
 
-	void InitWindowRect();
-
+	DECLARE_MESSAGE_MAP()
 // 程式碼實作
 protected:
 	HICON m_hIcon;
 
 	// 產生的訊息對應函式
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支援
 	virtual BOOL OnInitDialog();
-	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
+	afx_msg HCURSOR OnQueryDragIcon();
 	virtual void OnOK();
+	virtual void OnCancel();
 public:
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnMove(int x, int y);
+	afx_msg void OnDestroy();
 	afx_msg void OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult);
 };
