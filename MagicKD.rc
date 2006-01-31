@@ -136,13 +136,11 @@ BEGIN
     BEGIN
         BLOCK "040403b6"
         BEGIN
-            VALUE "CompanyName", "TODO: <公司名稱>"
-            VALUE "FileDescription", "TODO: <檔案說明>"
+            VALUE "FileDescription", "MagicKD"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "MagicKD.exe"
-            VALUE "LegalCopyright", "TODO: (c) <公司名稱>.  All rights reserved."
             VALUE "OriginalFilename", "MagicKD.exe"
-            VALUE "ProductName", "TODO: <產品名稱>"
+            VALUE "ProductName", "MagicKD"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -195,19 +193,19 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_WALLADDENABLECLASSLIST "加入啟用分類列表"
-    IDS_WALLDELCLASSLIST    "刪除分類列表"
+    IDS_SEL_FOLDER          "請選擇一個資料夾"
     IDS_WALLCLASSLIST       "分類列表"
     IDS_WALLDIRPATH         "資料夾路徑"
     IDS_WALLDIRPATHFINDNUM  "數量"
+    IDS_WALLADDENABLECLASSLIST "加入啟用分類列表"
+    IDS_WALLDELCLASSLIST    "刪除分類列表"
     IDS_WALLADDDIRPATH      "加入資料夾"
     IDS_WALLUPDATEDIRFILEFIND "重新搜尋圖檔"
     IDS_WALLDELDIRPATH      "取消資料夾"
-    IDS_SEL_FOLDER          "請選擇一個資料夾"
     IDS_WALLCANONLYCHOICEONECLASS "您只能選擇一個分類進行此動作"
+    IDS_WALLDIRNOTEXIST     "資料夾不存在"
     IDS_WALLDIRNOTEXIST_ONNOTFIXEDDRIVE 
                             "資料夾不存在\n請連上網路或是插入可攜式裝置"
-    IDS_WALLDIRNOTEXIST     "資料夾不存在"
     IDS_WALLDIRNOTEXIST_UPDATEPATHLATER "資料夾不存在\n請稍後再手動更新列表"
 END
 
