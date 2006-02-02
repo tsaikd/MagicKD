@@ -1,4 +1,10 @@
+快取數量設定
+n 張以內不重複 設定
 有顏色的字
 tip window
 tray icon
 快速鍵
+
+OnSize
+
+螢幕解析度

@@ -40,7 +40,7 @@ public:
 			if (m_pIni->IsKeyExist(_T("PicPath"), GetItemDirPath())) {
 				m_pIni->GetArray(_T("PicPath"), GetItemDirPath(), &m_saPicPath);
 				if (IsItemEnable())
-					::slWallChangerEnablePicPath.AppendArray(m_saPicPath);
+					::g_slWallChangerEnablePicPath.AppendArray(m_saPicPath);
 				SetItemFileFindNum(m_saPicPath.GetCount());
 			} else {
 				SetItemFileFindNum(-1);
@@ -59,7 +59,7 @@ public:
 		}
 
 		if (IsItemEnable())
-			::slWallChangerEnablePicPath.RemoveArray(m_saPicPath);
+			::g_slWallChangerEnablePicPath.RemoveArray(m_saPicPath);
 
 		SaveIni();
 	}
@@ -94,10 +94,19 @@ public:
 			return;
 		if (bEnable) {
 			// Change from false to true
-			::slWallChangerEnablePicPath.AppendArray(m_saPicPath);
+			::g_slWallChangerEnablePicPath.AppendArray(m_saPicPath);
 		} else {
 			// Change from true to false
-			::slWallChangerEnablePicPath.RemoveArray(m_saPicPath);
+			POSITION pos = ::g_imglCachePic.GetHeadPathPosition();
+			POSITION posFind;
+			CString sPicPath;
+			while (pos) {
+				sPicPath = ::g_imglCachePic.GetNextPath(pos);
+				posFind = ::g_slWallChangerEnablePicPath.Find(sPicPath);
+				if (posFind)
+					::g_slWallChangerEnablePicPath.RemoveAt(posFind);
+			}
+			::g_slWallChangerEnablePicPath.RemoveArray(m_saPicPath);
 		}
 	}
 	void UpdateDirState() {
@@ -124,7 +133,7 @@ public:
 		SetItemFileFindNum(FindPicPath());
 		SetIniModify();
 		if (IsItemEnable())
-			::slWallChangerEnablePicPath.AppendArray(m_saPicPath);
+			::g_slWallChangerEnablePicPath.AppendArray(m_saPicPath);
 		m_bFindPath = true;
 		InvalidateRect(m_hWnd, NULL, TRUE);
 		m_bIsThreading = false;

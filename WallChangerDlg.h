@@ -1,8 +1,9 @@
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 #include "KDIni.h"
 #include "Ini.h"
-#include "afxcmn.h"
+#include "xImage.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
@@ -23,22 +24,38 @@ public:
 	void DoSize();
 	virtual void SaveIni();
 
+	void SetHistoryNum(UINT uNum);
+	bool SetCachePicNum(UINT uCachePicNum);
+	UINT GetCachePicNum();
+	const CString GetRandPicPath();
+
 	CIni m_cIni;
-	UINT m_uWaitTime;
 	bool m_bCanThread;
 
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
 	CEdit m_editWaitTime;
 	CEdit m_editAddClass;
+	CEdit m_editHistoryNum;
+	CEdit m_editCacheNum;
 	CWallClassListCtrl m_listClass;
 	CWallDirListCtrl m_listDirPath;
 	CWallDirListCtrl *m_pCurListDirPath;
 protected:
 private:
+	CPoint _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax);
+
 	bool m_bInit;
 	bool m_bIsThreading;
+	UINT m_uWaitTime;
+	UINT m_uCachePicNum;
+	// at least 1. if in history, then don't set to wallpager
+	// if larger than total list number, then equal to set 1
+	UINT m_uPicPathHistory;
+	CxImage m_xImgNowPic;
 	CString m_sNowPicPath;
+	CString m_sTempFilePath;
+	CStringList m_slPicPathHistory;
 
 // Thread Stander Code
 public:

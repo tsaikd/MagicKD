@@ -111,6 +111,10 @@ BEGIN
     PUSHBUTTON      "§R°£",IDC_BUTTON_DELPIC,40,5,25,12
     CONTROL         "",IDC_STATIC_NOWPICPATH,"Static",SS_LEFTNOWORDWRAP | 
                     SS_NOPREFIX | SS_PATHELLIPSIS | WS_GROUP,10,19,350,8
+    EDITTEXT        IDC_EDIT_HISTORYNUM,205,5,15,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDIT_CACHENUM,190,5,10,12,ES_AUTOHSCROLL | ES_NUMBER | 
+                    NOT WS_BORDER,WS_EX_CLIENTEDGE
 END
 
 
@@ -120,8 +124,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,0,2
+ PRODUCTVERSION 1,0,0,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -137,11 +141,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "1.0.0.2"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "1.0.0.2"
         END
     END
     BLOCK "VarFileInfo"

@@ -42,4 +42,5 @@ public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDestroy();
+	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
 };

@@ -3,6 +3,7 @@
 #include "Language.h"
 #include "WallDirListCtrl.h"
 #include "WallClassListCtrl.h"
+#include ".\wallclasslistctrl.h"
 
 CWallClassListCtrl::CWallClassListCtrl() :
 	m_bInit(false), m_iIDC_WALLDIRLISTBASE(200)
@@ -69,6 +70,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 
 	CancleAllSelected();
 	SetItemSelected(0);
+	EnableToolTips();
 
 	m_bInit = true;
 }
@@ -166,4 +168,11 @@ void CWallClassListCtrl::OnDestroy()
 	CWallListCtrl::OnDestroy();
 
 	// TODO: 在此加入您的訊息處理常式程式碼
+}
+
+INT_PTR CWallClassListCtrl::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
+{
+	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
+
+	return CWallListCtrl::OnToolHitTest(point, pTI);
 }
