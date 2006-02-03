@@ -1,9 +1,11 @@
+防止開啟兩個程式
+畫ICON
+
 把設定弄成OnOK
 
 刪除圖片後要更新列表
 
 tip window
-tray icon
 快速鍵
 
 OnSize

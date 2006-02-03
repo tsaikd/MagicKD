@@ -35,6 +35,8 @@
 #define IDS_WALL_BTN_DELPIC             157
 #define IDS_WALL_BTN_SETUPINICONFIG     158
 #define IDS_WALL_BTN_ADDCLASS           159
+#define IDS_MAGICKD_CLOSEWINDOW         160
+#define IDS_MAGICKD_MENU_CLOSEWINDOW    160
 #define IDC_MAINTAB                     1000
 #define IDC_WALLCHANGERCHECK            1001
 #define IDC_EDIT_WAITTIME               1002

@@ -4,11 +4,14 @@
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
+#include ".\magickddlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+
+CKDTray theTray;
 
 // CMagicKDDlg 對話方塊
 
@@ -82,6 +85,7 @@ BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnTcnSelchangeMaintab)
 	ON_NOTIFY(TCN_SELCHANGING, IDC_MAINTAB, OnTcnSelchangingMaintab)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -97,6 +101,9 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	InitTabRect();
+	theTray.RegisterTray(m_hWnd, m_hIcon);
+
+	theTray.AppendMenu(MF_STRING, IDS_MAGICKD_MENU_CLOSEWINDOW, GetResString(IDS_MAGICKD_MENU_CLOSEWINDOW));
 
 	m_pIni = &theApp.m_cIni;
 	m_cMainConfigDlg.Create(IDD_MAGICCONFIGDIALOG, this);
@@ -106,7 +113,6 @@ BOOL CMagicKDDlg::OnInitDialog()
 	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
 		SetFuncEnable(eFunc_WallChanger, true, false);
 
-	DoSize();
 	if (m_pWallChangerDlg) {
 		CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
 		if (pCurDlg)
@@ -120,9 +126,24 @@ BOOL CMagicKDDlg::OnInitDialog()
 			DoSize();
 		}
 	}
+
+	DoSize();
 	// TODO: 在此加入額外的初始設定
 	
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
+}
+
+void CMagicKDDlg::OnDestroy()
+{
+	if (IsIniModify())
+		SaveIni();
+
+	CDialog::OnDestroy();
+
+	SetFuncEnable(eFunc_WallChanger, false, false);
+	theTray.RemoveTrayMenuItem(GetResString(IDS_MAGICKD_MENU_CLOSEWINDOW));
+	theTray.UnRegisterTray();
+	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 // 如果將最小化按鈕加入您的對話方塊，您需要下列的程式碼，以便繪製圖示。
@@ -173,14 +194,15 @@ void CMagicKDDlg::OnCancel()
 	CDialog::OnCancel();
 }
 
-void CMagicKDDlg::OnDestroy()
+void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
 {
-	if (IsIniModify())
-		SaveIni();
+	if (nType == SIZE_MINIMIZED) {
+		ShowWindow(SW_RESTORE);
+		ShowWindow(SW_HIDE);
+		return;
+	}
+	__super::OnSize(nType, cx, cy);
 
-	CDialog::OnDestroy();
-
-	SetFuncEnable(eFunc_WallChanger, false, false);
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
@@ -205,4 +227,38 @@ void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 	if (pCurDlg)
 		pCurDlg->ShowWindow(SW_HIDE);
 	*pResult = 0;
+}
+
+LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if (message == UWM_TRAY_CALLBACK) {
+		switch (lParam) {
+		case WM_LBUTTONUP:
+			
+			if (IsWindowVisible()) {
+				ShowWindow(SW_HIDE);
+			} else {
+				ShowWindow(SW_SHOW);
+				SetForegroundWindow();
+			}
+			break;
+		case WM_RBUTTONUP:
+			theTray.TrackPopupMenu(this);
+			Invalidate();
+			break;
+		}
+	}
+	switch (message) {
+	case WM_COMMAND:
+		{
+			UINT nID = LOWORD(wParam);
+			switch (nID) {
+			case IDS_MAGICKD_MENU_CLOSEWINDOW:
+				DestroyWindow();
+				break;
+			}
+		}
+	}
+
+	return __super::DefWindowProc(message, wParam, lParam);
 }

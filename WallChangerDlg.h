@@ -6,12 +6,13 @@
 #include "KDIni.h"
 #include "KDEdit.h"
 #include "KDButton.h"
+#include "KDTray.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
 // CWallChangerDlg ¹ï¸Ü¤è¶ô
 
-class CWallChangerDlg : public CDialog, public CKDIni
+class CWallChangerDlg : public CDialog, public CKDIni, public CKDTray
 {
 	DECLARE_DYNAMIC(CWallChangerDlg)
 	DECLARE_MESSAGE_MAP()

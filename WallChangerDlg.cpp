@@ -252,7 +252,6 @@ BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_ENABLETOOLTIP, OnBnClickedButtonEnabletooltip)
 END_MESSAGE_MAP()
 
-
 // CWallChangerDlg 訊息處理常式
 
 BOOL CWallChangerDlg::OnInitDialog()
@@ -317,6 +316,7 @@ void CWallChangerDlg::OnDestroy()
 
 	if (PathFileExists(m_sTempFilePath))
 		DeleteFile(m_sTempFilePath);
+
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
 

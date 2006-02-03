@@ -57,7 +57,7 @@ BOOL CMagicKDApp::InitInstance()
 	// 如果您不使用這些功能並且想減少最後完成的可執行檔大小，您可以從下列
 	// 程式碼移除不需要的初始化常式，變更儲存設定值的登錄機碼
 	// TODO: 您應該適度修改此字串 (例如，公司名稱或組織名稱)
-	SetRegistryKey(_T("本機 AppWizard 所產生的應用程式"));
+//	SetRegistryKey(_T("本機 AppWizard 所產生的應用程式"));
 
 	CMagicKDDlg dlg;
 	m_pMainWnd = &dlg;

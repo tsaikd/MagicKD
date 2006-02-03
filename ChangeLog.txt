@@ -1,5 +1,7 @@
-2006-02-03
-Version: 1.0.0.3
+Version: 1.0.0.4	(2006-02-03)
+	Tray Icon
+
+Version: 1.0.0.3	(2006-02-03)
 	Add ToolTip
 	Set Cache Picture Number
 	Set at least N Picture not repeat

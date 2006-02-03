@@ -8,8 +8,11 @@
 #include "Ini.h"
 #include "KDTabCtrl.h"
 #include "KDIni.h"
+#include "KDTray.h"
 
 #include "WallChangerDlg.h"
+
+extern CKDTray theTray;
 
 // CMagicKDDlg ¹ï¸Ü¤è¶ô
 class CMagicKDDlg : public CDialog, public CKDIni
@@ -56,4 +59,7 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+protected:
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };
