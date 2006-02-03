@@ -12,13 +12,18 @@
 CKDStringList g_slWallChangerEnablePicPath;
 CxImageList g_imglCachePic;
 
+#define DEFAULT_WAITTIME		30
+#define DEFAULT_CACHEPICNUM		1
+#define DEFAULT_PICPATHHISTORY	5
+#define DEFAULT_ENABLETIP		TRUE
+
 
 // CWallChangerDlg 對話方塊
 
 IMPLEMENT_DYNAMIC(CWallChangerDlg, CDialog)
 CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CWallChangerDlg::IDD, pParent), m_bCanThread(false), m_uWaitTime(30), m_bIsThreading(false), m_bInit(false),
-	m_pCurListDirPath(NULL), m_uCachePicNum(0), m_uPicPathHistory(0)
+	m_pCurListDirPath(NULL), m_uCachePicNum(0), m_uPicPathHistory(0), m_bEnableTip(true)
 {
 }
 
@@ -59,9 +64,25 @@ void CWallChangerDlg::SaveIni()
 	if (!IsIniModify())
 		return;
 
-	m_cIni.WriteUInt(_T("General"), _T("uWaitTime"), m_uWaitTime);
-	m_cIni.WriteUInt(_T("General"), _T("uCachePicNum"), m_uCachePicNum);
-	m_cIni.WriteUInt(_T("General"), _T("uPicPathHistory"), m_uPicPathHistory);
+	if (m_uWaitTime != DEFAULT_WAITTIME)
+		m_cIni.WriteUInt(_T("General"), _T("uWaitTime"), m_uWaitTime);
+	else
+		m_cIni.DeleteKey(_T("General"), _T("uWaitTime"));
+
+	if (m_uCachePicNum != DEFAULT_CACHEPICNUM)
+		m_cIni.WriteUInt(_T("General"), _T("uCachePicNum"), m_uCachePicNum);
+	else
+		m_cIni.DeleteKey(_T("General"), _T("uCachePicNum"));
+
+	if (m_uPicPathHistory != DEFAULT_PICPATHHISTORY)
+		m_cIni.WriteUInt(_T("General"), _T("uPicPathHistory"), m_uPicPathHistory);
+	else
+		m_cIni.DeleteKey(_T("General"), _T("uPicPathHistory"));
+
+	if (m_bEnableTip != DEFAULT_ENABLETIP)
+		m_cIni.WriteBool(_T("General"), _T("bEnableTip"), m_bEnableTip);
+	else
+		m_cIni.DeleteKey(_T("General"), _T("bEnableTip"));
 
 	CKDIni::SaveIni();
 }
@@ -147,6 +168,22 @@ const CString CWallChangerDlg::GetRandPicPath()
 	return sRandPicPath;
 }
 
+BOOL CWallChangerDlg::EnableToolTips(BOOL bEnable/* = TRUE*/)
+{
+	m_editWaitTime.EnableToolTips(CResString(IDS_WALLTOOLTIP_SETWAITTIME), bEnable);
+	m_editAddClass.EnableToolTips(CResString(IDS_WALLTOOLTIP_ADDCLASS), bEnable);
+	m_editHistoryNum.EnableToolTips(CResString(IDS_WALLTOOLTIP_SETHISTORYNUM), bEnable);
+	m_editCacheNum.EnableToolTips(CResString(IDS_WALLTOOLTIP_SETCACHEPICNUM), bEnable);
+
+	m_btn_RandPic.EnableToolTips(CResString(IDS_WALLTOOLTIP_RANDPIC), bEnable);
+	m_btn_DelPic.EnableToolTips(CResString(IDS_WALLTOOLTIP_DELNOWPIC), bEnable);
+
+	m_listClass.EnableToolTips(NULL, bEnable);
+	m_listDirPath.EnableToolTips(NULL, bEnable);
+
+	return CDialog::EnableToolTips(bEnable);
+}
+
 CPoint CWallChangerDlg::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
 {
 	if ((cpSizeMax.x >= cpSizeSrc.x) && (cpSizeMax.y >= cpSizeSrc.y))
@@ -196,6 +233,11 @@ void CWallChangerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_NOWPICPATH, m_staticNowPicPath);
 	DDX_Control(pDX, IDC_EDIT_HISTORYNUM, m_editHistoryNum);
 	DDX_Control(pDX, IDC_EDIT_CACHENUM, m_editCacheNum);
+	DDX_Control(pDX, IDC_BUTTON_RANDPIC, m_btn_RandPic);
+	DDX_Control(pDX, IDC_BUTTON_DELPIC, m_btn_DelPic);
+	DDX_Control(pDX, IDC_BUTTON_ENABLETOOLTIP, m_btn_EnableToolTip);
+	DDX_Control(pDX, IDC_BUTTON_SETWAITTIME, m_btn_SetupIniConfig);
+	DDX_Control(pDX, IDC_BUTTON_ADDCLASSLIST, m_btn_AddClass);
 }
 
 
@@ -207,6 +249,7 @@ BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CLASS, OnLvnItemchangedListClass)
 	ON_BN_CLICKED(IDC_BUTTON_RANDPIC, OnBnClickedButtonRandpic)
 	ON_BN_CLICKED(IDC_BUTTON_DELPIC, OnBnClickedButtonDelpic)
+	ON_BN_CLICKED(IDC_BUTTON_ENABLETOOLTIP, OnBnClickedButtonEnabletooltip)
 END_MESSAGE_MAP()
 
 
@@ -221,7 +264,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	srand(time(NULL));
 	m_cIni.SetPathName(theApp.m_sAppDir + _T("WallChanger.ini"));
 
-	m_uWaitTime = m_cIni.GetUInt(_T("General"), _T("uWaitTime"), m_uWaitTime);
+	m_uWaitTime = m_cIni.GetUInt(_T("General"), _T("uWaitTime"), DEFAULT_WAITTIME);
 	CString sBuf;
 	sBuf.Format(_T("%d"), m_uWaitTime);
 	m_editWaitTime.SetWindowText(sBuf);
@@ -237,11 +280,20 @@ BOOL CWallChangerDlg::OnInitDialog()
 	GetTempPath(MAX_PATH, sTmpDir);
 	m_sTempFilePath.Format(_T("%s_TMP_WallChanger.jpg"), sTmpDir);
 
-	m_uPicPathHistory = m_cIni.GetUInt(_T("General"), _T("uPicPathHistory"), 5);
+	m_uPicPathHistory = m_cIni.GetUInt(_T("General"), _T("uPicPathHistory"), DEFAULT_PICPATHHISTORY);
 	SetHistoryNum(m_uPicPathHistory);
 
-	m_uCachePicNum = m_cIni.GetUInt(_T("General"), _T("uCachePicNum"), 1);
+	m_uCachePicNum = m_cIni.GetUInt(_T("General"), _T("uCachePicNum"), DEFAULT_CACHEPICNUM);
 	SetCachePicNum(m_uCachePicNum);
+
+	m_bEnableTip = m_cIni.GetBool(_T("General"), _T("bEnableTip"), DEFAULT_ENABLETIP);
+	EnableToolTips(m_bEnableTip);
+
+	m_btn_RandPic.SetWindowText(CResString(IDS_WALL_BTN_RANDPIC));
+	m_btn_DelPic.SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
+	m_btn_EnableToolTip.SetWindowText(CResString(m_bEnableTip ? IDS_WALL_BTN_DISABLETIP : IDS_WALL_BTN_ENABLETIP));
+	m_btn_SetupIniConfig.SetWindowText(CResString(IDS_WALL_BTN_SETUPINICONFIG));
+	m_btn_AddClass.SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
 
 	m_bCanThread = true;
 	CreateThread();
@@ -358,10 +410,27 @@ void CWallChangerDlg::OnBnClickedButtonDelpic()
 	TCHAR sNowPicPath[MAX_PATH] = {0};
 	_tcscpy(sNowPicPath, m_sNowPicPath);
 
-	if (IsShiftPressed())
-		RemoveFileDlg(m_hWnd, sNowPicPath, false);
-	else
-		RemoveFileDlg(m_hWnd, sNowPicPath);
+	RemoveFileDlg(m_hWnd, sNowPicPath, !IsShiftPressed());
+
+	if (!PathFileExists(sNowPicPath)) {
+		OnBnClickedButtonRandpic();
+	}
+	// TODO: 在此加入控制項告知處理常式程式碼
+}
+
+void CWallChangerDlg::OnBnClickedButtonEnabletooltip()
+{
+	if (m_bEnableTip) {
+		m_bEnableTip = FALSE;
+		m_btn_EnableToolTip.SetWindowText(CResString(IDS_WALL_BTN_ENABLETIP));
+	} else {
+		m_bEnableTip = TRUE;
+		m_btn_EnableToolTip.SetWindowText(CResString(IDS_WALL_BTN_DISABLETIP));
+	}
+
+	EnableToolTips(m_bEnableTip);
+
+	SetIniModify();
 	// TODO: 在此加入控制項告知處理常式程式碼
 }
 

@@ -33,6 +33,8 @@ public:
 	bool AddItem(LPCTSTR sClassName);
 	void SetItemEnable(int nItem, bool bEnable);
 
+	BOOL EnableToolTips(LPCTSTR sToolTip = NULL, BOOL bEnable = TRUE);
+
 private:
 	bool m_bInit;
 	int m_iIDC_WALLDIRLISTBASE;
@@ -42,5 +44,5 @@ public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDestroy();
-	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
+	afx_msg void OnLvnGetInfoTip(NMHDR *pNMHDR, LRESULT *pResult);
 };

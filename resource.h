@@ -21,6 +21,20 @@
 #define IDS_WALLDIRNOTEXIST_UPDATEPATHLATER 143
 #define IDS_WALLCLASSCANNOTENABLE       144
 #define IDS_WALLSETWALLPAGERFAIL        145
+#define IDS_WALLTOOLTIP_RANDPIC         146
+#define IDS_WALLTOOLTIP_DELNOWPIC       147
+#define IDS_WALLTOOLTIP_SETWAITTIME     148
+#define IDS_WALLTOOLTIP_SETHISTORYNUM   149
+#define IDS_WALLTOOLTIP_SETCACHEPICNUM  150
+#define IDS_WALLTOOLTIP_ADDCLASS        151
+#define IDS_WALLTOOLTIP_CLASSLIST       152
+#define IDS_WALLTOOLTIP_DIRLIST         153
+#define IDS_WALL_BTN_ENABLETIP          154
+#define IDS_WALL_BTN_DISABLETIP         155
+#define IDS_WALL_BTN_RANDPIC            156
+#define IDS_WALL_BTN_DELPIC             157
+#define IDS_WALL_BTN_SETUPINICONFIG     158
+#define IDS_WALL_BTN_ADDCLASS           159
 #define IDC_MAINTAB                     1000
 #define IDC_WALLCHANGERCHECK            1001
 #define IDC_EDIT_WAITTIME               1002
@@ -34,8 +48,8 @@
 #define IDC_BUTTON_DELPIC               1011
 #define IDC_STATIC_NOWPICPATH           1012
 #define IDC_EDIT_HISTORYNUM             1013
-#define IDC_EDIT2                       1014
 #define IDC_EDIT_CACHENUM               1014
+#define IDC_BUTTON_ENABLETOOLTIP        1015
 
 // Next default values for new objects
 // 
@@ -43,7 +57,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

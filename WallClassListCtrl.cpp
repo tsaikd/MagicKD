@@ -3,7 +3,6 @@
 #include "Language.h"
 #include "WallDirListCtrl.h"
 #include "WallClassListCtrl.h"
-#include ".\wallclasslistctrl.h"
 
 CWallClassListCtrl::CWallClassListCtrl() :
 	m_bInit(false), m_iIDC_WALLDIRLISTBASE(200)
@@ -44,6 +43,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 {
 	CWallListCtrl::Init(pIni);
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
+
 	CRect rcWin;
 	GetClientRect(rcWin);
 	InsertColumn(0, CResString(IDS_WALLCLASSLIST), LVCFMT_LEFT, rcWin.right);
@@ -70,7 +70,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 
 	CancleAllSelected();
 	SetItemSelected(0);
-	EnableToolTips();
+	SetToolTips(CResString(IDS_WALLTOOLTIP_CLASSLIST));
 
 	m_bInit = true;
 }
@@ -85,7 +85,7 @@ bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
 		return false;
 	}
 	pChildList->Init(m_pIni, sClassName);
-	pChildList->ShowWindow(SW_HIDE);
+	pChildList->EnableToolTips(NULL, pChildList->IsEnableToolTips());
 
 	CWallClassListItem *pItem = new CWallClassListItem;
 	pItem->SetItemName(sClassName);
@@ -118,10 +118,27 @@ void CWallClassListCtrl::SetItemEnable(int nItem, bool bEnable)
 	}
 }
 
+BOOL CWallClassListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+{
+	CWallClassListItem *pItem;
+	CWallDirListCtrl *pChildDirList;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallClassListItem *)GetItemData(i)) {
+			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
+				pChildDirList->EnableToolTips(NULL, bEnable);
+			}
+		}
+	}
+
+	return CWallListCtrl::EnableToolTips(sToolTip, bEnable);
+}
+
 BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_WM_CONTEXTMENU()
 	ON_WM_DESTROY()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
+	ON_NOTIFY_REFLECT(LVN_GETINFOTIP, OnLvnGetInfoTip)
 END_MESSAGE_MAP()
 
 void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
@@ -170,9 +187,12 @@ void CWallClassListCtrl::OnDestroy()
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
-INT_PTR CWallClassListCtrl::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
+void CWallClassListCtrl::OnLvnGetInfoTip(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
+	LPNMLVGETINFOTIP pGetInfoTip = reinterpret_cast<LPNMLVGETINFOTIP>(pNMHDR);
 
-	return CWallListCtrl::OnToolHitTest(point, pTI);
+	pGetInfoTip->pszText = _T("ZZ");
+
+	// TODO: 在此加入控制項告知處理常式程式碼
+	*pResult = 0;
 }

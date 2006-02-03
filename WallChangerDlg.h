@@ -1,9 +1,11 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
-#include "KDIni.h"
 #include "Ini.h"
 #include "xImage.h"
+#include "KDIni.h"
+#include "KDEdit.h"
+#include "KDButton.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
@@ -29,15 +31,22 @@ public:
 	UINT GetCachePicNum();
 	const CString GetRandPicPath();
 
+	BOOL EnableToolTips(BOOL bEnable = TRUE);
+
 	CIni m_cIni;
 	bool m_bCanThread;
 
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
-	CEdit m_editWaitTime;
-	CEdit m_editAddClass;
-	CEdit m_editHistoryNum;
-	CEdit m_editCacheNum;
+	CButton m_btn_EnableToolTip;
+	CButton m_btn_SetupIniConfig;
+	CKDButton m_btn_RandPic;
+	CKDButton m_btn_DelPic;
+	CKDButton m_btn_AddClass;
+	CKDEdit m_editWaitTime;
+	CKDEdit m_editAddClass;
+	CKDEdit m_editHistoryNum;
+	CKDEdit m_editCacheNum;
 	CWallClassListCtrl m_listClass;
 	CWallDirListCtrl m_listDirPath;
 	CWallDirListCtrl *m_pCurListDirPath;
@@ -47,6 +56,7 @@ private:
 
 	bool m_bInit;
 	bool m_bIsThreading;
+	BOOL m_bEnableTip;
 	UINT m_uWaitTime;
 	UINT m_uCachePicNum;
 	// at least 1. if in history, then don't set to wallpager
@@ -86,4 +96,5 @@ public:
 	afx_msg void OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonRandpic();
 	afx_msg void OnBnClickedButtonDelpic();
+	afx_msg void OnBnClickedButtonEnabletooltip();
 };

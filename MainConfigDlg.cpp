@@ -7,6 +7,8 @@
 #include "MainConfigDlg.h"
 
 
+#define DEFAULT_WALLCHANGER false
+
 // CMainConfigDlg ¹ï¸Ü¤è¶ô
 
 IMPLEMENT_DYNAMIC(CMainConfigDlg, CDialog)
@@ -35,7 +37,11 @@ void CMainConfigDlg::SetIniModify(bool bModify/* = true*/)
 
 void CMainConfigDlg::SaveIni()
 {
-	m_pIni->WriteBool(_T("FuncList"), _T("bWallChanger"), m_cbWallChanger.GetCheck()==BST_CHECKED);
+	bool bWallChanger = m_cbWallChanger.GetCheck()==BST_CHECKED;
+	if (bWallChanger != DEFAULT_WALLCHANGER)
+		m_pIni->WriteBool(_T("FuncList"), _T("bWallChanger"), bWallChanger);
+	else
+		m_pIni->DeleteKey(_T("FuncList"), _T("bWallChanger"));
 
 	SetIniModify(false);
 }
@@ -59,7 +65,7 @@ BOOL CMainConfigDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	m_pIni = &theApp.m_cIni;
-	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
+	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), DEFAULT_WALLCHANGER))
 		m_cbWallChanger.SetCheck(BST_CHECKED);
 	else
 		m_cbWallChanger.SetCheck(BST_UNCHECKED);

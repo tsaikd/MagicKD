@@ -2,6 +2,7 @@
 #include "KDListCtrl.h"
 
 CKDListCtrl::CKDListCtrl()
+	: m_bEnableToolTip(FALSE)
 {
 }
 
@@ -71,6 +72,39 @@ BOOL CKDListCtrl::SetItemSelected(int nItem)
 {
 	return SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED);
 }
+
+BOOL CKDListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+{
+	if (bEnable)
+		SetToolTips(sToolTip);
+	return CListCtrl::EnableToolTips(bEnable);
+}
+
+BOOL CKDListCtrl::IsEnableToolTips()
+{
+	return m_bEnableToolTip;
+}
+
+void CKDListCtrl::SetToolTips(LPCTSTR sToolTip)
+{
+	if (sToolTip)
+		m_sToolTip = sToolTip;
+}
+
+INT_PTR CKDListCtrl::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
+{
+	if (pTI && !m_sToolTip.IsEmpty()) {
+		pTI->hwnd = m_hWnd;
+		pTI->uId = (UINT_PTR) m_hWnd;
+		pTI->uFlags |= TTF_ALWAYSTIP;
+		pTI->lpszText = _tcsdup(m_sToolTip);
+		GetClientRect(&pTI->rect);
+
+		return GetDlgCtrlID();
+	}
+	return -1;
+}
+
 BEGIN_MESSAGE_MAP(CKDListCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_GETDISPINFO, OnLvnGetdispinfo)
 END_MESSAGE_MAP()

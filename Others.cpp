@@ -42,7 +42,7 @@ bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
 
 #include "shellapi.h"
 // Open a Dialog to ask user for sure
-// if not Undo, then remove files directly (default is true)
+// if not Undo, then remove files directly (default: true)
 bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
 {
 	SHFILEOPSTRUCT shFile = {0};

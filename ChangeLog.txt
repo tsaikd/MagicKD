@@ -1,0 +1,5 @@
+2006-02-03
+Version: 1.0.0.3
+	Add ToolTip
+	Set Cache Picture Number
+	Set at least N Picture not repeat

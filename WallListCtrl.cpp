@@ -12,7 +12,7 @@ CWallListCtrl::~CWallListCtrl()
 void CWallListCtrl::Init(CIni *pIni)
 {
 	m_pIni = pIni;
-	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
+	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	m_bInit = true;
 }

@@ -181,6 +181,12 @@
 				Name="KDClass"
 				Filter="">
 				<File
+					RelativePath=".\KDButton.cpp">
+				</File>
+				<File
+					RelativePath=".\KDEdit.cpp">
+				</File>
+				<File
 					RelativePath=".\KDIni.cpp">
 				</File>
 				<File
@@ -234,6 +240,9 @@
 				RelativePath=".\Resource.h">
 			</File>
 			<File
+				RelativePath=".\resource.hm">
+			</File>
+			<File
 				RelativePath=".\stdafx.h">
 			</File>
 			<Filter
@@ -252,6 +261,12 @@
 			<Filter
 				Name="KDClass"
 				Filter="">
+				<File
+					RelativePath=".\KDButton.h">
+				</File>
+				<File
+					RelativePath=".\KDEdit.h">
+				</File>
 				<File
 					RelativePath=".\KDIni.h">
 				</File>
@@ -306,6 +321,9 @@
 				RelativePath=".\res\MagicKD.rc2">
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ChangeLog.txt">
+		</File>
 		<File
 			RelativePath=".\TODO.txt">
 		</File>

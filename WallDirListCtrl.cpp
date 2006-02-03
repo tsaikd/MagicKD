@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "Language.h"
 #include "WallDirListCtrl.h"
+#include ".\walldirlistctrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
 	m_bInit(false), m_bFindPath(true), m_bAllItemEnable(false)
@@ -33,6 +34,7 @@ void CWallDirListCtrl::SaveIni()
 void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
 {
 	CWallListCtrl::Init(pIni);
+
 	CRect rcWin;
 	GetClientRect(rcWin);
 	InsertColumn(0, CResString(IDS_WALLDIRPATH), LVCFMT_LEFT, rcWin.right - 50);
@@ -47,6 +49,9 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
 			AddItem(saDirList[i]);
 		}
 	}
+
+	SetToolTips(CResString(IDS_WALLTOOLTIP_DIRLIST));
+	ShowWindow(SW_HIDE);
 
 	m_bInit = true;
 }
