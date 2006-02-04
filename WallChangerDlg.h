@@ -6,19 +6,20 @@
 #include "KDIni.h"
 #include "KDEdit.h"
 #include "KDButton.h"
-#include "KDTray.h"
+#include "KDThread.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
 // CWallChangerDlg 對話方塊
 
-class CWallChangerDlg : public CDialog, public CKDIni, public CKDTray
+class CWallChangerDlg : public CDialog, public CKDIni, public CKDThread
 {
 	DECLARE_DYNAMIC(CWallChangerDlg)
 	DECLARE_MESSAGE_MAP()
 public:
 	CWallChangerDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChangerDlg();
+	virtual DWORD ThreadProc();
 
 // 對話方塊資料
 	enum { IDD = IDD_WALLCHANGERDIALOG };
@@ -39,6 +40,7 @@ public:
 
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
+	CStatic m_staticCachePicNum;
 	CButton m_btn_EnableToolTip;
 	CButton m_btn_SetupIniConfig;
 	CKDButton m_btn_RandPic;
@@ -56,7 +58,6 @@ private:
 	CPoint _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax);
 
 	bool m_bInit;
-	bool m_bIsThreading;
 	BOOL m_bEnableTip;
 	UINT m_uWaitTime;
 	UINT m_uCachePicNum;
@@ -67,21 +68,6 @@ private:
 	CString m_sNowPicPath;
 	CString m_sTempFilePath;
 	CStringList m_slPicPathHistory;
-
-// Thread Stander Code
-public:
-	void CreateThread()
-	{ VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, 0, &m_dwThreadId) ); }
-	virtual DWORD ThreadProc();
-protected:
-	HANDLE m_hThread;
-	DWORD m_dwThreadId;
-private:
-	static DWORD WINAPI ThreadProc(LPVOID pParam) {
-		CWallChangerDlg *pThis = (CWallChangerDlg *) pParam;
-		return pThis->ThreadProc();
-	}
-// Thread Stander Code End
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援

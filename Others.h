@@ -2,12 +2,15 @@
 #include "StdAfx.h"
 
 //	Add #include <wininet.h> before #include <afxdtctl.h> in "StdAfx.h"
+bool ChooseFolder(CString &sFolder, HWND hWnd = 0);
 bool ChooseFolder(LPTSTR sFolder, HWND hWnd = 0);
 
+bool RemoveFileDlg(HWND hWnd, CString &sFiles, bool bUndo = true);
 bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo = true);
 
-#ifdef _UNICODE
+CString GetTempFilePath(LPSTR lpTempFilePath = NULL, LPCTSTR lpTempDir = NULL, LPCTSTR lpPreFix = NULL);
 
+#ifdef _UNICODE
 /*
 	Must Turn On Unicode
 */
@@ -34,3 +37,10 @@ inline bool IsWinPressed()
 {
 	return (GetKeyState(VK_LWIN) & 0x8000) != 0 || (GetKeyState(VK_RWIN) & 0x8000) != 0;
 }
+
+#define INRANGE(v, m, M)		((v) >= (m) && (v) <= (M))
+#define MAKE_INRANGE(v, m, M)	((v) = min(max((v), (m)), (M)))
+
+#define INRANGE_R(v, m, M)		((v) >= (m) && (v) < (M))
+#define INRANGE_L(v, m, M)		((v) > (m) && (v) <= (M))
+#define INRANGE_LR(v, m, M)		((v) > (m) && (v) < (M))

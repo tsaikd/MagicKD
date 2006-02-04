@@ -37,8 +37,8 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
 
 	CRect rcWin;
 	GetClientRect(rcWin);
-	InsertColumn(0, CResString(IDS_WALLDIRPATH), LVCFMT_LEFT, rcWin.right - 50);
-	InsertColumn(1, CResString(IDS_WALLDIRPATHFINDNUM), LVCFMT_CENTER, 50);
+	InsertColumn(0, CResString(IDS_WALL_COLUMN_DIRPATH), LVCFMT_LEFT, rcWin.right - 50);
+	InsertColumn(1, CResString(IDS_WALL_COLUMN_PICFINDNUM), LVCFMT_CENTER, 50);
 	SetListClassName(sListClassName);
 
 	CStringArray saDirList;
@@ -50,7 +50,7 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
 		}
 	}
 
-	SetToolTips(CResString(IDS_WALLTOOLTIP_DIRLIST));
+	SetToolTips(CResString(IDS_WALL_TOOLTIP_DIRLIST));
 	ShowWindow(SW_HIDE);
 
 	m_bInit = true;
@@ -81,6 +81,17 @@ bool CWallDirListCtrl::AddItem(LPCTSTR sDirPath)
 		m_bFindPath = false;
 	}
 	return true;
+}
+
+void CWallDirListCtrl::UpdateAllItemFileFindNum()
+{
+	CWallDirListItem *pItem;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallDirListItem *)GetItemData(i)) {
+			pItem->UpdateItemFileFindNum();
+		}
+	}
 }
 
 void CWallDirListCtrl::UpdateSelectItemFileFindNum()
@@ -124,10 +135,22 @@ void CWallDirListCtrl::SetAllItemEnable(bool bEnable)
 	m_bFindPath = bFindPath;
 }
 
+void CWallDirListCtrl::RemoveFromPath(CString &sPath)
+{
+	CWallDirListItem *pItem;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallDirListItem *)GetItemData(i)) {
+			pItem->RemoveAllPath(sPath);
+		}
+	}
+}
+
 BEGIN_MESSAGE_MAP(CWallDirListCtrl, CWallListCtrl)
 	ON_WM_DESTROY()
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 void CWallDirListCtrl::OnDestroy()
@@ -143,10 +166,10 @@ void CWallDirListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	POSITION pos = GetFirstSelectedItemPosition();
 	m_mContextMenu.CreatePopupMenu();
 
-	m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLADDDIRPATH, GetResString(IDS_WALLADDDIRPATH));
+	m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDDIRPATH, GetResString(IDS_WALL_MENU_ADDDIRPATH));
 	if (pos) {
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLUPDATEDIRFILEFIND, GetResString(IDS_WALLUPDATEDIRFILEFIND));
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLDELDIRPATH, GetResString(IDS_WALLDELDIRPATH));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_UPDATEDIRFILEFIND, GetResString(IDS_WALL_MENU_UPDATEDIRFILEFIND));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_DELDIRPATH, GetResString(IDS_WALL_MENU_DELDIRPATH));
 	}
 
 	if (m_mContextMenu.GetMenuItemCount()) {
@@ -169,4 +192,13 @@ void CWallDirListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 
 	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
+}
+
+void CWallDirListCtrl::OnSetFocus(CWnd* pOldWnd)
+{
+	CWallListCtrl::OnSetFocus(pOldWnd);
+
+//	Invalidate();
+
+	// TODO: 在此加入您的訊息處理常式程式碼
 }

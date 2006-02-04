@@ -31,6 +31,8 @@ public:
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
 	virtual void SaveIni();
 
+	bool SetTransparency(UINT uAlpha);
+
 	CIni *m_pIni;
 	CKDTabCtrl m_cMainTab;
 	CMainConfigDlg m_cMainConfigDlg;
@@ -39,6 +41,7 @@ protected:
 private:
 	CRect m_rcMainTab;
 	bool m_bIniModify;
+	bool m_bVisiable;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ¤ä´©
@@ -60,6 +63,7 @@ public:
 	afx_msg void OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

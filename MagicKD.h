@@ -9,13 +9,14 @@
 
 #include "resource.h"		// 主要符號
 #include "Ini.h"
+#include "KDSingleApp.h"
 
 
 // CMagicKDApp:
 // 請參閱實作此類別的 MagicKD.cpp
 //
 
-class CMagicKDApp : public CWinApp
+class CMagicKDApp : public CWinApp, public CKDSingleApp
 {
 public:
 	CMagicKDApp();

@@ -46,7 +46,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 
 	CRect rcWin;
 	GetClientRect(rcWin);
-	InsertColumn(0, CResString(IDS_WALLCLASSLIST), LVCFMT_LEFT, rcWin.right);
+	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, rcWin.right);
 	m_rcChildDirList = rcChildDirList;
 
 	CStringArray saClassList;
@@ -68,9 +68,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 		}
 	}
 
-	CancleAllSelected();
-	SetItemSelected(0);
-	SetToolTips(CResString(IDS_WALLTOOLTIP_CLASSLIST));
+	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
 
 	m_bInit = true;
 }
@@ -112,7 +110,21 @@ void CWallClassListCtrl::SetItemEnable(int nItem, bool bEnable)
 			pChildDirList->SetAllItemEnable(bEnable);
 			if (bEnable && !(pChildDirList->IsFindPath())) {
 				ListView_SetCheckState(m_hWnd, nItem, false);
-				MessageBox(CResString(IDS_WALLCLASSCANNOTENABLE), NULL, MB_OK|MB_ICONERROR);
+				MessageBox(CResString(IDS_WALL_CLASSCANNOTENABLE), NULL, MB_OK|MB_ICONERROR);
+			}
+		}
+	}
+}
+
+void CWallClassListCtrl::UpdateSelectItemFileFindNum()
+{
+	CWallClassListItem *pItem;
+	CWallDirListCtrl *pChildDirList;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallClassListItem *)GetItemData(i)) {
+			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
+				pChildDirList->UpdateAllItemFileFindNum();
 			}
 		}
 	}
@@ -134,11 +146,24 @@ BOOL CWallClassListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnabl
 	return CWallListCtrl::EnableToolTips(sToolTip, bEnable);
 }
 
+void CWallClassListCtrl::RemoveAllDirListFromPath(CString &sPath)
+{
+	CWallClassListItem *pItem;
+	CWallDirListCtrl *pChildDirList;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallClassListItem *)GetItemData(i)) {
+			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
+				pChildDirList->RemoveFromPath(sPath);
+			}
+		}
+	}
+}
+
 BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_WM_CONTEXTMENU()
 	ON_WM_DESTROY()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
-	ON_NOTIFY_REFLECT(LVN_GETINFOTIP, OnLvnGetInfoTip)
 END_MESSAGE_MAP()
 
 void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
@@ -147,8 +172,9 @@ void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	m_mContextMenu.CreatePopupMenu();
 
 	if (pos) {
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLADDENABLECLASSLIST, GetResString(IDS_WALLADDENABLECLASSLIST));
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALLDELCLASSLIST, GetResString(IDS_WALLDELCLASSLIST));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDENABLECLASSLIST, GetResString(IDS_WALL_MENU_ADDENABLECLASSLIST));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_DELCLASSLIST, GetResString(IDS_WALL_MENU_DELCLASSLIST));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_UPDATEALLDIRFILEFIND, GetResString(IDS_WALL_MENU_UPDATEALLDIRFILEFIND));
 	}
 
 	if (m_mContextMenu.GetMenuItemCount()) {
@@ -185,14 +211,4 @@ void CWallClassListCtrl::OnDestroy()
 	CWallListCtrl::OnDestroy();
 
 	// TODO: 在此加入您的訊息處理常式程式碼
-}
-
-void CWallClassListCtrl::OnLvnGetInfoTip(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLVGETINFOTIP pGetInfoTip = reinterpret_cast<LPNMLVGETINFOTIP>(pNMHDR);
-
-	pGetInfoTip->pszText = _T("ZZ");
-
-	// TODO: 在此加入控制項告知處理常式程式碼
-	*pResult = 0;
 }

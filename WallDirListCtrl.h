@@ -23,16 +23,16 @@ public:
 		bool bGetFilePath = true;
 		if (!PathFileExists(GetItemDirPath())) {
 			if (m_uDirState & DIRSTATE_FIXEDDRIVE) {
-				MessageBox(CResString(IDS_WALLDIRNOTEXIST), MB_OK|MB_ICONERROR);
+				MessageBox(CResString(IDS_WALL_DIRNOTEXIST), MB_OK|MB_ICONERROR);
 				m_pIni->DeleteKey(_T("PicPath"), GetItemDirPath());
 				m_pIni->DeleteEmptySection(_T("PicPath"));
 			} else {
-				int iRes = MessageBox(CResString(IDS_WALLDIRNOTEXIST_ONNOTFIXEDDRIVE), MB_OKCANCEL|MB_ICONWARNING);
+				int iRes = MessageBox(CResString(IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE), MB_OKCANCEL|MB_ICONWARNING);
 				if (iRes == 2) {
 					bGetFilePath = false;
 				} else if ((iRes == 1) && (!PathFileExists(GetItemDirPath()))) {
 					bGetFilePath = false;
-					MessageBox(CResString(IDS_WALLDIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
+					MessageBox(CResString(IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
 				}
 			}
 		}
@@ -84,6 +84,31 @@ public:
 	void SetItemFileFindNum(int iNum) { CString sBuf; sBuf.Format(_T("%d"), iNum); SetText(1, sBuf); }
 	void UpdateItemFileFindNum() { if (!m_bIsThreading) CreateThread(); }
 	CStringArray *GetItemPicPathArray() const { return (CStringArray * const)&m_saPicPath; }
+	// if not find, then return -1
+	// else return index
+	int FindPath(CString &sPath) {
+		int iCount = m_saPicPath.GetCount();
+		for (int i=0 ; i<iCount ; i++) {
+			if (m_saPicPath[i] == sPath)
+				return i;
+		}
+		return -1;
+	}
+	bool RemoveAllPath(CString &sPath) {
+		bool bRes;
+		int iIndex = FindPath(sPath);
+		if (iIndex >= 0) {
+			SetIniModify();
+			bRes = true;
+		} else {
+			bRes = false;
+		}
+		while (iIndex >= 0) {
+			m_saPicPath.RemoveAt(iIndex);
+			iIndex = FindPath(sPath);
+		}
+		return bRes;
+	}
 	bool IsFindPath() { return m_bFindPath; }
 	bool IsItemEnable() { return m_bItemEnable; }
 	void SetItemEnable(bool bEnable) {
@@ -222,10 +247,14 @@ public:
 	void SetListClassName(LPCTSTR sName);
 	CString GetListClassName();
 	bool AddItem(LPCTSTR sDirPath);
+	void UpdateAllItemFileFindNum();
 	void UpdateSelectItemFileFindNum();
 	bool IsFindPath();
 	bool IsAllItemEnable();
 	void SetAllItemEnable(bool bEnable);
+
+	void RemoveFromPath(CString &sPath);
+
 private:
 	bool m_bInit;
 	bool m_bFindPath;
@@ -236,4 +265,5 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 };

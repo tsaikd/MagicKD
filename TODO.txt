@@ -1,13 +1,14 @@
-防止開啟兩個程式
-畫ICON
-
+drag
 把設定弄成OnOK
+整合BindWinKey
 
-刪除圖片後要更新列表
-
-tip window
 快速鍵
+list item可移動
 
 OnSize
 
-螢幕解析度
+螢幕解析度(ku)
+
+
+bug:
+	左鍵點tray icon兩下會換圖

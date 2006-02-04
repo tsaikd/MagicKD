@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
+#include "Others.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
-#include ".\magickddlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -17,7 +17,7 @@ CKDTray theTray;
 
 
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMagicKDDlg::IDD, pParent), m_pIni(NULL), m_pWallChangerDlg(NULL)
+	: CDialog(CMagicKDDlg::IDD, pParent), m_pIni(NULL), m_pWallChangerDlg(NULL), m_bVisiable(true)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -72,10 +72,21 @@ void CMagicKDDlg::SaveIni()
 	CKDIni::SaveIni();
 }
 
+bool CMagicKDDlg::SetTransparency(UINT uAlpha)
+{
+	bool bRes = true;
+	ASSERT(INRANGE(uAlpha, 50, 255));
+
+	if (!(GetExStyle() && WS_EX_LAYERED))
+		bRes = bRes && ModifyStyleEx(0, WS_EX_LAYERED);
+	bRes = bRes && SetLayeredWindowAttributes(0, uAlpha, LWA_ALPHA);
+	return bRes;
+}
+
 void CMagicKDDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_MAINTAB, m_cMainTab);
+	DDX_Control(pDX, IDC_TAB_MAIN, m_cMainTab);
 }
 
 BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
@@ -83,9 +94,10 @@ BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_WM_DESTROY()
-	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnTcnSelchangeMaintab)
-	ON_NOTIFY(TCN_SELCHANGING, IDC_MAINTAB, OnTcnSelchangingMaintab)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MAIN, OnTcnSelchangeMaintab)
+	ON_NOTIFY(TCN_SELCHANGING, IDC_TAB_MAIN, OnTcnSelchangingMaintab)
 	ON_WM_SIZE()
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 
@@ -103,16 +115,23 @@ BOOL CMagicKDDlg::OnInitDialog()
 	InitTabRect();
 	theTray.RegisterTray(m_hWnd, m_hIcon);
 
-	theTray.AppendMenu(MF_STRING, IDS_MAGICKD_MENU_CLOSEWINDOW, GetResString(IDS_MAGICKD_MENU_CLOSEWINDOW));
+	theTray.AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, GetResString(IDS_TRAY_OPENWINDOW));
+	theTray.AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, GetResString(IDS_TRAY_CLOSEWINDOW), true);
 
 	m_pIni = &theApp.m_cIni;
 	m_cMainConfigDlg.Create(IDD_MAGICCONFIGDIALOG, this);
-	m_cMainConfigDlg.ShowWindow(SW_SHOW);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
 	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
 		SetFuncEnable(eFunc_WallChanger, true, false);
 
+	if (m_cMainConfigDlg.IsStartMin())
+		m_bVisiable = false;
+
+	ModifyStyleEx(0, WS_EX_LAYERED);
+	SetTransparency(m_cMainConfigDlg.GetSliderTransparency());
+
+//////////////////////////////////////////////////
 	if (m_pWallChangerDlg) {
 		CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
 		if (pCurDlg)
@@ -141,7 +160,7 @@ void CMagicKDDlg::OnDestroy()
 	CDialog::OnDestroy();
 
 	SetFuncEnable(eFunc_WallChanger, false, false);
-	theTray.RemoveTrayMenuItem(GetResString(IDS_MAGICKD_MENU_CLOSEWINDOW));
+	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_CLOSEWINDOW));
 	theTray.UnRegisterTray();
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
@@ -206,6 +225,16 @@ void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
+void CMagicKDDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+	if (!m_bVisiable)
+		lpwndpos->flags &= ~SWP_SHOWWINDOW;
+
+	__super::OnWindowPosChanging(lpwndpos);
+
+	// TODO: 在此加入您的訊息處理常式程式碼
+}
+
 void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: 在此加入控制項告知處理常式程式碼
@@ -231,33 +260,55 @@ void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message == UWM_TRAY_CALLBACK) {
+	if (message == WMU_ARE_YOU_APP) {
+		ShowWindow(SW_SHOW);
+		SetForegroundWindow();
+		return WMU_I_AM_APP;
+	} else if (message == WMU_TRAY_CALLBACK) {
 		switch (lParam) {
-		case WM_LBUTTONUP:
-			
+		case WM_LBUTTONDOWN:
+			if (IsWindowVisible())
+				SetForegroundWindow();
+			if (m_pWallChangerDlg)
+				m_pWallChangerDlg->OnBnClickedButtonRandpic();
+			else
+				SendMessage(message, wParam, WM_LBUTTONDBLCLK);
+			return 0;
+		case WM_LBUTTONDBLCLK:
 			if (IsWindowVisible()) {
+				m_bVisiable = false;
 				ShowWindow(SW_HIDE);
 			} else {
+				m_bVisiable = true;
 				ShowWindow(SW_SHOW);
 				SetForegroundWindow();
 			}
-			break;
+			return 0;
 		case WM_RBUTTONUP:
+			SetForegroundWindow();
 			theTray.TrackPopupMenu(this);
 			Invalidate();
-			break;
+			return 0;
 		}
+		return 0;
 	}
 	switch (message) {
 	case WM_COMMAND:
 		{
 			UINT nID = LOWORD(wParam);
 			switch (nID) {
-			case IDS_MAGICKD_MENU_CLOSEWINDOW:
+			case IDS_TRAY_OPENWINDOW:
+				ShowWindow(SW_SHOW);
+				SetForegroundWindow();
+				return 0;
+			case IDS_TRAY_CLOSEWINDOW:
 				DestroyWindow();
-				break;
+				return 0;
 			}
+			if (m_pWallChangerDlg && m_pWallChangerDlg->m_hWnd)
+				::SendMessage(m_pWallChangerDlg->m_hWnd, message, wParam, lParam);
 		}
+		break;
 	}
 
 	return __super::DefWindowProc(message, wParam, lParam);

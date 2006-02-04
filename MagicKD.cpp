@@ -37,6 +37,9 @@ BOOL CMagicKDApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
+	if (IsDialogRunning())
+		return FALSE;
+
 	{
 		TCHAR sBuffer[MAX_PATH], *ptr;
 		GetModuleFileName(NULL, sBuffer, MAX_PATH);

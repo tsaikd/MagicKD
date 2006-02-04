@@ -2,10 +2,13 @@
 
 #include "Ini.h"
 #include "afxwin.h"
+#include "afxcmn.h"
+#include "KDIni.h"
+#include "KDButton.h"
 
 // CMainConfigDlg 對話方塊
 
-class CMainConfigDlg : public CDialog
+class CMainConfigDlg : public CDialog, public CKDIni
 {
 	DECLARE_DYNAMIC(CMainConfigDlg)
 	DECLARE_MESSAGE_MAP()
@@ -18,15 +21,20 @@ public:
 
 public:
 	void DoSize();
-	bool IsIniModify();
-	void SetIniModify(bool bModify = true);
-	void SaveIni();
+	virtual void SaveIni();
+
+	bool IsStartMin();
+	bool IsWallChanger();
+
+	UINT GetSliderTransparency();
 
 	CIni *m_pIni;
 	CButton m_cbWallChanger;
+	CKDButton m_checkStartMin;
+	CSliderCtrl m_sliderTransparency;
 protected:
 private:
-	bool m_bModify;
+	UINT m_uTransparency;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
@@ -34,4 +42,8 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedWallchangercheck();
+	afx_msg void OnBnClickedCheckConfStartmin();
+	afx_msg void OnDestroy();
+protected:
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

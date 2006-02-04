@@ -5,7 +5,40 @@
 
 #include "Others.h"
 
-/*/ return true if user choice a folder*/
+// return true if user choice a folder
+bool ChooseFolder(CString &sFolder, HWND hWnd/*= 0*/)
+{
+	LPMALLOC pMalloc;
+	bool bOK = false;
+
+	if (SHGetMalloc(&pMalloc) == NOERROR) {
+#ifdef IDS_SEL_FOLDER
+		CResString sTitle(IDS_SEL_FOLDER);
+#else
+		CString sTitle(_T("Please select a folder"));
+#endif
+		LPTSTR pFolder = sFolder.GetBuffer(MAX_PATH);
+		BROWSEINFO brInfo = {0};
+		brInfo.hwndOwner = hWnd;
+		brInfo.pszDisplayName = pFolder;
+		brInfo.lpszTitle = sTitle;
+		brInfo.ulFlags = BIF_USENEWUI;
+
+		CoInitialize(NULL);
+
+		LPITEMIDLIST pidl;
+		if ((pidl = SHBrowseForFolder(&brInfo)) != NULL){
+			if (SHGetPathFromIDList(pidl, pFolder))
+				bOK = true;
+			pMalloc->Free(pidl);
+		}
+		pMalloc->Release();
+
+		CoUninitialize();
+	}
+
+	return bOK;
+}
 
 bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
 {
@@ -43,6 +76,20 @@ bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
 #include "shellapi.h"
 // Open a Dialog to ask user for sure
 // if not Undo, then remove files directly (default: true)
+bool RemoveFileDlg(HWND hWnd, CString &sFiles, bool bUndo/* = true*/)
+{
+	TCHAR sFileBuf[MAX_PATH] = {0};
+	_tcscpy(sFileBuf, sFiles);
+
+	SHFILEOPSTRUCT shFile = {0};
+	shFile.hwnd = hWnd;
+	shFile.wFunc = FO_DELETE;
+	shFile.pFrom = sFileBuf;
+	if (bUndo)
+		shFile.fFlags = FOF_ALLOWUNDO;
+	return (SHFileOperation(&shFile)) == 0;
+}
+
 bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
 {
 	SHFILEOPSTRUCT shFile = {0};
@@ -54,6 +101,28 @@ bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
 	return (SHFileOperation(&shFile)) == 0;
 }
 
+// ouput lpTempFilePath and return sTempFilePath, input lpTempDir and lpPreFix
+CString GetTempFilePath(LPSTR lpTempFilePath/* = NULL*/, LPCTSTR lpTempDir/* = NULL*/, LPCTSTR lpPreFix/* = NULL*/)
+{
+	CString sTempFilePath, sTempDir, sPreFix;
+	if (lpTempFilePath)
+		sTempFilePath = lpTempFilePath;
+
+	if (lpTempDir)
+		sTempDir = lpTempDir;
+	else
+		GetTempPath(MAX_PATH, sTempDir.GetBuffer(MAX_PATH));
+
+	if (lpPreFix)
+		sPreFix = lpPreFix;
+	else
+		sPreFix = _T("__TEMP_");
+
+	GetTempFileName(sTempDir, sPreFix, 0, sTempFilePath.GetBuffer(MAX_PATH));
+	DeleteFile(sTempFilePath);
+
+	return sTempFilePath;
+}
 
 #ifdef _UNICODE
 

@@ -141,9 +141,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\KDTray.cpp">
-			</File>
-			<File
 				RelativePath=".\MagicKD.cpp">
 			</File>
 			<File
@@ -199,7 +196,13 @@
 					RelativePath=".\KDListItem.cpp">
 				</File>
 				<File
+					RelativePath=".\KDSingleApp.cpp">
+				</File>
+				<File
 					RelativePath=".\KDTabCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\KDTray.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -230,9 +233,6 @@
 			Name="¼ÐÀYÀÉ"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
-			<File
-				RelativePath=".\KDTray.h">
-			</File>
 			<File
 				RelativePath=".\MagicKD.h">
 			</File>
@@ -283,7 +283,16 @@
 					RelativePath=".\KDListItem.h">
 				</File>
 				<File
+					RelativePath=".\KDSingleApp.h">
+				</File>
+				<File
 					RelativePath=".\KDTabCtrl.h">
+				</File>
+				<File
+					RelativePath=".\KDThread.h">
+				</File>
+				<File
+					RelativePath=".\KDTray.h">
 				</File>
 			</Filter>
 			<Filter

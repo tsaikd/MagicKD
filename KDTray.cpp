@@ -1,11 +1,11 @@
 #include "StdAfx.h"
 #include <shellapi.h>
-#include "KDTray.h"
 
 #include "Resource.h"
+#include "KDTray.h"
 
 #define TRAY_ICON_ID 1
-UINT UWM_TRAY_CALLBACK = ::RegisterWindowMessage(_T("UWM_TRAY_CALLBACK-")
+UINT WMU_TRAY_CALLBACK = ::RegisterWindowMessage(_T("WMU_TRAY_CALLBACK-")
 												 _T("{6b8c4821-e6a4-11D1-8370-00aa005c0507}"));
 
 CKDTray::CKDTray()
@@ -25,21 +25,16 @@ BOOL CKDTray::RegisterTray(HWND hWnd, HICON hIcon, LPCTSTR sTip/* = NULL*/)
 	if (m_trayData.hWnd)
 		UnRegisterTray();
 
-//	HICON icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
-	m_trayData.cbSize = sizeof(m_trayData);
-	m_trayData.hWnd   = hWnd;
-	m_trayData.uID    = TRAY_ICON_ID;
-	m_trayData.uCallbackMessage = UWM_TRAY_CALLBACK;
-	m_trayData.hIcon  = hIcon;
+	m_trayData.cbSize			= sizeof(m_trayData);
+	m_trayData.hWnd				= hWnd;
+	m_trayData.uID				= TRAY_ICON_ID;
+	m_trayData.uCallbackMessage	= WMU_TRAY_CALLBACK;
+	m_trayData.hIcon			= hIcon;
 	if (sTip)
 		_tcscpy(m_trayData.szTip, sTip);
-	m_trayData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+	m_trayData.uFlags			= NIF_MESSAGE | NIF_ICON | NIF_TIP;
 
-	BOOL result = Shell_NotifyIcon(NIM_ADD, &m_trayData);
-
-//	::DestroyIcon(icon);
-	return result;
+	return Shell_NotifyIcon(NIM_ADD, &m_trayData);
 }
 
 void CKDTray::UnRegisterTray()
@@ -47,6 +42,11 @@ void CKDTray::UnRegisterTray()
 	if (m_trayData.hWnd)
 		Shell_NotifyIcon(NIM_DELETE, &m_trayData);
 	memset(&m_trayData, 0, sizeof(m_trayData));
+}
+
+LPCTSTR CKDTray::GetTrayTip()
+{
+	return m_trayData.szTip;
 }
 
 BOOL CKDTray::SetTrayTip(LPCTSTR sTip)
@@ -63,8 +63,20 @@ CMenu *CKDTray::GetTrayMenu() {
 	return &m_mTrayMenu;
 }
 
-BOOL CKDTray::AppendMenu(UINT nFlags, UINT_PTR nIDNewItem/* = 0*/, LPCTSTR lpszNewItem/* = NULL*/) {
-	return m_mTrayMenu.AppendMenu(nFlags, nIDNewItem, lpszNewItem);
+BOOL CKDTray::AppendMenu(UINT nFlags, UINT_PTR nIDNewItem/* = 0*/, LPCTSTR lpszNewItem/* = NULL*/, bool bDefault/* = false*/) {
+	BOOL bRes = m_mTrayMenu.AppendMenu(nFlags, nIDNewItem, lpszNewItem);
+	if (!(nFlags & MF_SEPARATOR) && bDefault)
+		bRes = bRes && m_mTrayMenu.SetDefaultItem(nIDNewItem);
+
+	return bRes;
+}
+
+BOOL CKDTray::InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem/* = 0*/, LPCTSTR lpszNewItem/* = NULL*/, bool bDefault/* = false*/) {
+	BOOL bRes = m_mTrayMenu.InsertMenu(nPosition, nFlags, nIDNewItem, lpszNewItem);
+	if (!(nFlags & MF_SEPARATOR) && bDefault)
+		bRes = bRes && m_mTrayMenu.SetDefaultItem(nIDNewItem);
+
+	return bRes;
 }
 
 int CKDTray::FindTrayMenuItem(LPCTSTR sMenuString) {

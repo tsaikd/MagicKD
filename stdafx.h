@@ -39,3 +39,6 @@
 #include <afxcmn.h>			// MFC 支援的 Windows 通用控制項
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdhtml.h>
+
+#define APPNAME _T("MagicKD")
+#define APPUUID _T("43863dcf-f931-443e-bee0-eba5db4083a2")

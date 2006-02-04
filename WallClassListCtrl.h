@@ -32,8 +32,11 @@ public:
 	void Init(CIni *pIni, CRect &rcChildDirList);
 	bool AddItem(LPCTSTR sClassName);
 	void SetItemEnable(int nItem, bool bEnable);
+	void UpdateSelectItemFileFindNum();
 
 	BOOL EnableToolTips(LPCTSTR sToolTip = NULL, BOOL bEnable = TRUE);
+
+	void RemoveAllDirListFromPath(CString &sPath);
 
 private:
 	bool m_bInit;
@@ -44,5 +47,4 @@ public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDestroy();
-	afx_msg void OnLvnGetInfoTip(NMHDR *pNMHDR, LRESULT *pResult);
 };

@@ -1,5 +1,19 @@
 #pragma once
 
+/*
+	Inherit and	ReWrite virtual void SaveIni();
+
+	void SaveIni()
+	{
+		if (!IsIniModify())
+			return;
+
+		// Add Your Config
+
+		CKDIni::SaveIni();
+	}
+*/
+
 class CKDIni
 {
 public:
