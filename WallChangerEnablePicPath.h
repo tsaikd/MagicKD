@@ -8,7 +8,7 @@ class CKDStringList
 {
 public:
 	CKDStringList() {}
-	virtual ~CKDStringList() {}
+	virtual ~CKDStringList() { RemoveAll(); }
 
 	using CStringList::GetCount;
 	using CStringList::Find;
@@ -24,10 +24,8 @@ public:
 	void RemoveArray(CStringArray const &saRemove) {
 		POSITION pos;
 		int iCount = saRemove.GetCount();
-		for (int i=0 ; i<iCount ; i++) {
-			if (pos = Find(saRemove[i]))
-				RemoveAt(pos);
-		}
+		for (int i=0 ; i<iCount ; i++)
+			RemoveFirstFind(saRemove[i]);
 	}
 
 	void RemoveAt(POSITION position) {
@@ -39,6 +37,16 @@ public:
 			}
 		}
 		CStringList::RemoveAt(position);
+	}
+
+	bool RemoveFirstFind(LPCTSTR searchValue, POSITION startAfter = 0) {
+		POSITION pos = Find(searchValue, startAfter);
+		if (pos) {
+			RemoveAt(pos);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	CString const GetRandPos() {
@@ -56,4 +64,4 @@ public:
 #endif // _CKDStringList_
 
 extern CKDStringList g_slWallChangerEnablePicPath;
-extern CxImageList g_imglCachePic;
+extern CxImageList* g_pimglCachePic;

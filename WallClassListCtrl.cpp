@@ -76,7 +76,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
 {
 	CWallDirListCtrl *pChildList = new CWallDirListCtrl;
-	if (! pChildList->CreateEx(WS_EX_CLIENTEDGE | WS_EX_TRANSPARENT,
+	if (! pChildList->CreateEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES | WS_EX_TRANSPARENT,
 	WS_BORDER | WS_TABSTOP | LVS_REPORT | LVS_NOSORTHEADER | LVS_SHOWSELALWAYS,
 	m_rcChildDirList, GetParent(), m_iIDC_WALLDIRLISTBASE++)) {
 		delete pChildList;

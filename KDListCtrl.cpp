@@ -13,8 +13,8 @@ CKDListCtrl::~CKDListCtrl()
 void CKDListCtrl::DeleteSelectItem()
 {
 	int nItem;
-	POSITION pos = GetFirstSelectedItemPosition();
-	while (pos) {
+	POSITION pos;
+	while (pos = GetFirstSelectedItemPosition()) {
 		nItem = GetNextSelectedItem(pos);
 		DeleteItem(nItem);
 	}
@@ -23,8 +23,8 @@ void CKDListCtrl::DeleteSelectItem()
 void CKDListCtrl::CancleAllSelected()
 {
 	int nItem;
-	POSITION pos = GetFirstSelectedItemPosition();
-	while (pos) {
+	POSITION pos;
+	while (pos = GetFirstSelectedItemPosition()) {
 		nItem = GetNextSelectedItem(pos);
 		SetItemState(nItem, 0, LVIS_SELECTED);
 	}

@@ -2,8 +2,13 @@
 #include "xImage.h"
 #include "KDThread.h"
 
+enum {
+	WMU_UPDATE_CACHENUM = (WM_USER + 1),
+	WMU_NULL
+};
+
 class CxImageList :
-	private CStringList, public CKDThread
+	public CKDThread
 {
 public:
 	CxImageList();
@@ -13,7 +18,7 @@ public:
 	void AddHead(const CString &newElement);
 	void AddTail(const CString &newElement);
 
-	POSITION FindPath(LPCTSTR searchValue, POSITION startAfter = 0);
+	POSITION FindPath(LPCTSTR searchValue, POSITION startAfter = 0) const;
 
 	const CString & GetHeadPath();
 	const CString & GetTailPath();
@@ -26,14 +31,15 @@ public:
 	POSITION GetTailPathPosition();
 	CString & GetNextPath(POSITION &rPosition);
 
-	using CStringList::GetCount;
+	UINT GetCount();
+	UINT GetAllPicCount();
 
 	bool IsHeadImageResample();
 	bool IsTailImageResample();
 
 	bool AutoPicSize(CxImage &img);
 
-	void SetCacheNumWnd(CWnd *pCacheNumWnd);
+	void SetCacheNumWnd(HWND hUpdateWnd);
 
 	CString RemoveHead();
 	CString RemoveTail();
@@ -41,14 +47,14 @@ public:
 	void RemoveAll();
 
 private:
-	CPoint _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax);
-	void _SetCacheNumWnd();
+	bool _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax);
+	void _UpdateCacheNum();
 
-	CWnd *m_pCacheNumWnd;
-	bool m_bCanThread;
-	CSemaphore m_semWaitForAdd;
+	HANDLE m_hEventHavePicQueue;
+	HWND m_hUpdateWnd;
 	CPoint m_cpScreenSize;
 	CList<bool, bool> m_blImageResample;
+	CStringList m_slImagePath;
 	CStringList m_slImageBufPath;
 	CStringList m_slImageWaitForAdd;
 };

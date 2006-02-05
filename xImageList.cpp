@@ -4,55 +4,97 @@
 #include "xImageList.h"
 
 CxImageList::CxImageList()
-	: m_cpScreenSize(1024, 768), m_bCanThread(true), m_semWaitForAdd(0), m_pCacheNumWnd(NULL)
+	: m_cpScreenSize(1024, 768), m_hUpdateWnd(NULL), m_hEventHavePicQueue(NULL)
 {
-	CreateThread();
-	SetThreadPriority(m_hThread, THREAD_PRIORITY_LOWEST);
+	CreateThread(THREAD_PRIORITY_LOWEST);
 }
 
 CxImageList::~CxImageList()
 {
-	m_pCacheNumWnd = NULL;
-	m_bCanThread = false;
-	m_semWaitForAdd.Unlock();
-	if (WAIT_TIMEOUT == WaitForSingleObject(m_hThread, 10000)) {
+	RemoveAll();
+
+	SetCacheNumWnd(NULL);
+	SetCanThread(false);
+	SetEvent(m_hEventHavePicQueue);
+	if (WAIT_TIMEOUT == WaitForThread(10000)) {
 		MessageBox(NULL, _T("xImageList Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
-		TerminateThread(m_hThread, 0);
+		TerminateThread(0);
 	}
 
-	RemoveAll();
+	CloseHandle(m_hEventHavePicQueue);
+}
+
+DWORD CxImageList::ThreadProc()
+{
+	m_hEventHavePicQueue = CreateEvent(NULL, TRUE, FALSE, NULL);
+	CString sImageWaitForAdd, sBufPicPath;
+	CxImage xImage;
+	while (IsCanThread()) {
+		WaitForSingleObject(m_hEventHavePicQueue, INFINITE);
+		if (!IsCanThread())
+			return 0;
+		if (!m_slImageWaitForAdd.GetCount()) {
+			ResetEvent(m_hEventHavePicQueue);
+			continue;
+		}
+
+		sImageWaitForAdd = m_slImageWaitForAdd.RemoveHead();
+		if ((sImageWaitForAdd.GetLength()) && (xImage.Load(sImageWaitForAdd))) {
+			if (!IsCanThread())
+				return 0;
+
+			bool bAutoPicSize = AutoPicSize(xImage);
+			if (bAutoPicSize) {
+				sBufPicPath.Format(_T("%s.jpg"), GetTempFilePath());
+				xImage.Save(sBufPicPath, CXIMAGE_FORMAT_JPG);
+			} else {
+				sBufPicPath = _T("");
+			}
+
+			if (!IsCanThread())
+				return 0;
+
+			m_blImageResample.AddTail(bAutoPicSize);
+			m_slImageBufPath.AddTail(sBufPicPath);
+			m_slImagePath.AddTail(sImageWaitForAdd);
+
+			_UpdateCacheNum();
+		}
+	}
+
+	return 0;
 }
 
 void CxImageList::AddHead(const CString &newElement)
 {
 	m_slImageWaitForAdd.AddHead(newElement);
-	m_semWaitForAdd.Unlock();
+	SetEvent(m_hEventHavePicQueue);
 }
 
 void CxImageList::AddTail(const CString &newElement)
 {
 	m_slImageWaitForAdd.AddTail(newElement);
-	m_semWaitForAdd.Unlock();
+	SetEvent(m_hEventHavePicQueue);
 }
 
-POSITION CxImageList::FindPath(LPCTSTR searchValue, POSITION startAfter/* = 0*/)
+POSITION CxImageList::FindPath(LPCTSTR searchValue, POSITION startAfter/* = 0*/) const
 {
-	return CStringList::Find(searchValue, startAfter);
+	return m_slImagePath.Find(searchValue, startAfter);
 }
 
 const CString & CxImageList::GetHeadPath()
 {
-	return CStringList::GetHead();
+	return m_slImagePath.GetHead();
 }
 
 const CString & CxImageList::GetTailPath()
 {
-	return CStringList::GetTail();
+	return m_slImagePath.GetTail();
 }
 
 const CString & CxImageList::GetAtPath(POSITION position)
 {
-	return CStringList::GetAt(position);
+	return m_slImagePath.GetAt(position);
 }
 
 const CString & CxImageList::GetHeadBufPath()
@@ -67,17 +109,27 @@ const CString & CxImageList::GetTailBufPath()
 
 POSITION CxImageList::GetHeadPathPosition()
 {
-	return CStringList::GetHeadPosition();
+	return m_slImagePath.GetHeadPosition();
 }
 
 POSITION CxImageList::GetTailPathPosition()
 {
-	return CStringList::GetTailPosition();
+	return m_slImagePath.GetTailPosition();
 }
 
 CString & CxImageList::GetNextPath(POSITION &rPosition)
 {
-	return CStringList::GetNext(rPosition);
+	return m_slImagePath.GetNext(rPosition);
+}
+
+UINT CxImageList::GetCount()
+{
+	return m_slImagePath.GetCount();
+}
+
+UINT CxImageList::GetAllPicCount()
+{
+	return GetCount() + m_slImageWaitForAdd.GetCount();
 }
 
 bool CxImageList::IsHeadImageResample()
@@ -94,53 +146,53 @@ bool CxImageList::IsTailImageResample()
 bool CxImageList::AutoPicSize(CxImage &img)
 {
 	CPoint cpSize(img.GetWidth(), img.GetHeight());
-	if ((cpSize.x > m_cpScreenSize.x) || (cpSize.y > m_cpScreenSize.y)) {
-		_AutoPicSize(cpSize, m_cpScreenSize);
 
-		if (!m_bCanThread)
-			return false;
-
-		img.Resample2(cpSize.x, cpSize.y, CxImage::IM_CATROM);
-
-		if (!m_bCanThread)
-			return false;
-
+	if (_AutoPicSize(cpSize, m_cpScreenSize)) {
+		img.QIShrink(cpSize.x, cpSize.y);
+//		img.Resample2(cpSize.x, cpSize.y, CxImage::IM_CATROM);
 		return true;
+	} else {
+		return false;
 	}
-	return false;
 }
 
-void CxImageList::SetCacheNumWnd(CWnd *pCacheNumWnd)
+void CxImageList::SetCacheNumWnd(HWND hUpdateWnd)
 {
-	m_pCacheNumWnd = pCacheNumWnd;
+	m_hUpdateWnd = hUpdateWnd;
 }
 
 CString CxImageList::RemoveHead()
 {
+	if (!GetCount())
+		return CString();
+
 	bool bResample = m_blImageResample.RemoveHead();
 	CString sBufPath = m_slImageBufPath.RemoveHead();
 
 	if (bResample && PathFileExists(sBufPath))
 		DeleteFile(sBufPath);
 
-	sBufPath = CStringList::RemoveHead();
+	sBufPath = m_slImagePath.RemoveHead();
 
-	_SetCacheNumWnd();
+	_UpdateCacheNum();
 
 	return sBufPath;
 }
 
 CString CxImageList::RemoveTail()
 {
+	if (!GetCount())
+		return CString();
+
 	bool bResample = m_blImageResample.RemoveTail();
 	CString sBufPath = m_slImageBufPath.RemoveTail();
 
 	if (bResample && PathFileExists(sBufPath))
 		DeleteFile(sBufPath);
 
-	sBufPath = CStringList::RemoveTail();
+	sBufPath = m_slImagePath.RemoveTail();
 
-	_SetCacheNumWnd();
+	_UpdateCacheNum();
 
 	return sBufPath;
 }
@@ -149,14 +201,15 @@ void CxImageList::RemoveAll()
 {
 	while (GetCount())
 		RemoveTail();
-
-	return CStringList::RemoveAll();
+	m_slImageWaitForAdd.RemoveAll();
 }
 
-CPoint CxImageList::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
+// if need resample, then return true, and set new size at cpSizeSrc
+// else return false
+bool CxImageList::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
 {
 	if ((cpSizeMax.x >= cpSizeSrc.x) && (cpSizeMax.y >= cpSizeSrc.y))
-		return cpSizeSrc;
+		return false;
 
 	double dRatioX, dRatioY;
 	dRatioX = (double)cpSizeMax.x / (double)cpSizeSrc.x;
@@ -164,61 +217,11 @@ CPoint CxImageList::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
 
 	double dRatio = (dRatioX<dRatioY) ? dRatioX : dRatioY;
 	cpSizeSrc.SetPoint((int)((double)cpSizeSrc.x * dRatio), (int)((double)cpSizeSrc.y * dRatio));
-	return cpSizeSrc;
+	return true;
 }
 
-void CxImageList::_SetCacheNumWnd()
+void CxImageList::_UpdateCacheNum()
 {
-	if (m_bCanThread && m_pCacheNumWnd) {
-		CString sNum;
-		sNum.Format(_T("%d"), GetCount());
-		m_pCacheNumWnd->SetWindowText(sNum);
-	}
-}
-
-DWORD CxImageList::ThreadProc()
-{
-	if (!m_bCanThread)
-		return 0;
-
-	CString sImageWaitForAdd, sBufPicPath;
-	CxImage xImage;
-	while (m_bCanThread) {
-		if (!m_slImageWaitForAdd.GetCount()) {
-			m_semWaitForAdd.Lock();
-			continue;
-		}
-		if (!m_bCanThread)
-			return 0;
-
-		sImageWaitForAdd = m_slImageWaitForAdd.RemoveHead();
-		if (sImageWaitForAdd.GetLength()) {
-			if (!m_bCanThread)
-				return 0;
-
-			if (xImage.Load(sImageWaitForAdd)) {
-				if (!m_bCanThread)
-					return 0;
-
-				bool bAutoPicSize = AutoPicSize(xImage);
-				if (bAutoPicSize) {
-					sBufPicPath.Format(_T("%s.jpg"), GetTempFilePath());
-					xImage.Save(sBufPicPath, CXIMAGE_FORMAT_JPG);
-				} else {
-					sBufPicPath = _T("");
-				}
-
-				if (!m_bCanThread)
-					return 0;
-
-				m_blImageResample.AddTail(bAutoPicSize);
-				m_slImageBufPath.AddTail(sBufPicPath);
-				CStringList::AddTail(sImageWaitForAdd);
-
-				_SetCacheNumWnd();
-			}
-		}
-	}
-
-	return 0;
+	if (IsCanThread() && m_hUpdateWnd)
+		::PostMessage(m_hUpdateWnd, WMU_UPDATE_CACHENUM, 0, 0);
 }

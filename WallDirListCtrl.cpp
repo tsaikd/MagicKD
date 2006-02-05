@@ -2,7 +2,6 @@
 #include "Resource.h"
 #include "Language.h"
 #include "WallDirListCtrl.h"
-#include ".\walldirlistctrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
 	m_bInit(false), m_bFindPath(true), m_bAllItemEnable(false)
@@ -151,6 +150,7 @@ BEGIN_MESSAGE_MAP(CWallDirListCtrl, CWallListCtrl)
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
 	ON_WM_SETFOCUS()
+	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
 void CWallDirListCtrl::OnDestroy()
@@ -201,4 +201,23 @@ void CWallDirListCtrl::OnSetFocus(CWnd* pOldWnd)
 //	Invalidate();
 
 	// TODO: 在此加入您的訊息處理常式程式碼
+}
+
+void CWallDirListCtrl::OnDropFiles(HDROP hDropInfo)
+{
+	TCHAR sFilePath[MAX_PATH];
+	UINT i, uCount = DragQueryFile(hDropInfo, UINT_MAX, NULL, 0);
+
+	for (i = 0;i< uCount;i++) {
+		DragQueryFile(hDropInfo, i, sFilePath, MAX_PATH);
+
+		if (PathIsDirectory(sFilePath)) {
+			AddItem(sFilePath);
+			SetIniModify();
+		}
+	}
+
+	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+
+	CWallListCtrl::OnDropFiles(hDropInfo);
 }

@@ -122,14 +122,12 @@ public:
 			::g_slWallChangerEnablePicPath.AppendArray(m_saPicPath);
 		} else {
 			// Change from true to false
-			POSITION pos = ::g_imglCachePic.GetHeadPathPosition();
-			POSITION posFind;
-			CString sPicPath;
-			while (pos) {
-				sPicPath = ::g_imglCachePic.GetNextPath(pos);
-				posFind = ::g_slWallChangerEnablePicPath.Find(sPicPath);
-				if (posFind)
-					::g_slWallChangerEnablePicPath.RemoveAt(posFind);
+			int iCount = m_saPicPath.GetCount();
+			for (int i=0 ; i<iCount ; i++) {
+				if (::g_pimglCachePic->FindPath(m_saPicPath[i])) {
+					::g_pimglCachePic->RemoveAll();
+					break;
+				}
 			}
 			::g_slWallChangerEnablePicPath.RemoveArray(m_saPicPath);
 		}
@@ -266,4 +264,5 @@ public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 };

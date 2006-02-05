@@ -5,7 +5,7 @@
 #define IDD_MAGICKD_DIALOG              102
 #define IDR_MAINFRAME                   128
 #define IDD_MAGICCONFIGDIALOG           129
-#define IDD_WALLCHANGERDIALOG           130
+#define IDD_WALLCHANGER                 130
 #define IDS_SEL_FOLDER                  131
 #define IDS_TRAY_CLOSEWINDOW            141
 #define IDS_TRAY_RANDPIC                142
@@ -20,7 +20,6 @@
 #define IDS_WALL_BTN_DISABLETIP         172
 #define IDS_WALL_BTN_RANDPIC            173
 #define IDS_WALL_BTN_DELPIC             174
-#define IDS_WALL_BTN_SETUPINICONFIG     175
 #define IDS_WALL_BTN_ADDCLASS           176
 #define IDS_WALL_STATIC_CACHEDNUM       181
 #define IDS_WALL_STATIC_WAITTIME        182
@@ -54,11 +53,10 @@
 #define IDC_WALL_STATIC_CACHENUM        1013
 #define IDC_WALL_STATIC_CACHEDNUM       1014
 #define IDC_WALL_STATIC_WAITTIME        1015
-#define IDC_WALL_BTN_SETWAITTIME        1021
-#define IDC_WALL_BTN_ADDCLASSLIST       1022
-#define IDC_WALL_BTN_RANDPIC            1023
-#define IDC_WALL_BTN_DELPIC             1024
-#define IDC_WALL_BTN_ENABLETOOLTIP      1025
+#define IDC_WALL_BTN_ADDCLASSLIST       1021
+#define IDC_WALL_BTN_RANDPIC            1022
+#define IDC_WALL_BTN_DELPIC             1023
+#define IDC_WALL_BTN_ENABLETOOLTIP      1024
 #define IDC_WALL_LIST_CLASS             1031
 #define IDC_WALL_LIST_DIRPATH           1032
 #define IDC_WALL_EDIT_WAITTIME          1041

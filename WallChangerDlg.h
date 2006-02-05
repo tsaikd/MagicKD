@@ -22,7 +22,7 @@ public:
 	virtual DWORD ThreadProc();
 
 // 對話方塊資料
-	enum { IDD = IDD_WALLCHANGERDIALOG };
+	enum { IDD = IDD_WALLCHANGER };
 
 public:
 	void DoSize();
@@ -36,13 +36,11 @@ public:
 	BOOL EnableToolTips(BOOL bEnable = TRUE);
 
 	CIni m_cIni;
-	bool m_bCanThread;
-
+	CMutex m_muxRandPic;
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
 	CStatic m_staticCachePicNum;
 	CButton m_btn_EnableToolTip;
-	CButton m_btn_SetupIniConfig;
 	CKDButton m_btn_RandPic;
 	CKDButton m_btn_DelPic;
 	CKDButton m_btn_AddClass;
@@ -77,7 +75,6 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-	afx_msg void OnBnClickedButtonSetwaittime();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBnClickedButtonAddclasslist();
 	afx_msg void OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult);

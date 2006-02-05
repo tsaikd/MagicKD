@@ -29,10 +29,12 @@ void CMagicKDDlg::InitTabRect()
 
 void CMagicKDDlg::DoSize()
 {
-	m_cMainTab.MoveWindow(m_rcMainTab, FALSE);
-
 	CRect rcWin = m_rcMainTab;
-	rcWin.top += 20;
+	rcWin.bottom = 25;
+	m_cMainTab.MoveWindow(rcWin, FALSE);
+
+	rcWin = m_rcMainTab;
+	rcWin.top += 22;
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg)
 		pCurDlg->MoveWindow(rcWin, FALSE);
@@ -48,7 +50,7 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 				if (m_pWallChangerDlg)
 					SetFuncEnable(eFunc_WallChanger, false, false);
 				m_pWallChangerDlg = new CWallChangerDlg;
-				m_pWallChangerDlg->Create(IDD_WALLCHANGERDIALOG, this);
+				m_pWallChangerDlg->Create(IDD_WALLCHANGER, this);
 				m_pWallChangerDlg->ShowWindow(SW_HIDE);
 				m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChangerDlg);
 			} else {

@@ -27,7 +27,7 @@
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="3"
-				WarningLevel="3"
+				WarningLevel="2"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
@@ -200,6 +200,9 @@
 				</File>
 				<File
 					RelativePath=".\KDTabCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\KDThread.cpp">
 				</File>
 				<File
 					RelativePath=".\KDTray.cpp">

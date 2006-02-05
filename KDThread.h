@@ -7,33 +7,32 @@
 
 	Care: Setting a config to wait or terminate thread is better!!
 	Example:
-		if (WAIT_TIMEOUT == WaitForSingleObject(m_hThread, 10000)) {
+		if (WAIT_TIMEOUT == WaitForThread(10000)) {
 			MessageBox(this, _T("Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
-			TerminateThread(m_hThread, 0);
+			TerminateThread(0);
 		}
 */
 
 class CKDThread
 {
 public:
-	CKDThread() : m_hThread(NULL), m_dwThreadId(NULL) {}
-	virtual ~CKDThread() {}
-	virtual DWORD ThreadProc() { return 0; }
+	CKDThread();
+	virtual ~CKDThread();
+	virtual DWORD ThreadProc();
 
-	void CreateThread()
-	{ VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, 0, &m_dwThreadId) ); }
-	bool IsThreadRunning() {
-		if (m_semThread.Lock(0)) {
-			m_semThread.Unlock();
-			return false;
-		} else {
-			return true;
-		}
-	}
+	void CreateThread(int nPriority = THREAD_PRIORITY_NORMAL);
+	void SetCanThread(bool bCanThread = true);
+	bool SetThreadPriority(int nPriority = THREAD_PRIORITY_NORMAL);
+	bool IsCanThread();
+	bool IsThreadRunning();
+	DWORD WaitForThread(DWORD dwMilliseconds);
+	bool TerminateThread(DWORD dwExutCode = 0);
+
 protected:
 	HANDLE		m_hThread;
 	DWORD		m_dwThreadId;
 	CSemaphore	m_semThread;
+	CSemaphore	m_semCanThread;
 private:
 	static DWORD WINAPI ThreadProc(LPVOID pParam) {
 		DWORD dwRes = 0;

@@ -1,9 +1,10 @@
-drag
-把設定弄成OnOK
 整合BindWinKey
 
-快速鍵
+圖片讀取錯誤log
 list item可移動
+
+用SQLite
+設假桌布
 
 OnSize
 
@@ -12,3 +13,4 @@ OnSize
 
 bug:
 	左鍵點tray icon兩下會換圖
+	cache num 的部份不同步
