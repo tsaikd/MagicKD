@@ -7,7 +7,6 @@
 #include "MainConfigDlg.h"
 #include "Ini.h"
 #include "KDTabCtrl.h"
-#include "KDIni.h"
 #include "KDTray.h"
 
 #include "WallChangerDlg.h"
@@ -15,7 +14,7 @@
 extern CKDTray theTray;
 
 // CMagicKDDlg 對話方塊
-class CMagicKDDlg : public CDialog, public CKDIni
+class CMagicKDDlg : public CDialog
 {
 // 建構
 public:
@@ -29,7 +28,6 @@ public:
 	void InitTabRect();
 	void DoSize();
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
-	virtual void SaveIni();
 
 	bool SetTransparency(UINT uAlpha);
 

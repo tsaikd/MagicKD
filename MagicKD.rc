@@ -119,7 +119,7 @@ BEGIN
     EDITTEXT        IDC_WALL_EDIT_HISTORYNUM,195,5,15,12,ES_AUTOHSCROLL | 
                     ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
     EDITTEXT        IDC_WALL_EDIT_CACHENUM,180,5,10,12,ES_AUTOHSCROLL | 
-                    ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
+                    ES_NUMBER | WS_DISABLED | NOT WS_BORDER,WS_EX_CLIENTEDGE
     PUSHBUTTON      "關閉提示",IDC_WALL_BTN_ENABLETOOLTIP,325,5,40,12
     RTEXT           "0",IDC_WALL_STATIC_CACHENUM,165,7,10,8
     LTEXT           "已快取",IDC_WALL_STATIC_CACHEDNUM,135,7,25,8
@@ -132,8 +132,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,6
- PRODUCTVERSION 1,0,0,6
+ FILEVERSION 1,0,0,7
+ PRODUCTVERSION 1,0,0,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -149,11 +149,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 0, 6"
+            VALUE "FileVersion", "1, 0, 0, 7"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 0, 6"
+            VALUE "ProductVersion", "1, 0, 0, 7"
         END
     END
     BLOCK "VarFileInfo"
@@ -222,6 +222,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_TRAY_OPENWINDOW     "開啟 MagicKD\t(&O)"
+    IDS_TRAY_WALLCHANGER    "WallChanger"
     IDS_CONF_STATIC_TRANSPARENCY "透明度"
     IDS_CONF_CHECK_STARTMIN "開始時最小化"
 END

@@ -2,14 +2,16 @@
 //
 
 #include "stdafx.h"
+#include "Resource.h"
+#include "Language.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 #include "MainConfigDlg.h"
 
 
-#define DEFAULT_STARTMIN false
-#define DEFAULT_WALLCHANGER false
-#define DEFAULT_TRANSPARENCY 255
+#define DEFAULT_STARTMIN		false
+#define DEFAULT_WALLCHANGER		false
+#define DEFAULT_TRANSPARENCY	255
 
 // CMainConfigDlg ¹ï¸Ü¤è¶ô
 
@@ -65,6 +67,14 @@ bool CMainConfigDlg::IsWallChanger()
 UINT CMainConfigDlg::GetSliderTransparency()
 {
 	return m_uTransparency;
+}
+
+void CMainConfigDlg::UpdateFuncCheck()
+{
+	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
+	if (pParentDlg) {
+		m_cbWallChanger.SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
+	}
 }
 
 void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)

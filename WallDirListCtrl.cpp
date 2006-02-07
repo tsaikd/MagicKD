@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Resource.h"
 #include "Language.h"
+#include "WallDirListItem.h"
+
 #include "WallDirListCtrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
@@ -67,7 +69,8 @@ CString CWallDirListCtrl::GetListClassName()
 
 bool CWallDirListCtrl::AddItem(LPCTSTR sDirPath)
 {
-	CWallDirListItem *pItem = new CWallDirListItem(m_hWnd, m_pIni, sDirPath);
+	CWallDirListItem *pItem = new CWallDirListItem;
+	pItem->Init(m_hWnd, m_pIni, sDirPath);
 	if (-1 == InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0,
 	I_IMAGECALLBACK, (LPARAM) pItem)) {
 		delete pItem;
@@ -134,6 +137,17 @@ void CWallDirListCtrl::SetAllItemEnable(bool bEnable)
 	m_bFindPath = bFindPath;
 }
 
+void CWallDirListCtrl::SetOnExit(bool bOnExit/* = true*/)
+{
+	CWallDirListItem *pItem;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallDirListItem *)GetItemData(i)) {
+			pItem->SetOnExit(bOnExit);
+		}
+	}
+}
+
 void CWallDirListCtrl::RemoveFromPath(CString &sPath)
 {
 	CWallDirListItem *pItem;
@@ -149,7 +163,6 @@ BEGIN_MESSAGE_MAP(CWallDirListCtrl, CWallListCtrl)
 	ON_WM_DESTROY()
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
-	ON_WM_SETFOCUS()
 	ON_WM_DROPFILES()
 END_MESSAGE_MAP()
 
@@ -192,15 +205,6 @@ void CWallDirListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 
 	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
-}
-
-void CWallDirListCtrl::OnSetFocus(CWnd* pOldWnd)
-{
-	CWallListCtrl::OnSetFocus(pOldWnd);
-
-//	Invalidate();
-
-	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 void CWallDirListCtrl::OnDropFiles(HDROP hDropInfo)

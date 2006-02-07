@@ -2,13 +2,16 @@
 #include <afxmt.h>
 
 /*
-	inherit CKDThread and Rewrite DWORD ThreadProc();
+	inherit CKDThread and Rewrite virtual DWORD ThreadProc();
 	Call CreateThread() to Run ThreadProc();
 
 	Care: Setting a config to wait or terminate thread is better!!
 	Example:
+		SetCanThread(false);
 		if (WAIT_TIMEOUT == WaitForThread(10000)) {
-			MessageBox(this, _T("Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+#ifdef DEBUG
+			MessageBox(GetFocus(), _T("Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+#endif //DEBUG
 			TerminateThread(0);
 		}
 */
@@ -20,7 +23,10 @@ public:
 	virtual ~CKDThread();
 	virtual DWORD ThreadProc();
 
-	void CreateThread(int nPriority = THREAD_PRIORITY_NORMAL);
+	void CreateThread(int nPriority = THREAD_PRIORITY_NORMAL, bool bSuspend = false);
+	DWORD SuspendThread();
+	DWORD ResumeThread();
+
 	void SetCanThread(bool bCanThread = true);
 	bool SetThreadPriority(int nPriority = THREAD_PRIORITY_NORMAL);
 	bool IsCanThread();
@@ -33,6 +39,7 @@ protected:
 	DWORD		m_dwThreadId;
 	CSemaphore	m_semThread;
 	CSemaphore	m_semCanThread;
+	CMutex		m_muxThread;
 private:
 	static DWORD WINAPI ThreadProc(LPVOID pParam) {
 		DWORD dwRes = 0;
@@ -43,4 +50,5 @@ private:
 		}
 		return dwRes;
 	}
+	void _SetCanThread(bool bCanThread = true);
 };

@@ -88,8 +88,10 @@
 				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="CxImage\CxImage\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
+				StringPooling="TRUE"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="2"
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="3"
 				WarningLevel="3"
@@ -99,7 +101,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CxImage/CxImage/Debug/CxImage.lib CxImage/j2k/Debug/j2k.lib CxImage/jasper/Debug/jasper.lib CxImage/jbig/Debug/jbig.lib CxImage/jpeg/Debug/jpeg.lib CxImage/png/Debug/png.lib CxImage/tiff/Debug/tiff.lib CxImage/zlib/Debug/zlib.lib"
+				AdditionalDependencies="CxImage/CxImage/Release/CxImage.lib CxImage/j2k/Release/j2k.lib CxImage/jasper/Release/jasper.lib CxImage/jbig/Release/jbig.lib CxImage/jpeg/Release/jpeg.lib CxImage/png/Release/png.lib CxImage/tiff/Release/tiff.lib CxImage/zlib/Release/zlib.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -221,13 +223,32 @@
 					RelativePath=".\WallDirListCtrl.cpp">
 				</File>
 				<File
-					RelativePath=".\xImageList.cpp">
+					RelativePath=".\WallDirListItem.cpp">
+				</File>
+				<File
+					RelativePath=".\WallEnablePicList.cpp">
+				</File>
+				<File
+					RelativePath=".\WallOthers.cpp">
 				</File>
 				<Filter
 					Name="FuncBase"
 					Filter="">
 					<File
 						RelativePath=".\WallListCtrl.cpp">
+					</File>
+					<File
+						RelativePath=".\WallThread.cpp">
+					</File>
+				</Filter>
+				<Filter
+					Name="WallThread"
+					Filter="">
+					<File
+						RelativePath=".\WallThreadFindPic.cpp">
+					</File>
+					<File
+						RelativePath=".\WallThreadImageCache.cpp">
 					</File>
 				</Filter>
 			</Filter>
@@ -305,22 +326,38 @@
 					RelativePath=".\WallChangerDlg.h">
 				</File>
 				<File
-					RelativePath=".\WallChangerEnablePicPath.h">
-				</File>
-				<File
 					RelativePath=".\WallClassListCtrl.h">
 				</File>
 				<File
 					RelativePath=".\WallDirListCtrl.h">
 				</File>
 				<File
-					RelativePath=".\xImageList.h">
+					RelativePath=".\WallDirListItem.h">
+				</File>
+				<File
+					RelativePath=".\WallEnablePicList.h">
+				</File>
+				<File
+					RelativePath=".\WallOthers.h">
 				</File>
 				<Filter
 					Name="FuncBase"
 					Filter="">
 					<File
 						RelativePath=".\WallListCtrl.h">
+					</File>
+					<File
+						RelativePath=".\WallThread.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="WallThread"
+					Filter="">
+					<File
+						RelativePath=".\WallThreadFindPic.h">
+					</File>
+					<File
+						RelativePath=".\WallThreadImageCache.h">
 					</File>
 				</Filter>
 			</Filter>

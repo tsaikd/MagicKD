@@ -27,6 +27,7 @@ public:
 	bool IsWallChanger();
 
 	UINT GetSliderTransparency();
+	void UpdateFuncCheck();
 
 	CIni *m_pIni;
 	CButton m_cbWallChanger;
@@ -38,12 +39,10 @@ private:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ¤ä´©
-
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedWallchangercheck();
 	afx_msg void OnBnClickedCheckConfStartmin();
 	afx_msg void OnDestroy();
-protected:
-	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "afxwin.h"
 #include "afxcmn.h"
 #include "Ini.h"
@@ -9,6 +10,12 @@
 #include "KDThread.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
+
+// CWallChangerDlg User Message
+enum {
+	WMU_UPDATE_CACHENUM = (WM_USER + 1),
+	WMU_FIRST_FIND_PIC
+};
 
 // CWallChangerDlg ¹ï¸Ü¤è¶ô
 
@@ -29,14 +36,17 @@ public:
 	virtual void SaveIni();
 
 	void SetHistoryNum(UINT uNum);
+	void SetWaitTime(UINT uWaitTime);
 	bool SetCachePicNum(UINT uCachePicNum);
 	UINT GetCachePicNum();
-	const CString GetRandPicPath();
+	bool SetRandWallPager(bool bWay);
+	LPCTSTR GetRandPicPath();
 
 	BOOL EnableToolTips(BOOL bEnable = TRUE);
 
 	CIni m_cIni;
 	CMutex m_muxRandPic;
+	CMutex m_muxSetRandWallPager;
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
 	CStatic m_staticCachePicNum;
@@ -56,6 +66,7 @@ private:
 	CPoint _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax);
 
 	bool m_bInit;
+	bool m_bSetCachePicNum;
 	BOOL m_bEnableTip;
 	UINT m_uWaitTime;
 	UINT m_uCachePicNum;

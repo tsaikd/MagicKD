@@ -71,6 +71,9 @@ BOOL CKDTray::AppendMenu(UINT nFlags, UINT_PTR nIDNewItem/* = 0*/, LPCTSTR lpszN
 	return bRes;
 }
 
+//nFlags:
+//	MF_BYCOMMAND or MF_BYPOSITION
+//	MF_OWNERDRAW or MF_STRING or MF_SEPARATOR
 BOOL CKDTray::InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem/* = 0*/, LPCTSTR lpszNewItem/* = NULL*/, bool bDefault/* = false*/) {
 	BOOL bRes = m_mTrayMenu.InsertMenu(nPosition, nFlags, nIDNewItem, lpszNewItem);
 	if (!(nFlags & MF_SEPARATOR) && bDefault)
@@ -101,4 +104,15 @@ BOOL CKDTray::TrackPopupMenu(CWnd *pWnd, UINT nFlags/* = TPM_LEFTALIGN | TPM_LEF
 	CPoint cpPopMenu;
 	GetCursorPos(&cpPopMenu);
 	return m_mTrayMenu.TrackPopupMenu(nFlags, cpPopMenu.x, cpPopMenu.y, pWnd);
+}
+
+//nCheck:
+//	MF_BYCOMMAND or MF_BYPOSITION
+//	MF_CHECKED or MF_UNCHECKED
+//return:
+//	if success, MF_CHECKED or MF_UNCHECKED
+//	failed, INFINITE
+UINT CKDTray::CheckMenuItem(UINT nIDCheckItem, UINT nCheck)
+{
+	return m_mTrayMenu.CheckMenuItem(nIDCheckItem, nCheck);
 }

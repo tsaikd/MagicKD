@@ -30,6 +30,8 @@ public:
 	BOOL RemoveTrayMenuItem(LPCTSTR sMenuString);
 	BOOL TrackPopupMenu(CWnd *pWnd, UINT nFlags = TPM_LEFTALIGN | TPM_LEFTBUTTON);
 
+	UINT CheckMenuItem(UINT nIDCheckItem, UINT nCheck);
+
 private:
 	NOTIFYICONDATA m_trayData;
 	CMenu m_mTrayMenu;

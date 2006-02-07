@@ -4,13 +4,12 @@
 CKDThread::CKDThread()
 	: m_hThread(NULL), m_dwThreadId(NULL)
 {
-	SetCanThread();
+	_SetCanThread();
 }
 
 CKDThread::~CKDThread()
 {
-	if (m_hThread)
-		CloseHandle(m_hThread);
+	TerminateThread(0);
 }
 
 DWORD CKDThread::ThreadProc() {
@@ -25,17 +24,45 @@ DWORD CKDThread::ThreadProc() {
 //	THREAD_PRIORITY_BELOW_NORMAL
 //	THREAD_PRIORITY_LOWEST
 //	THREAD_PRIORITY_IDLE
-void CKDThread::CreateThread(int nPriority/* = THREAD_PRIORITY_NORMAL*/) {
-	SetCanThread();
-	VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, 0, &m_dwThreadId) );
-	SetThreadPriority(nPriority);
+void CKDThread::CreateThread(int nPriority/* = THREAD_PRIORITY_NORMAL*/, bool bSuspend/* = false*/) {
+	if (m_muxThread.Lock()) {
+		TerminateThread(0);
+
+		DWORD dwCreationFlags = 0;
+		if (bSuspend)
+			dwCreationFlags = CREATE_SUSPENDED;
+		_SetCanThread();
+		VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, dwCreationFlags, &m_dwThreadId) );
+		SetThreadPriority(nPriority);
+		m_muxThread.Unlock();
+	}
 }
 
 void CKDThread::SetCanThread(bool bCanThread/* = true*/) {
-	if (bCanThread)
-		m_semCanThread.Lock(0);
-	else
-		m_semCanThread.Unlock();
+	if (m_muxThread.Lock()) {
+		_SetCanThread(bCanThread);
+		m_muxThread.Unlock();
+	}
+}
+
+DWORD CKDThread::SuspendThread()
+{
+	DWORD dwRes;
+	if (m_muxThread.Lock()) {
+		dwRes = ::SuspendThread(m_hThread);
+		m_muxThread.Unlock();
+	}
+	return dwRes;
+}
+
+DWORD CKDThread::ResumeThread()
+{
+	DWORD dwRes;
+	if (m_muxThread.Lock()) {
+		dwRes = ::ResumeThread(m_hThread);
+		m_muxThread.Unlock();
+	}
+	return dwRes;
 }
 
 //nPriority: (Can only use after CreateThread())
@@ -47,31 +74,44 @@ void CKDThread::SetCanThread(bool bCanThread/* = true*/) {
 //	THREAD_PRIORITY_LOWEST
 //	THREAD_PRIORITY_IDLE
 bool CKDThread::SetThreadPriority(int nPriority/* = THREAD_PRIORITY_NORMAL*/) {
-	if (IsThreadRunning())
-		return ::SetThreadPriority(m_hThread, nPriority);
-	else
-		return false;
+	bool bRes;
+	if (m_muxThread.Lock()) {
+		bRes = ::SetThreadPriority(m_hThread, nPriority);
+		m_muxThread.Unlock();
+	}
+	return bRes;
 }
 
 bool CKDThread::IsCanThread() {
-	if (m_semCanThread.Lock(0)) {
-		m_semCanThread.Unlock();
-		return false;
-	} else {
-		return true;
+	bool bRes;
+	if (m_muxThread.Lock()) {
+		if (m_semCanThread.Lock(0)) {
+			m_semCanThread.Unlock();
+			bRes = false;
+		} else {
+			bRes = true;
+		}
+		m_muxThread.Unlock();
 	}
+	return bRes;
 }
 
-bool CKDThread::IsThreadRunning() {
-	if (m_semThread.Lock(0)) {
-		m_semThread.Unlock();
-		return false;
-	} else {
-		return true;
+bool CKDThread::IsThreadRunning()
+{
+	bool bRes;
+	if (m_muxThread.Lock()) {
+		if (m_semThread.Lock(0)) {
+			m_semThread.Unlock();
+			bRes = false;
+		} else {
+			bRes = true;
+		}
+		m_muxThread.Unlock();
 	}
+	return bRes;
 }
 
-//return value:
+//return vale:
 //	WAIT_OBJECT_0
 //	WAIT_TIMEOUT
 DWORD CKDThread::WaitForThread(DWORD dwMilliseconds) {
@@ -79,5 +119,24 @@ DWORD CKDThread::WaitForThread(DWORD dwMilliseconds) {
 }
 
 bool CKDThread::TerminateThread(DWORD dwExitCode/* = 0*/) {
-	return ::TerminateThread(m_hThread, dwExitCode);
+	bool bRes;
+	if (m_muxThread.Lock()) {
+		if (m_hThread) {
+			bRes = ::TerminateThread(m_hThread, dwExitCode);
+			CloseHandle(m_hThread);
+			m_hThread = NULL;
+		} else {
+			bRes = false;
+		}
+		m_muxThread.Unlock();
+	}
+	return bRes;
+}
+
+void CKDThread::_SetCanThread(bool bCanThread/* = true*/) {
+	if (bCanThread)
+		m_semCanThread.Lock(0);
+	else
+		m_semCanThread.Unlock();
+	m_muxThread.Unlock();
 }

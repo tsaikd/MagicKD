@@ -166,6 +166,25 @@ BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
 END_MESSAGE_MAP()
 
+void CWallClassListCtrl::OnDestroy()
+{
+	CWallClassListItem *pItem;
+	CWallDirListCtrl *pChildDirList;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallClassListItem *)GetItemData(i)) {
+			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
+				pChildDirList->SetOnExit();
+			}
+		}
+	}
+
+	SaveIni();
+	CWallListCtrl::OnDestroy();
+
+	// TODO: 在此加入您的訊息處理常式程式碼
+}
+
 void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 {
 	POSITION pos = GetFirstSelectedItemPosition();
@@ -203,12 +222,4 @@ void CWallClassListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	*pResult = 0;
-}
-
-void CWallClassListCtrl::OnDestroy()
-{
-	SaveIni();
-	CWallListCtrl::OnDestroy();
-
-	// TODO: 在此加入您的訊息處理常式程式碼
 }

@@ -11,6 +11,7 @@
 #define IDS_TRAY_RANDPIC                142
 #define IDS_TRAY_DELNOWPIC              143
 #define IDS_TRAY_OPENWINDOW             144
+#define IDS_TRAY_WALLCHANGER            145
 #define IDS_CONF_STATIC_TRANSPARENCY    151
 #define IDS_CONF_CHECK_STARTMIN         152
 #define IDS_WALL_COLUMN_CLASSLIST       161

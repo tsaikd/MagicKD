@@ -2,7 +2,9 @@
 //
 
 #include "stdafx.h"
+#include "Resource.h"
 #include "Others.h"
+#include "Language.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
@@ -36,8 +38,10 @@ void CMagicKDDlg::DoSize()
 	rcWin = m_rcMainTab;
 	rcWin.top += 22;
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
-	if (pCurDlg)
+	if (pCurDlg) {
 		pCurDlg->MoveWindow(rcWin, FALSE);
+		pCurDlg->ShowWindow(SW_SHOW);
+	}
 
 	Invalidate();
 }
@@ -53,25 +57,26 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 				m_pWallChangerDlg->Create(IDD_WALLCHANGER, this);
 				m_pWallChangerDlg->ShowWindow(SW_HIDE);
 				m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChangerDlg);
+
+				int nItem = theTray.FindTrayMenuItem(_T("WallChanger"));
+				if (nItem >= 0)
+					theTray.CheckMenuItem(nItem, MF_BYPOSITION | MF_CHECKED);
 			} else {
 				if (m_pWallChangerDlg){
 					m_cMainTab.DeleteItem(eFunc_WallChanger);
 					m_pWallChangerDlg->DestroyWindow();
                     delete m_pWallChangerDlg;
 					m_pWallChangerDlg = NULL;
+
+					int nItem = theTray.FindTrayMenuItem(_T("WallChanger"));
+					if (nItem >= 0)
+						theTray.CheckMenuItem(nItem, MF_BYPOSITION | MF_UNCHECKED);
 				}
 			}
 			break;
 	}
 	if (bRedraw)
 		Invalidate();
-}
-
-void CMagicKDDlg::SaveIni()
-{
-	m_cMainConfigDlg.SaveIni();
-
-	CKDIni::SaveIni();
 }
 
 bool CMagicKDDlg::SetTransparency(UINT uAlpha)
@@ -124,31 +129,24 @@ BOOL CMagicKDDlg::OnInitDialog()
 	m_cMainConfigDlg.Create(IDD_MAGICCONFIGDIALOG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
+	theTray.InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, GetResString(IDS_TRAY_WALLCHANGER));
 	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
 		SetFuncEnable(eFunc_WallChanger, true, false);
+	else
+		SetFuncEnable(eFunc_WallChanger, false, false);
 
 	if (m_cMainConfigDlg.IsStartMin())
 		m_bVisiable = false;
-
 	ModifyStyleEx(0, WS_EX_LAYERED);
 	SetTransparency(m_cMainConfigDlg.GetSliderTransparency());
 
 //////////////////////////////////////////////////
-	if (m_pWallChangerDlg) {
-		CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
-		if (pCurDlg)
-			pCurDlg->ShowWindow(SW_HIDE);
+	if (m_pWallChangerDlg)
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
-		pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
-		if (pCurDlg) {
-			pCurDlg->ShowWindow(SW_SHOW);
-			pCurDlg->SetFocus();
-
-			DoSize();
-		}
-	}
+//////////////////////////////////////////////////
 
 	DoSize();
+
 	// TODO: 在此加入額外的初始設定
 	
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
@@ -156,9 +154,6 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 void CMagicKDDlg::OnDestroy()
 {
-	if (IsIniModify())
-		SaveIni();
-
 	CDialog::OnDestroy();
 
 	SetFuncEnable(eFunc_WallChanger, false, false);
@@ -300,11 +295,23 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			UINT nID = LOWORD(wParam);
 			switch (nID) {
 			case IDS_TRAY_OPENWINDOW:
+				m_bVisiable = true;
 				ShowWindow(SW_SHOW);
 				SetForegroundWindow();
 				return 0;
 			case IDS_TRAY_CLOSEWINDOW:
 				DestroyWindow();
+				return 0;
+			case IDS_TRAY_WALLCHANGER:
+				if (m_pWallChangerDlg)
+					SetFuncEnable(eFunc_WallChanger, false);
+				else
+					SetFuncEnable(eFunc_WallChanger, false);
+				m_cMainConfigDlg.UpdateFuncCheck();
+				m_cMainConfigDlg.SetIniModify();
+				if (-1 == m_cMainTab.GetCurSel())
+					m_cMainTab.SetCurSel(0);
+				DoSize();
 				return 0;
 			}
 			if (m_pWallChangerDlg && m_pWallChangerDlg->m_hWnd)

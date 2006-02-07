@@ -1,3 +1,8 @@
+Version: 1.0.0.7	(2006-02-07)
+	Speedup Close Program
+	More Stable
+	Disable Cache (unstable now)
+
 Version: 1.0.0.6	(2006-02-05)
 	Can Drop Dirs to DirList
 	Speedup Cache Resample

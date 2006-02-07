@@ -2,28 +2,35 @@
 //
 
 #include "stdafx.h"
-#include "Others.h"
 #include "Language.h"
+#include "Others.h"
+#include "WallOthers.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
-#include "WallChangerDlg.h"
 
 // GLobal variable
-CKDStringList g_slWallChangerEnablePicPath;
-CxImageList *g_pimglCachePic = NULL;
+#define _MAIN_CWallEnablePicList
+#include "WallEnablePicList.h"
+#define _MAIN_CxImageList
+#include "WallThreadImageCache.h"
+#define _MAIN_CWallThreadFindPic
+#include "WallThreadFindPic.h"
+
+#include "WallChangerDlg.h"
+
 
 #define DEFAULT_WAITTIME		30
 #define DEFAULT_CACHEPICNUM		5
 #define DEFAULT_PICPATHHISTORY	10
 #define DEFAULT_ENABLETIP		TRUE
 
-
 // CWallChangerDlg 對話方塊
 
 IMPLEMENT_DYNAMIC(CWallChangerDlg, CDialog)
 CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CWallChangerDlg::IDD, pParent), m_uWaitTime(30), m_bInit(false),// m_bCanThread(true),
-	m_pCurListDirPath(NULL), m_uCachePicNum(0), m_uPicPathHistory(0), m_bEnableTip(true)
+	: CDialog(CWallChangerDlg::IDD, pParent), m_uWaitTime(30), m_bInit(false),
+	m_pCurListDirPath(NULL), m_uCachePicNum(0), m_uPicPathHistory(0), m_bEnableTip(true),
+	m_bSetCachePicNum(false)
 {
 }
 
@@ -41,20 +48,11 @@ DWORD CWallChangerDlg::ThreadProc()
 		if (!IsCanThread())
 			return 0;
 
+		if (m_uCachePicNum && (!m_bSetCachePicNum) && (::g_pWallEnablePicList->GetCount() > m_uCachePicNum))
+			m_bSetCachePicNum = SetCachePicNum(m_uCachePicNum);
+
 		m_staticTime.GetWindowText(sTime);
 		iTime = _ttoi(sTime) - 1;
-
-		//if (iTime % 5 == 0) {	// 因為 cache pic num 還有一些 bug, 每五秒檢查一次
-		//	if (::g_pimglCachePic->GetAllPicCount() > m_uCachePicNum)
-		//		::g_pimglCachePic->RemoveTail();
-		//	else if (::g_pimglCachePic->GetAllPicCount() < m_uCachePicNum) {
-		//		CString sRandPicPath = GetRandPicPath();
-		//		if (sRandPicPath.GetLength() && !::g_pimglCachePic->FindPath(sRandPicPath))
-		//			::g_pimglCachePic->AddTail(sRandPicPath);
-		//	}
-		//	sTime.Format(_T("%d"), ::g_pimglCachePic->GetCount());
-		//	m_staticCachePicNum.SetWindowText(sTime);
-		//}
 
 		if (!IsCanThread())
 			return 0;
@@ -136,13 +134,59 @@ void CWallChangerDlg::SetHistoryNum(UINT uNum)
 	SetIniModify();
 }
 
+void CWallChangerDlg::SetWaitTime(UINT uWaitTime)
+{
+	CString sNewTime, sRestTime;
+	int iRestTime;
+	if (uWaitTime) {
+		m_staticTime.GetWindowText(sRestTime);
+		iRestTime = _ttoi(sRestTime) - m_uWaitTime + uWaitTime;
+		if (iRestTime < 0)
+			iRestTime = 0;
+		sRestTime.Format(_T("%d"), iRestTime);
+		m_staticTime.SetWindowText(sRestTime);
+		m_uWaitTime = uWaitTime;
+		sNewTime.Format(_T("%d"), uWaitTime);
+		m_editWaitTime.SetWindowText(sNewTime);
+
+		if (!IsThreadRunning())
+			CreateThread();
+	} else {
+		m_uWaitTime = 0;
+		m_staticTime.SetWindowText(_T("0"));
+		m_editWaitTime.SetWindowText(_T("0"));
+
+		SetCanThread(false);
+		if (WAIT_TIMEOUT == WaitForThread(10000)) {
+	#ifdef DEBUG
+			MessageBox(_T("WallChanger Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+	#endif //DEBUG
+			TerminateThread(0);
+		}
+	}
+}
+
 // if list number == 0, then set cache number = 0 and return false
 // if cache number > list number, then set cache number = list number and return false
 // else return true
 bool CWallChangerDlg::SetCachePicNum(UINT uCachePicNum) {
-	UINT uCachePicNumMax = ::g_slWallChangerEnablePicPath.GetCount();
+	if (uCachePicNum == 0) {
+		m_uCachePicNum = 0;
+		m_editCacheNum.SetWindowText(_T("0"));
+		SetIniModify();
+		return true;
+	}
 
-	::g_pimglCachePic->RemoveAll();
+	if (!::g_pWallThreadImageCache) {
+		CString sBuf;
+		sBuf.Format(_T("%d"), m_uCachePicNum);
+		m_editCacheNum.SetWindowText(sBuf);
+		return false;
+	}
+
+	UINT uCachePicNumMax = ::g_pWallEnablePicList->GetCount();
+
+	::g_pWallThreadImageCache->RemoveAll();
 	if (uCachePicNumMax == 0) {
 		m_uCachePicNum = 0;
 		m_editCacheNum.SetWindowText(_T("0"));
@@ -158,15 +202,16 @@ bool CWallChangerDlg::SetCachePicNum(UINT uCachePicNum) {
 
 	for (UINT i=0 ; i<uCachePicNum ; i++) {
 		sRandPicPath = GetRandPicPath();
-		if (::g_pimglCachePic->FindPath(sRandPicPath)) {
+		if (::g_pWallThreadImageCache->FindPath(sRandPicPath)) {
 			uCachePicNum--;
 			i--;
 			continue;
 		}
-		::g_pimglCachePic->AddTail(sRandPicPath);
+		::g_pWallThreadImageCache->AddTail(sRandPicPath);
 	}
 
-	m_uCachePicNum = uCachePicNum;
+	if (bRes)
+		m_uCachePicNum = uCachePicNum;
 	sRandPicPath.Format(_T("%d"), m_uCachePicNum);
 	m_editCacheNum.SetWindowText(sRandPicPath);
 	SetIniModify();
@@ -179,29 +224,95 @@ UINT CWallChangerDlg::GetCachePicNum()
 	return m_uCachePicNum;
 }
 
-const CString CWallChangerDlg::GetRandPicPath()
+//bWay:
+//	true: From File List
+//	false: From Cache List
+bool CWallChangerDlg::SetRandWallPager(bool bWay)
 {
-	int iCountEnablePicPath = ::g_slWallChangerEnablePicPath.GetCount();
+	if (!IsCanThread())
+		return false;
+	if (!m_muxSetRandWallPager.Lock(0))
+		return false;
+
+#define RETURN(x) {																	\
+	if (x) {																		\
+		m_staticNowPicPath.SetWindowText(m_sNowPicPath);							\
+		theTray.SetTrayTip(m_sNowPicPath);											\
+	} else {																		\
+		m_sNowPicPath = _T("");														\
+		m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETWALLPAGERFAIL));	\
+		theTray.SetTrayTip(_T(""));													\
+	}																				\
+	m_muxSetRandWallPager.Unlock(); return (x);										\
+}
+
+	m_sNowPicPath = GetRandPicPath();
+
+	if (m_sNowPicPath.IsEmpty())
+		RETURN(false);
+
+	if (bWay){
+		if (m_xImgNowPic.Load(m_sNowPicPath)) {
+			bool bRes = true;
+			if (AutoPicSize(m_xImgNowPic)) {
+				m_xImgNowPic.Save(m_sTempFilePath, CXIMAGE_FORMAT_JPG);
+				bRes = SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);
+			} else {
+				bRes = SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
+			}
+			RETURN(bRes);
+		} else {
+#ifdef DEBUG
+				MessageBox(m_sNowPicPath, _T("Image Load Error"), MB_OK | MB_ICONERROR);
+#endif //DEBUG
+			RETURN(false);
+		}
+	} else {
+		::g_pWallThreadImageCache->AddTail(m_sNowPicPath);
+		if (!(::g_pWallThreadImageCache->GetCount()))
+			RETURN(false);
+
+		bool bRes = true;
+		m_sNowPicPath = ::g_pWallThreadImageCache->GetHeadPath();
+		if (::g_pWallThreadImageCache->IsHeadImageResample()) {
+			CString sImageBufPath = ::g_pWallThreadImageCache->GetHeadBufPath();
+
+			bRes = SetWallpaper(sImageBufPath, WPSTYLE_CENTER);
+		} else {
+			bRes = SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
+		}
+
+		::g_pWallThreadImageCache->RemoveHead();
+		RETURN(bRes);
+	}
+
+	RETURN(true);
+#undef RETURN
+}
+
+LPCTSTR CWallChangerDlg::GetRandPicPath()
+{
+	int iCountEnablePicPath = ::g_pWallEnablePicList->GetCount();
 	if (iCountEnablePicPath < 1)
-		return CString();
+		return _T("");
 	else if (iCountEnablePicPath == 1)
-		return ::g_slWallChangerEnablePicPath.GetRandPos();
+		return ::g_pWallEnablePicList->GetRandPic();
 
 	CString sTailHistory;
 	if (m_slPicPathHistory.GetCount())
 		sTailHistory = m_slPicPathHistory.GetTail();
-	CString sRandPicPath = ::g_slWallChangerEnablePicPath.GetRandPos();
+	CString sRandPicPath = ::g_pWallEnablePicList->GetRandPic();
 
 	while (sRandPicPath == sTailHistory) {
 		if (!IsCanThread())
-			return CString();
-		sRandPicPath = ::g_slWallChangerEnablePicPath.GetRandPos();
+			return _T("");
+		sRandPicPath = ::g_pWallEnablePicList->GetRandPic();
 		if ((m_slPicPathHistory.Find(sRandPicPath)) && (m_slPicPathHistory.GetCount()>iCountEnablePicPath))
 			continue;
 	}
 
 	if (!IsCanThread())
-		return CString();
+		return _T("");
 	if ((UINT)m_slPicPathHistory.GetCount() > m_uPicPathHistory)
 		m_slPicPathHistory.RemoveHead();
 	m_slPicPathHistory.AddTail(sRandPicPath);
@@ -274,11 +385,14 @@ BOOL CWallChangerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  在此加入額外的初始化
-	if (!::g_pimglCachePic)
-		::g_pimglCachePic = new CxImageList;
-	::g_pimglCachePic->SetCacheNumWnd(m_hWnd);
-	CreateThread(THREAD_PRIORITY_ABOVE_NORMAL);
+	if (!::g_pWallEnablePicList)
+		::g_pWallEnablePicList = new CWallEnablePicList;
+	//if (!::g_pWallThreadImageCache)
+	//	::g_pWallThreadImageCache = new CWallThreadImageCache;
+	//::g_pWallThreadImageCache->SetMsgWnd(m_hWnd);
+	if (!::g_pWallThreadFindPic)
+		::g_pWallThreadFindPic = new CWallThreadFindPic;
+	::g_pWallThreadFindPic->SetMsgWnd(m_hWnd);
 
 	theTray.InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_DELNOWPIC, CResString(IDS_TRAY_DELNOWPIC));
 	theTray.InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC, CResString(IDS_TRAY_RANDPIC), true);
@@ -288,12 +402,17 @@ BOOL CWallChangerDlg::OnInitDialog()
 	m_sTempFilePath.Format(_T("%s.jpg"), GetTempFilePath());
 	GetDlgItem(IDC_WALL_STATIC_CACHEDNUM)->SetWindowText(CResString(IDS_WALL_STATIC_CACHEDNUM));
 	GetDlgItem(IDC_WALL_STATIC_WAITTIME)->SetWindowText(CResString(IDS_WALL_STATIC_WAITTIME));
+	m_btn_RandPic.SetWindowText(CResString(IDS_WALL_BTN_RANDPIC));
+	m_btn_DelPic.SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
+	m_btn_EnableToolTip.SetWindowText(CResString(m_bEnableTip ? IDS_WALL_BTN_DISABLETIP : IDS_WALL_BTN_ENABLETIP));
+	m_btn_AddClass.SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
 
+	// Create Thread in DefWindowProc()
 	m_uWaitTime = m_cIni.GetUInt(_T("General"), _T("uWaitTime"), DEFAULT_WAITTIME);
 	CString sBuf;
 	sBuf.Format(_T("%d"), m_uWaitTime);
 	m_editWaitTime.SetWindowText(sBuf);
-	m_staticTime.SetWindowText(_T("0"));
+	m_staticTime.SetWindowText(sBuf);
 
 	CRect rcWin;
 	m_pCurListDirPath = &m_listDirPath;
@@ -302,19 +421,16 @@ BOOL CWallChangerDlg::OnInitDialog()
 	m_listDirPath.GetClientRect(rcWin);
 	m_listClass.Init(&m_cIni, rcWin);
 
-	m_uPicPathHistory = m_cIni.GetUInt(_T("General"), _T("uPicPathHistory"), DEFAULT_PICPATHHISTORY);
-	SetHistoryNum(m_uPicPathHistory);
-
 	m_uCachePicNum = m_cIni.GetUInt(_T("General"), _T("uCachePicNum"), DEFAULT_CACHEPICNUM);
 	SetCachePicNum(m_uCachePicNum);
+
+	m_uPicPathHistory = m_cIni.GetUInt(_T("General"), _T("uPicPathHistory"), DEFAULT_PICPATHHISTORY);
+	SetHistoryNum(m_uPicPathHistory);
 
 	m_bEnableTip = m_cIni.GetBool(_T("General"), _T("bEnableTip"), DEFAULT_ENABLETIP);
 	EnableToolTips(m_bEnableTip);
 
-	m_btn_RandPic.SetWindowText(CResString(IDS_WALL_BTN_RANDPIC));
-	m_btn_DelPic.SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
-	m_btn_EnableToolTip.SetWindowText(CResString(m_bEnableTip ? IDS_WALL_BTN_DISABLETIP : IDS_WALL_BTN_ENABLETIP));
-	m_btn_AddClass.SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
+	// TODO:  在此加入額外的初始化
 
 	SetIniModify(false);
 	m_bInit = true;
@@ -324,16 +440,6 @@ BOOL CWallChangerDlg::OnInitDialog()
 
 void CWallChangerDlg::OnDestroy()
 {
-	SetCanThread(false);
-	if (WAIT_TIMEOUT == WaitForThread(10000)) {
-		MessageBox(_T("WallChanger Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
-		TerminateThread(0);
-	}
-	if (::g_pimglCachePic) {
-		delete ::g_pimglCachePic;
-		::g_pimglCachePic = NULL;
-	}
-
 	SaveIni();
 
 	CDialog::OnDestroy();
@@ -341,8 +447,29 @@ void CWallChangerDlg::OnDestroy()
 	if (PathFileExists(m_sTempFilePath))
 		DeleteFile(m_sTempFilePath);
 
-	theTray.RemoveTrayMenuItem(CResString(IDS_TRAY_RANDPIC));
-	theTray.RemoveTrayMenuItem(CResString(IDS_TRAY_DELNOWPIC));
+	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_RANDPIC));
+	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_DELNOWPIC));
+
+	SetCanThread(false);
+	if (WAIT_TIMEOUT == WaitForThread(10000)) {
+#ifdef DEBUG
+		MessageBox(_T("WallChanger Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+#endif //DEBUG
+		TerminateThread(0);
+	}
+
+	if (::g_pWallThreadFindPic) {
+		delete ::g_pWallThreadFindPic;
+		::g_pWallThreadFindPic = NULL;
+	}
+	if (::g_pWallThreadImageCache) {
+		delete ::g_pWallThreadImageCache;
+		::g_pWallThreadImageCache = NULL;
+	}
+	if (::g_pWallEnablePicList) {
+		delete ::g_pWallEnablePicList;
+		::g_pWallEnablePicList = NULL;
+	}
 
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
@@ -357,20 +484,7 @@ void CWallChangerDlg::OnOK()
 		int iNewTime, iRestTime;
 		m_editWaitTime.GetWindowText(sNewTime);
 		iNewTime = _ttoi(sNewTime);
-		if (iNewTime > 0) {
-			m_staticTime.GetWindowText(sRestTime);
-			iRestTime = _ttoi(sRestTime) - m_uWaitTime + iNewTime;
-			if (iRestTime < 0)
-				iRestTime = 0;
-			sRestTime.Format(_T("%d"), iRestTime);
-			m_staticTime.SetWindowText(sRestTime);
-			m_uWaitTime = iNewTime;
-			sNewTime.Format(_T("%d"), iNewTime);
-			m_editWaitTime.SetWindowText(sNewTime);
-		} else {
-			sNewTime.Format(_T("%d"), m_uWaitTime);
-			m_editWaitTime.SetWindowText(sNewTime);
-		}
+		SetWaitTime(iNewTime);
 		SetIniModify();
 	} else if (wndIDC == GetDlgItem(IDC_WALL_EDIT_ADDCLASS)) {
 		OnBnClickedButtonAddclasslist();
@@ -415,90 +529,34 @@ void CWallChangerDlg::OnBnClickedButtonRandpic()
 		return;
 
 #define RETURN { m_muxRandPic.Unlock(); return; }
-
-	bool bRes = true;
-
-	m_sNowPicPath = GetRandPicPath();
-	if (!m_sNowPicPath.GetLength()) {
-		m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETWALLPAGERFAIL));
-		RETURN;
-	}
 	if (!IsCanThread())
 		RETURN;
 
-	if (m_uCachePicNum) {
-		::g_pimglCachePic->AddTail(m_sNowPicPath);
-
-		if (::g_pimglCachePic->GetCount()) {
-			m_sNowPicPath = ::g_pimglCachePic->GetHeadPath();
-			if (::g_pimglCachePic->IsHeadImageResample()) {
-				CString sImageBufPath = ::g_pimglCachePic->GetHeadBufPath();
-
-				bRes = bRes && SetWallpaper(sImageBufPath, WPSTYLE_CENTER);
-			} else {
-				bRes = bRes && SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
-			}
-
-			if (!IsCanThread())
-				RETURN;
-
-			::g_pimglCachePic->RemoveHead();
-		} else {
-			bRes = false;
-		}
+	if (m_uCachePicNum && ::g_pWallThreadImageCache->GetCount()) {
+		SetRandWallPager(false);
 	} else {
-		if (!IsCanThread())
-			RETURN;
-		if (m_xImgNowPic.Load(m_sNowPicPath)) {
-			if (!IsCanThread())
-				RETURN;
-
-			if (g_pimglCachePic->AutoPicSize(m_xImgNowPic)) {
-				if (!IsCanThread())
-					RETURN;
-
-				m_xImgNowPic.Save(m_sTempFilePath, CXIMAGE_FORMAT_JPG);
-
-				if (!IsCanThread())
-					RETURN;
-				bRes = bRes && SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);
-			} else {
-				bRes = bRes && SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
-			}
-		} else {
-			bRes = false;
-			m_sNowPicPath = _T("");
-		}
+		SetRandWallPager(true);
 	}
 
 	if (!IsCanThread())
 		RETURN;
-
-	if (bRes) {
-		m_staticNowPicPath.SetWindowText(m_sNowPicPath);
-		theTray.SetTrayTip(m_sNowPicPath);
-	} else {
-		m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETWALLPAGERFAIL));
-		theTray.SetTrayTip(_T(""));
-	}
 
 	CString sTime;
 	sTime.Format(_T("%d"), m_uWaitTime);
 	m_staticTime.SetWindowText(sTime);
 
 	RETURN;
+#undef RETURN
+
 	// TODO: 在此加入控制項告知處理常式程式碼
 }
-#undef RETURN
 
 void CWallChangerDlg::OnBnClickedButtonDelpic()
 {
 	RemoveFileDlg(m_hWnd, m_sNowPicPath, !IsShiftPressed());
 
 	if (!PathFileExists(m_sNowPicPath)) {
-		POSITION pos;
-		while (pos = ::g_slWallChangerEnablePicPath.Find(m_sNowPicPath))
-			::g_slWallChangerEnablePicPath.RemoveAt(pos);
+		::g_pWallEnablePicList->RemoveAllFind(m_sNowPicPath);
 		OnBnClickedButtonRandpic();
 	}
 	// TODO: 在此加入控制項告知處理常式程式碼
@@ -528,15 +586,67 @@ void CWallChangerDlg::OnSize(UINT nType, int cx, int cy)
 	DoSize();
 }
 
+void CWallChangerDlg::OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 在此加入控制項告知處理常式程式碼
+
+	if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(1)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(2))) {
+		// Check this Item
+		m_listClass.SetItemEnable(pNMLV->iItem, true);
+		m_listClass.SetIniModify();
+	} else if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(2)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(1))) {
+		// UnCheck this Item
+		m_listClass.SetItemEnable(pNMLV->iItem, false);
+		m_listClass.SetIniModify();
+	} else {
+		// Change Select Items
+		Invalidate(FALSE);
+		int iSelCount = m_listClass.GetSelectedCount();
+		if ((iSelCount == 0) && (m_pCurListDirPath != &m_listDirPath)) {
+			if (m_pCurListDirPath)
+				m_pCurListDirPath->ShowWindow(SW_HIDE);
+			m_pCurListDirPath = &m_listDirPath;
+			m_pCurListDirPath->ShowWindow(SW_SHOW);
+		} else if (iSelCount == 1) {
+			CRect rcWin, rcBase;
+			CPoint cpBase;
+			GetWindowRect(rcBase);
+			cpBase = rcBase.TopLeft();
+			m_listDirPath.GetWindowRect(rcWin);
+			rcWin = rcWin - cpBase;
+			if (m_pCurListDirPath)
+				m_pCurListDirPath->ShowWindow(SW_HIDE);
+			CWallClassListItem *pListItem = (CWallClassListItem *)m_listClass.GetFirstSelectedItemLParam();
+			if (pListItem)
+				m_pCurListDirPath = (CWallDirListCtrl *)pListItem->GetChildDirList();
+			if (m_pCurListDirPath) {
+				m_pCurListDirPath->MoveWindow(rcWin);
+				m_pCurListDirPath->ShowWindow(SW_SHOW);
+			}
+		}
+		Invalidate();
+	}
+
+	*pResult = 0;
+}
+
 LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
 	case WMU_UPDATE_CACHENUM:
 		{
 			CString sNum;
-			sNum.Format(_T("%d"), ::g_pimglCachePic->GetCount());
+			sNum.Format(_T("%d"), ::g_pWallThreadImageCache->GetCount());
 			m_staticCachePicNum.SetWindowText(sNum);
 		}
+		break;
+	case WMU_FIRST_FIND_PIC:
+		m_bSetCachePicNum = SetCachePicNum(m_uCachePicNum);
+		if (!SetRandWallPager(true))
+			m_staticNowPicPath.SetWindowText(GetResString(IDS_WALL_SETWALLPAGERFAIL));
+		if (!IsThreadRunning() && m_uWaitTime)
+			CreateThread();
 		break;
 	case WM_COMMAND:
 		{
@@ -592,49 +702,4 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
 
 	return __super::DefWindowProc(message, wParam, lParam);
-}
-
-void CWallChangerDlg::OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 在此加入控制項告知處理常式程式碼
-
-	if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(1)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(2))) {
-		// Check this Item
-		m_listClass.SetItemEnable(pNMLV->iItem, true);
-		m_listClass.SetIniModify();
-	} else if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(2)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(1))) {
-		// UnCheck this Item
-		m_listClass.SetItemEnable(pNMLV->iItem, false);
-		m_listClass.SetIniModify();
-	} else {
-		// Change Select Items
-		Invalidate(FALSE);
-		int iSelCount = m_listClass.GetSelectedCount();
-		if ((iSelCount == 0) && (m_pCurListDirPath != &m_listDirPath)) {
-			if (m_pCurListDirPath)
-				m_pCurListDirPath->ShowWindow(SW_HIDE);
-			m_pCurListDirPath = &m_listDirPath;
-			m_pCurListDirPath->ShowWindow(SW_SHOW);
-		} else if (iSelCount == 1) {
-			CRect rcWin, rcBase;
-			CPoint cpBase;
-			GetWindowRect(rcBase);
-			cpBase = rcBase.TopLeft();
-			m_listDirPath.GetWindowRect(rcWin);
-			rcWin = rcWin - cpBase;
-			if (m_pCurListDirPath)
-				m_pCurListDirPath->ShowWindow(SW_HIDE);
-			CWallClassListItem *pListItem = (CWallClassListItem *)m_listClass.GetFirstSelectedItemLParam();
-			if (pListItem)
-				m_pCurListDirPath = (CWallDirListCtrl *)pListItem->GetChildDirList();
-			if (m_pCurListDirPath) {
-				m_pCurListDirPath->MoveWindow(rcWin);
-				m_pCurListDirPath->ShowWindow(SW_SHOW);
-			}
-		}
-		Invalidate();
-	}
-
-	*pResult = 0;
 }
