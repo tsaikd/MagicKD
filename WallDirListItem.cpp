@@ -35,7 +35,7 @@ void CWallDirListItem::SaveIni()
 	SetIniModify(false);
 }
 
-void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath)
+void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *bShowMsgOnNotFixDrive)
 {
 	m_hWnd = pParent;
 	m_pIni = pIni;
@@ -52,12 +52,25 @@ void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath)
 			m_pIni->DeleteKey(_T("PicPath"), GetItemDirPath());
 			m_pIni->DeleteEmptySection(_T("PicPath"));
 		} else {
-			int iRes = MessageBox(CResString(IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE), MB_OKCANCEL|MB_ICONWARNING);
-			if (iRes == 2) {
+			if (*bShowMsgOnNotFixDrive) {
+				int iRes;
+				while (iRes = MessageBox(GetResString(IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE), MB_RETRYCANCEL|MB_ICONWARNING)) {
+					if (iRes == IDCANCEL) {
+						bGetFilePath = false;
+						*bShowMsgOnNotFixDrive = false;
+						MessageBox(CResString(IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
+						break;
+					} else if (iRes == IDRETRY) {
+						if (PathFileExists(GetItemDirPath())) {
+							bGetFilePath = true;
+							break;
+						} else {
+							continue;
+						}
+					}
+				}
+			} else if (!PathFileExists(GetItemDirPath())) {
 				bGetFilePath = false;
-			} else if ((iRes == 1) && (!PathFileExists(GetItemDirPath()))) {
-				bGetFilePath = false;
-				MessageBox(CResString(IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
 			}
 		}
 	}
@@ -134,6 +147,7 @@ void CWallDirListItem::UpdateItemFileFindNum()
 INT_PTR CWallDirListItem::SetItemPicPathArray(CStringArray &saPicPath)
 {
 	m_saPicPath.RemoveAll();
+	m_bFindPath = true;
 	return m_saPicPath.Append(saPicPath);
 }
 
@@ -170,6 +184,7 @@ bool CWallDirListItem::RemoveAllPath(CString &sPath)
 	}
 	return bRes;
 }
+
 bool CWallDirListItem::IsFindPath()
 {
 	return m_bFindPath;

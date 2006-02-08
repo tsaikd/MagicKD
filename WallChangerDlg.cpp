@@ -264,6 +264,7 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 		} else {
 #ifdef DEBUG
 				MessageBox(m_sNowPicPath, _T("Image Load Error"), MB_OK | MB_ICONERROR);
+				RemoveFileDlg(GetSafeHwnd(), m_sNowPicPath, !IsShiftPressed());
 #endif //DEBUG
 			RETURN(false);
 		}
@@ -506,7 +507,7 @@ void CWallChangerDlg::OnOK()
 void CWallChangerDlg::OnCancel()
 {
 	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
-	((CMagicKDDlg *)GetParent())->DestroyWindow();
+	theApp.GetMainWnd()->DestroyWindow();
 
 //	CDialog::OnCancel();
 }

@@ -154,11 +154,13 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 void CMagicKDDlg::OnDestroy()
 {
+	SetFuncEnable(eFunc_WallChanger, false, false);
+
 	CDialog::OnDestroy();
 
-	SetFuncEnable(eFunc_WallChanger, false, false);
 	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_CLOSEWINDOW));
 	theTray.UnRegisterTray();
+
 	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
@@ -206,8 +208,9 @@ void CMagicKDDlg::OnOK()
 void CMagicKDDlg::OnCancel()
 {
 	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
+	theApp.GetMainWnd()->DestroyWindow();
 
-	CDialog::OnCancel();
+//	CDialog::OnCancel();
 }
 
 void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)

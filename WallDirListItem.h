@@ -11,7 +11,7 @@ public:
 	virtual ~CWallDirListItem();
 	virtual void SaveIni();
 
-	void Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath);
+	void Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *bShowMsgOnNotFixDrive);
 	void Destroy();
 
 	int MessageBox(LPCTSTR lpText, UINT uType = MB_OK);

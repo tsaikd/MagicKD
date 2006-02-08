@@ -6,7 +6,7 @@
 #include "WallDirListCtrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
-	m_bInit(false), m_bFindPath(true), m_bAllItemEnable(false)
+	m_bInit(false), m_bFindPath(true), m_bAllItemEnable(false), m_bShowMsgOnNotFixDrive(true)
 {
 }
 
@@ -70,7 +70,7 @@ CString CWallDirListCtrl::GetListClassName()
 bool CWallDirListCtrl::AddItem(LPCTSTR sDirPath)
 {
 	CWallDirListItem *pItem = new CWallDirListItem;
-	pItem->Init(m_hWnd, m_pIni, sDirPath);
+	pItem->Init(m_hWnd, m_pIni, sDirPath, &m_bShowMsgOnNotFixDrive);
 	if (-1 == InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0,
 	I_IMAGECALLBACK, (LPARAM) pItem)) {
 		delete pItem;

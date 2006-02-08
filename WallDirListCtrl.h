@@ -26,7 +26,9 @@ private:
 	bool m_bInit;
 	bool m_bFindPath;
 	bool m_bAllItemEnable;
+	bool m_bShowMsgOnNotFixDrive;
 	CString m_sListClassName;
+
 public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnDestroy();

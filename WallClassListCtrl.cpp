@@ -110,7 +110,7 @@ void CWallClassListCtrl::SetItemEnable(int nItem, bool bEnable)
 			pChildDirList->SetAllItemEnable(bEnable);
 			if (bEnable && !(pChildDirList->IsFindPath())) {
 				ListView_SetCheckState(m_hWnd, nItem, false);
-				MessageBox(CResString(IDS_WALL_CLASSCANNOTENABLE), NULL, MB_OK|MB_ICONERROR);
+				MessageBox(GetResString(IDS_WALL_CLASSCANNOTENABLE), NULL, MB_OK|MB_ICONERROR);
 			}
 		}
 	}
