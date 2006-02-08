@@ -2,10 +2,11 @@
 // Microsoft Visual C++ generated include file.
 // Used by MagicKD.rc
 //
-#define IDD_MAGICKD_DIALOG              102
-#define IDR_MAINFRAME                   128
-#define IDD_MAGICCONFIGDIALOG           129
-#define IDD_WALLCHANGER                 130
+#define IDD_MAGICKD                     101
+#define IDD_MAGICKD_END                 102
+#define IDD_MAGICKD_CONFIG              103
+#define IDD_MAGICKD_WALLCHANGER         104
+#define IDR_MAINFRAME                   121
 #define IDS_SEL_FOLDER                  131
 #define IDS_TRAY_CLOSEWINDOW            141
 #define IDS_TRAY_RANDPIC                142
@@ -44,11 +45,14 @@
 #define IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER 214
 #define IDS_WALL_CLASSCANNOTENABLE      215
 #define IDS_WALL_SETWALLPAGERFAIL       216
+#define IDS_WALL_SETTINGWALLPAGER       217
 #define IDC_TAB_MAIN                    1000
-#define IDC_CONF_CHECK_STARTMIN         1001
-#define IDC_CONF_CHECK_WALLCHANGER      1002
-#define IDC_CONF_SLIDER_TRANSPARENCY    1003
-#define IDC_CONF_STATIC_TRANSPARENCY    1004
+#define IDC_PROGRESS_END                1001
+#define IDC_MAGICKDEND_EDIT_TEXT        1002
+#define IDC_CONF_CHECK_STARTMIN         1003
+#define IDC_CONF_CHECK_WALLCHANGER      1004
+#define IDC_CONF_SLIDER_TRANSPARENCY    1005
+#define IDC_CONF_STATIC_TRANSPARENCY    1006
 #define IDC_WALL_STATIC_RESTTIME        1011
 #define IDC_WALL_STATIC_NOWPICPATH      1012
 #define IDC_WALL_STATIC_CACHENUM        1013
@@ -71,7 +75,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

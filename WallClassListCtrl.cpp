@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Resource.h"
 #include "Language.h"
+#include "MagicKD.h"
 #include "WallDirListCtrl.h"
 #include "WallClassListCtrl.h"
 
@@ -37,40 +38,6 @@ void CWallClassListCtrl::SaveIni()
 	}
 
 	CWallListCtrl::SaveIni();
-}
-
-void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
-{
-	CWallListCtrl::Init(pIni);
-	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
-
-	CRect rcWin;
-	GetClientRect(rcWin);
-	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, rcWin.right);
-	m_rcChildDirList = rcChildDirList;
-
-	CStringArray saClassList;
-	m_pIni->GetArray(_T("General"), _T("ClassList"), &saClassList);
-	int iCount = saClassList.GetCount();
-	if (iCount) {
-		for (int i=0 ; i<iCount ; i++) {
-			AddItem(saClassList[i]);
-		}
-	}
-
-	m_pIni->GetArray(_T("General"), _T("EnableClassList"), &saClassList);
-	iCount = saClassList.GetCount();
-	if (iCount) {
-		for (int i=0 ; i<iCount ; i++) {
-			int nItem = FindItemByText(saClassList[i]);
-			ListView_SetCheckState(m_hWnd, nItem, true);
-			SetItemEnable(nItem, true);
-		}
-	}
-
-	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
-
-	m_bInit = true;
 }
 
 bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
@@ -166,8 +133,45 @@ BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
 END_MESSAGE_MAP()
 
+void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
+{
+	theAppEndDlg.SignWnd(m_hWnd, 1);
+
+	CWallListCtrl::Init(pIni);
+	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
+
+	CRect rcWin;
+	GetClientRect(rcWin);
+	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, rcWin.right);
+	m_rcChildDirList = rcChildDirList;
+
+	CStringArray saClassList;
+	m_pIni->GetArray(_T("General"), _T("ClassList"), &saClassList);
+	int iCount = saClassList.GetCount();
+	if (iCount) {
+		for (int i=0 ; i<iCount ; i++) {
+			AddItem(saClassList[i]);
+		}
+	}
+
+	m_pIni->GetArray(_T("General"), _T("EnableClassList"), &saClassList);
+	iCount = saClassList.GetCount();
+	if (iCount) {
+		for (int i=0 ; i<iCount ; i++) {
+			int nItem = FindItemByText(saClassList[i]);
+			ListView_SetCheckState(m_hWnd, nItem, true);
+			SetItemEnable(nItem, true);
+		}
+	}
+
+	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
+
+	m_bInit = true;
+}
+
 void CWallClassListCtrl::OnDestroy()
 {
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Freeing\tWallChanger\tClass List"));
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirList;
 	int iCount = GetItemCount();
@@ -181,6 +185,8 @@ void CWallClassListCtrl::OnDestroy()
 
 	SaveIni();
 	CWallListCtrl::OnDestroy();
+
+	theAppEndDlg.UnsignWnd(m_hWnd);
 
 	// TODO: 在此加入您的訊息處理常式程式碼
 }

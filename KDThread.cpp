@@ -34,6 +34,7 @@ void CKDThread::CreateThread(int nPriority/* = THREAD_PRIORITY_NORMAL*/, bool bS
 		_SetCanThread();
 		VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, dwCreationFlags, &m_dwThreadId) );
 		SetThreadPriority(nPriority);
+
 		m_muxThread.Unlock();
 	}
 }

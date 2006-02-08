@@ -1,16 +1,12 @@
 用ini存file list太慢了 (暫時不存)
-可以手動換圖
-紀錄讀取失敗次數
+紀錄讀取失敗次數(順便可以刪除或查看)
 刪除檔案時要刪除enable list
-
-Enablie Pic List 也用 thread
 
 整合BindWinKey
 
 圖片讀取錯誤log
 list item可移動
 
-用SQLite
 重新啟動
 設假桌布
 
@@ -23,4 +19,4 @@ OnSize
 bug:
 	左鍵點tray icon兩下會換圖
 	cache num 的部份不同步
-	thread 有時候會開不起來
+	WallChanger Timer Thread 有時候會關不掉

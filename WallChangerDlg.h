@@ -29,7 +29,7 @@ public:
 	virtual DWORD ThreadProc();
 
 // 對話方塊資料
-	enum { IDD = IDD_WALLCHANGER };
+	enum { IDD = IDD_MAGICKD_WALLCHANGER };
 
 public:
 	void DoSize();

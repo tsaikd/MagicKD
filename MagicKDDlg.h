@@ -21,7 +21,7 @@ public:
 	CMagicKDDlg(CWnd* pParent = NULL);	// 標準建構函式
 
 // 對話方塊資料
-	enum { IDD = IDD_MAGICKD_DIALOG };
+	enum { IDD = IDD_MAGICKD };
 	typedef enum { eFunc_WallChanger = 1 } FuncList;
 
 public:

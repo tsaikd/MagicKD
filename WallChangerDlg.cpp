@@ -240,12 +240,13 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 		theTray.SetTrayTip(m_sNowPicPath);											\
 	} else {																		\
 		m_sNowPicPath = _T("");														\
-		m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETWALLPAGERFAIL));	\
+		m_staticNowPicPath.SetWindowText(GetResString(IDS_WALL_SETWALLPAGERFAIL));	\
 		theTray.SetTrayTip(_T(""));													\
 	}																				\
 	m_muxSetRandWallPager.Unlock(); return (x);										\
 }
 
+	m_staticNowPicPath.SetWindowText(GetResString(IDS_WALL_SETTINGWALLPAGER));
 	m_sNowPicPath = GetRandPicPath();
 
 	if (m_sNowPicPath.IsEmpty())
@@ -397,6 +398,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 
 	theTray.InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_DELNOWPIC, CResString(IDS_TRAY_DELNOWPIC));
 	theTray.InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC, CResString(IDS_TRAY_RANDPIC), true);
+	theAppEndDlg.SignWnd(m_hWnd, 7);
 
 	srand(time(NULL));
 	m_cIni.SetPathName(theApp.m_sAppDir + _T("WallChanger.ini"));
@@ -441,17 +443,12 @@ BOOL CWallChangerDlg::OnInitDialog()
 
 void CWallChangerDlg::OnDestroy()
 {
-	SaveIni();
-
-	CDialog::OnDestroy();
-
-	if (PathFileExists(m_sTempFilePath))
-		DeleteFile(m_sTempFilePath);
-
-	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_RANDPIC));
-	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_DELNOWPIC));
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Closing\tWallChanger\tDialog"));
 
 	SetCanThread(false);
+	SaveIni();
+
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Waiting\tWallChanger\tTime Thread"));
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {
 #ifdef DEBUG
 		MessageBox(_T("WallChanger Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
@@ -459,18 +456,33 @@ void CWallChangerDlg::OnDestroy()
 		TerminateThread(0);
 	}
 
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Closing\tWallChanger\tFind Picture Thread"));
 	if (::g_pWallThreadFindPic) {
 		delete ::g_pWallThreadFindPic;
 		::g_pWallThreadFindPic = NULL;
 	}
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Closing\tWallChanger\tImage Cache Thread"));
 	if (::g_pWallThreadImageCache) {
 		delete ::g_pWallThreadImageCache;
 		::g_pWallThreadImageCache = NULL;
 	}
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Closing\tWallChanger\tEnable Picture List Thread"));
 	if (::g_pWallEnablePicList) {
 		delete ::g_pWallEnablePicList;
 		::g_pWallEnablePicList = NULL;
 	}
+
+	CDialog::OnDestroy();
+
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Deleting\tWallChanger\tTemp File"));
+	if (PathFileExists(m_sTempFilePath))
+		DeleteFile(m_sTempFilePath);
+
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Deleting\tWallChanger\tTray Menu"));
+	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_RANDPIC));
+	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_DELNOWPIC));
+
+	theAppEndDlg.UnsignWnd(m_hWnd);
 
 	// TODO: 在此加入您的訊息處理常式程式碼
 }

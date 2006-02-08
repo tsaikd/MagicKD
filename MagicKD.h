@@ -10,6 +10,7 @@
 #include "resource.h"		// ¥D­n²Å¸¹
 #include "Ini.h"
 #include "KDSingleApp.h"
+#include "MagicKDEndDlg.h"
 
 
 // CMagicKDApp:
@@ -34,3 +35,4 @@ public:
 };
 
 extern CMagicKDApp theApp;
+extern CMagicKDEndDlg theAppEndDlg;

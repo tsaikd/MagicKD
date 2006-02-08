@@ -54,7 +54,7 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 				if (m_pWallChangerDlg)
 					SetFuncEnable(eFunc_WallChanger, false, false);
 				m_pWallChangerDlg = new CWallChangerDlg;
-				m_pWallChangerDlg->Create(IDD_WALLCHANGER, this);
+				m_pWallChangerDlg->Create(IDD_MAGICKD_WALLCHANGER, this);
 				m_pWallChangerDlg->ShowWindow(SW_HIDE);
 				m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChangerDlg);
 
@@ -124,9 +124,10 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 	theTray.AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, GetResString(IDS_TRAY_OPENWINDOW));
 	theTray.AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, GetResString(IDS_TRAY_CLOSEWINDOW), true);
+	theAppEndDlg.SignWnd(m_hWnd, 2);
 
 	m_pIni = &theApp.m_cIni;
-	m_cMainConfigDlg.Create(IDD_MAGICCONFIGDIALOG, this);
+	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
 	theTray.InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, GetResString(IDS_TRAY_WALLCHANGER));
@@ -154,10 +155,13 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 void CMagicKDDlg::OnDestroy()
 {
+	theAppEndDlg.ShowWindow(SW_SHOW);
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Closing\tMagicKD\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
 
 	CDialog::OnDestroy();
 
+	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Deleting\tMagicKD\tTray Menu"));
 	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_CLOSEWINDOW));
 	theTray.UnRegisterTray();
 

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Ini.h"
 #include "afxwin.h"
 #include "afxcmn.h"
+#include "Resource.h"
+#include "Ini.h"
 #include "KDIni.h"
 #include "KDButton.h"
 
@@ -17,7 +18,7 @@ public:
 	virtual ~CMainConfigDlg();
 
 // 對話方塊資料
-	enum { IDD = IDD_MAGICCONFIGDIALOG };
+	enum { IDD = IDD_MAGICKD_CONFIG };
 
 public:
 	void DoSize();

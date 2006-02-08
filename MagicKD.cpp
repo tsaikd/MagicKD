@@ -2,8 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "MagicKD.h"
 #include "MagicKDDlg.h"
+
+#include "MagicKD.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,7 +30,7 @@ CMagicKDApp::CMagicKDApp()
 // 僅有的一個 CMagicKDApp 物件
 
 CMagicKDApp theApp;
-
+CMagicKDEndDlg theAppEndDlg;
 
 // CMagicKDApp 初始設定
 
@@ -61,6 +62,8 @@ BOOL CMagicKDApp::InitInstance()
 	// 程式碼移除不需要的初始化常式，變更儲存設定值的登錄機碼
 	// TODO: 您應該適度修改此字串 (例如，公司名稱或組織名稱)
 //	SetRegistryKey(_T("本機 AppWizard 所產生的應用程式"));
+
+	theAppEndDlg.Create(IDD_MAGICKD_END);
 
 	CMagicKDDlg dlg;
 	m_pMainWnd = &dlg;

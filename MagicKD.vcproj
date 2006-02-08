@@ -149,6 +149,9 @@
 				RelativePath=".\MagicKDDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\MagicKDEndDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\MainConfigDlg.cpp">
 			</File>
 			<File
@@ -262,6 +265,9 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.h">
+			</File>
+			<File
+				RelativePath=".\MagicKDEndDlg.h">
 			</File>
 			<File
 				RelativePath=".\MainConfigDlg.h">
