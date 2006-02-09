@@ -29,8 +29,10 @@ DWORD CWallThreadFindPic::ThreadProc()
 	// State 1: When First Find Pic, Send Message to Main Dialog
 	while (IsCanThread()) {
 		_ThreadProcStage();
-		PostMessage(WMU_FIRST_FIND_PIC, 0, 0);
-		break;
+		if (::g_pWallEnablePicList->GetCount()) {
+			PostMessage(WMU_FIRST_FIND_PIC, 0, 0);
+			break;
+		}
 	}
 
 	// Stage 2: After Stage 1
@@ -50,6 +52,20 @@ void CWallThreadFindPic::AddItem(CWallDirListItem *pDirItem)
 
 		m_lDirItem.AddTail(pDirItem);
 		SetEvent(m_hHaveDirItem);
+
+		m_muxThread.Unlock();
+	}
+}
+
+void CWallThreadFindPic::TestOfflineDirItem()
+{
+	if (m_muxThread.Lock()) {
+		if (m_lDirItemOffline.GetCount()) {
+			m_lDirItem.AddTail(&m_lDirItemOffline);
+			m_lDirItemOffline.RemoveAll();
+			SetEvent(m_hHaveDirItem);
+		}
+
 		m_muxThread.Unlock();
 	}
 }
@@ -92,28 +108,24 @@ bool CWallThreadFindPic::__bMatchSupport(LPCTSTR sPat) {
 
 void CWallThreadFindPic::_ThreadProcStage()
 {
-	int i;
-	POSITION pos;
-	CWallDirListItem *pDirItem;
-	CStringList *pslPicPath;
-	CStringArray saPicPath;
-
 	WaitForSingleObject(m_hHaveDirItem, INFINITE);
 	if (m_lDirItem.IsEmpty()) {
 		ResetEvent(m_hHaveDirItem);
 		return;
 	}
 
-	pDirItem = m_lDirItem.RemoveHead();
-	pslPicPath = __pFindPicPathDynamic(pDirItem->GetItemDirPath() + _T("\\*.*"), true);
-	if (pslPicPath->IsEmpty()) {
-		delete pslPicPath;
+	CWallDirListItem *pDirItem = m_lDirItem.RemoveHead();
+	CString sDirPath = pDirItem->GetItemDirPath();
+	if (!PathFileExists(sDirPath) && !pDirItem->IsDirOnFixDrive()) {
+		m_lDirItemOffline.AddTail(pDirItem);
 		return;
 	}
 
+	CStringList *pslPicPath = __pFindPicPathDynamic(sDirPath + _T("\\*.*"), true);
+	CStringArray saPicPath;
 	saPicPath.SetSize(pslPicPath->GetCount());
-	i = 0;
-	pos = pslPicPath->GetHeadPosition();
+	int i = 0;
+	POSITION pos = pslPicPath->GetHeadPosition();
 	while (pos) {
 		saPicPath[i++] = pslPicPath->GetAt(pos);
 		pslPicPath->GetNext(pos);

@@ -79,15 +79,15 @@ bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
 bool RemoveFileDlg(HWND hWnd, CString &sFiles, bool bUndo/* = true*/)
 {
 	TCHAR sFileBuf[MAX_PATH] = {0};
-	_tcscpy(sFileBuf, sFiles);
+	_tcsncpy(sFileBuf, sFiles, sFiles.GetLength());
 
 	SHFILEOPSTRUCT shFile = {0};
 	shFile.hwnd = hWnd;
 	shFile.wFunc = FO_DELETE;
 	shFile.pFrom = sFileBuf;
 	if (bUndo)
-		shFile.fFlags = FOF_ALLOWUNDO;
-	return (SHFileOperation(&shFile)) == 0;
+		shFile.fFlags |= FOF_ALLOWUNDO;
+	return (::SHFileOperation(&shFile)) == 0;
 }
 
 bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
@@ -210,3 +210,89 @@ bool SetWallpaper(LPCTSTR sFilePath, DWORD dwStyle/* = WPSTYLE_STRETCH*/)
 }
 
 #endif // _UNICODE
+
+//return:
+//	0: Test Success
+//	1: Can't Find a Usable WinSock DLL
+//	2: Create Socket Error
+//	3: Bind Socket Error
+//	4: Invalid Host Name
+//	5: Connect Host Error
+int GetOnInternet(LPCSTR lpszTestHost/* = "www.google.com"*/, u_short uTestPort/* = 80*/)
+{
+	WORD wVersionRequested = MAKEWORD(2, 2);
+	WSADATA wsaData;
+	if (WSAStartup(wVersionRequested, &wsaData) != 0)
+		return 1;
+	if ((LOBYTE(wsaData.wVersion) != 2) || (HIBYTE(wsaData.wVersion) != 2)) {
+		WSACleanup();
+		return 1;
+	}
+
+	SOCKET cli = INVALID_SOCKET;
+	struct sockaddr_in cliAddrInfo;
+	struct sockaddr_in srvAddrInfo;
+	struct hostent *host;
+
+	cliAddrInfo.sin_family = AF_INET;
+	cliAddrInfo.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	cliAddrInfo.sin_port = htons(0); // auto assigned by client
+	cli = socket(AF_INET, SOCK_STREAM, 0);
+	if(cli == INVALID_SOCKET) {
+		WSACleanup();
+		return 2;
+	}
+
+	if(bind(cli, (struct sockaddr *) &cliAddrInfo, sizeof(cliAddrInfo)) == SOCKET_ERROR) {
+		WSACleanup();
+		return 3;
+	}
+
+	srvAddrInfo.sin_addr.S_un.S_addr = inet_addr(lpszTestHost);
+	if (srvAddrInfo.sin_addr.S_un.S_addr == -1) {
+		host = gethostbyname(lpszTestHost);
+		if (host == NULL) {
+			WSACleanup();
+			return 4;
+		}
+		memcpy(&(srvAddrInfo.sin_addr), host->h_addr_list[0], host->h_length);
+	}
+
+	srvAddrInfo.sin_family = AF_INET;
+	srvAddrInfo.sin_port = htons(uTestPort);
+
+	if (connect(cli, (struct sockaddr *) &srvAddrInfo, sizeof(srvAddrInfo))  == SOCKET_ERROR) {
+		WSACleanup();
+		return 5;
+	}
+
+	closesocket(cli);
+	WSACleanup();
+	return 0;
+}
+
+//return:
+//	if On Offline, return 1
+//	if On Internet, return 0
+//	if Can't Load Library, return -1
+int GetOnOffline()
+{
+	HINSTANCE urldll = LoadLibrary(_T("url.dll"));
+	if (!urldll)
+		return -1;
+
+	int (WINAPI* offline)(DWORD);
+	offline = (int (WINAPI*)(DWORD)) GetProcAddress(urldll, "InetIsOffline");
+	if (!offline) {
+		FreeLibrary(urldll);
+		return -1;
+	}
+
+	if (offline(0)) {
+		FreeLibrary(urldll);
+		return 0;
+	} else {
+		FreeLibrary(urldll);
+		return 1;
+	}
+}

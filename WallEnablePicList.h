@@ -14,7 +14,7 @@ public:
 	LPCTSTR GetNextPic();
 
 	bool RemoveEnableItem(CStringArray *pItem);
-	bool RemoveAllFind(LPCTSTR sMatch);/////////////////////////////////¥¼§¹¦¨
+	CStringArray *RemoveFind(LPCTSTR sMatch);
 
 	BOOL IsEmpty();
 	ULONG GetCount();

@@ -1,20 +1,16 @@
+list item可移動
 用ini存file list太慢了 (暫時不存)
 紀錄讀取失敗次數(順便可以刪除或查看)
-刪除檔案時要刪除enable list
-
-整合BindWinKey
-
 圖片讀取錯誤log
-list item可移動
 
 重新啟動
 設假桌布
 
+整合BindWinKey
+
 OnSize
 
 螢幕解析度(ku)
-
-自動偵測網路連線
 
 bug:
 	左鍵點tray icon兩下會換圖

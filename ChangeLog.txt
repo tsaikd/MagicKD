@@ -1,3 +1,8 @@
+	Fix bug: If First Class is Empty, then Set Wallpager at First Time Will Fail
+	Auto Detect if Dir on Removable Drive and not collect correctly
+	When Delete a Picture, Auto Update Dir List
+	When Image Load Error, User Can Choice something
+
 Version: 1.0.0.8	(2006-02-08)
 	Can Disable WallChanger Timer
 	Add Program Closing Message

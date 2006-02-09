@@ -75,10 +75,6 @@ void CWallClassListCtrl::SetItemEnable(int nItem, bool bEnable)
 	if (pItem = (CWallClassListItem *)GetItemData(nItem)) {
 		if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
 			pChildDirList->SetAllItemEnable(bEnable);
-			if (bEnable && !(pChildDirList->IsFindPath())) {
-				ListView_SetCheckState(m_hWnd, nItem, false);
-				MessageBox(GetResString(IDS_WALL_CLASSCANNOTENABLE), NULL, MB_OK|MB_ICONERROR);
-			}
 		}
 	}
 }

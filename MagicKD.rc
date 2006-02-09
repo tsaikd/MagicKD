@@ -111,7 +111,7 @@ BEGIN
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
                     WS_DISABLED | WS_BORDER | WS_TABSTOP,160,30,200,210
     EDITTEXT        IDC_WALL_EDIT_ADDCLASS,10,225,105,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "新增",IDC_WALL_BTN_ADDCLASSLIST,120,225,25,12
+    PUSHBUTTON      "新增",IDC_WALL_BTN_ADDCLASS,120,225,25,12
     PUSHBUTTON      "換圖",IDC_WALL_BTN_RANDPIC,10,5,25,12
     PUSHBUTTON      "刪除",IDC_WALL_BTN_DELPIC,40,5,25,12
     CONTROL         "",IDC_WALL_STATIC_NOWPICPATH,"Static",SS_LEFTNOWORDWRAP | 
@@ -122,7 +122,10 @@ BEGIN
                     ES_NUMBER | WS_DISABLED | NOT WS_BORDER,WS_EX_CLIENTEDGE
     PUSHBUTTON      "關閉提示",IDC_WALL_BTN_ENABLETOOLTIP,325,5,40,12
     RTEXT           "0",IDC_WALL_STATIC_CACHENUM,165,7,10,8
-    LTEXT           "已快取",IDC_WALL_STATIC_CACHEDNUM,135,7,25,8
+    LTEXT           "已快取",IDC_WALL_STATIC_CACHEDNUM,140,7,25,8
+    COMBOBOX        IDC_COMBO_IMAGELOADERROR,75,5,60,60,CBS_DROPDOWNLIST | 
+                    CBS_SORT | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
 END
 
 IDD_MAGICKD_END DIALOGEX 0, 0, 287, 160
@@ -144,8 +147,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,8
- PRODUCTVERSION 1,0,0,8
+ FILEVERSION 1,0,0,9
+ PRODUCTVERSION 1,0,0,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -161,11 +164,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 0, 8"
+            VALUE "FileVersion", "1, 0, 0, 9"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 0, 8"
+            VALUE "ProductVersion", "1, 0, 0, 9"
         END
     END
     BLOCK "VarFileInfo"
@@ -276,15 +279,26 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_WALL_TOOLTIP_DIRLIST "某個分類中的資料夾列表，右鍵選單中可以刪除"
+    IDS_WALL_TOOLTIP_DIRLIST 
+                            "某個分類中的資料夾列表，右鍵選單中可以新增或刪除，也可以將資料夾拖曳進來"
+    IDS_WALL_TOOLTIP_IMAGELOADERROR "當圖片讀取錯誤時的措施"
     IDS_WALL_CANONLYCHOICEONECLASS "您只能選擇一個分類進行此動作"
     IDS_WALL_DIRNOTEXIST    "資料夾不存在"
     IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE 
                             "資料夾不存在\n請連上網路或是插入可攜式裝置"
-    IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER "資料夾不存在\n請稍後再手動更新列表"
-    IDS_WALL_CLASSCANNOTENABLE "檔案路徑發生問題\n啟動失敗"
+    IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER 
+                            "資料夾不存在\n請稍後再手動更新列表\n或是等待程式自動更新"
     IDS_WALL_SETWALLPAGERFAIL "設定桌布失敗"
-    IDS_WALL_SETTINGWALLPAGER "設定桌布中..."
+    IDS_WALL_SETTINGWALLPAGER "設定桌布中"
+    IDS_WALL_MSG_IMAGELOADERROR "圖檔讀取失敗\n直接刪除請選是、前往查看請選否"
+    IDS_WALL_COMBOX_ASKUSER "詢問使用者"
+    IDS_WALL_COMBOX_DELETE  "直接刪除"
+    IDS_WALL_COMBOX_EXPLORE "前往查看"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WALL_COMBOX_NULL    "不做事"
 END
 
 #endif    // 中文 (台灣) resources

@@ -110,17 +110,48 @@ bool CWallEnablePicList::RemoveEnableItem(CStringArray *pItem)
 	return bRes;
 }
 
-bool CWallEnablePicList::RemoveAllFind(LPCTSTR sMatch)
+CStringArray *CWallEnablePicList::RemoveFind(LPCTSTR sMatch)
 {
 	if (!sMatch)
-		return false;
+		return NULL;
 
-	bool bRes;
+	CStringArray *psaRes = NULL;
 	if (m_mux.Lock()) {
-		bRes = true;
+		if (m_lEnableItem.IsEmpty()) {
+			m_mux.Unlock();
+			return NULL;
+		}
+
+		CStringArray *psaEnable = NULL;
+		if (m_posNowList)
+			psaEnable = m_lEnableItem.GetAt(m_posNowList);
+		if (!psaEnable)
+			psaEnable = m_lEnableItem.GetHead();
+
+		if ((m_iNowArray>=0) && (psaEnable->GetAt(m_iNowArray)==sMatch)) {
+			psaEnable->RemoveAt(m_iNowArray);
+			psaRes = psaEnable;
+		} else {
+			int i, iCount;
+			POSITION pos = m_lEnableItem.GetHeadPosition();
+			while (pos) {
+				psaEnable = m_lEnableItem.GetNext(pos);
+
+				iCount = psaEnable->GetCount();
+				for (i=0 ; i<iCount ; i++) {
+					if (psaEnable->GetAt(i) == sMatch) {
+						psaEnable->RemoveAt(i);
+						pos = 0;
+						psaRes = psaEnable;
+						break;
+					}
+				}
+			}
+		}
+
 		m_mux.Unlock();
 	}
-	return bRes;
+	return psaRes;
 }
 
 BOOL CWallEnablePicList::IsEmpty()

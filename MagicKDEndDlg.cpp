@@ -83,7 +83,6 @@ bool CMagicKDEndDlg::ProgressStepIt(HWND hWnd, LPCTSTR lpszText/* = NULL*/)
 				pSignWnd->uEndStep--;
 
 				if (lpszText) {
-					int iMinPos, iMaxPos;
 					CString sText;
 					m_editText.GetWindowText(sText);
 					sText.AppendFormat(_T("%s\r\n"), lpszText);

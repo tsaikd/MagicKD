@@ -15,7 +15,6 @@ CString GetTempFilePath(LPSTR lpTempFilePath = NULL, LPCTSTR lpTempDir = NULL, L
 	Must Turn On Unicode
 */
 bool SetWallpaper(LPCTSTR sFilePath, DWORD dwStyle = WPSTYLE_STRETCH);
-
 #endif // _UNICODE
 
 inline bool IsCtrlPressed()
@@ -44,3 +43,6 @@ inline bool IsWinPressed()
 #define INRANGE_R(v, m, M)		((v) >= (m) && (v) < (M))
 #define INRANGE_L(v, m, M)		((v) > (m) && (v) <= (M))
 #define INRANGE_LR(v, m, M)		((v) > (m) && (v) < (M))
+
+int GetOnInternet(LPCSTR lpszTestHost = "www.google.com", u_short uTestPort = 80);
+int GetOnOffline();

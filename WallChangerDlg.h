@@ -7,6 +7,7 @@
 #include "KDIni.h"
 #include "KDEdit.h"
 #include "KDButton.h"
+#include "KDComboBox.h"
 #include "KDThread.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
@@ -35,18 +36,19 @@ public:
 	void DoSize();
 	virtual void SaveIni();
 
-	void SetHistoryNum(UINT uNum);
-	void SetWaitTime(UINT uWaitTime);
-	bool SetCachePicNum(UINT uCachePicNum);
-	UINT GetCachePicNum();
-	bool SetRandWallPager(bool bWay);
-	LPCTSTR GetRandPicPath();
+	void	SetHistoryNum(UINT uNum);
+	void	SetWaitTime(UINT uWaitTime);
+	bool	SetCachePicNum(UINT uCachePicNum);
+	UINT	GetCachePicNum();
+	bool	SetRandWallPager(bool bWay);
+	LPCTSTR	GetRandPicPath();
 
-	BOOL EnableToolTips(BOOL bEnable = TRUE);
+	BOOL	EnableToolTips(BOOL bEnable = TRUE);
 
-	CIni m_cIni;
-	CMutex m_muxRandPic;
-	CMutex m_muxSetRandWallPager;
+	CIni	m_cIni;
+	CMutex	m_muxRandPic;
+	CMutex	m_muxSetRandWallPager;
+
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
 	CStatic m_staticCachePicNum;
@@ -58,6 +60,7 @@ public:
 	CKDEdit m_editAddClass;
 	CKDEdit m_editHistoryNum;
 	CKDEdit m_editCacheNum;
+	CKDComboBox m_comboxImageLoadError;
 	CWallClassListCtrl m_listClass;
 	CWallDirListCtrl m_listDirPath;
 	CWallDirListCtrl *m_pCurListDirPath;
@@ -70,9 +73,11 @@ private:
 	BOOL m_bEnableTip;
 	UINT m_uWaitTime;
 	UINT m_uCachePicNum;
+	int m_iTestOfflineCount;
 	// at least 1. if in history, then don't set to wallpager
 	// if larger than total list number, then equal to set 1
 	UINT m_uPicPathHistory;
+	CString m_sComboxMsg;
 	CxImage m_xImgNowPic;
 	CString m_sNowPicPath;
 	CString m_sTempFilePath;
@@ -92,4 +97,5 @@ public:
 	afx_msg void OnBnClickedButtonRandpic();
 	afx_msg void OnBnClickedButtonDelpic();
 	afx_msg void OnBnClickedButtonEnabletooltip();
+	afx_msg void OnCbnSelchangeComboImageloaderror();
 };

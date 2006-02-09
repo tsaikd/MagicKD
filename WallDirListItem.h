@@ -26,6 +26,7 @@ public:
 	CStringArray *GetItemPicPathArray();
 	int FindPath(CString &sPath);
 	bool RemoveAllPath(CString &sPath);
+	bool IsDirOnFixDrive();
 	bool IsFindPath();
 	bool IsItemEnable();
 	void SetItemEnable(bool bEnable);

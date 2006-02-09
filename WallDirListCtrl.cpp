@@ -6,7 +6,7 @@
 #include "WallDirListCtrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
-	m_bInit(false), m_bFindPath(true), m_bAllItemEnable(false), m_bShowMsgOnNotFixDrive(true)
+	m_bInit(false), m_bAllItemEnable(false), m_bShowMsgOnNotFixDrive(true)
 {
 }
 
@@ -76,12 +76,7 @@ bool CWallDirListCtrl::AddItem(LPCTSTR sDirPath)
 		delete pItem;
 		return false;
 	}
-	if (pItem->IsFindPath()) {
-		SetAllItemEnable(IsAllItemEnable());
-	} else {
-		SetAllItemEnable(false);
-		m_bFindPath = false;
-	}
+	SetAllItemEnable(IsAllItemEnable());
 	return true;
 }
 
@@ -111,11 +106,6 @@ void CWallDirListCtrl::UpdateSelectItemFileFindNum()
 	}
 }
 
-bool CWallDirListCtrl::IsFindPath()
-{
-	return m_bFindPath;
-}
-
 bool CWallDirListCtrl::IsAllItemEnable()
 {
 	return m_bAllItemEnable;
@@ -131,10 +121,8 @@ void CWallDirListCtrl::SetAllItemEnable(bool bEnable)
 	for (int i=0 ; i<iCount ; i++) {
 		if (pItem = (CWallDirListItem *)GetItemData(i)) {
 			pItem->SetItemEnable(bEnable);
-			bFindPath = bFindPath && pItem->IsFindPath();
 		}
 	}
-	m_bFindPath = bFindPath;
 }
 
 void CWallDirListCtrl::SetOnExit(bool bOnExit/* = true*/)

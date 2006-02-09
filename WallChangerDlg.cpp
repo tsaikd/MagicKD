@@ -17,12 +17,16 @@
 #include "WallThreadFindPic.h"
 
 #include "WallChangerDlg.h"
+#include ".\wallchangerdlg.h"
 
 
 #define DEFAULT_WAITTIME		30
-#define DEFAULT_CACHEPICNUM		5
+#define DEFAULT_CACHEPICNUM		0
 #define DEFAULT_PICPATHHISTORY	10
 #define DEFAULT_ENABLETIP		TRUE
+#define DEFAULT_COMBOX_MSG		GetResString(IDS_WALL_COMBOX_ASKUSER)
+
+#define TESTOFFLINECOUNT		30
 
 // CWallChangerDlg 對話方塊
 
@@ -30,7 +34,7 @@ IMPLEMENT_DYNAMIC(CWallChangerDlg, CDialog)
 CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CWallChangerDlg::IDD, pParent), m_uWaitTime(30), m_bInit(false),
 	m_pCurListDirPath(NULL), m_uCachePicNum(0), m_uPicPathHistory(0), m_bEnableTip(true),
-	m_bSetCachePicNum(false)
+	m_bSetCachePicNum(false), m_iTestOfflineCount(TESTOFFLINECOUNT)
 {
 }
 
@@ -50,6 +54,12 @@ DWORD CWallChangerDlg::ThreadProc()
 
 		if (m_uCachePicNum && (!m_bSetCachePicNum) && (::g_pWallEnablePicList->GetCount() > m_uCachePicNum))
 			m_bSetCachePicNum = SetCachePicNum(m_uCachePicNum);
+
+		m_iTestOfflineCount--;
+		if (m_iTestOfflineCount < 0) {
+			m_iTestOfflineCount = TESTOFFLINECOUNT;
+			::g_pWallThreadFindPic->TestOfflineDirItem();
+		}
 
 		m_staticTime.GetWindowText(sTime);
 		iTime = _ttoi(sTime) - 1;
@@ -119,6 +129,11 @@ void CWallChangerDlg::SaveIni()
 		m_cIni.WriteBool(_T("General"), _T("bEnableTip"), m_bEnableTip);
 	else
 		m_cIni.DeleteKey(_T("General"), _T("bEnableTip"));
+
+	if (m_sComboxMsg != DEFAULT_COMBOX_MSG)
+		m_cIni.WriteString(_T("General"), _T("sComboxMsg"), m_sComboxMsg);
+	else
+		m_cIni.DeleteKey(_T("General"), _T("sComboxMsg"));
 
 	CKDIni::SaveIni();
 }
@@ -263,10 +278,30 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 			}
 			RETURN(bRes);
 		} else {
-#ifdef DEBUG
-				MessageBox(m_sNowPicPath, _T("Image Load Error"), MB_OK | MB_ICONERROR);
-				RemoveFileDlg(GetSafeHwnd(), m_sNowPicPath, !IsShiftPressed());
-#endif //DEBUG
+			int iRes;
+			if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_NULL)) {
+				iRes = IDCANCEL;
+			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_DELETE)) {
+				iRes = IDYES;
+			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_EXPLORE)) {
+				iRes = IDNO;
+			} else {
+				CString sMsg;
+				sMsg.Format(_T("%s\n%s"), m_sNowPicPath, GetResString(IDS_WALL_MSG_IMAGELOADERROR));
+				iRes = MessageBox(sMsg, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
+			}
+
+			if (iRes == IDYES) {
+				RemoveFileDlg(m_hWnd, m_sNowPicPath, !IsShiftPressed());
+				m_muxSetRandWallPager.Unlock();
+				return SetRandWallPager(bWay);
+			} else if (iRes == IDNO) {
+				CString sBuf = m_sNowPicPath;
+				PathRemoveFileSpec(sBuf.GetBuffer());
+				sBuf.ReleaseBuffer();
+				ShellExecute(m_hWnd, _T("open"), sBuf, NULL, NULL, SW_SHOW);
+			}
+
 			RETURN(false);
 		}
 	} else {
@@ -324,16 +359,18 @@ LPCTSTR CWallChangerDlg::GetRandPicPath()
 
 BOOL CWallChangerDlg::EnableToolTips(BOOL bEnable/* = TRUE*/)
 {
-	m_editWaitTime.EnableToolTips(CResString(IDS_WALL_TOOLTIP_SETWAITTIME), bEnable);
-	m_editAddClass.EnableToolTips(CResString(IDS_WALL_TOOLTIP_ADDCLASS), bEnable);
-	m_editHistoryNum.EnableToolTips(CResString(IDS_WALL_TOOLTIP_SETHISTORYNUM), bEnable);
-	m_editCacheNum.EnableToolTips(CResString(IDS_WALL_TOOLTIP_SETCACHEPICNUM), bEnable);
+	m_editWaitTime.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_SETWAITTIME), bEnable);
+	m_editAddClass.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_ADDCLASS), bEnable);
+	m_editHistoryNum.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_SETHISTORYNUM), bEnable);
+	m_editCacheNum.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_SETCACHEPICNUM), bEnable);
 
-	m_btn_RandPic.EnableToolTips(CResString(IDS_WALL_TOOLTIP_RANDPIC), bEnable);
-	m_btn_DelPic.EnableToolTips(CResString(IDS_WALL_TOOLTIP_DELNOWPIC), bEnable);
+	m_btn_RandPic.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_RANDPIC), bEnable);
+	m_btn_DelPic.EnableToolTips				(CResString(IDS_WALL_TOOLTIP_DELNOWPIC), bEnable);
 
-	m_listClass.EnableToolTips(NULL, bEnable);
-	m_listDirPath.EnableToolTips(NULL, bEnable);
+	m_listClass.EnableToolTips				(NULL, bEnable);
+	m_listDirPath.EnableToolTips			(NULL, bEnable);
+
+	m_comboxImageLoadError.EnableToolTips	(GetResString(IDS_WALL_TOOLTIP_IMAGELOADERROR), bEnable);
 
 	return CDialog::EnableToolTips(bEnable);
 }
@@ -355,30 +392,32 @@ CPoint CWallChangerDlg::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
 void CWallChangerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_WALL_STATIC_RESTTIME, m_staticTime);
-	DDX_Control(pDX, IDC_WALL_EDIT_WAITTIME, m_editWaitTime);
-	DDX_Control(pDX, IDC_WALL_LIST_CLASS, m_listClass);
-	DDX_Control(pDX, IDC_WALL_LIST_DIRPATH, m_listDirPath);
-	DDX_Control(pDX, IDC_WALL_EDIT_ADDCLASS, m_editAddClass);
-	DDX_Control(pDX, IDC_WALL_STATIC_NOWPICPATH, m_staticNowPicPath);
-	DDX_Control(pDX, IDC_WALL_EDIT_HISTORYNUM, m_editHistoryNum);
-	DDX_Control(pDX, IDC_WALL_EDIT_CACHENUM, m_editCacheNum);
-	DDX_Control(pDX, IDC_WALL_BTN_RANDPIC, m_btn_RandPic);
-	DDX_Control(pDX, IDC_WALL_BTN_DELPIC, m_btn_DelPic);
-	DDX_Control(pDX, IDC_WALL_BTN_ENABLETOOLTIP, m_btn_EnableToolTip);
-	DDX_Control(pDX, IDC_WALL_BTN_ADDCLASSLIST, m_btn_AddClass);
-	DDX_Control(pDX, IDC_WALL_STATIC_CACHENUM, m_staticCachePicNum);
+	DDX_Control(pDX, IDC_WALL_STATIC_RESTTIME	, m_staticTime);
+	DDX_Control(pDX, IDC_WALL_EDIT_WAITTIME		, m_editWaitTime);
+	DDX_Control(pDX, IDC_WALL_LIST_CLASS		, m_listClass);
+	DDX_Control(pDX, IDC_WALL_LIST_DIRPATH		, m_listDirPath);
+	DDX_Control(pDX, IDC_WALL_EDIT_ADDCLASS		, m_editAddClass);
+	DDX_Control(pDX, IDC_WALL_STATIC_NOWPICPATH	, m_staticNowPicPath);
+	DDX_Control(pDX, IDC_WALL_EDIT_HISTORYNUM	, m_editHistoryNum);
+	DDX_Control(pDX, IDC_WALL_EDIT_CACHENUM		, m_editCacheNum);
+	DDX_Control(pDX, IDC_WALL_BTN_RANDPIC		, m_btn_RandPic);
+	DDX_Control(pDX, IDC_WALL_BTN_DELPIC		, m_btn_DelPic);
+	DDX_Control(pDX, IDC_WALL_BTN_ENABLETOOLTIP	, m_btn_EnableToolTip);
+	DDX_Control(pDX, IDC_WALL_BTN_ADDCLASS		, m_btn_AddClass);
+	DDX_Control(pDX, IDC_WALL_STATIC_CACHENUM	, m_staticCachePicNum);
+	DDX_Control(pDX, IDC_COMBO_IMAGELOADERROR	, m_comboxImageLoadError);
 }
 
 
 BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
-	ON_BN_CLICKED(IDC_WALL_BTN_ADDCLASSLIST, OnBnClickedButtonAddclasslist)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS, OnLvnItemchangedListClass)
+	ON_BN_CLICKED(IDC_WALL_BTN_ADDCLASS, OnBnClickedButtonAddclasslist)
 	ON_BN_CLICKED(IDC_WALL_BTN_RANDPIC, OnBnClickedButtonRandpic)
 	ON_BN_CLICKED(IDC_WALL_BTN_DELPIC, OnBnClickedButtonDelpic)
 	ON_BN_CLICKED(IDC_WALL_BTN_ENABLETOOLTIP, OnBnClickedButtonEnabletooltip)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS, OnLvnItemchangedListClass)
+	ON_CBN_SELCHANGE(IDC_COMBO_IMAGELOADERROR, OnCbnSelchangeComboImageloaderror)
 END_MESSAGE_MAP()
 
 // CWallChangerDlg 訊息處理常式
@@ -396,22 +435,31 @@ BOOL CWallChangerDlg::OnInitDialog()
 		::g_pWallThreadFindPic = new CWallThreadFindPic;
 	::g_pWallThreadFindPic->SetMsgWnd(m_hWnd);
 
+	srand(time(NULL));
 	theTray.InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_DELNOWPIC, CResString(IDS_TRAY_DELNOWPIC));
 	theTray.InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC, CResString(IDS_TRAY_RANDPIC), true);
 	theAppEndDlg.SignWnd(m_hWnd, 7);
 
-	srand(time(NULL));
 	m_cIni.SetPathName(theApp.m_sAppDir + _T("WallChanger.ini"));
 	m_sTempFilePath.Format(_T("%s.jpg"), GetTempFilePath());
-	GetDlgItem(IDC_WALL_STATIC_CACHEDNUM)->SetWindowText(CResString(IDS_WALL_STATIC_CACHEDNUM));
-	GetDlgItem(IDC_WALL_STATIC_WAITTIME)->SetWindowText(CResString(IDS_WALL_STATIC_WAITTIME));
-	m_btn_RandPic.SetWindowText(CResString(IDS_WALL_BTN_RANDPIC));
-	m_btn_DelPic.SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
+	GetDlgItem(IDC_WALL_STATIC_CACHEDNUM)	->SetWindowText(CResString(IDS_WALL_STATIC_CACHEDNUM));
+	GetDlgItem(IDC_WALL_STATIC_WAITTIME)	->SetWindowText(CResString(IDS_WALL_STATIC_WAITTIME));
+	GetDlgItem(IDC_WALL_BTN_RANDPIC)		->SetWindowText(CResString(IDS_WALL_BTN_RANDPIC));
+	GetDlgItem(IDC_WALL_BTN_DELPIC)			->SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
+	GetDlgItem(IDC_WALL_BTN_ADDCLASS)		->SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
 	m_btn_EnableToolTip.SetWindowText(CResString(m_bEnableTip ? IDS_WALL_BTN_DISABLETIP : IDS_WALL_BTN_ENABLETIP));
-	m_btn_AddClass.SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
+	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_ASKUSER));
+	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_DELETE));
+	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_EXPLORE));
+	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_NULL));
+
+	m_iTestOfflineCount = TESTOFFLINECOUNT;
+	m_uWaitTime = m_cIni.GetUInt(_T("General"), _T("uWaitTime"), DEFAULT_WAITTIME);
 
 	// Create Thread in DefWindowProc()
-	m_uWaitTime = m_cIni.GetUInt(_T("General"), _T("uWaitTime"), DEFAULT_WAITTIME);
+	m_sComboxMsg = m_cIni.GetString(_T("General"), _T("sComboxMsg"), DEFAULT_COMBOX_MSG);
+	m_comboxImageLoadError.SetCurSel(m_comboxImageLoadError.FindString(-1, m_sComboxMsg));
+
 	CString sBuf;
 	sBuf.Format(_T("%d"), m_uWaitTime);
 	m_editWaitTime.SetWindowText(sBuf);
@@ -569,7 +617,32 @@ void CWallChangerDlg::OnBnClickedButtonDelpic()
 	RemoveFileDlg(m_hWnd, m_sNowPicPath, !IsShiftPressed());
 
 	if (!PathFileExists(m_sNowPicPath)) {
-		::g_pWallEnablePicList->RemoveAllFind(m_sNowPicPath);
+		CStringArray *psaRes;
+		if (psaRes = ::g_pWallEnablePicList->RemoveFind(m_sNowPicPath)) {
+			CWallClassListItem *pClassListItem;
+			CWallDirListCtrl *pDirListCtrl;
+			CWallDirListItem *pDirListItem;
+			int i, iCount = m_listClass.GetItemCount();
+			int j, jCount;
+
+			for (i=0 ; i<iCount ; i++) {
+				if (pClassListItem = (CWallClassListItem *)m_listClass.GetItemData(i)) {
+					if (pDirListCtrl = (CWallDirListCtrl *)pClassListItem->GetChildDirList()) {
+						jCount = pDirListCtrl->GetItemCount();
+						for (j=0 ; j<jCount ; j++) {
+							if (pDirListItem = (CWallDirListItem *)pDirListCtrl->GetItemData(j)) {
+								if (pDirListItem->GetItemPicPathArray() == psaRes){
+									pDirListItem->SetItemFileFindNum(psaRes->GetCount());
+									pDirListItem->Invalidate();
+									i = iCount;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		OnBnClickedButtonRandpic();
 	}
 	// TODO: 在此加入控制項告知處理常式程式碼
@@ -587,6 +660,13 @@ void CWallChangerDlg::OnBnClickedButtonEnabletooltip()
 
 	EnableToolTips(m_bEnableTip);
 
+	SetIniModify();
+	// TODO: 在此加入控制項告知處理常式程式碼
+}
+
+void CWallChangerDlg::OnCbnSelchangeComboImageloaderror()
+{
+	m_comboxImageLoadError.GetLBText(m_comboxImageLoadError.GetCurSel(), m_sComboxMsg);
 	SetIniModify();
 	// TODO: 在此加入控制項告知處理常式程式碼
 }

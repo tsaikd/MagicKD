@@ -12,11 +12,13 @@ public:
 	virtual DWORD ThreadProc();
 
 	void AddItem(CWallDirListItem *pDirItem);
+	void TestOfflineDirItem();
 
 private:
 	CMutex m_muxThread;
 	HANDLE m_hHaveDirItem;
 	CList<CWallDirListItem*, CWallDirListItem*> m_lDirItem;
+	CList<CWallDirListItem*, CWallDirListItem*> m_lDirItemOffline;
 
 	void _ThreadProcStage();
 	int FindPicPath();
