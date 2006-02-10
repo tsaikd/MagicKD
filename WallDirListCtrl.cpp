@@ -4,6 +4,7 @@
 #include "WallDirListItem.h"
 
 #include "WallDirListCtrl.h"
+#include ".\walldirlistctrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
 	m_bInit(false), m_bAllItemEnable(false), m_bShowMsgOnNotFixDrive(true)

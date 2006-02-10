@@ -44,5 +44,8 @@ inline bool IsWinPressed()
 #define INRANGE_L(v, m, M)		((v) > (m) && (v) <= (M))
 #define INRANGE_LR(v, m, M)		((v) > (m) && (v) < (M))
 
+#define RECT_WIDTH(rc)		((rc).right - (rc).left)
+#define RECT_HEIGHT(rc)		((rc).bottom - (rc).top)
+
 int GetOnInternet(LPCSTR lpszTestHost = "www.google.com", u_short uTestPort = 80);
 int GetOnOffline();

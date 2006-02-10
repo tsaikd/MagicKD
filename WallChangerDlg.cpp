@@ -17,7 +17,6 @@
 #include "WallThreadFindPic.h"
 
 #include "WallChangerDlg.h"
-#include ".\wallchangerdlg.h"
 
 
 #define DEFAULT_WAITTIME		30
@@ -282,6 +281,8 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 			if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_NULL)) {
 				iRes = IDCANCEL;
 			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_DELETE)) {
+				DeleteFile(m_sNowPicPath);
+			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_ASKDELETE)) {
 				iRes = IDYES;
 			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_EXPLORE)) {
 				iRes = IDNO;
@@ -449,6 +450,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	GetDlgItem(IDC_WALL_BTN_ADDCLASS)		->SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
 	m_btn_EnableToolTip.SetWindowText(CResString(m_bEnableTip ? IDS_WALL_BTN_DISABLETIP : IDS_WALL_BTN_ENABLETIP));
 	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_ASKUSER));
+	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_ASKDELETE));
 	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_DELETE));
 	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_EXPLORE));
 	((CComboBox *)GetDlgItem(IDC_COMBO_IMAGELOADERROR))->AddString(GetResString(IDS_WALL_COMBOX_NULL));

@@ -299,6 +299,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_WALL_COMBOX_NULL    "不做事"
+    IDS_WALL_COMBOX_ASKDELETE "詢問刪除"
 END
 
 #endif    // 中文 (台灣) resources

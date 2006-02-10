@@ -51,6 +51,7 @@
 #define IDS_WALL_COMBOX_DELETE          222
 #define IDS_WALL_COMBOX_EXPLORE         223
 #define IDS_WALL_COMBOX_NULL            224
+#define IDS_WALL_COMBOX_ASKDELETE       235
 #define IDC_TAB_MAIN                    1000
 #define IDC_PROGRESS_END                1001
 #define IDC_MAGICKDEND_EDIT_TEXT        1002
