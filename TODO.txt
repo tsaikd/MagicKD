@@ -1,4 +1,7 @@
-list item可移動
+可不顯示closing window
+一開始的讀取錯誤可不顯示
+把history放進enable class
+
 用ini存file list太慢了 (暫時不存)
 紀錄讀取失敗次數(順便可以刪除或查看)
 圖片讀取錯誤log
@@ -13,6 +16,4 @@ OnSize
 螢幕解析度(ku)
 
 bug:
-	左鍵點tray icon兩下會換圖
 	cache num 的部份不同步
-	WallChanger Timer Thread 有時候會關不掉

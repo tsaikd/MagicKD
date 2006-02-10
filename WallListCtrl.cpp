@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Others.h"
 #include "WallListCtrl.h"
 
 CWallListCtrl::CWallListCtrl() : m_pIni(NULL), m_bInit(false)
@@ -23,4 +24,24 @@ void CWallListCtrl::SaveIni()
 		return;
 
 	CKDIni::SaveIni();
+}
+
+LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message) {
+	case WM_LBUTTONUP:
+		if (m_bEnableDrag) {
+			CPoint pt(lParam);
+			int iPos = QueryDragPos(pt); // return the target position
+			int iMaxPos = GetItemCount();
+			if (!INRANGE(m_nmlvBeginDrag.iItem, 0, iMaxPos) || !INRANGE(iPos, 0, iMaxPos))
+				break;
+
+			MoveSelectedItems(iPos);
+			SetIniModify();
+		}
+		break;
+	}
+
+	return __super::DefWindowProc(message, wParam, lParam);
 }

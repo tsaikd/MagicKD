@@ -23,6 +23,6 @@ void CKDListItem::SetText(int iColumn, CString sText)
 CString CKDListItem::GetText(int iColumn)
 {
 	if (iColumn > m_iColumn)
-		return NULL;
+		return CString();
 	return m_pText[iColumn];
 }

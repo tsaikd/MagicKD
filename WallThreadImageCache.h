@@ -56,9 +56,4 @@ private:
 	CStringList m_slImageWaitForAdd;
 };
 
-#ifdef _MAIN_CxImageList
-#undef _MAIN_CxImageList
-CWallThreadImageCache *g_pWallThreadImageCache = NULL;
-#else
 extern CWallThreadImageCache *g_pWallThreadImageCache;
-#endif //_MAIN_CxImageList

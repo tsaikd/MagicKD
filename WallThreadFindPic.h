@@ -26,9 +26,4 @@ private:
 	bool __bMatchSupport(LPCTSTR sPat);
 };
 
-#ifdef _MAIN_CWallThreadFindPic
-#undef _MAIN_CWallThreadFindPic
-CWallThreadFindPic *g_pWallThreadFindPic = NULL;
-#else
 extern CWallThreadFindPic *g_pWallThreadFindPic;
-#endif //_MAIN_CWallThreadFindPic

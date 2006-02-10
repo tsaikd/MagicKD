@@ -1,14 +1,15 @@
 #pragma once
-#include "Resource.h"
 #include "afxwin.h"
 #include "afxcmn.h"
+#include "afxmt.h"
+#include "Resource.h"
 #include "Ini.h"
 #include "xImage.h"
 #include "KDIni.h"
 #include "KDEdit.h"
 #include "KDButton.h"
 #include "KDComboBox.h"
-#include "KDThread.h"
+//#include "KDThread.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
@@ -20,14 +21,14 @@ enum {
 
 // CWallChangerDlg 對話方塊
 
-class CWallChangerDlg : public CDialog, public CKDIni, public CKDThread
+class CWallChangerDlg : public CDialog, public CKDIni//, public CKDThread
 {
 	DECLARE_DYNAMIC(CWallChangerDlg)
 	DECLARE_MESSAGE_MAP()
 public:
 	CWallChangerDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChangerDlg();
-	virtual DWORD ThreadProc();
+//	virtual DWORD ThreadProc();
 
 // 對話方塊資料
 	enum { IDD = IDD_MAGICKD_WALLCHANGER };
@@ -42,6 +43,9 @@ public:
 	UINT	GetCachePicNum();
 	bool	SetRandWallPager(bool bWay);
 	LPCTSTR	GetRandPicPath();
+
+	UINT	StartTimer();
+	UINT	StopTimer();
 
 	BOOL	EnableToolTips(BOOL bEnable = TRUE);
 
@@ -77,6 +81,7 @@ private:
 	// at least 1. if in history, then don't set to wallpager
 	// if larger than total list number, then equal to set 1
 	UINT m_uPicPathHistory;
+	UINT m_uTimer;
 	CString m_sComboxMsg;
 	CxImage m_xImgNowPic;
 	CString m_sNowPicPath;
@@ -98,4 +103,5 @@ public:
 	afx_msg void OnBnClickedButtonDelpic();
 	afx_msg void OnBnClickedButtonEnabletooltip();
 	afx_msg void OnCbnSelchangeComboImageloaderror();
+	afx_msg void OnTimer(UINT nIDEvent);
 };

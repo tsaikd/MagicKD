@@ -29,9 +29,4 @@ private:
 	LPCTSTR _GetNextPic(UINT uJump = 1);
 };
 
-#ifdef _MAIN_CWallEnablePicList
-#undef _MAIN_CWallEnablePicList
-CWallEnablePicList *g_pWallEnablePicList = NULL;
-#else
 extern CWallEnablePicList *g_pWallEnablePicList;
-#endif //_MAIN_CWallEnablePicList

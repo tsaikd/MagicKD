@@ -19,4 +19,6 @@ protected:
 
 private:
 	bool m_bInit;
+protected:
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

@@ -1,8 +1,10 @@
 #include "StdAfx.h"
+#include "Others.h"
 #include "Resource.h"
 #include "Language.h"
 #include "MagicKD.h"
 #include "WallDirListCtrl.h"
+
 #include "WallClassListCtrl.h"
 
 CWallClassListCtrl::CWallClassListCtrl() :
@@ -127,6 +129,7 @@ BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_WM_CONTEXTMENU()
 	ON_WM_DESTROY()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
+	ON_NOTIFY_REFLECT(LVN_ENDLABELEDIT, OnLvnEndlabeledit)
 END_MESSAGE_MAP()
 
 void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
@@ -135,6 +138,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 
 	CWallListCtrl::Init(pIni);
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
+	EnableDrag();
 
 	CRect rcWin;
 	GetClientRect(rcWin);
@@ -221,6 +225,21 @@ void CWallClassListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 			delete pChildList;
 		}
 		delete pItem;
+	}
+
+	*pResult = 0;
+}
+
+void CWallClassListCtrl::OnLvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
+
+	if (pDispInfo->item.pszText) {
+		CWallClassListItem *pItem = (CWallClassListItem *)GetItemData(pDispInfo->item.iItem);
+		if (pItem) {
+            pItem->SetItemName(pDispInfo->item.pszText);
+			SetIniModify();
+		}
 	}
 
 	*pResult = 0;

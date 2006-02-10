@@ -143,9 +143,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\KDComboBox.cpp">
-			</File>
-			<File
 				RelativePath=".\MagicKD.cpp">
 			</File>
 			<File
@@ -190,6 +187,9 @@
 				Filter="">
 				<File
 					RelativePath=".\KDButton.cpp">
+				</File>
+				<File
+					RelativePath=".\KDComboBox.cpp">
 				</File>
 				<File
 					RelativePath=".\KDEdit.cpp">
@@ -264,9 +264,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\KDComboBox.h">
-			</File>
-			<File
 				RelativePath=".\MagicKD.h">
 			</File>
 			<File
@@ -305,6 +302,9 @@
 				Filter="">
 				<File
 					RelativePath=".\KDButton.h">
+				</File>
+				<File
+					RelativePath=".\KDComboBox.h">
 				</File>
 				<File
 					RelativePath=".\KDEdit.h">

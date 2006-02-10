@@ -1,10 +1,10 @@
 #include "StdAfx.h"
+#include "Others.h"
 #include "Resource.h"
 #include "Language.h"
 #include "WallDirListItem.h"
 
 #include "WallDirListCtrl.h"
-#include ".\walldirlistctrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
 	m_bInit(false), m_bAllItemEnable(false), m_bShowMsgOnNotFixDrive(true)
@@ -42,6 +42,7 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
 	InsertColumn(0, CResString(IDS_WALL_COLUMN_DIRPATH), LVCFMT_LEFT, rcWin.right - 50);
 	InsertColumn(1, CResString(IDS_WALL_COLUMN_PICFINDNUM), LVCFMT_CENTER, 50);
 	SetListClassName(sListClassName);
+	EnableDrag();
 
 	CStringArray saDirList;
 	m_pIni->GetArray(_T("DirList"), GetListClassName(), &saDirList);

@@ -273,19 +273,17 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_LBUTTONDOWN:
 			if (IsWindowVisible())
 				SetForegroundWindow();
-			if (m_pWallChangerDlg)
+			if (m_pWallChangerDlg) {
 				m_pWallChangerDlg->OnBnClickedButtonRandpic();
-			else
-				SendMessage(message, wParam, WM_LBUTTONDBLCLK);
-			return 0;
-		case WM_LBUTTONDBLCLK:
-			if (IsWindowVisible()) {
-				m_bVisiable = false;
-				ShowWindow(SW_HIDE);
 			} else {
-				m_bVisiable = true;
-				ShowWindow(SW_SHOW);
-				SetForegroundWindow();
+				if (IsWindowVisible()) {
+					m_bVisiable = false;
+					ShowWindow(SW_HIDE);
+				} else {
+					m_bVisiable = true;
+					ShowWindow(SW_SHOW);
+					SetForegroundWindow();
+				}
 			}
 			return 0;
 		case WM_RBUTTONUP:
@@ -296,6 +294,7 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		return 0;
 	}
+
 	switch (message) {
 	case WM_COMMAND:
 		{

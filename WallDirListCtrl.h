@@ -4,6 +4,7 @@
 class CWallDirListCtrl :
 	public CWallListCtrl
 {
+	DECLARE_MESSAGE_MAP()
 public:
 	CWallDirListCtrl();
 	virtual ~CWallDirListCtrl();
@@ -30,7 +31,6 @@ private:
 	CString m_sListClassName;
 
 public:
-	DECLARE_MESSAGE_MAP()
 	afx_msg void OnDestroy();
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
