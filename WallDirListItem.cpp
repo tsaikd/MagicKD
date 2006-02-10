@@ -28,7 +28,7 @@ void CWallDirListItem::SaveIni()
 	SetIniModify(false);
 }
 
-void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *bShowMsgOnNotFixDrive)
+void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *pbShowDirLoadError)
 {
 	m_hWnd = pParent;
 	m_pIni = pIni;
@@ -46,19 +46,14 @@ void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *bS
 	} else if (IsDirOnFixDrive()) {
 		MessageBox(CResString(IDS_WALL_DIRNOTEXIST), MB_OK|MB_ICONERROR);
 	} else {
-		if (*bShowMsgOnNotFixDrive) {
+		if (*pbShowDirLoadError) {
 			int iRes;
 			while (iRes = MessageBox(GetResString(IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE), MB_RETRYCANCEL|MB_ICONWARNING)) {
 				if (iRes == IDCANCEL) {
-					*bShowMsgOnNotFixDrive = false;
 					MessageBox(GetResString(IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
 					break;
-				} else if (iRes == IDRETRY) {
-					if (PathFileExists(GetItemDirPath())) {
-						break;
-					} else {
-						continue;
-					}
+				} else if ((iRes == IDRETRY) && (PathFileExists(GetItemDirPath()))) {
+					break;
 				}
 			}
 		}

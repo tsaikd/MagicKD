@@ -6,6 +6,7 @@
 #include "Others.h"
 #include "Language.h"
 #include "MagicKD.h"
+
 #include "MagicKDDlg.h"
 
 #ifdef _DEBUG
@@ -13,15 +14,21 @@
 #endif
 
 
-CKDTray theTray;
+CKDTray *pTheTray = NULL;
 
 // CMagicKDDlg 對話方塊
 
 
+IMPLEMENT_DYNAMIC(CMagicKDDlg, CDialog)
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMagicKDDlg::IDD, pParent), m_pIni(NULL), m_pWallChangerDlg(NULL), m_bVisiable(true)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
+CMagicKDDlg::~CMagicKDDlg()
+{
+	DestroyIcon(m_hIcon);
 }
 
 void CMagicKDDlg::InitTabRect()
@@ -58,9 +65,9 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 				m_pWallChangerDlg->ShowWindow(SW_HIDE);
 				m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChangerDlg);
 
-				int nItem = theTray.FindTrayMenuItem(_T("WallChanger"));
+				int nItem = pTheTray->FindTrayMenuItem(_T("WallChanger"));
 				if (nItem >= 0)
-					theTray.CheckMenuItem(nItem, MF_BYPOSITION | MF_CHECKED);
+					pTheTray->CheckMenuItem(nItem, MF_BYPOSITION | MF_CHECKED);
 			} else {
 				if (m_pWallChangerDlg){
 					m_cMainTab.DeleteItem(eFunc_WallChanger);
@@ -68,9 +75,9 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
                     delete m_pWallChangerDlg;
 					m_pWallChangerDlg = NULL;
 
-					int nItem = theTray.FindTrayMenuItem(_T("WallChanger"));
+					int nItem = pTheTray->FindTrayMenuItem(_T("WallChanger"));
 					if (nItem >= 0)
-						theTray.CheckMenuItem(nItem, MF_BYPOSITION | MF_UNCHECKED);
+						pTheTray->CheckMenuItem(nItem, MF_BYPOSITION | MF_UNCHECKED);
 				}
 			}
 			break;
@@ -90,6 +97,20 @@ bool CMagicKDDlg::SetTransparency(UINT uAlpha)
 	return bRes;
 }
 
+BOOL CMagicKDDlg::ShowWindow(int nCmdShow)
+{
+	if (nCmdShow == SW_SHOW)
+		m_bVisiable = true;
+	else if (nCmdShow == SW_HIDE)
+		m_bVisiable = false;
+
+	BOOL bRes = CWnd::ShowWindow(nCmdShow);
+
+	if (nCmdShow == SW_SHOW)
+		SetForegroundWindow();
+	return bRes;
+}
+
 void CMagicKDDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
@@ -99,7 +120,6 @@ void CMagicKDDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	//}}AFX_MSG_MAP
 	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MAIN, OnTcnSelchangeMaintab)
 	ON_NOTIFY(TCN_SELCHANGING, IDC_TAB_MAIN, OnTcnSelchangingMaintab)
@@ -107,8 +127,6 @@ BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
-
-// CMagicKDDlg 訊息處理常式
 
 BOOL CMagicKDDlg::OnInitDialog()
 {
@@ -120,17 +138,19 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	InitTabRect();
-	theTray.RegisterTray(m_hWnd, m_hIcon);
+	if (!pTheTray)
+		pTheTray = new CKDTray;
+	pTheTray->RegisterTray(m_hWnd, m_hIcon);
 
-	theTray.AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, GetResString(IDS_TRAY_OPENWINDOW));
-	theTray.AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, GetResString(IDS_TRAY_CLOSEWINDOW), true);
-	theAppEndDlg.SignWnd(m_hWnd, 2);
+	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, GetResString(IDS_TRAY_OPENWINDOW));
+	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, GetResString(IDS_TRAY_CLOSEWINDOW), true);
+	pTheAppEndDlg->SignWnd(m_hWnd, 2);
 
 	m_pIni = &theApp.m_cIni;
 	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
-	theTray.InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, GetResString(IDS_TRAY_WALLCHANGER));
+	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, GetResString(IDS_TRAY_WALLCHANGER));
 	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
 		SetFuncEnable(eFunc_WallChanger, true, false);
 	else
@@ -148,24 +168,23 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 	DoSize();
 
-	// TODO: 在此加入額外的初始設定
-	
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
 void CMagicKDDlg::OnDestroy()
 {
-	theAppEndDlg.ShowWindow(SW_SHOW);
-	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Closing\tMagicKD\tDialog"));
+	if (m_cMainConfigDlg.IsShowCloseWindow())
+		pTheAppEndDlg->ShowWindow(SW_SHOW);
+
+	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Closing\tMagicKD\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
 
 	CDialog::OnDestroy();
 
-	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Deleting\tMagicKD\tTray Menu"));
-	theTray.RemoveTrayMenuItem(GetResString(IDS_TRAY_CLOSEWINDOW));
-	theTray.UnRegisterTray();
-
-	// TODO: 在此加入您的訊息處理常式程式碼
+	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Deleting\tMagicKD\tTray Menu"));
+	pTheTray->RemoveTrayMenuItem(GetResString(IDS_TRAY_CLOSEWINDOW));
+	delete pTheTray;
+	pTheTray = NULL;
 }
 
 // 如果將最小化按鈕加入您的對話方塊，您需要下列的程式碼，以便繪製圖示。
@@ -204,14 +223,11 @@ HCURSOR CMagicKDDlg::OnQueryDragIcon()
 
 void CMagicKDDlg::OnOK()
 {
-	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
-
 //	CDialog::OnOK();
 }
 
 void CMagicKDDlg::OnCancel()
 {
-	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
 	theApp.GetMainWnd()->DestroyWindow();
 
 //	CDialog::OnCancel();
@@ -225,8 +241,6 @@ void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
 		return;
 	}
 	__super::OnSize(nType, cx, cy);
-
-	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 void CMagicKDDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
@@ -235,13 +249,10 @@ void CMagicKDDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 		lpwndpos->flags &= ~SWP_SHOWWINDOW;
 
 	__super::OnWindowPosChanging(lpwndpos);
-
-	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: 在此加入控制項告知處理常式程式碼
 	CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg) {
 		pCurDlg->ShowWindow(SW_SHOW);
@@ -255,7 +266,6 @@ void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: 在此加入控制項告知處理常式程式碼
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg)
 		pCurDlg->ShowWindow(SW_HIDE);
@@ -266,7 +276,6 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message == WMU_ARE_YOU_APP) {
 		ShowWindow(SW_SHOW);
-		SetForegroundWindow();
 		return WMU_I_AM_APP;
 	} else if (message == WMU_TRAY_CALLBACK) {
 		switch (lParam) {
@@ -276,19 +285,15 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			if (m_pWallChangerDlg) {
 				m_pWallChangerDlg->OnBnClickedButtonRandpic();
 			} else {
-				if (IsWindowVisible()) {
-					m_bVisiable = false;
+				if (IsWindowVisible())
 					ShowWindow(SW_HIDE);
-				} else {
-					m_bVisiable = true;
+				else
 					ShowWindow(SW_SHOW);
-					SetForegroundWindow();
-				}
 			}
 			return 0;
 		case WM_RBUTTONUP:
 			SetForegroundWindow();
-			theTray.TrackPopupMenu(this);
+			pTheTray->TrackPopupMenu(this);
 			Invalidate();
 			return 0;
 		}
@@ -301,9 +306,7 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			UINT nID = LOWORD(wParam);
 			switch (nID) {
 			case IDS_TRAY_OPENWINDOW:
-				m_bVisiable = true;
 				ShowWindow(SW_SHOW);
-				SetForegroundWindow();
 				return 0;
 			case IDS_TRAY_CLOSEWINDOW:
 				DestroyWindow();

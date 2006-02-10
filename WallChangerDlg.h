@@ -60,6 +60,7 @@ public:
 	CKDButton m_btn_RandPic;
 	CKDButton m_btn_DelPic;
 	CKDButton m_btn_AddClass;
+	CKDButton m_checkShowLoadDirError;
 	CKDEdit m_editWaitTime;
 	CKDEdit m_editAddClass;
 	CKDEdit m_editHistoryNum;
@@ -74,6 +75,7 @@ private:
 
 	bool m_bInit;
 	bool m_bSetCachePicNum;
+	bool m_bShowDirLoadError;
 	BOOL m_bEnableTip;
 	UINT m_uWaitTime;
 	UINT m_uCachePicNum;
@@ -104,4 +106,5 @@ public:
 	afx_msg void OnBnClickedButtonEnabletooltip();
 	afx_msg void OnCbnSelchangeComboImageloaderror();
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnBnClickedWallCheckShowdirloaderror();
 };

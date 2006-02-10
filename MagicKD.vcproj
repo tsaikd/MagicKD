@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="MagicKD"
 	ProjectGUID="{192342B2-0496-4F02-AA80-C0A92F7F068D}"
+	RootNamespace="MagicKD"
 	Keyword="MFCProj">
 	<Platforms>
 		<Platform
@@ -34,7 +35,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CxImage/CxImage/Debug/CxImage.lib CxImage/j2k/Debug/j2k.lib CxImage/jasper/Debug/jasper.lib CxImage/jbig/Debug/jbig.lib CxImage/jpeg/Debug/jpeg.lib CxImage/png/Debug/png.lib CxImage/tiff/Debug/tiff.lib CxImage/zlib/Debug/zlib.lib"
+				AdditionalDependencies="CxImage/CxImage/$(ConfigurationName)/CxImage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
 				LinkIncremental="2"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
@@ -101,7 +102,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CxImage/CxImage/Release/CxImage.lib CxImage/j2k/Release/j2k.lib CxImage/jasper/Release/jasper.lib CxImage/jbig/Release/jbig.lib CxImage/jpeg/Release/jpeg.lib CxImage/png/Release/png.lib CxImage/tiff/Release/tiff.lib CxImage/zlib/Release/zlib.lib"
+				AdditionalDependencies="CxImage/CxImage/$(ConfigurationName)/CxImage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"

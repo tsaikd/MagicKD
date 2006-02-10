@@ -30,7 +30,7 @@ LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
 	case WM_LBUTTONUP:
-		if (m_bEnableDrag) {
+		if (m_bOnDraging) {
 			CPoint pt(lParam);
 			int iPos = QueryDragPos(pt); // return the target position
 			int iMaxPos = GetItemCount();

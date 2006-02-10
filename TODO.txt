@@ -1,8 +1,5 @@
-可不顯示closing window
-一開始的讀取錯誤可不顯示
 把history放進enable class
 
-用ini存file list太慢了 (暫時不存)
 紀錄讀取失敗次數(順便可以刪除或查看)
 圖片讀取錯誤log
 

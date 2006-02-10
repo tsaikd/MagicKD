@@ -11,16 +11,17 @@
 
 #include "WallChangerDlg.h"
 
-extern CKDTray theTray;
+extern CKDTray *pTheTray;
 
 // CMagicKDDlg 對話方塊
 class CMagicKDDlg : public CDialog
 {
-// 建構
+	DECLARE_DYNAMIC(CMagicKDDlg)
+	DECLARE_MESSAGE_MAP()
 public:
 	CMagicKDDlg(CWnd* pParent = NULL);	// 標準建構函式
+	virtual ~CMagicKDDlg();
 
-// 對話方塊資料
 	enum { IDD = IDD_MAGICKD };
 	typedef enum { eFunc_WallChanger = 1 } FuncList;
 
@@ -30,6 +31,7 @@ public:
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
 
 	bool SetTransparency(UINT uAlpha);
+	BOOL ShowWindow(int nCmdShow);
 
 	CIni *m_pIni;
 	CKDTabCtrl m_cMainTab;
@@ -42,15 +44,10 @@ private:
 	bool m_bVisiable;
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支援
-
-
-	DECLARE_MESSAGE_MAP()
-// 程式碼實作
-protected:
 	HICON m_hIcon;
 
-	// 產生的訊息對應函式
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支援
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -62,6 +59,4 @@ public:
 	afx_msg void OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
-protected:
-	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

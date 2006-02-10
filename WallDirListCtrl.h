@@ -10,7 +10,7 @@ public:
 	virtual ~CWallDirListCtrl();
 	virtual void SaveIni();
 
-	void Init(CIni *pIni, LPCTSTR sListClassName);
+	void Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirLoadError);
 	void SetListClassName(LPCTSTR sName);
 	CString GetListClassName();
 	bool AddItem(LPCTSTR sDirPath);
@@ -27,7 +27,7 @@ private:
 	bool m_bInit;
 	bool m_bFindPath;
 	bool m_bAllItemEnable;
-	bool m_bShowMsgOnNotFixDrive;
+	bool *m_pbShowDirLoadError;
 	CString m_sListClassName;
 
 public:

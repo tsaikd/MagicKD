@@ -7,7 +7,7 @@
 #include "WallDirListCtrl.h"
 
 CWallDirListCtrl::CWallDirListCtrl() :
-	m_bInit(false), m_bAllItemEnable(false), m_bShowMsgOnNotFixDrive(true)
+	m_bInit(false), m_bAllItemEnable(false), m_pbShowDirLoadError(NULL)
 {
 }
 
@@ -33,7 +33,7 @@ void CWallDirListCtrl::SaveIni()
 	CWallListCtrl::SaveIni();
 }
 
-void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
+void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirLoadError)
 {
 	CWallListCtrl::Init(pIni);
 
@@ -43,6 +43,8 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName)
 	InsertColumn(1, CResString(IDS_WALL_COLUMN_PICFINDNUM), LVCFMT_CENTER, 50);
 	SetListClassName(sListClassName);
 	EnableDrag();
+
+	m_pbShowDirLoadError = pbShowDirLoadError;
 
 	CStringArray saDirList;
 	m_pIni->GetArray(_T("DirList"), GetListClassName(), &saDirList);
@@ -72,7 +74,7 @@ CString CWallDirListCtrl::GetListClassName()
 bool CWallDirListCtrl::AddItem(LPCTSTR sDirPath)
 {
 	CWallDirListItem *pItem = new CWallDirListItem;
-	pItem->Init(m_hWnd, m_pIni, sDirPath, &m_bShowMsgOnNotFixDrive);
+	pItem->Init(m_hWnd, m_pIni, sDirPath, m_pbShowDirLoadError);
 	if (-1 == InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, GetItemCount(), LPSTR_TEXTCALLBACK, 0, 0,
 	I_IMAGECALLBACK, (LPARAM) pItem)) {
 		delete pItem;

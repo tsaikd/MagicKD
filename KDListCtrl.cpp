@@ -3,7 +3,7 @@
 #include "KDListCtrl.h"
 
 CKDListCtrl::CKDListCtrl()
-: m_bEnableToolTip(FALSE), m_pImageList(NULL), m_bEnableDrag(false)
+: m_bEnableToolTip(FALSE), m_pImageList(NULL), m_bEnableDrag(false), m_bOnDraging(false)
 {
 }
 
@@ -203,7 +203,6 @@ int CKDListCtrl::GetFirstSelectedItemNum()
 	return GetNextSelectedItem(pos);
 }
 
-#if (_WIN32_IE >= 0x0300)
 void CKDListCtrl::SetSelectItemCheckState(bool bCheck)
 {
 	int nItem;
@@ -214,7 +213,6 @@ void CKDListCtrl::SetSelectItemCheckState(bool bCheck)
 		SetItemState(nItem, 0, LVIS_SELECTED);
 	}
 }
-#endif
 
 int CKDListCtrl::FindItemByText(LPCTSTR sText)
 {
@@ -308,11 +306,11 @@ void CKDListCtrl::OnLvnBegindrag(NMHDR *pNMHDR, LRESULT *pResult)
 		return;
 	m_nmlvBeginDrag = *pNMLV;
 
+	m_bOnDraging = true;
 	m_pImageList->BeginDrag(0, CPoint(0, 0));
 	m_pImageList->DragShowNolock(TRUE);
 	SetCapture();
 
-	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
 }
 
@@ -320,7 +318,7 @@ LRESULT CKDListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
 	case WM_MOUSEMOVE:
-		if (m_bEnableDrag && m_pImageList) {
+		if (m_bEnableDrag && m_bOnDraging && m_pImageList) {
 			CPoint pt(lParam);
 			DrawDragMark(pt, m_clrDragLine, m_clrBackGround);
 			CPoint ptCur;
@@ -329,16 +327,15 @@ LRESULT CKDListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_LBUTTONUP:
-		if (m_bEnableDrag && m_pImageList) {
+		if (m_bEnableDrag && m_bOnDraging && m_pImageList) {
 			m_pImageList->EndDrag();
 			delete m_pImageList;
 			m_pImageList = NULL;
+			m_bOnDraging = false;
 			Invalidate();
 		}
 		break;
 	}
-
-	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
 
 	return CListCtrl::DefWindowProc(message, wParam, lParam);
 }

@@ -17,7 +17,6 @@ public:
 	CMainConfigDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CMainConfigDlg();
 
-// 對話方塊資料
 	enum { IDD = IDD_MAGICKD_CONFIG };
 
 public:
@@ -25,14 +24,16 @@ public:
 	virtual void SaveIni();
 
 	bool IsStartMin();
+	bool IsShowCloseWindow();
 	bool IsWallChanger();
 
 	UINT GetSliderTransparency();
 	void UpdateFuncCheck();
 
 	CIni *m_pIni;
-	CButton m_cbWallChanger;
+	CButton m_checkWallChanger;
 	CKDButton m_checkStartMin;
+	CKDButton m_checkShowCloseWindow;
 	CSliderCtrl m_sliderTransparency;
 protected:
 private:
@@ -46,4 +47,5 @@ public:
 	afx_msg void OnBnClickedWallchangercheck();
 	afx_msg void OnBnClickedCheckConfStartmin();
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedConfCheckShowclosewindow();
 };

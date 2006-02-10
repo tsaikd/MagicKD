@@ -18,7 +18,7 @@ How To Use Drag:
 	2. Add to DefWindowProc:
 		switch (message) {
 		case WM_LBUTTONUP:
-			if (m_bEnableDrag) {
+			if (m_bOnDraging) {
 				CPoint pt(lParam);
 				int iPos = QueryDragPos(pt); // return the target position
 				// Then do what you want
@@ -31,14 +31,17 @@ How To Use Drag:
 	//BOOL ScrollByItem(int iItems, bool bDrawDragMark = false, LPPOINT pPt = NULL);
 	int QueryDragPos(const POINT &pt);
 	void DrawDragMark(const POINT &pt, COLORREF clr = RGB(255, 0, 0), COLORREF bgClr = RGB(255, 255, 255));
+protected:
+	bool m_bOnDraging;
+private:
+	bool m_bEnableDrag;
 
+public:
 	void DeleteSelectItem();
 	void CancleAllSelected();
 	LPARAM GetFirstSelectedItemLParam();
 	int GetFirstSelectedItemNum();
-#if (_WIN32_IE >= 0x0300)
 	void SetSelectItemCheckState(bool bCheck);
-#endif
 
 	int FindItemByText(LPCTSTR sText);
 	LPARAM GetItemLParam(int nItem);
@@ -50,7 +53,6 @@ How To Use Drag:
 	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
 
 protected:
-	bool		m_bEnableDrag;
 	NMLISTVIEW	m_nmlvBeginDrag;
 	CImageList*	m_pImageList;
 

@@ -29,7 +29,7 @@ public:
 	virtual ~CWallClassListCtrl();
 	virtual void SaveIni();
 
-	void Init(CIni *pIni, CRect &rcChildDirList);
+	void Init(CIni *pIni, CRect &rcChildDirList, bool *bShowDirLoadError);
 	bool AddItem(LPCTSTR sClassName);
 	void SetItemEnable(int nItem, bool bEnable);
 	void UpdateSelectItemFileFindNum();
@@ -40,6 +40,7 @@ public:
 
 private:
 	bool m_bInit;
+	bool *m_pbShowDirLoadError;
 	int m_iIDC_WALLDIRLISTBASE;
 	CRect m_rcChildDirList;
 

@@ -10,7 +10,7 @@ UINT WMU_TRAY_CALLBACK = ::RegisterWindowMessage(_T("WMU_TRAY_CALLBACK-")
 
 CKDTray::CKDTray()
 {
-	memset(&m_trayData, 0, sizeof(m_trayData));
+	ZeroMemory(&m_trayData, sizeof(m_trayData));
 	m_mTrayMenu.CreatePopupMenu();
 }
 

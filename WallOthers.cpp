@@ -4,11 +4,11 @@
 // if do resample, then return true
 bool AutoPicSize(CxImage &img)
 {
-	CPoint cpSize(img.GetWidth(), img.GetHeight());
+	CSize sizeImg(img.GetWidth(), img.GetHeight());
 
-	if (_AutoPicSize(cpSize, CPoint(1024, 768))) {
-		img.QIShrink(cpSize.x, cpSize.y);
-//		img.Resample2(cpSize.x, cpSize.y, CxImage::IM_CATROM);
+	if (_AutoPicSize(sizeImg, CSize(1024, 768))) {
+		img.QIShrink(sizeImg.cx, sizeImg.cy);
+//		img.Resample2(sizeImg.cx, sizeImg.cy, CxImage::IM_CATROM);
 		return true;
 	} else {
 		return false;
@@ -17,16 +17,16 @@ bool AutoPicSize(CxImage &img)
 
 // if need resample, then return true, and set new size at cpSizeSrc
 // else return false
-bool _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
+bool _AutoPicSize(CSize &sizeSrc, CSize const &sizeMax)
 {
-	if ((cpSizeMax.x >= cpSizeSrc.x) && (cpSizeMax.y >= cpSizeSrc.y))
+	if ((sizeMax.cx >= sizeSrc.cx) && (sizeMax.cy >= sizeSrc.cy))
 		return false;
 
 	double dRatioX, dRatioY;
-	dRatioX = (double)cpSizeMax.x / (double)cpSizeSrc.x;
-	dRatioY = (double)cpSizeMax.y / (double)cpSizeSrc.y;
+	dRatioX = (double)sizeMax.cx / (double)sizeSrc.cx;
+	dRatioY = (double)sizeMax.cy / (double)sizeSrc.cy;
 
 	double dRatio = (dRatioX<dRatioY) ? dRatioX : dRatioY;
-	cpSizeSrc.SetPoint((int)((double)cpSizeSrc.x * dRatio), (int)((double)cpSizeSrc.y * dRatio));
+	sizeSrc.SetSize((int)((double)sizeSrc.cx * dRatio), (int)((double)sizeSrc.cy * dRatio));
 	return true;
 }

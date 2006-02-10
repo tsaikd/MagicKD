@@ -8,7 +8,7 @@
 #include "WallClassListCtrl.h"
 
 CWallClassListCtrl::CWallClassListCtrl() :
-	m_bInit(false), m_iIDC_WALLDIRLISTBASE(200)
+	m_bInit(false), m_iIDC_WALLDIRLISTBASE(200), m_pbShowDirLoadError(NULL)
 {
 }
 
@@ -51,7 +51,7 @@ bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
 		delete pChildList;
 		return false;
 	}
-	pChildList->Init(m_pIni, sClassName);
+	pChildList->Init(m_pIni, sClassName, m_pbShowDirLoadError);
 	pChildList->EnableToolTips(NULL, pChildList->IsEnableToolTips());
 
 	CWallClassListItem *pItem = new CWallClassListItem;
@@ -132,9 +132,9 @@ BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_NOTIFY_REFLECT(LVN_ENDLABELEDIT, OnLvnEndlabeledit)
 END_MESSAGE_MAP()
 
-void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
+void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDirLoadError)
 {
-	theAppEndDlg.SignWnd(m_hWnd, 1);
+	pTheAppEndDlg->SignWnd(m_hWnd, 1);
 
 	CWallListCtrl::Init(pIni);
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
@@ -144,6 +144,8 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 	GetClientRect(rcWin);
 	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, rcWin.right);
 	m_rcChildDirList = rcChildDirList;
+
+	m_pbShowDirLoadError = pbShowDirLoadError;
 
 	CStringArray saClassList;
 	m_pIni->GetArray(_T("General"), _T("ClassList"), &saClassList);
@@ -171,7 +173,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList)
 
 void CWallClassListCtrl::OnDestroy()
 {
-	theAppEndDlg.ProgressStepIt(m_hWnd, _T("Freeing\tWallChanger\tClass List"));
+	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Freeing\tWallChanger\tClass List"));
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirList;
 	int iCount = GetItemCount();
@@ -186,9 +188,7 @@ void CWallClassListCtrl::OnDestroy()
 	SaveIni();
 	CWallListCtrl::OnDestroy();
 
-	theAppEndDlg.UnsignWnd(m_hWnd);
-
-	// TODO: 在此加入您的訊息處理常式程式碼
+	pTheAppEndDlg->UnsignWnd(m_hWnd);
 }
 
 void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
@@ -209,13 +209,11 @@ void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	}
 	m_mContextMenu.DestroyMenu();
 	Invalidate();
-	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 void CWallClassListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 在此加入控制項告知處理常式程式碼
 
 	CWallClassListItem *pItem = (CWallClassListItem *)pNMLV->lParam;
 	if (pItem) {

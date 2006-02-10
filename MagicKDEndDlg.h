@@ -44,3 +44,5 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 };
+
+extern CMagicKDEndDlg *pTheAppEndDlg;

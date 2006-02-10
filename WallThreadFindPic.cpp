@@ -143,6 +143,4 @@ void CWallThreadFindPic::_ThreadProcStage()
 	if (pDirItem->IsItemEnable())
 		::g_pWallEnablePicList->AddEnableItem(pDirItem->GetItemPicPathArray());
 	pDirItem->Invalidate();
-
-	saPicPath.RemoveAll();
 }

@@ -6,12 +6,13 @@
 #include "Language.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
+
 #include "MainConfigDlg.h"
 
-
-#define DEFAULT_STARTMIN		false
-#define DEFAULT_WALLCHANGER		false
-#define DEFAULT_TRANSPARENCY	255
+#define DEFAULT_STARTMIN			false
+#define DEFAULT_SHOWCLOSEWINDOW		true
+#define DEFAULT_WALLCHANGER			false
+#define DEFAULT_TRANSPARENCY		255
 
 // CMainConfigDlg 對話方塊
 
@@ -40,6 +41,12 @@ void CMainConfigDlg::SaveIni()
 	else
 		m_pIni->DeleteKey(_T("General"), _T("bStartMin"));
 
+	bool bShowCloseWindow = IsShowCloseWindow();
+	if (bShowCloseWindow != DEFAULT_SHOWCLOSEWINDOW)
+		m_pIni->WriteBool(_T("General"), _T("bShowCloseWindow"), bShowCloseWindow);
+	else
+		m_pIni->DeleteKey(_T("General"), _T("bShowCloseWindow"));
+
 	bool bWallChanger = IsWallChanger();
 	if (bWallChanger != DEFAULT_WALLCHANGER)
 		m_pIni->WriteBool(_T("FuncList"), _T("bWallChanger"), bWallChanger);
@@ -59,9 +66,14 @@ bool CMainConfigDlg::IsStartMin()
 	return m_checkStartMin.GetCheck()==BST_CHECKED;
 }
 
+bool CMainConfigDlg::IsShowCloseWindow()
+{
+	return m_checkShowCloseWindow.GetCheck()==BST_CHECKED;
+}
+
 bool CMainConfigDlg::IsWallChanger()
 {
-	return m_cbWallChanger.GetCheck()==BST_CHECKED;
+	return m_checkWallChanger.GetCheck()==BST_CHECKED;
 }
 
 UINT CMainConfigDlg::GetSliderTransparency()
@@ -72,23 +84,24 @@ UINT CMainConfigDlg::GetSliderTransparency()
 void CMainConfigDlg::UpdateFuncCheck()
 {
 	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-	if (pParentDlg) {
-		m_cbWallChanger.SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
-	}
+	if (pParentDlg)
+		m_checkWallChanger.SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_CONF_CHECK_WALLCHANGER, m_cbWallChanger);
-	DDX_Control(pDX, IDC_CONF_CHECK_STARTMIN, m_checkStartMin);
-	DDX_Control(pDX, IDC_CONF_SLIDER_TRANSPARENCY, m_sliderTransparency);
+	DDX_Control(pDX, IDC_CONF_CHECK_STARTMIN		, m_checkStartMin);
+	DDX_Control(pDX, IDC_CONF_CHECK_SHOWCLOSEWINDOW	, m_checkShowCloseWindow);
+	DDX_Control(pDX, IDC_CONF_CHECK_WALLCHANGER		, m_checkWallChanger);
+	DDX_Control(pDX, IDC_CONF_SLIDER_TRANSPARENCY	, m_sliderTransparency);
 }
 
 
 BEGIN_MESSAGE_MAP(CMainConfigDlg, CDialog)
-	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER, OnBnClickedWallchangercheck)
-	ON_BN_CLICKED(IDC_CONF_CHECK_STARTMIN, OnBnClickedCheckConfStartmin)
+	ON_BN_CLICKED(IDC_CONF_CHECK_STARTMIN		, OnBnClickedCheckConfStartmin)
+	ON_BN_CLICKED(IDC_CONF_CHECK_SHOWCLOSEWINDOW, OnBnClickedConfCheckShowclosewindow)
+	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER	, OnBnClickedWallchangercheck)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
@@ -101,23 +114,27 @@ BOOL CMainConfigDlg::OnInitDialog()
 
 	m_pIni = &theApp.m_cIni;
 
-	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), DEFAULT_WALLCHANGER))
-		m_cbWallChanger.SetCheck(BST_CHECKED);
-	else
-		m_cbWallChanger.SetCheck(BST_UNCHECKED);
-
-	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(CResString(IDS_CONF_CHECK_STARTMIN));
+	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(GetResString(IDS_CONF_CHECK_STARTMIN));
 	if (m_pIni->GetBool(_T("General"), _T("bStartMin"), DEFAULT_STARTMIN))
 		m_checkStartMin.SetCheck(BST_CHECKED);
 	else
 		m_checkStartMin.SetCheck(BST_UNCHECKED);
 
-	m_sliderTransparency.SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
+	GetDlgItem(IDC_CONF_CHECK_SHOWCLOSEWINDOW)->SetWindowText(GetResString(IDS_CONF_CHECK_SHOWCLOSEWINDOW));
+	if (m_pIni->GetBool(_T("General"), _T("bShowCloseWindow"), DEFAULT_SHOWCLOSEWINDOW))
+		m_checkShowCloseWindow.SetCheck(BST_CHECKED);
+	else
+		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
+
+	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), DEFAULT_WALLCHANGER))
+		m_checkWallChanger.SetCheck(BST_CHECKED);
+	else
+		m_checkWallChanger.SetCheck(BST_UNCHECKED);
+
+	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(GetResString(IDS_CONF_STATIC_TRANSPARENCY));
 	m_sliderTransparency.SetRange(50, 255);
 	m_uTransparency = m_pIni->GetUInt(_T("General"), _T("uTransparency"), DEFAULT_TRANSPARENCY);
 	m_sliderTransparency.SetPos(m_uTransparency);
-
-	// TODO:  在此加入額外的初始化
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX 屬性頁應傳回 FALSE
@@ -128,14 +145,16 @@ void CMainConfigDlg::OnDestroy()
 	SaveIni();
 
 	__super::OnDestroy();
-
-	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 void CMainConfigDlg::OnBnClickedCheckConfStartmin()
 {
 	SetIniModify();
-	// TODO: 在此加入控制項告知處理常式程式碼
+}
+
+void CMainConfigDlg::OnBnClickedConfCheckShowclosewindow()
+{
+	SetIniModify();
 }
 
 void CMainConfigDlg::OnBnClickedWallchangercheck()
@@ -145,13 +164,10 @@ void CMainConfigDlg::OnBnClickedWallchangercheck()
 		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_WallChanger, IsWallChanger());
 
 	SetIniModify();
-	m_cbWallChanger.SetFocus();
-	// TODO: 在此加入控制項告知處理常式程式碼
 }
 
 LRESULT CMainConfigDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// TODO: 在此加入特定的程式碼和 (或) 呼叫基底類別
 	if (message == WM_HSCROLL) {
 		CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
 		if (pParentDlg) {

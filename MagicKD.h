@@ -19,20 +19,16 @@
 
 class CMagicKDApp : public CWinApp, public CKDSingleApp
 {
+	DECLARE_MESSAGE_MAP()
 public:
 	CMagicKDApp();
 
 	CString m_sAppDir;
 	CString m_sAppPath;
 	CIni m_cIni;
-// 覆寫
+
 public:
 	virtual BOOL InitInstance();
-
-// 程式碼實作
-
-	DECLARE_MESSAGE_MAP()
 };
 
 extern CMagicKDApp theApp;
-extern CMagicKDEndDlg theAppEndDlg;
