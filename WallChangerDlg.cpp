@@ -24,6 +24,7 @@ enum {
 };
 
 // GLobal variable
+CWallChangerDlg *g_pWallChangerDlg = NULL;
 #include "WallEnablePicList.h"
 CWallEnablePicList *g_pWallEnablePicList = NULL;
 #include "WallThreadImageCache.h"
@@ -49,28 +50,6 @@ void CWallChangerDlg::DoSize()
 {
 	if (!m_bInit)
 		return;
-
-	//SetRedraw(FALSE);
-
-	//CRect rcWin, rcBase;
-	//CPoint cpBase;
-	//GetWindowRect(rcBase);
-	//cpBase.SetPoint(rcBase.left, rcBase.top);
-
-	//if (m_pCurListDirPath) {
-	//	CPoint cpOffset(160, 25);
-	//	m_pCurListDirPath->GetClientRect(rcWin);
-	//	rcWin.left = rcWin.right - 200;
-	//	rcWin.top = rcWin.bottom - 215;
-	//	m_pCurListDirPath->MoveWindow(rcWin + cpOffset, FALSE);
-	//}
-
-	//m_staticTime.GetWindowRect(rcWin);
-	//m_staticTime.MoveWindow(rcWin - cpBase);
-	//m_editWaitTime.GetWindowRect(rcWin);
-
-	//SetRedraw(TRUE);
-	//Invalidate();
 }
 
 void CWallChangerDlg::SaveIni()
@@ -232,20 +211,20 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 
 	if (bWay){
 		if (m_xImgNowPic.Load(m_sNowPicPath)) {
-			bool bRes = true;
 			if (AutoPicSize(m_xImgNowPic)) {
 				m_xImgNowPic.Save(m_sTempFilePath, CXIMAGE_FORMAT_JPG);
-				bRes = SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);
+				SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);
 			} else {
-				bRes = SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
+				SetWallpaper(m_sNowPicPath, WPSTYLE_CENTER);
 			}
-			RETURN(bRes);
+			RETURN(true);
 		} else {
-			int iRes;
+			int iRes = IDCANCEL;
 			if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_NULL)) {
 				iRes = IDCANCEL;
 			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_DELETE)) {
-				DeleteFile(m_sNowPicPath);
+				DeletePicFile(m_sNowPicPath, false);
+				RETURN(false);
 			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_ASKDELETE)) {
 				iRes = IDYES;
 			} else if (m_sComboxMsg == GetResString(IDS_WALL_COMBOX_EXPLORE)) {
@@ -257,9 +236,8 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 			}
 
 			if ((iRes == IDYES) && PathFileExists(m_sNowPicPath)) {
-				DeleteFile(m_sNowPicPath);
-				m_muxSetRandWallPager.Unlock();
-				return SetRandWallPager(bWay);
+				DeletePicFile(m_sNowPicPath, true);
+				RETURN(false);
 			} else if (iRes == IDNO) {
 				CString sBuf = m_sNowPicPath;
 				PathRemoveFileSpec(sBuf.GetBuffer());
@@ -318,6 +296,50 @@ LPCTSTR CWallChangerDlg::GetRandPicPath()
 	return sRandPicPath;
 }
 
+// Delete Picture File and Remove from Enable List if posiable
+// If Delete success, then return true
+bool CWallChangerDlg::DeletePicFile(LPCTSTR sFilePath, bool bAskForSure/* = true*/)
+{
+	if (!PathFileExists(sFilePath))
+		return false;
+
+	bool bRes;
+	if (bAskForSure)
+		bRes = RemoveFileDlg(m_hWnd, sFilePath, !IsShiftPressed());
+	else
+		bRes = (DeleteFile(sFilePath) == TRUE);
+
+	if (!PathFileExists(sFilePath)) {
+		CStringArray *psaRes;
+		if (psaRes = ::g_pWallEnablePicList->RemoveFind(sFilePath)) {
+			CWallClassListItem *pClassListItem;
+			CWallDirListCtrl *pDirListCtrl;
+			CWallDirListItem *pDirListItem;
+			int i, iCount = m_listClass.GetItemCount();
+			int j, jCount;
+
+			for (i=0 ; i<iCount ; i++) {
+				if (pClassListItem = (CWallClassListItem *)m_listClass.GetItemData(i)) {
+					if (pDirListCtrl = (CWallDirListCtrl *)pClassListItem->GetChildDirList()) {
+						jCount = pDirListCtrl->GetItemCount();
+						for (j=0 ; j<jCount ; j++) {
+							if (pDirListItem = (CWallDirListItem *)pDirListCtrl->GetItemData(j)) {
+								if (pDirListItem->GetItemPicPathArray() == psaRes){
+									pDirListItem->SetItemFileFindNum(psaRes->GetCount());
+									pDirListItem->Invalidate();
+									i = iCount;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return bRes;
+}
+
 UINT CWallChangerDlg::StartTimer()
 {
 	if (m_uTimer)
@@ -373,35 +395,36 @@ CPoint CWallChangerDlg::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
 void CWallChangerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_WALL_STATIC_RESTTIME	, m_staticTime);
-	DDX_Control(pDX, IDC_WALL_EDIT_WAITTIME		, m_editWaitTime);
-	DDX_Control(pDX, IDC_WALL_LIST_CLASS		, m_listClass);
-	DDX_Control(pDX, IDC_WALL_LIST_DIRPATH		, m_listDirPath);
-	DDX_Control(pDX, IDC_WALL_EDIT_ADDCLASS		, m_editAddClass);
-	DDX_Control(pDX, IDC_WALL_STATIC_NOWPICPATH	, m_staticNowPicPath);
-	DDX_Control(pDX, IDC_WALL_EDIT_HISTORYNUM	, m_editHistoryNum);
-	DDX_Control(pDX, IDC_WALL_EDIT_CACHENUM		, m_editCacheNum);
-	DDX_Control(pDX, IDC_WALL_BTN_RANDPIC		, m_btn_RandPic);
-	DDX_Control(pDX, IDC_WALL_BTN_DELPIC		, m_btn_DelPic);
-	DDX_Control(pDX, IDC_WALL_BTN_ENABLETOOLTIP	, m_btn_EnableToolTip);
-	DDX_Control(pDX, IDC_WALL_BTN_ADDCLASS		, m_btn_AddClass);
-	DDX_Control(pDX, IDC_WALL_STATIC_CACHENUM	, m_staticCachePicNum);
-	DDX_Control(pDX, IDC_COMBO_IMAGELOADERROR	, m_comboxImageLoadError);
+	DDX_Control(pDX, IDC_WALL_STATIC_CACHENUM		, m_staticCachePicNum);
+	DDX_Control(pDX, IDC_WALL_STATIC_RESTTIME		, m_staticTime);
+	DDX_Control(pDX, IDC_WALL_STATIC_PICTOTALNUMSHOW, m_staticPicTotalNum);
+	DDX_Control(pDX, IDC_WALL_STATIC_NOWPICPATH		, m_staticNowPicPath);
+	DDX_Control(pDX, IDC_WALL_LIST_CLASS			, m_listClass);
+	DDX_Control(pDX, IDC_WALL_LIST_DIRPATH			, m_listDirPath);
+	DDX_Control(pDX, IDC_WALL_EDIT_WAITTIME			, m_editWaitTime);
+	DDX_Control(pDX, IDC_WALL_EDIT_ADDCLASS			, m_editAddClass);
+	DDX_Control(pDX, IDC_WALL_EDIT_HISTORYNUM		, m_editHistoryNum);
+	DDX_Control(pDX, IDC_WALL_EDIT_CACHENUM			, m_editCacheNum);
+	DDX_Control(pDX, IDC_WALL_BTN_RANDPIC			, m_btn_RandPic);
+	DDX_Control(pDX, IDC_WALL_BTN_DELPIC			, m_btn_DelPic);
+	DDX_Control(pDX, IDC_WALL_BTN_ENABLETOOLTIP		, m_btn_EnableToolTip);
+	DDX_Control(pDX, IDC_WALL_BTN_ADDCLASS			, m_btn_AddClass);
 	DDX_Control(pDX, IDC_WALL_CHECK_SHOWDIRLOADERROR, m_checkShowLoadDirError);
+	DDX_Control(pDX, IDC_WALL_COMBO_IMAGELOADERROR	, m_comboxImageLoadError);
 }
 
 
 BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_WALL_BTN_ADDCLASS, OnBnClickedButtonAddclasslist)
 	ON_BN_CLICKED(IDC_WALL_BTN_RANDPIC, OnBnClickedButtonRandpic)
 	ON_BN_CLICKED(IDC_WALL_BTN_DELPIC, OnBnClickedButtonDelpic)
 	ON_BN_CLICKED(IDC_WALL_BTN_ENABLETOOLTIP, OnBnClickedButtonEnabletooltip)
+	ON_BN_CLICKED(IDC_WALL_CHECK_SHOWDIRLOADERROR, OnBnClickedWallCheckShowdirloaderror)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS, OnLvnItemchangedListClass)
 	ON_CBN_SELCHANGE(IDC_COMBO_IMAGELOADERROR, OnCbnSelchangeComboImageloaderror)
-	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_WALL_CHECK_SHOWDIRLOADERROR, OnBnClickedWallCheckShowdirloaderror)
 END_MESSAGE_MAP()
 
 // CWallChangerDlg 訊息處理常式
@@ -410,6 +433,8 @@ BOOL CWallChangerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	if (!::g_pWallChangerDlg)
+		g_pWallChangerDlg = this;
 	if (!::g_pWallEnablePicList)
 		::g_pWallEnablePicList = new CWallEnablePicList;
 	//if (!::g_pWallThreadImageCache)
@@ -428,6 +453,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	m_sTempFilePath.Format(_T("%s.jpg"), GetTempFilePath());
 	GetDlgItem(IDC_WALL_STATIC_CACHEDNUM)	->SetWindowText(GetResString(IDS_WALL_STATIC_CACHEDNUM));
 	GetDlgItem(IDC_WALL_STATIC_WAITTIME)	->SetWindowText(GetResString(IDS_WALL_STATIC_WAITTIME));
+	GetDlgItem(IDC_WALL_STATIC_PICTOTALNUM)	->SetWindowText(GetResString(IDS_WALL_STATIC_PICTOTALNUM));
 	GetDlgItem(IDC_WALL_BTN_RANDPIC)		->SetWindowText(GetResString(IDS_WALL_BTN_RANDPIC));
 	GetDlgItem(IDC_WALL_BTN_DELPIC)			->SetWindowText(GetResString(IDS_WALL_BTN_DELPIC));
 	GetDlgItem(IDC_WALL_BTN_ADDCLASS)		->SetWindowText(GetResString(IDS_WALL_BTN_ADDCLASS));
@@ -506,6 +532,9 @@ void CWallChangerDlg::OnDestroy()
 		::g_pWallEnablePicList = NULL;
 	}
 
+	if (::g_pWallChangerDlg)
+		::g_pWallChangerDlg = NULL;
+
 	CDialog::OnDestroy();
 
 	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Deleting\tWallChanger\tTemp File"));
@@ -523,8 +552,8 @@ void CWallChangerDlg::OnOK()
 {
 	CWnd *wndIDC = GetFocus();
 	if (wndIDC == GetDlgItem(IDC_WALL_EDIT_WAITTIME)) {
-		CString sNewTime, sRestTime;
-		int iNewTime, iRestTime;
+		CString sNewTime;
+		int iNewTime;
 		m_editWaitTime.GetWindowText(sNewTime);
 		iNewTime = _ttoi(sNewTime);
 		SetWaitTime(iNewTime);
@@ -574,7 +603,12 @@ void CWallChangerDlg::OnBnClickedButtonRandpic()
 	if (m_uCachePicNum && ::g_pWallThreadImageCache->GetCount()) {
 		SetRandWallPager(false);
 	} else {
-		SetRandWallPager(true);
+		while (!SetRandWallPager(true)) {
+			if (::g_pWallEnablePicList->IsEmpty()) {
+				StopTimer();
+				break;
+			}
+		}
 	}
 
 	CString sTime;
@@ -587,37 +621,10 @@ void CWallChangerDlg::OnBnClickedButtonRandpic()
 
 void CWallChangerDlg::OnBnClickedButtonDelpic()
 {
-	RemoveFileDlg(m_hWnd, m_sNowPicPath, !IsShiftPressed());
+	DeletePicFile(m_sNowPicPath, true);
 
-	if (!PathFileExists(m_sNowPicPath)) {
-		CStringArray *psaRes;
-		if (psaRes = ::g_pWallEnablePicList->RemoveFind(m_sNowPicPath)) {
-			CWallClassListItem *pClassListItem;
-			CWallDirListCtrl *pDirListCtrl;
-			CWallDirListItem *pDirListItem;
-			int i, iCount = m_listClass.GetItemCount();
-			int j, jCount;
-
-			for (i=0 ; i<iCount ; i++) {
-				if (pClassListItem = (CWallClassListItem *)m_listClass.GetItemData(i)) {
-					if (pDirListCtrl = (CWallDirListCtrl *)pClassListItem->GetChildDirList()) {
-						jCount = pDirListCtrl->GetItemCount();
-						for (j=0 ; j<jCount ; j++) {
-							if (pDirListItem = (CWallDirListItem *)pDirListCtrl->GetItemData(j)) {
-								if (pDirListItem->GetItemPicPathArray() == psaRes){
-									pDirListItem->SetItemFileFindNum(psaRes->GetCount());
-									pDirListItem->Invalidate();
-									i = iCount;
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	if (!PathFileExists(m_sNowPicPath))
 		OnBnClickedButtonRandpic();
-	}
 }
 
 void CWallChangerDlg::OnBnClickedButtonEnabletooltip()
@@ -741,6 +748,13 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 			CString sNum;
 			sNum.Format(_T("%d"), ::g_pWallThreadImageCache->GetCount());
 			m_staticCachePicNum.SetWindowText(sNum);
+		}
+		break;
+	case WMU_UPDATE_TOTALNUM:
+		{
+			CString sNum;
+			sNum.Format(_T("%d"), ::g_pWallEnablePicList->GetCount());
+			m_staticPicTotalNum.SetWindowText(sNum);
 		}
 		break;
 	case WMU_FIRST_FIND_PIC:

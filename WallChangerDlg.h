@@ -9,26 +9,25 @@
 #include "KDEdit.h"
 #include "KDButton.h"
 #include "KDComboBox.h"
-//#include "KDThread.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
 // CWallChangerDlg User Message
 enum {
 	WMU_UPDATE_CACHENUM = (WM_USER + 1),
+	WMU_UPDATE_TOTALNUM,
 	WMU_FIRST_FIND_PIC
 };
 
 // CWallChangerDlg 對話方塊
 
-class CWallChangerDlg : public CDialog, public CKDIni//, public CKDThread
+class CWallChangerDlg : public CDialog, public CKDIni
 {
 	DECLARE_DYNAMIC(CWallChangerDlg)
 	DECLARE_MESSAGE_MAP()
 public:
 	CWallChangerDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChangerDlg();
-//	virtual DWORD ThreadProc();
 
 // 對話方塊資料
 	enum { IDD = IDD_MAGICKD_WALLCHANGER };
@@ -43,6 +42,7 @@ public:
 	UINT	GetCachePicNum();
 	bool	SetRandWallPager(bool bWay);
 	LPCTSTR	GetRandPicPath();
+	bool	DeletePicFile(LPCTSTR sFilePath, bool bAskForSure = true);
 
 	UINT	StartTimer();
 	UINT	StopTimer();
@@ -56,6 +56,7 @@ public:
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
 	CStatic m_staticCachePicNum;
+	CStatic m_staticPicTotalNum;
 	CButton m_btn_EnableToolTip;
 	CKDButton m_btn_RandPic;
 	CKDButton m_btn_DelPic;
@@ -108,3 +109,5 @@ public:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnBnClickedWallCheckShowdirloaderror();
 };
+
+extern CWallChangerDlg *g_pWallChangerDlg;

@@ -136,11 +136,14 @@ void CWallThreadFindPic::_ThreadProcStage()
 	}
 	delete pslPicPath;
 
+	bool bItemEnable = pDirItem->IsItemEnable();
+	if (bItemEnable)
+		::g_pWallEnablePicList->RemoveEnableItem(pDirItem->GetItemPicPathArray());
 	pDirItem->SetItemFileFindNum(saPicPath.GetCount());
 	pDirItem->SetItemPicPathArray(saPicPath);
 	pDirItem->SetIniModify();
 	pDirItem->SetOnFindPic(false);
-	if (pDirItem->IsItemEnable())
+	if (bItemEnable)
 		::g_pWallEnablePicList->AddEnableItem(pDirItem->GetItemPicPathArray());
 	pDirItem->Invalidate();
 }

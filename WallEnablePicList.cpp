@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "WallChangerDlg.h"
 #include "WallEnablePicList.h"
 
 CWallEnablePicList::CWallEnablePicList()
@@ -23,6 +24,8 @@ bool CWallEnablePicList::AddEnableItem(CStringArray *pItem)
 		} else {
 			bRes = false;
 		}
+
+		UpdateWallChangerDlg();
 		m_mux.Unlock();
 	}
 	return bRes;
@@ -105,6 +108,8 @@ bool CWallEnablePicList::RemoveEnableItem(CStringArray *pItem)
 		} else {
 			bRes = false;
 		}
+
+		UpdateWallChangerDlg();
 		m_mux.Unlock();
 	}
 	return bRes;
@@ -149,9 +154,16 @@ CStringArray *CWallEnablePicList::RemoveFind(LPCTSTR sMatch)
 			}
 		}
 
+		UpdateWallChangerDlg();
 		m_mux.Unlock();
 	}
 	return psaRes;
+}
+
+void CWallEnablePicList::UpdateWallChangerDlg()
+{
+	if (::g_pWallChangerDlg)
+		SendNotifyMessage(::g_pWallChangerDlg->GetSafeHwnd(), WMU_UPDATE_TOTALNUM, 0, 0);
 }
 
 BOOL CWallEnablePicList::IsEmpty()

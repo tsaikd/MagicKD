@@ -16,6 +16,8 @@ public:
 	bool RemoveEnableItem(CStringArray *pItem);
 	CStringArray *RemoveFind(LPCTSTR sMatch);
 
+	void UpdateWallChangerDlg();
+
 	BOOL IsEmpty();
 	ULONG GetCount();
 

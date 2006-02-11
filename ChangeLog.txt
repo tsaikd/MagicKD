@@ -1,6 +1,8 @@
 	Fix bug: If Hide Window, then Open Another Program won't Show Program
+	Fix buf: If User choice Directly Delete bad Picture File in Config, won't Update Enable List
 	User Can Hide Close Window
 	User Can Hide Dir Load Error Message Window
+	Add Show Total Enable Picture Number
 
 Version: 1.0.0.9	(2006-02-10)
 	Fix bug: If First Class is Empty, then Set Wallpager at First Time Will Fail

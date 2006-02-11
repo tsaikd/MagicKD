@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include "Others.h"
 #include "Resource.h"
 #include "Language.h"
 #include "WallDirListItem.h"

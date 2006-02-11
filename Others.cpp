@@ -76,26 +76,16 @@ bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
 #include "shellapi.h"
 // Open a Dialog to ask user for sure
 // if not Undo, then remove files directly (default: true)
-bool RemoveFileDlg(HWND hWnd, CString &sFiles, bool bUndo/* = true*/)
+// if Remove success, then return true
+bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
 {
 	TCHAR sFileBuf[MAX_PATH] = {0};
-	_tcsncpy(sFileBuf, sFiles, sFiles.GetLength());
+	_tcscpy(sFileBuf, sFiles);
 
 	SHFILEOPSTRUCT shFile = {0};
 	shFile.hwnd = hWnd;
 	shFile.wFunc = FO_DELETE;
 	shFile.pFrom = sFileBuf;
-	if (bUndo)
-		shFile.fFlags |= FOF_ALLOWUNDO;
-	return (::SHFileOperation(&shFile)) == 0;
-}
-
-bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
-{
-	SHFILEOPSTRUCT shFile = {0};
-	shFile.hwnd = hWnd;
-	shFile.wFunc = FO_DELETE;
-	shFile.pFrom = sFiles;
 	if (bUndo)
 		shFile.fFlags = FOF_ALLOWUNDO;
 	return (SHFileOperation(&shFile)) == 0;

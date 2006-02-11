@@ -5,7 +5,6 @@
 bool ChooseFolder(CString &sFolder, HWND hWnd = 0);
 bool ChooseFolder(LPTSTR sFolder, HWND hWnd = 0);
 
-bool RemoveFileDlg(HWND hWnd, CString &sFiles, bool bUndo = true);
 bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo = true);
 
 CString GetTempFilePath(LPSTR lpTempFilePath = NULL, LPCTSTR lpTempDir = NULL, LPCTSTR lpPreFix = NULL);
