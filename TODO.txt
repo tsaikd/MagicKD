@@ -1,3 +1,4 @@
+Class 改名的部份還有 bug
 把history放進enable class
 
 紀錄讀取失敗次數(順便可以刪除或查看)

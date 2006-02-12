@@ -6,7 +6,10 @@ bool AutoPicSize(CxImage &img)
 {
 	CSize sizeImg(img.GetWidth(), img.GetHeight());
 
-	if (_AutoPicSize(sizeImg, CSize(1024, 768))) {
+	CRect rcWin;
+	GetWindowRect(GetDesktopWindow(), rcWin);
+
+	if (_AutoPicSize(sizeImg, CSize(rcWin.Width(), rcWin.Height()-30))) {
 		img.QIShrink(sizeImg.cx, sizeImg.cy);
 //		img.Resample2(sizeImg.cx, sizeImg.cy, CxImage::IM_CATROM);
 		return true;

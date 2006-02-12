@@ -1,5 +1,6 @@
 	Fix bug: If Hide Window, then Open Another Program won't Show Program
-	Fix buf: If User choice Directly Delete bad Picture File in Config, won't Update Enable List
+	Fix bug: If User choice Directly Delete bad Picture File in Config, won't Update Enable List
+	Fix bug: User Can't Use Tray Icon to Control WallChanger
 	User Can Hide Close Window
 	User Can Hide Dir Load Error Message Window
 	Add Show Total Enable Picture Number

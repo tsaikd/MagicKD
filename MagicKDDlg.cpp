@@ -238,7 +238,6 @@ void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
 	if (nType == SIZE_MINIMIZED) {
 		ShowWindow(SW_RESTORE);
 		ShowWindow(SW_HIDE);
-		return;
 	}
 	__super::OnSize(nType, cx, cy);
 }
@@ -290,43 +289,42 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				else
 					ShowWindow(SW_SHOW);
 			}
-			return 0;
+			break;
 		case WM_RBUTTONUP:
 			SetForegroundWindow();
 			pTheTray->TrackPopupMenu(this);
 			Invalidate();
-			return 0;
+			break;
 		}
-		return 0;
-	}
-
-	switch (message) {
-	case WM_COMMAND:
-		{
-			UINT nID = LOWORD(wParam);
-			switch (nID) {
-			case IDS_TRAY_OPENWINDOW:
-				ShowWindow(SW_SHOW);
-				return 0;
-			case IDS_TRAY_CLOSEWINDOW:
-				DestroyWindow();
-				return 0;
-			case IDS_TRAY_WALLCHANGER:
-				if (m_pWallChangerDlg)
-					SetFuncEnable(eFunc_WallChanger, false);
-				else
-					SetFuncEnable(eFunc_WallChanger, false);
-				m_cMainConfigDlg.UpdateFuncCheck();
-				m_cMainConfigDlg.SetIniModify();
-				if (-1 == m_cMainTab.GetCurSel())
-					m_cMainTab.SetCurSel(0);
-				DoSize();
-				return 0;
+	} else {
+		switch (message) {
+		case WM_COMMAND:
+			{
+				UINT nID = LOWORD(wParam);
+				switch (nID) {
+				case IDS_TRAY_OPENWINDOW:
+					ShowWindow(SW_SHOW);
+					return 0;
+				case IDS_TRAY_CLOSEWINDOW:
+					DestroyWindow();
+					return 0;
+				case IDS_TRAY_WALLCHANGER:
+					if (m_pWallChangerDlg)
+						SetFuncEnable(eFunc_WallChanger, false);
+					else
+						SetFuncEnable(eFunc_WallChanger, true);
+					m_cMainConfigDlg.UpdateFuncCheck();
+					m_cMainConfigDlg.SetIniModify();
+					if (-1 == m_cMainTab.GetCurSel())
+						m_cMainTab.SetCurSel(0);
+					DoSize();
+					break;
+				}
+				if (m_pWallChangerDlg && m_pWallChangerDlg->m_hWnd)
+					::SendMessage(m_pWallChangerDlg->m_hWnd, message, wParam, lParam);
 			}
-			if (m_pWallChangerDlg && m_pWallChangerDlg->m_hWnd)
-				::SendMessage(m_pWallChangerDlg->m_hWnd, message, wParam, lParam);
+			break;
 		}
-		break;
 	}
 
 	return __super::DefWindowProc(message, wParam, lParam);
