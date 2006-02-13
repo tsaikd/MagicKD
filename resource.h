@@ -8,11 +8,12 @@
 #define IDD_MAGICKD_WALLCHANGER         104
 #define IDR_MAINFRAME                   121
 #define IDS_SEL_FOLDER                  131
-#define IDS_TRAY_CLOSEWINDOW            141
-#define IDS_TRAY_RANDPIC                142
-#define IDS_TRAY_DELNOWPIC              143
-#define IDS_TRAY_OPENWINDOW             144
-#define IDS_TRAY_WALLCHANGER            145
+#define IDS_TRAY_OPENWINDOW             141
+#define IDS_TRAY_CLOSEWINDOW            142
+#define IDS_TRAY_WALLCHANGER            143
+#define IDS_TRAY_RANDPIC                144
+#define IDS_TRAY_DELNOWPIC              145
+#define IDS_TRAY_MOVEPIC                146
 #define IDS_CONF_STATIC_TRANSPARENCY    151
 #define IDS_CONF_CHECK_STARTMIN         152
 #define IDS_CONF_CHECK_SHOWCLOSEWINDOW  153
@@ -23,6 +24,7 @@
 #define IDS_WALL_BTN_DISABLETIP         172
 #define IDS_WALL_BTN_RANDPIC            173
 #define IDS_WALL_BTN_DELPIC             174
+#define IDS_WALL_BTN_MOVEPIC            175
 #define IDS_WALL_BTN_ADDCLASS           176
 #define IDS_WALL_CHECK_SHOWDIRLOADERROR 177
 #define IDS_WALL_STATIC_CACHEDNUM       181
@@ -73,6 +75,7 @@
 #define IDC_WALL_CHECK_SHOWDIRLOADERROR 1016
 #define IDC_WALL_STATIC_PICTOTALNUMSHOW 1017
 #define IDC_WALL_STATIC_PICTOTALNUM     1018
+#define IDC_WALL_BTN_MOVEPIC            1019
 #define IDC_WALL_BTN_ADDCLASS           1021
 #define IDC_WALL_BTN_RANDPIC            1022
 #define IDC_WALL_BTN_DELPIC             1023
@@ -90,7 +93,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

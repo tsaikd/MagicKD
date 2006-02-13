@@ -8,36 +8,10 @@
 // return true if user choice a folder
 bool ChooseFolder(CString &sFolder, HWND hWnd/*= 0*/)
 {
-	LPMALLOC pMalloc;
-	bool bOK = false;
+	bool bRes = ChooseFolder(sFolder.GetBuffer(MAX_PATH), hWnd);
+	sFolder.ReleaseBuffer();
 
-	if (SHGetMalloc(&pMalloc) == NOERROR) {
-#ifdef IDS_SEL_FOLDER
-		CResString sTitle(IDS_SEL_FOLDER);
-#else
-		CString sTitle(_T("Please select a folder"));
-#endif
-		LPTSTR pFolder = sFolder.GetBuffer(MAX_PATH);
-		BROWSEINFO brInfo = {0};
-		brInfo.hwndOwner = hWnd;
-		brInfo.pszDisplayName = pFolder;
-		brInfo.lpszTitle = sTitle;
-		brInfo.ulFlags = BIF_USENEWUI;
-
-		CoInitialize(NULL);
-
-		LPITEMIDLIST pidl;
-		if ((pidl = SHBrowseForFolder(&brInfo)) != NULL){
-			if (SHGetPathFromIDList(pidl, pFolder))
-				bOK = true;
-			pMalloc->Free(pidl);
-		}
-		pMalloc->Release();
-
-		CoUninitialize();
-	}
-
-	return bOK;
+	return bRes;
 }
 
 bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
@@ -86,6 +60,23 @@ bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
 	shFile.hwnd = hWnd;
 	shFile.wFunc = FO_DELETE;
 	shFile.pFrom = sFileBuf;
+	if (bUndo)
+		shFile.fFlags = FOF_ALLOWUNDO;
+	return (SHFileOperation(&shFile)) == 0;
+}
+
+bool MoveFileDlg(LPCTSTR sFileFrom, LPCTSTR sFIleTo, HWND hWnd, bool bUndo/* = true*/)
+{
+	TCHAR sFileFromBuf[MAX_PATH] = {0};
+	_tcscpy(sFileFromBuf, sFileFrom);
+	TCHAR sFileToBuf[MAX_PATH] = {0};
+	_tcscpy(sFileToBuf, sFIleTo);
+
+	SHFILEOPSTRUCT shFile = {0};
+	shFile.hwnd = hWnd;
+	shFile.wFunc = FO_MOVE;
+	shFile.pFrom = sFileFromBuf;
+	shFile.pTo = sFileToBuf;
 	if (bUndo)
 		shFile.fFlags = FOF_ALLOWUNDO;
 	return (SHFileOperation(&shFile)) == 0;

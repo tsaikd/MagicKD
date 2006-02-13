@@ -66,33 +66,38 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
-			UseOfMFC="0"
+			UseOfMFC="2"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="1"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="TRUE"
+				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;JAS_WIN_MSVC_BUILD"
 				StringPooling="TRUE"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
+				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
 				PrecompiledHeaderFile=".\Release/jasper.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
-				WarningLevel="2"
-				SuppressStartupBanner="TRUE"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\Release\jasper.lib"
-				SuppressStartupBanner="TRUE"/>
+				OutputFile=".\Release\jasper.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool

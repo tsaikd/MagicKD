@@ -77,7 +77,7 @@ DWORD CKDThread::ResumeThread()
 bool CKDThread::SetThreadPriority(int nPriority/* = THREAD_PRIORITY_NORMAL*/) {
 	bool bRes;
 	if (m_muxThread.Lock()) {
-		bRes = ::SetThreadPriority(m_hThread, nPriority);
+		bRes = ::SetThreadPriority(m_hThread, nPriority) == TRUE;
 		m_muxThread.Unlock();
 	}
 	return bRes;
@@ -123,7 +123,7 @@ bool CKDThread::TerminateThread(DWORD dwExitCode/* = 0*/) {
 	bool bRes;
 	if (m_muxThread.Lock()) {
 		if (m_hThread) {
-			bRes = ::TerminateThread(m_hThread, dwExitCode);
+			bRes = ::TerminateThread(m_hThread, dwExitCode) == TRUE;
 			CloseHandle(m_hThread);
 			m_hThread = NULL;
 		} else {

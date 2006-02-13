@@ -108,6 +108,7 @@ public:
 	afx_msg void OnCbnSelchangeComboImageloaderror();
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnBnClickedWallCheckShowdirloaderror();
+	afx_msg void OnBnClickedWallBtnMovepic();
 };
 
 extern CWallChangerDlg *g_pWallChangerDlg;
