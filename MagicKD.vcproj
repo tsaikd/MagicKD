@@ -90,7 +90,7 @@
 				AdditionalIncludeDirectories="CxImage\CxImage\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				StringPooling="TRUE"
-				MinimalRebuild="FALSE"
+				MinimalRebuild="TRUE"
 				RuntimeLibrary="2"
 				EnableEnhancedInstructionSet="2"
 				TreatWChar_tAsBuiltInType="TRUE"

@@ -45,8 +45,8 @@ private:
 	CRect m_rcChildDirList;
 
 public:
+	afx_msg void OnDestroy();
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnDestroy();
 	afx_msg void OnLvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult);
 };

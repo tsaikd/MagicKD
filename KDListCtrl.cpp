@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Others.h"
 #include "KDListCtrl.h"
+#include ".\kdlistctrl.h"
 
 CKDListCtrl::CKDListCtrl()
 : m_bEnableToolTip(FALSE), m_pImageList(NULL), m_bEnableDrag(false), m_bOnDraging(false)
@@ -273,6 +274,7 @@ INT_PTR CKDListCtrl::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 BEGIN_MESSAGE_MAP(CKDListCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_GETDISPINFO, OnLvnGetdispinfo)
 	ON_NOTIFY_REFLECT(LVN_BEGINDRAG, OnLvnBegindrag)
+	ON_NOTIFY_REFLECT(LVN_BEGINLABELEDIT, OnLvnBeginlabeledit)
 END_MESSAGE_MAP()
 
 void CKDListCtrl::OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult)
@@ -285,6 +287,17 @@ void CKDListCtrl::OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult)
 		_stprintf(sText, _T("%s"), pItem->GetText(pDispInfo->item.iSubItem));
 		pDispInfo->item.pszText = sText;
 	}
+
+	*pResult = 0;
+}
+
+void CKDListCtrl::OnLvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
+
+	CEdit *pEdit = GetEditControl();
+	if (pEdit)
+		pEdit->SetWindowText(GetItemText(pDispInfo->item.iItem, pDispInfo->item.iSubItem));
 
 	*pResult = 0;
 }

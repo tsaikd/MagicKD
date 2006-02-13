@@ -235,6 +235,14 @@ void CWallClassListCtrl::OnLvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 		CWallClassListItem *pItem = (CWallClassListItem *)GetItemData(pDispInfo->item.iItem);
 		if (pItem) {
             pItem->SetItemName(pDispInfo->item.pszText);
+			CWallDirListCtrl *pDirList = (CWallDirListCtrl *)pItem->GetChildDirList();
+			if (pDirList) {
+				CString sOldClassName = pDirList->GetListClassName();
+				if (!sOldClassName.IsEmpty())
+					m_pIni->DeleteKey(_T("DirList"), sOldClassName);
+				pDirList->SetListClassName(pDispInfo->item.pszText);
+				pDirList->SetIniModify();
+			}
 			SetIniModify();
 		}
 	}
