@@ -3,7 +3,7 @@
 #include "KDListCtrl.h"
 
 CKDListCtrl::CKDListCtrl()
-: m_bEnableToolTip(false), m_pImageList(NULL), m_bEnableDrag(false), m_bOnDraging(false)
+	:	m_bEnableToolTip(false), m_pImageList(NULL), m_bEnableDrag(false), m_bOnDraging(false)
 {
 }
 
@@ -252,10 +252,8 @@ void CKDListCtrl::OnLvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult)
 	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
 
 	if (pDispInfo->item.mask & LVIF_TEXT) {
-		TCHAR sText[MAX_PATH] = {0};
 		CKDListItem *pItem = (CKDListItem *) pDispInfo->item.lParam;
-		_stprintf(sText, _T("%s"), pItem->GetText(pDispInfo->item.iSubItem));
-		pDispInfo->item.pszText = sText;
+		pDispInfo->item.pszText = (LPTSTR)pItem->GetText(pDispInfo->item.iSubItem);
 	}
 
 	*pResult = 0;
