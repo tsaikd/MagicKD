@@ -15,7 +15,7 @@ CKDSingleApp::~CKDSingleApp()
 		CloseHandle(m_hInstMutex);
 }
 
-bool CKDSingleApp::IsDialogRunning()
+bool CKDSingleApp::IsWndRunning()
 {
 	m_hInstMutex = CreateMutex(NULL, FALSE, APPNAME APPUUID);
 

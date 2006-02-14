@@ -16,7 +16,7 @@ bool CWallEnablePicList::AddEnableItem(CStringArray *pItem)
 	if (!pItem || !pItem->GetCount())
 		return false;
 
-	bool bRes;
+	bool bRes = false;
 	if (m_mux.Lock()) {
 		if (m_lEnableItem.AddTail(pItem)) {
 			bRes = true;
@@ -37,7 +37,7 @@ CString CWallEnablePicList::GetRandPic()
 	if (m_mux.Lock()) {
 		CStringArray *psaEnable;
 
-		int iRest;
+		int iRest = 0;
 		if (m_uCount > 10000) {
 			iRest = rand() % (m_uCount/10) + 10;
 		} else if (m_uCount > 1000) {
@@ -94,7 +94,7 @@ bool CWallEnablePicList::RemoveEnableItem(CStringArray *pItem)
 	if (!pItem)
 		return false;
 
-	bool bRes;
+	bool bRes = false;
 	if (m_mux.Lock()) {
 		POSITION pos = m_lEnableItem.Find(pItem);
 		if (pos) {
@@ -166,11 +166,11 @@ void CWallEnablePicList::UpdateWallChangerDlg()
 		SendNotifyMessage(::g_pWallChangerDlg->GetSafeHwnd(), WMU_UPDATE_TOTALNUM, 0, 0);
 }
 
-BOOL CWallEnablePicList::IsEmpty()
+bool CWallEnablePicList::IsEmpty()
 {
-	BOOL bRes;
+	bool bRes = false;
 	if (m_mux.Lock()) {
-		bRes = m_lEnableItem.IsEmpty();
+		bRes = m_lEnableItem.IsEmpty() != FALSE;
 		m_mux.Unlock();
 	}
 	return bRes;
@@ -178,7 +178,7 @@ BOOL CWallEnablePicList::IsEmpty()
 
 ULONG CWallEnablePicList::GetCount()
 {
-	ULONG uRes;
+	ULONG uRes = 0;
 	if (m_mux.Lock()) {
 		uRes = m_uCount;
 		m_mux.Unlock();

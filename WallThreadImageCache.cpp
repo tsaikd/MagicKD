@@ -53,7 +53,7 @@ DWORD CWallThreadImageCache::ThreadProc()
 
 			bool bAutoPicSize = AutoPicSize(xImage);
 			if (bAutoPicSize) {
-				sBufPicPath.Format(_T("%s.jpg"), GetTempFilePath());
+				sBufPicPath = CTempFilePath(NULL, NULL, _T(".jpg"));
 				xImage.Save(sBufPicPath, CXIMAGE_FORMAT_JPG);
 			} else {
 				sBufPicPath = _T("");

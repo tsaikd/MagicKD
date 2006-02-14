@@ -18,7 +18,7 @@ public:
 
 	void UpdateWallChangerDlg();
 
-	BOOL IsEmpty();
+	bool IsEmpty();
 	ULONG GetCount();
 
 private:

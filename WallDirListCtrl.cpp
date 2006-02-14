@@ -116,7 +116,6 @@ bool CWallDirListCtrl::IsAllItemEnable()
 
 void CWallDirListCtrl::SetAllItemEnable(bool bEnable)
 {
-	bool bFindPath = true;
 	m_bAllItemEnable = bEnable;
 
 	CWallDirListItem *pItem;

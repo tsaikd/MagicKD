@@ -13,7 +13,7 @@
 #define DEFAULT_WAITTIME			30
 #define DEFAULT_CACHEPICNUM			0
 #define DEFAULT_PICPATHHISTORY		10
-#define DEFAULT_ENABLETIP			TRUE
+#define DEFAULT_ENABLETIP			true
 #define DEFAULT_SHOWDIRLOADERROR	true
 #define DEFAULT_COMBOX_MSG			GetResString(IDS_WALL_COMBOX_ASKUSER)
 
@@ -267,8 +267,6 @@ bool CWallChangerDlg::SetRandWallPager(bool bWay)
 		::g_pWallThreadImageCache->RemoveHead();
 		RETURN(bRes);
 	}
-
-	RETURN(true);
 #undef RETURN
 }
 
@@ -307,7 +305,7 @@ bool CWallChangerDlg::DeletePicFile(LPCTSTR sFilePath, bool bAskForSure/* = true
 
 	bool bRes;
 	if (bAskForSure)
-		bRes = RemoveFileDlg(m_hWnd, sFilePath, !IsShiftPressed());
+		bRes = RemoveFileDlg(sFilePath, GetSafeHwnd(), !IsShiftPressed());
 	else
 		bRes = (DeleteFile(sFilePath) == TRUE);
 
@@ -362,7 +360,7 @@ UINT CWallChangerDlg::StopTimer()
 	return uRes;
 }
 
-BOOL CWallChangerDlg::EnableToolTips(BOOL bEnable/* = TRUE*/)
+bool CWallChangerDlg::EnableToolTips(bool bEnable/* = true*/)
 {
 	m_editWaitTime.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_SETWAITTIME), bEnable);
 	m_editAddClass.EnableToolTips			(CResString(IDS_WALL_TOOLTIP_ADDCLASS), bEnable);
@@ -377,7 +375,7 @@ BOOL CWallChangerDlg::EnableToolTips(BOOL bEnable/* = TRUE*/)
 
 	m_comboxImageLoadError.EnableToolTips	(GetResString(IDS_WALL_TOOLTIP_IMAGELOADERROR), bEnable);
 
-	return CDialog::EnableToolTips(bEnable);
+	return CDialog::EnableToolTips(bEnable) != FALSE;
 }
 
 CPoint CWallChangerDlg::_AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax)
@@ -454,7 +452,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	pTheAppEndDlg->SignWnd(m_hWnd, 7);
 
 	m_cIni.SetPathName(theApp.m_sAppDir + _T("WallChanger.ini"));
-	m_sTempFilePath.Format(_T("%s.jpg"), GetTempFilePath());
+	m_sTempFilePath = CTempFilePath(NULL, NULL, _T(".jpg"));
 	GetDlgItem(IDC_WALL_STATIC_CACHEDNUM)	->SetWindowText(GetResString(IDS_WALL_STATIC_CACHEDNUM));
 	GetDlgItem(IDC_WALL_STATIC_WAITTIME)	->SetWindowText(GetResString(IDS_WALL_STATIC_WAITTIME));
 	GetDlgItem(IDC_WALL_STATIC_PICTOTALNUM)	->SetWindowText(GetResString(IDS_WALL_STATIC_PICTOTALNUM));
@@ -500,7 +498,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	m_uPicPathHistory = m_cIni.GetUInt(_T("General"), _T("uPicPathHistory"), DEFAULT_PICPATHHISTORY);
 	SetHistoryNum(m_uPicPathHistory);
 
-	m_bEnableTip = m_cIni.GetBool(_T("General"), _T("bEnableTip"), DEFAULT_ENABLETIP);
+	m_bEnableTip = m_cIni.GetBool(_T("General"), _T("bEnableTip"), DEFAULT_ENABLETIP) != FALSE;
 	EnableToolTips(m_bEnableTip);
 
 	// TODO:  在此加入額外的初始化

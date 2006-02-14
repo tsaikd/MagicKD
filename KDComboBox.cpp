@@ -2,7 +2,7 @@
 #include "KDComboBox.h"
 
 CKDComboBox::CKDComboBox()
-	: m_bEnableToolTip(FALSE)
+	:	m_bEnableToolTip(false)
 {
 }
 
@@ -10,14 +10,14 @@ CKDComboBox::~CKDComboBox()
 {
 }
 
-BOOL CKDComboBox::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+bool CKDComboBox::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, bool bEnable/* = true*/)
 {
 	if (bEnable)
 		SetToolTips(sToolTip);
-	return CComboBox::EnableToolTips(bEnable);
+	return CComboBox::EnableToolTips(bEnable) != FALSE;
 }
 
-BOOL CKDComboBox::IsEnableToolTips()
+bool CKDComboBox::IsEnableToolTips()
 {
 	return m_bEnableToolTip;
 }
@@ -39,5 +39,5 @@ INT_PTR CKDComboBox::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 
 		return GetDlgCtrlID();
 	}
-	return -1;
+	return CComboBox::OnToolHitTest(point, pTI);
 }

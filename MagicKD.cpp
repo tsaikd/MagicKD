@@ -25,14 +25,15 @@ BOOL CMagicKDApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
-	if (IsDialogRunning())
+	if (IsWndRunning())
 		return FALSE;
 
 	{
 		TCHAR sBuffer[MAX_PATH], *ptr;
 		GetModuleFileName(NULL, sBuffer, MAX_PATH);
 		m_sAppPath = sBuffer;
-		if (ptr = _tcsrchr(sBuffer, _T('\\'))) {
+		ptr = _tcsrchr(sBuffer, _T('\\'));
+		if (ptr) {
 			ptr++;
 			*ptr = _T('\0');
 			SetCurrentDirectory(sBuffer);

@@ -34,7 +34,7 @@ public:
 	void SetItemEnable(int nItem, bool bEnable);
 	void UpdateSelectItemFileFindNum();
 
-	BOOL EnableToolTips(LPCTSTR sToolTip = NULL, BOOL bEnable = TRUE);
+	bool EnableToolTips(LPCTSTR sToolTip = NULL, bool bEnable = true);
 
 	void RemoveAllDirListFromPath(CString &sPath);
 

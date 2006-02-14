@@ -10,7 +10,7 @@ public:
 	virtual ~CKDListCtrl();
 
 	bool SwapItems(int iItem1, int iItem2);
-	void MoveSelectedItems(int iDist);
+	void MoveSelectedItems(int iPos);
 
 /*
 How To Use Drag:
@@ -28,7 +28,6 @@ How To Use Drag:
 		}
 */
 	bool EnableDrag(bool bEnable = true, COLORREF clrDragLine = RGB(255, 0, 0), COLORREF clrBackGround = RGB(255, 255, 255));
-	//BOOL ScrollByItem(int iItems, bool bDrawDragMark = false, LPPOINT pPt = NULL);
 	int QueryDragPos(const POINT &pt);
 	void DrawDragMark(const POINT &pt, COLORREF clr = RGB(255, 0, 0), COLORREF bgClr = RGB(255, 255, 255));
 protected:
@@ -44,11 +43,10 @@ public:
 	void SetSelectItemCheckState(bool bCheck);
 
 	int FindItemByText(LPCTSTR sText);
-	LPARAM GetItemLParam(int nItem);
-	BOOL SetItemSelected(int nItem);
+	bool SetItemSelected(int nItem);
 
-	BOOL EnableToolTips(LPCTSTR sToolTip = NULL, BOOL bEnable = TRUE);
-	BOOL IsEnableToolTips();
+	bool EnableToolTips(LPCTSTR sToolTip = NULL, bool bEnable = true);
+	bool IsEnableToolTips();
 	void SetToolTips(LPCTSTR sToolTip);
 	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
 
@@ -57,7 +55,7 @@ protected:
 	CImageList*	m_pImageList;
 
 private:
-	BOOL		m_bEnableToolTip;
+	bool		m_bEnableToolTip;
 	CString		m_sToolTip;
 	COLORREF	m_clrDragLine;
 	COLORREF	m_clrBackGround;

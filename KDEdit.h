@@ -8,12 +8,12 @@ public:
 	CKDEdit();
 	virtual ~CKDEdit();
 
-	BOOL EnableToolTips(LPCTSTR sToolTip = NULL, BOOL bEnable = TRUE);
-	BOOL IsEnableToolTips();
+	bool EnableToolTips(LPCTSTR sToolTip = NULL, bool bEnable = true);
+	bool IsEnableToolTips();
 	void SetToolTips(LPCTSTR sToolTip);
 	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
 
 private:
-	BOOL m_bEnableToolTip;
+	bool m_bEnableToolTip;
 	CString m_sToolTip;
 };

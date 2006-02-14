@@ -23,7 +23,7 @@ bool CMagicKDEndDlg::SignWnd(HWND hWnd, UINT uEndStep)
 	if (!hWnd)
 		return false;
 
-	bool bRes;
+	bool bRes = false;
 	if (m_muxEndDlg.Lock()) {
 		if (_FindSignWnd(hWnd))
 			return false;
@@ -47,11 +47,11 @@ bool CMagicKDEndDlg::UnsignWnd(HWND hWnd)
 	if (IsWindowVisible())
 		return false;
 
-	bool bRes;
+	bool bRes = false;
 	if (m_muxEndDlg.Lock()) {
 		SIGNWND signWnd;
-		POSITION pos;
-		if (pos = _FindSignWnd(hWnd)) {
+		POSITION pos = _FindSignWnd(hWnd);
+		if (pos) {
 			if (m_posLastFindWnd == pos)
 				m_posLastFindWnd = 0;
 

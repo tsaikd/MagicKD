@@ -2,7 +2,7 @@
 #include "KDButton.h"
 
 CKDButton::CKDButton()
-	: m_bEnableToolTip(FALSE)
+	:	m_bEnableToolTip(false)
 {
 }
 
@@ -10,14 +10,14 @@ CKDButton::~CKDButton()
 {
 }
 
-BOOL CKDButton::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+bool CKDButton::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, bool bEnable/* = true*/)
 {
 	if (bEnable)
 		SetToolTips(sToolTip);
-	return CButton::EnableToolTips(bEnable);
+	return CButton::EnableToolTips(bEnable) != FALSE;
 }
 
-BOOL CKDButton::IsEnableToolTips()
+bool CKDButton::IsEnableToolTips()
 {
 	return m_bEnableToolTip;
 }
@@ -39,5 +39,5 @@ INT_PTR CKDButton::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 
 		return GetDlgCtrlID();
 	}
-	return -1;
+	return CButton::OnToolHitTest(point, pTI);
 }

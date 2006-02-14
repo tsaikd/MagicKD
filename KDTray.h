@@ -17,18 +17,18 @@ public:
 	CKDTray();
 	virtual ~CKDTray();
 
-	BOOL RegisterTray(HWND hWnd, HICON hIcon, LPCTSTR sTip = NULL);
+	bool RegisterTray(HWND hWnd, HICON hIcon, LPCTSTR sTip = NULL);
 	void UnRegisterTray();
 
 	LPCTSTR GetTrayTip();
-	BOOL SetTrayTip(LPCTSTR sTip);
+	bool SetTrayTip(LPCTSTR sTip);
 
 	CMenu *GetTrayMenu();
-	BOOL AppendMenu(UINT nFlags, UINT_PTR nIDNewItem = 0, LPCTSTR lpszNewItem = NULL, bool bDefault = false);
-	BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem = 0, LPCTSTR lpszNewItem = NULL, bool bDefault = false);
+	bool AppendMenu(UINT nFlags, UINT_PTR nIDNewItem = 0, LPCTSTR lpszNewItem = NULL, bool bDefault = false);
+	bool InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem = 0, LPCTSTR lpszNewItem = NULL, bool bDefault = false);
 	int FindTrayMenuItem(LPCTSTR sMenuString);
-	BOOL RemoveTrayMenuItem(LPCTSTR sMenuString);
-	BOOL TrackPopupMenu(CWnd *pWnd, UINT nFlags = TPM_LEFTALIGN | TPM_LEFTBUTTON);
+	bool RemoveTrayMenuItem(LPCTSTR sMenuString);
+	bool TrackPopupMenu(CWnd *pWnd, UINT nFlags = TPM_LEFTALIGN | TPM_LEFTBUTTON);
 
 	UINT CheckMenuItem(UINT nIDCheckItem, UINT nCheck);
 

@@ -1,28 +1,28 @@
 #include "StdAfx.h"
 #include "KDListItem.h"
 
-CKDListItem::CKDListItem(int iColumn) : m_pText(NULL)
+CKDListItem::CKDListItem(UINT uColumn) : m_uColumn(uColumn)
 {
-	m_iColumn = iColumn;
-	m_pText = new CString[iColumn];
+	m_saText.SetSize(uColumn);
 }
 
 CKDListItem::~CKDListItem()
 {
-	if (m_pText)
-		delete [] (m_pText);
 }
 
-void CKDListItem::SetText(int iColumn, CString sText)
+bool CKDListItem::SetText(UINT uColumn, LPCTSTR sText)
 {
-	if (iColumn > m_iColumn)
-		return;
-	m_pText[iColumn] = sText;
+	if (uColumn >= m_uColumn)
+		return false;
+
+	m_saText[uColumn] = sText;
+	return true;
 }
 
-CString CKDListItem::GetText(int iColumn)
+LPCTSTR CKDListItem::GetText(UINT uColumn)
 {
-	if (iColumn > m_iColumn)
-		return CString();
-	return m_pText[iColumn];
+	if (uColumn >= m_uColumn)
+		return NULL;
+
+	return m_saText[uColumn];
 }

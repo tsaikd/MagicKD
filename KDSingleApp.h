@@ -5,7 +5,7 @@
 
 	inherit by WinApp
 	add in InitInstance() of WinApp
-		if (IsDialogRunning())
+		if (IsWndRunning())
 			return FALSE;
 
 	add in DefWindowProc() of Dialog
@@ -16,8 +16,6 @@
 		}
 */
 
-#include "StdAfx.h"
-
 extern UINT WMU_ARE_YOU_APP;
 extern UINT WMU_I_AM_APP;
 
@@ -27,7 +25,7 @@ public:
 	CKDSingleApp();
 	virtual ~CKDSingleApp();
 
-	bool IsDialogRunning();
+	bool IsWndRunning();
 	static BOOL CALLBACK QueryApp(HWND hWnd, LPARAM lParam);
 
 private:

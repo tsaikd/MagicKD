@@ -5,6 +5,7 @@ CKDThread::CKDThread()
 	: m_hThread(NULL), m_dwThreadId(NULL)
 {
 	_SetCanThread();
+	m_muxThread.Unlock();
 }
 
 CKDThread::~CKDThread()
@@ -31,8 +32,10 @@ void CKDThread::CreateThread(int nPriority/* = THREAD_PRIORITY_NORMAL*/, bool bS
 		DWORD dwCreationFlags = 0;
 		if (bSuspend)
 			dwCreationFlags = CREATE_SUSPENDED;
+
 		_SetCanThread();
-		VERIFY( m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, dwCreationFlags, &m_dwThreadId) );
+		m_hThread = ::CreateThread(NULL, 0, ThreadProc, (LPVOID) this, dwCreationFlags, &m_dwThreadId);
+		VERIFY(m_hThread);
 		SetThreadPriority(nPriority);
 
 		m_muxThread.Unlock();
@@ -48,7 +51,7 @@ void CKDThread::SetCanThread(bool bCanThread/* = true*/) {
 
 DWORD CKDThread::SuspendThread()
 {
-	DWORD dwRes;
+	DWORD dwRes = 0;
 	if (m_muxThread.Lock()) {
 		dwRes = ::SuspendThread(m_hThread);
 		m_muxThread.Unlock();
@@ -58,7 +61,7 @@ DWORD CKDThread::SuspendThread()
 
 DWORD CKDThread::ResumeThread()
 {
-	DWORD dwRes;
+	DWORD dwRes = 0;
 	if (m_muxThread.Lock()) {
 		dwRes = ::ResumeThread(m_hThread);
 		m_muxThread.Unlock();
@@ -75,7 +78,7 @@ DWORD CKDThread::ResumeThread()
 //	THREAD_PRIORITY_LOWEST
 //	THREAD_PRIORITY_IDLE
 bool CKDThread::SetThreadPriority(int nPriority/* = THREAD_PRIORITY_NORMAL*/) {
-	bool bRes;
+	bool bRes = false;
 	if (m_muxThread.Lock()) {
 		bRes = ::SetThreadPriority(m_hThread, nPriority) == TRUE;
 		m_muxThread.Unlock();
@@ -84,7 +87,7 @@ bool CKDThread::SetThreadPriority(int nPriority/* = THREAD_PRIORITY_NORMAL*/) {
 }
 
 bool CKDThread::IsCanThread() {
-	bool bRes;
+	bool bRes = false;
 	if (m_muxThread.Lock()) {
 		if (m_semCanThread.Lock(0)) {
 			m_semCanThread.Unlock();
@@ -99,7 +102,7 @@ bool CKDThread::IsCanThread() {
 
 bool CKDThread::IsThreadRunning()
 {
-	bool bRes;
+	bool bRes = false;
 	if (m_muxThread.Lock()) {
 		if (m_semThread.Lock(0)) {
 			m_semThread.Unlock();
@@ -120,7 +123,7 @@ DWORD CKDThread::WaitForThread(DWORD dwMilliseconds) {
 }
 
 bool CKDThread::TerminateThread(DWORD dwExitCode/* = 0*/) {
-	bool bRes;
+	bool bRes = false;
 	if (m_muxThread.Lock()) {
 		if (m_hThread) {
 			bRes = ::TerminateThread(m_hThread, dwExitCode) == TRUE;
@@ -139,5 +142,4 @@ void CKDThread::_SetCanThread(bool bCanThread/* = true*/) {
 		m_semCanThread.Lock(0);
 	else
 		m_semCanThread.Unlock();
-	m_muxThread.Unlock();
 }

@@ -47,7 +47,7 @@ public:
 	UINT	StartTimer();
 	UINT	StopTimer();
 
-	BOOL	EnableToolTips(BOOL bEnable = TRUE);
+	bool	EnableToolTips(bool bEnable = true);
 
 	CIni	m_cIni;
 	CMutex	m_muxRandPic;
@@ -77,7 +77,7 @@ private:
 	bool m_bInit;
 	bool m_bSetCachePicNum;
 	bool m_bShowDirLoadError;
-	BOOL m_bEnableTip;
+	bool m_bEnableTip;
 	UINT m_uWaitTime;
 	UINT m_uCachePicNum;
 	int m_iTestOfflineCount;

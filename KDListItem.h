@@ -3,13 +3,13 @@
 class CKDListItem
 {
 public:
-	CKDListItem(int iColumn);
+	CKDListItem(UINT uColumn);
 	virtual ~CKDListItem();
 
-	void SetText(int iColumn, CString sText);
-	CString GetText(int iColumn);
+	bool SetText(UINT uColumn, LPCTSTR sText);
+	LPCTSTR GetText(UINT uColumn);
 
 private:
-	int m_iColumn;
-	CString *m_pText;
+	UINT m_uColumn;
+	CStringArray m_saText;
 };

@@ -1,10 +1,9 @@
 #include "StdAfx.h"
 #include "Others.h"
 #include "KDListCtrl.h"
-#include ".\kdlistctrl.h"
 
 CKDListCtrl::CKDListCtrl()
-: m_bEnableToolTip(FALSE), m_pImageList(NULL), m_bEnableDrag(false), m_bOnDraging(false)
+: m_bEnableToolTip(false), m_pImageList(NULL), m_bEnableDrag(false), m_bOnDraging(false)
 {
 }
 
@@ -46,15 +45,15 @@ bool CKDListCtrl::SwapItems(int iItem1, int iItem2)
 	return true;
 }
 
-void CKDListCtrl::MoveSelectedItems(int iDist)
+void CKDListCtrl::MoveSelectedItems(int iPos)
 {
-	if (!INRANGE(iDist, 0, GetItemCount()) || !GetSelectedCount())
+	if (!INRANGE(iPos, 0, GetItemCount()) || !GetSelectedCount())
 		return;
 
 	SetRedraw(FALSE);
 
-	if (GetFirstSelectedItemNum() < iDist)
-		iDist--;
+	if (GetFirstSelectedItemNum() < iPos)
+		iPos--;
 
 	LVITEM lvItem = {0};
 	POSITION pos = GetFirstSelectedItemPosition();
@@ -72,10 +71,10 @@ void CKDListCtrl::MoveSelectedItems(int iDist)
 		SetItemData(iFrom, 0); // prevent delete item data
 		DeleteItem(iFrom);
 
-		lvItem.iItem = iDist++;
+		lvItem.iItem = iPos++;
 		lvItem.mask = LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE | LVIF_STATE;
 		InsertItem(&lvItem);
-//		SetItemState(lvItem.iItem, lvItem.state, 0xFFFFFFFF);
+		SetItemState(lvItem.iItem, lvItem.state, 0xFFFFFFFF);
 	}
 
 	SetRedraw(TRUE);
@@ -90,31 +89,6 @@ bool CKDListCtrl::EnableDrag(bool bEnable/* = true*/, COLORREF clrDragLine/* = R
 	return m_bEnableDrag;
 }
 
-//BOOL CKDListCtrl::ScrollByItem(int iItems, bool bDrawDragMark/* = false*/, LPPOINT pPt/* = NULL*/)
-//{
-//	int iCount;
-//	if (!(iCount = GetItemCount()) || !iItems)
-//		return FALSE;
-//
-//	CRect rcItem;
-//	GetItemRect(0, rcItem, LVIR_BOUNDS);
-//
-//	int iTop = GetTopIndex();
-//
-//	if (iItems < 0 && iTop == 0 || iItems > 0 && iTop + iItems > iCount)
-//		return FALSE;
-//
-//	if (bDrawDragMark)
-//		RedrawWindow();
-//
-//	BOOL bRes = Scroll(CSize(0, rcItem.Height() * iItems));
-//
-//	if (bDrawDragMark)
-//		DrawDragMark(*pPt);
-//
-//	return bRes;
-//}
-//
 int CKDListCtrl::QueryDragPos(const POINT &pt)
 {
 	int iCount = GetItemCount(), iItem = 0;
@@ -158,7 +132,9 @@ void CKDListCtrl::DrawDragMark(const POINT &pt, COLORREF clr/* = RGB(255, 0, 0)*
 	CDC *pDC = GetDC();
 
 	pOldPen = pDC->SelectObject(&penClean);
-	for (int i=0 ; i<iCount+1 ; i++) {
+	int iTopIndex = GetTopIndex();
+	int iButtonIndex = iTopIndex + GetCountPerPage();
+	for (int i=iTopIndex ; i<iButtonIndex + 1 ; i++) {
 		pDC->MoveTo(5, i * rcItem.Height() + rcItem.top);
 		pDC->LineTo(rc.right - 5, i * rcItem.Height() + rcItem.top);
 	}
@@ -175,27 +151,32 @@ void CKDListCtrl::DrawDragMark(const POINT &pt, COLORREF clr/* = RGB(255, 0, 0)*
 void CKDListCtrl::DeleteSelectItem()
 {
 	int nItem;
-	POSITION pos;
-	while (pos = GetFirstSelectedItemPosition()) {
+	POSITION pos = GetFirstSelectedItemPosition();
+
+	while (pos) {
 		nItem = GetNextSelectedItem(pos);
 		DeleteItem(nItem);
+
+		pos = GetFirstSelectedItemPosition();
 	}
 }
 
 void CKDListCtrl::CancleAllSelected()
 {
 	int nItem;
-	POSITION pos;
-	while (pos = GetFirstSelectedItemPosition()) {
+	POSITION pos = GetFirstSelectedItemPosition();
+	while (pos) {
 		nItem = GetNextSelectedItem(pos);
 		SetItemState(nItem, 0, LVIS_SELECTED);
+
+		pos = GetFirstSelectedItemPosition();
 	}
 }
 
 LPARAM CKDListCtrl::GetFirstSelectedItemLParam()
 {
 	POSITION pos = GetFirstSelectedItemPosition();
-	return GetItemLParam(GetNextSelectedItem(pos));
+	return (LPARAM)GetItemData(GetNextSelectedItem(pos));
 }
 
 int CKDListCtrl::GetFirstSelectedItemNum()
@@ -210,7 +191,7 @@ void CKDListCtrl::SetSelectItemCheckState(bool bCheck)
 	POSITION pos = GetFirstSelectedItemPosition();
 	while (pos) {
 		nItem = GetNextSelectedItem(pos);
-		ListView_SetCheckState(m_hWnd, nItem, bCheck);
+		ListView_SetCheckState(GetSafeHwnd(), nItem, bCheck);
 		SetItemState(nItem, 0, LVIS_SELECTED);
 	}
 }
@@ -223,30 +204,19 @@ int CKDListCtrl::FindItemByText(LPCTSTR sText)
 	return FindItem(&itemInfo);
 }
 
-LPARAM CKDListCtrl::GetItemLParam(int nItem)
+bool CKDListCtrl::SetItemSelected(int nItem)
 {
-	LVITEM lvitem = {0};
-	lvitem.mask = LVIF_PARAM;
-	lvitem.iItem = nItem;
-	if (GetItem(&lvitem))
-		return lvitem.lParam;
-	else
-		return NULL;
+	return SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED) != FALSE;
 }
 
-BOOL CKDListCtrl::SetItemSelected(int nItem)
-{
-	return SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED);
-}
-
-BOOL CKDListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+bool CKDListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, bool bEnable/* = true*/)
 {
 	if (bEnable)
 		SetToolTips(sToolTip);
-	return CListCtrl::EnableToolTips(bEnable);
+	return CListCtrl::EnableToolTips(bEnable) != FALSE;
 }
 
-BOOL CKDListCtrl::IsEnableToolTips()
+bool CKDListCtrl::IsEnableToolTips()
 {
 	return m_bEnableToolTip;
 }
@@ -268,7 +238,7 @@ INT_PTR CKDListCtrl::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 
 		return GetDlgCtrlID();
 	}
-	return -1;
+	return CListCtrl::OnToolHitTest(point, pTI);
 }
 
 BEGIN_MESSAGE_MAP(CKDListCtrl, CListCtrl)
@@ -309,18 +279,19 @@ void CKDListCtrl::OnLvnBegindrag(NMHDR *pNMHDR, LRESULT *pResult)
 	if (!m_bEnableDrag)
 		return;
 
+	CPoint ptZero(0, 0);
 	if (m_pImageList) {
 		delete m_pImageList;
 		m_pImageList = NULL;
 	} else {
-		m_pImageList = CreateDragImage(pNMLV->iItem, &CPoint(0, 0));
+		m_pImageList = CreateDragImage(pNMLV->iItem, &ptZero);
 	}
 	if (!m_pImageList)
 		return;
 	m_nmlvBeginDrag = *pNMLV;
 
 	m_bOnDraging = true;
-	m_pImageList->BeginDrag(0, CPoint(0, 0));
+	m_pImageList->BeginDrag(0, ptZero);
 	m_pImageList->DragShowNolock(TRUE);
 	SetCapture();
 

@@ -94,7 +94,7 @@ void CWallClassListCtrl::UpdateSelectItemFileFindNum()
 	}
 }
 
-BOOL CWallClassListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+bool CWallClassListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, bool bEnable/* = true*/)
 {
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirList;

@@ -10,7 +10,7 @@
 		SetCanThread(false);
 		if (WAIT_TIMEOUT == WaitForThread(10000)) {
 #ifdef DEBUG
-			MessageBox(GetFocus(), _T("Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+			MessageBox(GetForegroundWindow(), _T("Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
 			TerminateThread(0);
 		}
@@ -39,7 +39,7 @@ protected:
 	DWORD		m_dwThreadId;
 	CSemaphore	m_semThread;
 	CSemaphore	m_semCanThread;
-	CMutex		m_muxThread;
+
 private:
 	static DWORD WINAPI ThreadProc(LPVOID pParam) {
 		DWORD dwRes = 0;
@@ -51,4 +51,6 @@ private:
 		return dwRes;
 	}
 	void _SetCanThread(bool bCanThread = true);
+
+	CMutex		m_muxThread;
 };

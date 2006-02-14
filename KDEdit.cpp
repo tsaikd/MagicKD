@@ -2,7 +2,7 @@
 #include "KDEdit.h"
 
 CKDEdit::CKDEdit()
-	: m_bEnableToolTip(FALSE)
+	:	m_bEnableToolTip(false)
 {
 }
 
@@ -10,14 +10,14 @@ CKDEdit::~CKDEdit()
 {
 }
 
-BOOL CKDEdit::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, BOOL bEnable/* = TRUE*/)
+bool CKDEdit::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, bool bEnable/* = TRUE*/)
 {
 	if (bEnable)
 		SetToolTips(sToolTip);
-	return CEdit::EnableToolTips(bEnable);
+	return CEdit::EnableToolTips(bEnable) != FALSE;
 }
 
-BOOL CKDEdit::IsEnableToolTips()
+bool CKDEdit::IsEnableToolTips()
 {
 	return m_bEnableToolTip;
 }
@@ -39,5 +39,5 @@ INT_PTR CKDEdit::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 
 		return GetDlgCtrlID();
 	}
-	return -1;
+	return CEdit::OnToolHitTest(point, pTI);
 }

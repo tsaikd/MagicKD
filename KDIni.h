@@ -1,4 +1,5 @@
 #pragma once
+#include "Ini.h"
 
 /*
 	Inherit and	ReWrite virtual void SaveIni();
@@ -19,11 +20,17 @@ class CKDIni
 public:
 	CKDIni();
 	virtual ~CKDIni();
+	virtual void SaveIni();
+
+	void Init(CIni *pIni);
+	void Init(LPCTSTR lpIniPathName);
 
 	bool IsIniModify();
 	void SetIniModify(bool bModify = true);
-	virtual void SaveIni();
+
+	CIni *m_pIni;
 
 private:
 	bool m_bModify;
+	bool m_bNeedFreeMem;
 };

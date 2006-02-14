@@ -1,41 +1,35 @@
 #include "StdAfx.h"
-#ifdef IDS_SEL_FOLDER
-#include "Language.h"
-#endif
-
 #include "Others.h"
 
 // return true if user choice a folder
-bool ChooseFolder(CString &sFolder, HWND hWnd/*= 0*/)
+bool ChooseFolder(CString &sFolder, HWND hWnd/*= 0*/, LPCTSTR lpTitle/* = NULL*/)
 {
-	bool bRes = ChooseFolder(sFolder.GetBuffer(MAX_PATH), hWnd);
+	bool bRes = ChooseFolder(sFolder.GetBuffer(MAX_PATH), hWnd, lpTitle);
 	sFolder.ReleaseBuffer();
 
 	return bRes;
 }
 
-bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
+bool ChooseFolder(LPTSTR lpFolder, HWND hWnd/*= 0*/, LPCTSTR lpTitle/* = NULL*/)
 {
 	LPMALLOC pMalloc;
 	bool bOK = false;
 
 	if (SHGetMalloc(&pMalloc) == NOERROR) {
-#ifdef IDS_SEL_FOLDER
-		CResString sTitle(IDS_SEL_FOLDER);
-#else
-		CString sTitle(_T("Please select a folder"));
-#endif
 		BROWSEINFO brInfo = {0};
 		brInfo.hwndOwner = hWnd;
-		brInfo.pszDisplayName = sFolder;
-		brInfo.lpszTitle = sTitle;
+		brInfo.pszDisplayName = lpFolder;
+		if (lpTitle)
+			brInfo.lpszTitle = lpTitle;
+		else
+			brInfo.lpszTitle = _T("Please select a folder");
 		brInfo.ulFlags = BIF_USENEWUI;
 
 		CoInitialize(NULL);
 
 		LPITEMIDLIST pidl;
 		if ((pidl = SHBrowseForFolder(&brInfo)) != NULL){
-			if (SHGetPathFromIDList(pidl, sFolder))
+			if (SHGetPathFromIDList(pidl, lpFolder))
 				bOK = true;
 			pMalloc->Free(pidl);
 		}
@@ -51,10 +45,11 @@ bool ChooseFolder(LPTSTR sFolder, HWND hWnd/*= 0*/)
 // Open a Dialog to ask user for sure
 // if not Undo, then remove files directly (default: true)
 // if Remove success, then return true
-bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
+// bUndo usually set to !IsShiftPressed()
+bool RemoveFileDlg(LPCTSTR lpFiles, HWND hWnd/* = NULL*/, bool bUndo/* = true*/)
 {
 	TCHAR sFileBuf[MAX_PATH] = {0};
-	_tcscpy(sFileBuf, sFiles);
+	_tcscpy(sFileBuf, lpFiles);
 
 	SHFILEOPSTRUCT shFile = {0};
 	shFile.hwnd = hWnd;
@@ -65,12 +60,12 @@ bool RemoveFileDlg(HWND hWnd, LPCTSTR sFiles, bool bUndo/* = true*/)
 	return (SHFileOperation(&shFile)) == 0;
 }
 
-bool MoveFileDlg(LPCTSTR sFileFrom, LPCTSTR sFIleTo, HWND hWnd, bool bUndo/* = true*/)
+bool MoveFileDlg(LPCTSTR lpFileFrom, LPCTSTR lpFIleTo, HWND hWnd/* = NULL*/, bool bUndo/* = true*/)
 {
 	TCHAR sFileFromBuf[MAX_PATH] = {0};
-	_tcscpy(sFileFromBuf, sFileFrom);
+	_tcscpy(sFileFromBuf, lpFileFrom);
 	TCHAR sFileToBuf[MAX_PATH] = {0};
-	_tcscpy(sFileToBuf, sFIleTo);
+	_tcscpy(sFileToBuf, lpFIleTo);
 
 	SHFILEOPSTRUCT shFile = {0};
 	shFile.hwnd = hWnd;
@@ -82,27 +77,46 @@ bool MoveFileDlg(LPCTSTR sFileFrom, LPCTSTR sFIleTo, HWND hWnd, bool bUndo/* = t
 	return (SHFileOperation(&shFile)) == 0;
 }
 
-// ouput lpTempFilePath and return sTempFilePath, input lpTempDir and lpPreFix
-CString GetTempFilePath(LPSTR lpTempFilePath/* = NULL*/, LPCTSTR lpTempDir/* = NULL*/, LPCTSTR lpPreFix/* = NULL*/)
+// if need resample, then return true, and set new size at cpSizeSrc
+// else return false
+bool CalcPicSize(CSize &sizeSrc, const CSize &sizeMax)
 {
-	CString sTempFilePath, sTempDir, sPreFix;
-	if (lpTempFilePath)
-		sTempFilePath = lpTempFilePath;
+	if ((sizeMax.cx >= sizeSrc.cx) && (sizeMax.cy >= sizeSrc.cy))
+		return false;
 
-	if (lpTempDir)
-		sTempDir = lpTempDir;
-	else
-		GetTempPath(MAX_PATH, sTempDir.GetBuffer(MAX_PATH));
+	double dRatioX, dRatioY;
+	dRatioX = (double)sizeMax.cx / (double)sizeSrc.cx;
+	dRatioY = (double)sizeMax.cy / (double)sizeSrc.cy;
 
-	if (lpPreFix)
-		sPreFix = lpPreFix;
-	else
-		sPreFix = _T("__TEMP_");
+	double dRatio = (dRatioX<dRatioY) ? dRatioX : dRatioY;
+	sizeSrc.SetSize((int)((double)sizeSrc.cx * dRatio), (int)((double)sizeSrc.cy * dRatio));
+	return true;
+}
 
-	GetTempFileName(sTempDir, sPreFix, 0, sTempFilePath.GetBuffer(MAX_PATH));
-	DeleteFile(sTempFilePath);
+// ouput lpTempFilePath and return sTempFilePath, input lpTempDir and lpPreFix
+void GetTempFilePath(LPTSTR lpTempFilePath, LPCTSTR lpTempDir/* = NULL*/, LPCTSTR lpPreFix/* = NULL*/, LPCTSTR lpPostFix/* = NULL*/)
+{
+	if (!lpTempFilePath)
+		return;
 
-	return sTempFilePath;
+	LPTSTR lpTempDirBuf = (LPTSTR)lpTempDir;
+	LPCTSTR lpPreFixBuf = lpPreFix;
+
+	if (!lpTempDirBuf)
+		lpTempDirBuf = new TCHAR [MAX_PATH];
+	if (!lpPreFixBuf)
+		lpPreFixBuf = _T("_TEMP_");
+
+	GetTempPath(MAX_PATH, lpTempDirBuf);
+	GetTempFileName(lpTempDirBuf, lpPreFixBuf, 0, lpTempFilePath);
+	if (PathFileExists(lpTempFilePath))
+		DeleteFile(lpTempFilePath);
+
+	if (lpPostFix)
+		_tcscat(lpTempFilePath, lpPostFix);
+
+	if (lpTempDirBuf && !lpTempDir)
+		delete [] lpTempDirBuf;
 }
 
 #ifdef _UNICODE
@@ -112,9 +126,9 @@ CString GetTempFilePath(LPSTR lpTempFilePath/* = NULL*/, LPCTSTR lpTempDir/* = N
 //	WPSTYLE_TILE
 //	WPSTYLE_STRETCH (default)
 //	WPSTYLE_MAX
-bool SetWallpaper(LPCTSTR sFilePath, DWORD dwStyle/* = WPSTYLE_STRETCH*/)
+bool SetWallpaper(LPCTSTR lpFilePath, DWORD dwStyle/* = WPSTYLE_STRETCH*/)
 {
-	if (!sFilePath || !PathFileExists(sFilePath))
+	if (!lpFilePath || !PathFileExists(lpFilePath))
 		return false;
 
 	CoInitialize(NULL);
@@ -129,7 +143,7 @@ bool SetWallpaper(LPCTSTR sFilePath, DWORD dwStyle/* = WPSTYLE_STRETCH*/)
 		//Create an instance of the Active Desktop
 		TRYEXP(CoCreateInstance(CLSID_ActiveDesktop, NULL, CLSCTX_INPROC_SERVER,
 							IID_IActiveDesktop, (void**) &pActiveDesktop));
-		TRYEXP(pActiveDesktop->SetWallpaper(sFilePath, 0));
+		TRYEXP(pActiveDesktop->SetWallpaper(lpFilePath, 0));
 
 		wpOpt.dwSize = sizeof(WALLPAPEROPT);
 		wpOpt.dwStyle = dwStyle;
@@ -176,7 +190,7 @@ bool SetWallpaper(LPCTSTR sFilePath, DWORD dwStyle/* = WPSTYLE_STRETCH*/)
 			TRYREG(reg.SetStringValue(_T("TileWallpaper"), cstrTileWallpaper));
 			TRYREG(reg.SetStringValue(_T("WallpaperStyle"), cstrWallpaperStyle));
 
-			bMethod2 = (SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, (void *) sFilePath,
+			bMethod2 = (SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, (void *) lpFilePath,
 				SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE) != FALSE);
 		} catch (...) {
 			bMethod2 = false;
@@ -188,6 +202,72 @@ bool SetWallpaper(LPCTSTR sFilePath, DWORD dwStyle/* = WPSTYLE_STRETCH*/)
 	CoUninitialize();
 
 	return bMethod1 || bMethod2;
+}
+
+bool AddDesktopPic(LPCTSTR lpPicPath, const CSize &sizePic)
+{
+	if (!lpPicPath || !PathFileExists(lpPicPath))
+		return false;
+
+	bool bRes = true;
+	CoInitialize(NULL);
+	COMPONENT compDesk = {0};
+	IActiveDesktop *pActiveDesktop = NULL;
+	CoCreateInstance(CLSID_ActiveDesktop, NULL, CLSCTX_INPROC_SERVER, IID_IActiveDesktop, (void**) &pActiveDesktop);
+
+	compDesk.dwSize = sizeof(COMPONENT);
+	compDesk.iComponentType = COMP_TYPE_PICTURE;
+	compDesk.fChecked = TRUE;
+	compDesk.fDirty = FALSE;
+	compDesk.fNoScroll = FALSE;
+	compDesk.dwCurItemState = IS_NORMAL;
+	_tcscpy(compDesk.wszFriendlyName, PathFindFileName(lpPicPath));
+	_tcscpy(compDesk.wszSource, lpPicPath);
+
+	CScreenSize sizeScreen;
+	CSize sizePicBuf = sizePic;
+	CalcPicSize(sizePicBuf, sizeScreen);
+	compDesk.cpPos.dwSize = sizeof(COMPPOS);
+	compDesk.cpPos.iLeft = (sizeScreen.cx - sizePicBuf.cx) >> 1;
+	compDesk.cpPos.iTop = (sizeScreen.cy - sizePicBuf.cy) >> 1;
+	compDesk.cpPos.dwWidth = sizePic.cx;
+	compDesk.cpPos.dwHeight = sizePic.cy;
+	compDesk.cpPos.izIndex = 0;
+	compDesk.cpPos.fCanResize = FALSE;
+	compDesk.cpPos.fCanResizeX = FALSE;
+	compDesk.cpPos.fCanResizeY = FALSE;
+
+	ASSERT(bRes = (pActiveDesktop->AddDesktopItem(&compDesk, 0) == S_OK) && bRes);
+	ASSERT(bRes = (pActiveDesktop->ApplyChanges(AD_APPLY_ALL) == S_OK) && bRes);
+
+	if (pActiveDesktop)
+		pActiveDesktop->Release();
+	CoUninitialize();
+
+	return bRes;
+}
+
+bool RemoveDesktopPic(LPCTSTR lpPicPath)
+{
+	if (!lpPicPath)
+		return false;
+
+	bool bRes = true;
+	CoInitialize(NULL);
+	COMPONENT compDesk = {0};
+	IActiveDesktop *pActiveDesktop = NULL;
+	CoCreateInstance(CLSID_ActiveDesktop, NULL, CLSCTX_INPROC_SERVER, IID_IActiveDesktop, (void**) &pActiveDesktop);
+
+	compDesk.dwSize = sizeof(COMPONENT);
+	_tcscpy(compDesk.wszSource, lpPicPath);
+	ASSERT(bRes = (pActiveDesktop->RemoveDesktopItem(&compDesk, 0) == S_OK) && bRes);
+	ASSERT(bRes = (pActiveDesktop->ApplyChanges(AD_APPLY_ALL) == S_OK) && bRes);
+
+	if (pActiveDesktop)
+		pActiveDesktop->Release();
+	CoUninitialize();
+
+	return bRes;
 }
 
 #endif // _UNICODE
