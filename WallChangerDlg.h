@@ -14,8 +14,7 @@
 
 // CWallChangerDlg User Message
 enum {
-	WMU_UPDATE_CACHENUM = (WM_USER + 1),
-	WMU_UPDATE_TOTALNUM,
+	WMU_UPDATE_TOTALNUM = (WM_USER + 1),
 	WMU_FIRST_FIND_PIC
 };
 
@@ -38,9 +37,7 @@ public:
 
 	void	SetHistoryNum(UINT uNum);
 	void	SetWaitTime(UINT uWaitTime);
-	bool	SetCachePicNum(UINT uCachePicNum);
-	UINT	GetCachePicNum();
-	bool	SetRandWallPager(bool bWay);
+	bool	SetRandWallPager();
 	LPCTSTR	GetRandPicPath();
 	bool	DeletePicFile(LPCTSTR sFilePath, bool bAskForSure = true);
 
@@ -55,7 +52,6 @@ public:
 
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;
-	CStatic m_staticCachePicNum;
 	CStatic m_staticPicTotalNum;
 	CButton m_btn_EnableToolTip;
 	CKDButton m_btn_RandPic;
@@ -65,7 +61,6 @@ public:
 	CKDEdit m_editWaitTime;
 	CKDEdit m_editAddClass;
 	CKDEdit m_editHistoryNum;
-	CKDEdit m_editCacheNum;
 	CKDComboBox m_comboxImageLoadError;
 	CWallClassListCtrl m_listClass;
 	CWallDirListCtrl m_listDirPath;
@@ -75,18 +70,16 @@ private:
 	CPoint _AutoPicSize(CPoint &cpSizeSrc, CPoint const &cpSizeMax);
 
 	bool m_bInit;
-	bool m_bSetCachePicNum;
 	bool m_bShowDirLoadError;
 	bool m_bEnableTip;
 	UINT m_uWaitTime;
-	UINT m_uCachePicNum;
 	int m_iTestOfflineCount;
 	// at least 1. if in history, then don't set to wallpager
 	// if larger than total list number, then equal to set 1
 	UINT m_uPicPathHistory;
 	UINT m_uTimer;
 	CString m_sComboxMsg;
-	CxImage m_xImgNowPic;
+	CxImage m_imgNowPic;
 	CString m_sNowPicPath;
 	CString m_sTempFilePath;
 	CStringList m_slPicPathHistory;

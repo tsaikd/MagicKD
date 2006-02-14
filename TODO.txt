@@ -15,7 +15,6 @@ OnSize
 螢幕解析度(ku)
 
 bug:
-	cache num 的部份不同步
 	Release Version Property: Runtime Library 不能用 /MD 要用 /MDd , 不然中文字在 ListCtrl中顯示有問題
 	Release 執行一段時間後關閉會 memmory leak
 	刪除多個分類列表會當

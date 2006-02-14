@@ -3,7 +3,6 @@
 #include "Language.h"
 #include "WallEnablePicList.h"
 #include "WallThreadFindPic.h"
-#include "WallThreadImageCache.h"
 
 #include "WallDirListItem.h"
 
@@ -178,15 +177,6 @@ void CWallDirListItem::SetItemEnable(bool bEnable)
 			::g_pWallEnablePicList->AddEnableItem(&m_saPicPath);
 	} else {
 		// Change from true to false
-		if (::g_pWallThreadImageCache) {
-			int iCount = m_saPicPath.GetCount();
-			for (int i=0 ; i<iCount ; i++) {
-				if (::g_pWallThreadImageCache->FindPath(m_saPicPath[i])) {
-					::g_pWallThreadImageCache->RemoveAll();
-					break;
-				}
-			}
-		}
 		::g_pWallEnablePicList->RemoveEnableItem(&m_saPicPath);
 	}
 }

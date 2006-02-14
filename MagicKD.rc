@@ -121,11 +121,7 @@ BEGIN
                     SS_NOPREFIX | SS_PATHELLIPSIS | WS_GROUP,10,32,350,10
     EDITTEXT        IDC_WALL_EDIT_HISTORYNUM,195,5,15,12,ES_AUTOHSCROLL | 
                     ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
-    EDITTEXT        IDC_WALL_EDIT_CACHENUM,165,20,10,12,ES_AUTOHSCROLL | 
-                    ES_NUMBER | WS_DISABLED | NOT WS_BORDER,WS_EX_CLIENTEDGE
     PUSHBUTTON      "關閉提示",IDC_WALL_BTN_ENABLETOOLTIP,320,5,40,12
-    RTEXT           "0",IDC_WALL_STATIC_CACHENUM,145,22,15,8
-    LTEXT           "已快取",IDC_WALL_STATIC_CACHEDNUM,115,22,25,8
     COMBOBOX        IDC_WALL_COMBO_IMAGELOADERROR,135,5,60,60,
                     CBS_DROPDOWNLIST | CBS_SORT | CBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_TABSTOP
@@ -156,8 +152,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,9
- PRODUCTVERSION 1,0,0,9
+ FILEVERSION 1,0,1,0
+ PRODUCTVERSION 1,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -173,11 +169,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 0, 9"
+            VALUE "FileVersion", "1, 0, 1, 0"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 0, 9"
+            VALUE "ProductVersion", "1, 0, 1, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -238,29 +234,28 @@ END
 STRINGTABLE 
 BEGIN
     IDS_SEL_FOLDER          "請選擇一個資料夾"
+    IDS_TRAY_OPENWINDOW     "開啟 MagicKD\t(&O)"
     IDS_TRAY_CLOSEWINDOW    "關閉 MagicKD\t(&C)"
+    IDS_TRAY_WALLCHANGER    "WallChanger"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_TRAY_RANDPIC        "立即更換隨機桌布\t(Space)& "
     IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
+    IDS_TRAY_MOVEPIC        "移動目前桌布\t(&M)"
+    IDS_CONF_STATIC_TRANSPARENCY "透明度"
+    IDS_CONF_CHECK_STARTMIN "開始時最小化"
+    IDS_CONF_CHECK_SHOWCLOSEWINDOW "顯示關閉進度"
 END
 
 STRINGTABLE 
 BEGIN
     IDS_WALL_BTN_ADDCLASS   "新增"
     IDS_WALL_CHECK_SHOWDIRLOADERROR "顯示資料夾讀取錯誤"
-    IDS_WALL_STATIC_CACHEDNUM "已快取"
     IDS_WALL_STATIC_WAITTIME "換圖間隔(秒)"
     IDS_WALL_STATIC_PICTOTALNUM "啟用列表圖檔總數"
     IDS_WALL_MENU_ADDENABLECLASSLIST "加入啟用分類列表"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_TRAY_OPENWINDOW     "開啟 MagicKD\t(&O)"
-    IDS_TRAY_WALLCHANGER    "WallChanger"
-    IDS_TRAY_MOVEPIC        "移動目前桌布\t(&M)"
-    IDS_CONF_STATIC_TRANSPARENCY "透明度"
-    IDS_CONF_CHECK_STARTMIN "開始時最小化"
-    IDS_CONF_CHECK_SHOWCLOSEWINDOW "顯示關閉進度"
 END
 
 STRINGTABLE 
@@ -286,15 +281,14 @@ BEGIN
     IDS_WALL_TOOLTIP_DELNOWPIC "刪除目前桌布檔案"
     IDS_WALL_TOOLTIP_SETWAITTIME "設定更換圖片的間隔時間(秒) (預設:30)"
     IDS_WALL_TOOLTIP_SETHISTORYNUM "設定在幾張圖片之內不重覆 (預設:10)"
-    IDS_WALL_TOOLTIP_SETCACHEPICNUM "設定快取圖片數量 (建議:<=5)"
     IDS_WALL_TOOLTIP_ADDCLASS "輸入新分類的名稱"
     IDS_WALL_TOOLTIP_CLASSLIST "分類列表，打勾為啟動，右鍵選單中可以刪除"
+    IDS_WALL_TOOLTIP_DIRLIST 
+                            "某個分類中的資料夾列表，右鍵選單中可以新增或刪除，也可以將資料夾拖曳進來"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_WALL_TOOLTIP_DIRLIST 
-                            "某個分類中的資料夾列表，右鍵選單中可以新增或刪除，也可以將資料夾拖曳進來"
     IDS_WALL_TOOLTIP_IMAGELOADERROR "當圖片讀取錯誤時的措施"
     IDS_WALL_CANONLYCHOICEONECLASS "您只能選擇一個分類進行此動作"
     IDS_WALL_DIRNOTEXIST    "資料夾不存在"

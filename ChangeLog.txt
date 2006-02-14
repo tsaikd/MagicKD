@@ -1,3 +1,4 @@
+Version: 1.0.1.0	(2006-02-14)
 	Fix bug: If Hide Window, then Open Another Program won't Show Program
 	Fix bug: If User choice Directly Delete bad Picture File in Config, won't Update Enable List
 	Fix bug: User Can't Use Tray Icon to Control WallChanger
@@ -5,6 +6,7 @@
 	User Can Hide Close Window
 	User Can Hide Dir Load Error Message Window
 	Add Show Total Enable Picture Number
+	Cancle Cache Functions
 
 Version: 1.0.0.9	(2006-02-10)
 	Fix bug: If First Class is Empty, then Set Wallpager at First Time Will Fail

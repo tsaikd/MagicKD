@@ -251,9 +251,6 @@
 					<File
 						RelativePath=".\WallThreadFindPic.cpp">
 					</File>
-					<File
-						RelativePath=".\WallThreadImageCache.cpp">
-					</File>
 				</Filter>
 			</Filter>
 		</Filter>
@@ -365,9 +362,6 @@
 					Filter="">
 					<File
 						RelativePath=".\WallThreadFindPic.h">
-					</File>
-					<File
-						RelativePath=".\WallThreadImageCache.h">
 					</File>
 				</Filter>
 			</Filter>
