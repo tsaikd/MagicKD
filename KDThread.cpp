@@ -2,7 +2,7 @@
 #include "KDThread.h"
 
 CKDThread::CKDThread()
-	: m_hThread(NULL), m_dwThreadId(NULL)
+	:	m_hThread(NULL), m_dwThreadId(NULL)
 {
 	_SetCanThread();
 	m_muxThread.Unlock();

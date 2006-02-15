@@ -140,17 +140,17 @@ BOOL CMagicKDDlg::OnInitDialog()
 	InitTabRect();
 	if (!pTheTray)
 		pTheTray = new CKDTray;
-	pTheTray->RegisterTray(m_hWnd, m_hIcon);
+	pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon);
+	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 
-	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, GetResString(IDS_TRAY_OPENWINDOW));
-	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, GetResString(IDS_TRAY_CLOSEWINDOW), true);
-	pTheAppEndDlg->SignWnd(m_hWnd, 2);
+	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
+	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
 
 	m_pIni = &theApp.m_cIni;
 	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
-	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, GetResString(IDS_TRAY_WALLCHANGER));
+	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
 	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
 		SetFuncEnable(eFunc_WallChanger, true, false);
 	else
@@ -176,13 +176,13 @@ void CMagicKDDlg::OnDestroy()
 	if (m_cMainConfigDlg.IsShowCloseWindow())
 		pTheAppEndDlg->ShowWindow(SW_SHOW);
 
-	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Closing\tMagicKD\tDialog"));
+	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
 
 	CDialog::OnDestroy();
 
-	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Deleting\tMagicKD\tTray Menu"));
-	pTheTray->RemoveTrayMenuItem(GetResString(IDS_TRAY_CLOSEWINDOW));
+	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Deleting\tMagicKD\tTray Menu"));
+	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_CLOSEWINDOW));
 	delete pTheTray;
 	pTheTray = NULL;
 }

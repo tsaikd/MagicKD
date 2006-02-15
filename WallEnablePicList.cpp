@@ -11,16 +11,16 @@ CWallEnablePicList::~CWallEnablePicList()
 {
 }
 
-bool CWallEnablePicList::AddEnableItem(CStringArray *pItem)
+bool CWallEnablePicList::AddEnableItem(CWallDirListItem *pItem)
 {
-	if (!pItem || !pItem->GetCount())
+	if (!pItem || !pItem->GetItemPicPathArray()->GetCount())
 		return false;
 
 	bool bRes = false;
 	if (m_mux.Lock()) {
 		if (m_lEnableItem.AddTail(pItem)) {
 			bRes = true;
-			m_uCount += pItem->GetCount();
+			m_uCount += pItem->GetItemFileFindNum();
 		} else {
 			bRes = false;
 		}
@@ -35,6 +35,7 @@ CString CWallEnablePicList::GetRandPic()
 {
 	CString sRes;
 	if (m_mux.Lock()) {
+		CWallDirListItem *pItem;
 		CStringArray *psaEnable;
 
 		int iRest = 0;
@@ -48,9 +49,12 @@ CString CWallEnablePicList::GetRandPic()
 			iRest = 1;
 		} else if (m_uCount == 1) {
 			if (m_posNowList) {
-				psaEnable = m_lEnableItem.GetAt(m_posNowList);
-				if (psaEnable && (psaEnable->GetCount() > m_iNowArray))
-					sRes = psaEnable->GetAt(m_iNowArray);
+				pItem = m_lEnableItem.GetAt(m_posNowList);
+				if (pItem) {
+					psaEnable = pItem->GetItemPicPathArray();
+					if (psaEnable && (psaEnable->GetCount() > m_iNowArray))
+						sRes = psaEnable->GetAt(m_iNowArray);
+				}
 			}
 			iRest = 0;
 		} else if (m_uCount == 0) {
@@ -58,11 +62,16 @@ CString CWallEnablePicList::GetRandPic()
 		}
 
 		int iArrayRest;
-		while (iRest) {
+		while (iRest && m_lEnableItem.GetCount()) {
 			if (!m_posNowList)
 				m_posNowList = m_lEnableItem.GetHeadPosition();
 
-			psaEnable = m_lEnableItem.GetAt(m_posNowList);
+			pItem = m_lEnableItem.GetAt(m_posNowList);
+			if (pItem->IsOnFindPic()) {
+				m_lEnableItem.GetNext(m_posNowList);
+				continue;
+			}
+			psaEnable = pItem->GetItemPicPathArray();
 			iArrayRest = psaEnable->GetCount() - m_iNowArray - 1;
 			if (((iRest - iArrayRest) > 0) && iArrayRest) {
 				iRest -= iArrayRest;
@@ -71,7 +80,13 @@ CString CWallEnablePicList::GetRandPic()
 				continue;
 			}
 			sRes = _GetNextPic(iRest);
-			iRest = 0;
+			if (PathFileExists(sRes)) {
+				break;
+			} else {
+				pItem->UpdateItemFileFindNum();
+				RemoveEnableItem(pItem);
+				iRest = 1;
+			}
 		}
 
 		m_mux.Unlock();
@@ -89,7 +104,7 @@ LPCTSTR CWallEnablePicList::GetNextPic()
 	return sRes;
 }
 
-bool CWallEnablePicList::RemoveEnableItem(CStringArray *pItem)
+bool CWallEnablePicList::RemoveEnableItem(CWallDirListItem *pItem)
 {
 	if (!pItem)
 		return false;
@@ -102,7 +117,7 @@ bool CWallEnablePicList::RemoveEnableItem(CStringArray *pItem)
 				m_posNowList = 0;
 				m_iNowArray = -1;
 			}
-			m_uCount -= pItem->GetCount();
+			m_uCount -= pItem->GetItemPicPathArray()->GetCount();
 			m_lEnableItem.RemoveAt(pos);
 			bRes = true;
 		} else {
@@ -115,49 +130,59 @@ bool CWallEnablePicList::RemoveEnableItem(CStringArray *pItem)
 	return bRes;
 }
 
-CStringArray *CWallEnablePicList::RemoveFind(LPCTSTR sMatch)
+bool CWallEnablePicList::RemoveFind(LPCTSTR sMatch)
 {
 	if (!sMatch)
 		return NULL;
 
-	CStringArray *psaRes = NULL;
+	bool bRes = false;
 	if (m_mux.Lock()) {
 		if (m_lEnableItem.IsEmpty()) {
 			m_mux.Unlock();
 			return NULL;
 		}
 
+		CWallDirListItem *pItem = NULL;
 		CStringArray *psaEnable = NULL;
-		if (m_posNowList)
-			psaEnable = m_lEnableItem.GetAt(m_posNowList);
-		if (!psaEnable)
-			psaEnable = m_lEnableItem.GetHead();
+		if (m_posNowList) {
+			pItem = m_lEnableItem.GetAt(m_posNowList);
+			psaEnable = pItem->GetItemPicPathArray();
+		}
+		if (!pItem) {
+			pItem = m_lEnableItem.GetHead();
+			psaEnable = pItem->GetItemPicPathArray();
+		}
 
 		if ((m_iNowArray>=0) && (psaEnable->GetAt(m_iNowArray)==sMatch)) {
 			psaEnable->RemoveAt(m_iNowArray);
-			psaRes = psaEnable;
+			bRes = true;
 		} else {
 			int i, iCount;
 			POSITION pos = m_lEnableItem.GetHeadPosition();
 			while (pos) {
-				psaEnable = m_lEnableItem.GetNext(pos);
+				pItem = m_lEnableItem.GetNext(pos);
+				psaEnable = pItem->GetItemPicPathArray();
 
 				iCount = psaEnable->GetCount();
 				for (i=0 ; i<iCount ; i++) {
 					if (psaEnable->GetAt(i) == sMatch) {
 						psaEnable->RemoveAt(i);
 						pos = 0;
-						psaRes = psaEnable;
+						bRes = true;
 						break;
 					}
 				}
 			}
 		}
 
+		if (bRes) {
+			pItem->SetItemFileFindNum(pItem->GetItemPicPathArray()->GetCount());
+			pItem->Invalidate();
+		}
 		UpdateWallChangerDlg();
 		m_mux.Unlock();
 	}
-	return psaRes;
+	return bRes;
 }
 
 void CWallEnablePicList::UpdateWallChangerDlg()
@@ -189,15 +214,18 @@ ULONG CWallEnablePicList::GetCount()
 LPCTSTR CWallEnablePicList::_GetNextPic(UINT uJump/* = 1*/)
 {
 	CString sRes;
+	CWallDirListItem *pItem;
 	CStringArray *psaEnable;
 	while (m_uCount && m_lEnableItem.GetCount()) {
 		if (!m_posNowList) {
 			m_posNowList = m_lEnableItem.GetHeadPosition();
 			m_iNowArray = -1;
 		}
-		psaEnable = m_lEnableItem.GetAt(m_posNowList);
+		pItem = m_lEnableItem.GetAt(m_posNowList);
+		psaEnable = pItem->GetItemPicPathArray();
 		while (!psaEnable->GetCount() && m_posNowList) {
-			psaEnable = m_lEnableItem.GetNext(m_posNowList);
+			pItem = m_lEnableItem.GetNext(m_posNowList);
+			psaEnable = pItem->GetItemPicPathArray();
 			m_iNowArray = -1;
 		}
 		m_iNowArray += uJump;

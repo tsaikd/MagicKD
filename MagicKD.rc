@@ -152,8 +152,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,0
- PRODUCTVERSION 1,0,1,0
+ FILEVERSION 1,0,1,1
+ PRODUCTVERSION 1,0,1,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -169,11 +169,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 1, 0"
+            VALUE "FileVersion", "1, 0, 1, 1"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 1, 0"
+            VALUE "ProductVersion", "1, 0, 1, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -290,6 +290,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_WALL_TOOLTIP_IMAGELOADERROR "當圖片讀取錯誤時的措施"
+    IDS_WALL_TOOLTIP_MOVEPIC "將目前的桌布檔案移動到目的資料夾"
     IDS_WALL_CANONLYCHOICEONECLASS "您只能選擇一個分類進行此動作"
     IDS_WALL_DIRNOTEXIST    "資料夾不存在"
     IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE 

@@ -1,6 +1,5 @@
-把history放進enable class
 取消資料夾時findpic也要取消
-移動btn加tooltip
+ListCtrl可按CTRL+CVX
 
 紀錄讀取失敗次數(順便可以刪除或查看)
 圖片讀取錯誤log
@@ -15,6 +14,4 @@ OnSize
 螢幕解析度(ku)
 
 bug:
-	Release Version Property: Runtime Library 不能用 /MD 要用 /MDd , 不然中文字在 ListCtrl中顯示有問題
-	Release 執行一段時間後關閉會 memmory leak
 	刪除多個分類列表會當

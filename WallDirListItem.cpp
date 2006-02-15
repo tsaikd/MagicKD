@@ -47,9 +47,9 @@ void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *pb
 	} else {
 		if (*pbShowDirLoadError) {
 			int iRes;
-			while (iRes = MessageBox(GetResString(IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE), MB_RETRYCANCEL|MB_ICONWARNING)) {
+			while (iRes = MessageBox(CResString(IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE), MB_RETRYCANCEL|MB_ICONWARNING)) {
 				if (iRes == IDCANCEL) {
-					MessageBox(GetResString(IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
+					MessageBox(CResString(IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER), MB_OK|MB_ICONINFORMATION);
 					break;
 				} else if ((iRes == IDRETRY) && (PathFileExists(GetItemDirPath()))) {
 					break;
@@ -68,7 +68,7 @@ void CWallDirListItem::Destroy()
 		return;
 
 	if (IsItemEnable() && !m_bOnExit)
-		::g_pWallEnablePicList->RemoveEnableItem(&m_saPicPath);
+		::g_pWallEnablePicList->RemoveEnableItem(this);
 
 	SaveIni();
 
@@ -105,10 +105,12 @@ void CWallDirListItem::SetItemFileFindNum(int iNum)
 	CString sBuf;
 	sBuf.Format(_T("%d"), iNum);
 	SetText(1, sBuf);
+	Invalidate();
 }
 
 void CWallDirListItem::UpdateItemFileFindNum()
 {
+	SetItemFileFindNum(-1);
 	SetOnFindPic();
 	::g_pWallThreadFindPic->AddItem(this);
 }
@@ -121,7 +123,7 @@ INT_PTR CWallDirListItem::SetItemPicPathArray(CStringArray &saPicPath)
 
 CStringArray *CWallDirListItem::GetItemPicPathArray()
 {
-	return (CStringArray *)&m_saPicPath;
+	return &m_saPicPath;
 }
 
 // if not find, then return -1
@@ -161,6 +163,11 @@ bool CWallDirListItem::IsDirOnFixDrive()
 		return false;
 }
 
+bool CWallDirListItem::IsOnFindPic()
+{
+	return m_bOnFindPic;
+}
+
 bool CWallDirListItem::IsItemEnable()
 {
 	return m_bItemEnable;
@@ -174,10 +181,10 @@ void CWallDirListItem::SetItemEnable(bool bEnable)
 	if (bEnable) {
 		// Change from false to true
 		if (!m_bOnFindPic)
-			::g_pWallEnablePicList->AddEnableItem(&m_saPicPath);
+			::g_pWallEnablePicList->AddEnableItem(this);
 	} else {
 		// Change from true to false
-		::g_pWallEnablePicList->RemoveEnableItem(&m_saPicPath);
+		::g_pWallEnablePicList->RemoveEnableItem(this);
 	}
 }
 

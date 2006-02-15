@@ -138,12 +138,12 @@ void CWallThreadFindPic::_ThreadProcStage()
 
 	bool bItemEnable = pDirItem->IsItemEnable();
 	if (bItemEnable)
-		::g_pWallEnablePicList->RemoveEnableItem(pDirItem->GetItemPicPathArray());
+		::g_pWallEnablePicList->RemoveEnableItem(pDirItem);
 	pDirItem->SetItemFileFindNum(saPicPath.GetCount());
 	pDirItem->SetItemPicPathArray(saPicPath);
 	pDirItem->SetIniModify();
 	pDirItem->SetOnFindPic(false);
 	if (bItemEnable)
-		::g_pWallEnablePicList->AddEnableItem(pDirItem->GetItemPicPathArray());
+		::g_pWallEnablePicList->AddEnableItem(pDirItem);
 	pDirItem->Invalidate();
 }

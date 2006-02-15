@@ -5,7 +5,7 @@ UINT WMU_ARE_YOU_APP = RegisterWindowMessage(_T("Req") APPNAME APPUUID);
 UINT WMU_I_AM_APP = RegisterWindowMessage(_T("Res") APPNAME APPUUID);
 
 CKDSingleApp::CKDSingleApp()
-	: m_hOtherWnd(NULL), m_hInstMutex(NULL)
+	:	m_hOtherWnd(NULL), m_hInstMutex(NULL)
 {
 }
 

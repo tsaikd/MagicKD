@@ -5,8 +5,8 @@
 
 #include "WallDirListCtrl.h"
 
-CWallDirListCtrl::CWallDirListCtrl() :
-	m_bInit(false), m_bAllItemEnable(false), m_pbShowDirLoadError(NULL)
+CWallDirListCtrl::CWallDirListCtrl()
+	:	m_bInit(false), m_bAllItemEnable(false), m_pbShowDirLoadError(NULL)
 {
 }
 
@@ -169,10 +169,10 @@ void CWallDirListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	POSITION pos = GetFirstSelectedItemPosition();
 	m_mContextMenu.CreatePopupMenu();
 
-	m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDDIRPATH, GetResString(IDS_WALL_MENU_ADDDIRPATH));
+	m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDDIRPATH, CResString(IDS_WALL_MENU_ADDDIRPATH));
 	if (pos) {
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_UPDATEDIRFILEFIND, GetResString(IDS_WALL_MENU_UPDATEDIRFILEFIND));
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_DELDIRPATH, GetResString(IDS_WALL_MENU_DELDIRPATH));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_UPDATEDIRFILEFIND, CResString(IDS_WALL_MENU_UPDATEDIRFILEFIND));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_DELDIRPATH, CResString(IDS_WALL_MENU_DELDIRPATH));
 	}
 
 	if (m_mContextMenu.GetMenuItemCount()) {

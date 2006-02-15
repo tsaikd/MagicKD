@@ -1,3 +1,7 @@
+Version: 1.0.1.1	(2006-02-15)
+	Support Work on Part of Offline Drive
+	Solve Some of Release Version Problems
+
 Version: 1.0.1.0	(2006-02-14)
 	Fix bug: If Hide Window, then Open Another Program won't Show Program
 	Fix bug: If User choice Directly Delete bad Picture File in Config, won't Update Enable List

@@ -8,13 +8,13 @@ public:
 	CWallEnablePicList();
 	virtual ~CWallEnablePicList();
 
-	bool AddEnableItem(CStringArray *pItem);
+	bool AddEnableItem(CWallDirListItem *pItem);
 
 	CString GetRandPic();
 	LPCTSTR GetNextPic();
 
-	bool RemoveEnableItem(CStringArray *pItem);
-	CStringArray *RemoveFind(LPCTSTR sMatch);
+	bool RemoveEnableItem(CWallDirListItem *pItem);
+	bool RemoveFind(LPCTSTR sMatch);
 
 	void UpdateWallChangerDlg();
 
@@ -23,7 +23,7 @@ public:
 
 private:
 	CMutex m_mux;
-	CList<CStringArray *, CStringArray *> m_lEnableItem;
+	CList<CWallDirListItem *, CWallDirListItem *> m_lEnableItem;
 	ULONG m_uCount;
 	POSITION m_posNowList;
 	int m_iNowArray;

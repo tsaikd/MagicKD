@@ -114,13 +114,13 @@ BOOL CMainConfigDlg::OnInitDialog()
 
 	m_pIni = &theApp.m_cIni;
 
-	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(GetResString(IDS_CONF_CHECK_STARTMIN));
+	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(CResString(IDS_CONF_CHECK_STARTMIN));
 	if (m_pIni->GetBool(_T("General"), _T("bStartMin"), DEFAULT_STARTMIN))
 		m_checkStartMin.SetCheck(BST_CHECKED);
 	else
 		m_checkStartMin.SetCheck(BST_UNCHECKED);
 
-	GetDlgItem(IDC_CONF_CHECK_SHOWCLOSEWINDOW)->SetWindowText(GetResString(IDS_CONF_CHECK_SHOWCLOSEWINDOW));
+	GetDlgItem(IDC_CONF_CHECK_SHOWCLOSEWINDOW)->SetWindowText(CResString(IDS_CONF_CHECK_SHOWCLOSEWINDOW));
 	if (m_pIni->GetBool(_T("General"), _T("bShowCloseWindow"), DEFAULT_SHOWCLOSEWINDOW))
 		m_checkShowCloseWindow.SetCheck(BST_CHECKED);
 	else
@@ -131,7 +131,7 @@ BOOL CMainConfigDlg::OnInitDialog()
 	else
 		m_checkWallChanger.SetCheck(BST_UNCHECKED);
 
-	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(GetResString(IDS_CONF_STATIC_TRANSPARENCY));
+	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
 	m_sliderTransparency.SetRange(50, 255);
 	m_uTransparency = m_pIni->GetUInt(_T("General"), _T("uTransparency"), DEFAULT_TRANSPARENCY);
 	m_sliderTransparency.SetPos(m_uTransparency);

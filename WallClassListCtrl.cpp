@@ -6,8 +6,8 @@
 
 #include "WallClassListCtrl.h"
 
-CWallClassListCtrl::CWallClassListCtrl() :
-	m_bInit(false), m_iIDC_WALLDIRLISTBASE(200), m_pbShowDirLoadError(NULL)
+CWallClassListCtrl::CWallClassListCtrl()
+	:	m_bInit(false), m_iIDC_WALLDIRLISTBASE(200), m_pbShowDirLoadError(NULL)
 {
 }
 
@@ -133,7 +133,7 @@ END_MESSAGE_MAP()
 
 void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDirLoadError)
 {
-	pTheAppEndDlg->SignWnd(m_hWnd, 1);
+	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 
 	CWallListCtrl::Init(pIni);
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
@@ -172,7 +172,7 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDir
 
 void CWallClassListCtrl::OnDestroy()
 {
-	pTheAppEndDlg->ProgressStepIt(m_hWnd, _T("Freeing\tWallChanger\tClass List"));
+	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Freeing\tWallChanger\tClass List"));
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirList;
 	int iCount = GetItemCount();
@@ -184,6 +184,7 @@ void CWallClassListCtrl::OnDestroy()
 		}
 	}
 
+	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tClass List"));
 	SaveIni();
 	CWallListCtrl::OnDestroy();
 
@@ -196,9 +197,9 @@ void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	m_mContextMenu.CreatePopupMenu();
 
 	if (pos) {
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDENABLECLASSLIST, GetResString(IDS_WALL_MENU_ADDENABLECLASSLIST));
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_DELCLASSLIST, GetResString(IDS_WALL_MENU_DELCLASSLIST));
-		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_UPDATEALLDIRFILEFIND, GetResString(IDS_WALL_MENU_UPDATEALLDIRFILEFIND));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDENABLECLASSLIST, CResString(IDS_WALL_MENU_ADDENABLECLASSLIST));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_DELCLASSLIST, CResString(IDS_WALL_MENU_DELCLASSLIST));
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_UPDATEALLDIRFILEFIND, CResString(IDS_WALL_MENU_UPDATEALLDIRFILEFIND));
 	}
 
 	if (m_mContextMenu.GetMenuItemCount()) {

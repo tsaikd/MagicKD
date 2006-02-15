@@ -57,6 +57,7 @@ public:
 	CKDButton m_btn_RandPic;
 	CKDButton m_btn_DelPic;
 	CKDButton m_btn_AddClass;
+	CKDButton m_btn_MovePic;
 	CKDButton m_checkShowLoadDirError;
 	CKDEdit m_editWaitTime;
 	CKDEdit m_editAddClass;
