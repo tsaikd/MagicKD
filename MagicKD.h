@@ -23,9 +23,14 @@ class CMagicKDApp : public CWinApp, public CKDSingleApp
 public:
 	CMagicKDApp();
 
+	void SetRestart(bool bRestart = true);
+
 	CString m_sAppDir;
 	CString m_sAppPath;
 	CIni m_cIni;
+
+private:
+	bool m_bRestart;
 
 public:
 	virtual BOOL InitInstance();

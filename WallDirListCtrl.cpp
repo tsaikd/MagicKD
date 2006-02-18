@@ -58,6 +58,28 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirL
 	ShowWindow(SW_HIDE);
 
 	m_bInit = true;
+	DoSize();
+}
+
+void CWallDirListCtrl::OnDestroy()
+{
+	SaveIni();
+	CWallListCtrl::OnDestroy();
+}
+
+void CWallDirListCtrl::DoSize()
+{
+	if (!m_bInit)
+		return;
+
+	CRect rcWin;
+	GetClientRect(rcWin);
+
+	SetColumnWidth(0, rcWin.right - 50);
+	SetColumnWidth(1, 50);
+
+	Scroll(CSize(0, 0));	// When sizing down, update the scroll state
+	Invalidate();
 }
 
 void CWallDirListCtrl::SetListClassName(LPCTSTR sName)
@@ -154,14 +176,14 @@ BEGIN_MESSAGE_MAP(CWallDirListCtrl, CWallListCtrl)
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
 	ON_WM_DROPFILES()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
-void CWallDirListCtrl::OnDestroy()
+void CWallDirListCtrl::OnSize(UINT nType, int cx, int cy)
 {
-	SaveIni();
-	CWallListCtrl::OnDestroy();
+	CWallListCtrl::OnSize(nType, cx, cy);
 
-	// TODO: 在此加入您的訊息處理常式程式碼
+	DoSize();
 }
 
 void CWallDirListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
@@ -182,7 +204,6 @@ void CWallDirListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	}
 	m_mContextMenu.DestroyMenu();
 	Invalidate();
-	// TODO: 在此加入您的訊息處理常式程式碼
 }
 
 void CWallDirListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
@@ -193,7 +214,6 @@ void CWallDirListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 	if (pItem)
 		delete pItem;
 
-	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
 }
 
@@ -210,8 +230,6 @@ void CWallDirListCtrl::OnDropFiles(HDROP hDropInfo)
 			SetIniModify();
 		}
 	}
-
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 
 	CWallListCtrl::OnDropFiles(hDropInfo);
 }

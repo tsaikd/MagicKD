@@ -26,7 +26,6 @@ public:
 	typedef enum { eFunc_WallChanger = 1 } FuncList;
 
 public:
-	void InitTabRect();
 	void DoSize();
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
 
@@ -39,9 +38,10 @@ public:
 	CWallChangerDlg *m_pWallChangerDlg;
 protected:
 private:
-	CRect m_rcMainTab;
+	bool m_bInit;
 	bool m_bIniModify;
 	bool m_bVisiable;
+	CRect m_rcMainTab;
 
 protected:
 	HICON m_hIcon;

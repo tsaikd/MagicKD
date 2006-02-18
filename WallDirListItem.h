@@ -1,10 +1,11 @@
 #pragma once
+#include "afxmt.h"
 #include "Ini.h"
 #include "KDIni.h"
 #include "KDListItem.h"
 
-class CWallDirListItem :
-	public CKDListItem, public CKDIni
+class CWallDirListItem
+	:	public CKDListItem, public CKDIni
 {
 public:
 	CWallDirListItem();
@@ -43,5 +44,6 @@ private:
 	bool m_bItemEnable;
 	bool m_bFindPath;
 	UINT m_uDirState;
+	CMutex m_mux;
 	CStringArray m_saPicPath;
 };

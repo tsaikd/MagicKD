@@ -1,5 +1,4 @@
 #pragma once
-#include "StdAfx.h"
 
 #define INRANGE(v, m, M)		((v) >= (m) && (v) <= (M))
 #define MAKE_INRANGE(v, m, M)	((v) = min(max((v), (m)), (M)))
@@ -7,9 +6,6 @@
 #define INRANGE_R(v, m, M)		((v) >= (m) && (v) < (M))
 #define INRANGE_L(v, m, M)		((v) > (m) && (v) <= (M))
 #define INRANGE_LR(v, m, M)		((v) > (m) && (v) < (M))
-
-#define RECT_WIDTH(rc)		((rc).right - (rc).left)
-#define RECT_HEIGHT(rc)		((rc).bottom - (rc).top)
 
 inline bool IsCtrlPressed()
 {
@@ -30,6 +26,14 @@ inline bool IsWinPressed()
 {
 	return (GetKeyState(VK_LWIN) & 0x8000) != 0 || (GetKeyState(VK_RWIN) & 0x8000) != 0;
 }
+
+#define KDMOVEDLGITEM_WAY_LEFT		0x01
+#define KDMOVEDLGITEM_WAY_TOP		0x02
+#define KDMOVEDLGITEM_WAY_RIGHT		0x03
+#define KDMOVEDLGITEM_WAY_BOTTOM	0x04
+#define KDMOVEDLGITEM_WAY_F_OUTSIDE	0x00
+#define KDMOVEDLGITEM_WAY_F_INSIDE	0x10
+bool KDMoveDlgItem(CWnd *pItemWnd, CWnd *pRefWnd, int iRefWay, int iRefDist, bool bExtend = false, CPoint *ptOffset = NULL);
 
 //	Add #include <wininet.h> before #include <afxdtctl.h> in "StdAfx.h"
 bool ChooseFolder(CString &sFolder, HWND hWnd = 0, LPCTSTR lpTitle = NULL);

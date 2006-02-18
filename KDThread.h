@@ -31,6 +31,7 @@ public:
 	bool SetThreadPriority(int nPriority = THREAD_PRIORITY_NORMAL);
 	bool IsCanThread();
 	bool IsThreadRunning();
+	HANDLE GetThreadHandle();
 	DWORD WaitForThread(DWORD dwMilliseconds);
 	bool TerminateThread(DWORD dwExutCode = 0);
 

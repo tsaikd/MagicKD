@@ -71,14 +71,14 @@ IDR_MAINFRAME           ICON                    "res\\MagicKD.ico"
 // Dialog
 //
 
-IDD_MAGICKD DIALOGEX 0, 0, 321, 240
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | 
-    WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+IDD_MAGICKD DIALOGEX 0, 0, 322, 239
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | 
+    WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "MagicKD"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_TAB_MAIN,"SysTabControl32",0x0,7,7,307,226,
+    CONTROL         "",IDC_TAB_MAIN,"SysTabControl32",0x0,7,7,308,225,
                     WS_EX_STATICEDGE
 END
 
@@ -88,14 +88,15 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Wall Changer",IDC_CONF_CHECK_WALLCHANGER,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,40,60,90,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,40,65,90,12
     CONTROL         "開始時最小化",IDC_CONF_CHECK_STARTMIN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,40,30,90,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,40,35,90,12
     CONTROL         "",IDC_CONF_SLIDER_TRANSPARENCY,"msctls_trackbar32",
                     TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,215,45,100,15
     CTEXT           "透明度",IDC_CONF_STATIC_TRANSPARENCY,250,35,30,8
     CONTROL         "顯示關閉進度",IDC_CONF_CHECK_SHOWCLOSEWINDOW,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,40,45,90,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,40,50,90,12
+    PUSHBUTTON      "重新啟動",IDC_CONF_BTN_RESTART,40,15,50,15
 END
 
 IDD_MAGICKD_WALLCHANGER DIALOGEX 0, 0, 370, 250
@@ -108,13 +109,13 @@ BEGIN
     LTEXT           "30",IDC_WALL_STATIC_RESTTIME,265,7,20,8,0,WS_EX_RIGHT
     CONTROL         "",IDC_WALL_LIST_CLASS,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_EDITLABELS | LVS_ALIGNLEFT | 
-                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,45,135,175,
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,45,140,175,
                     WS_EX_TRANSPARENT
     CONTROL         "",IDC_WALL_LIST_DIRPATH,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
                     WS_DISABLED | WS_BORDER | WS_TABSTOP,160,45,200,195
-    EDITTEXT        IDC_WALL_EDIT_ADDCLASS,10,225,105,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "新增",IDC_WALL_BTN_ADDCLASS,120,225,25,12
+    EDITTEXT        IDC_WALL_EDIT_ADDCLASS,10,225,111,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "新增",IDC_WALL_BTN_ADDCLASS,125,225,25,12
     PUSHBUTTON      "換圖",IDC_WALL_BTN_RANDPIC,10,5,25,12
     PUSHBUTTON      "刪除",IDC_WALL_BTN_DELPIC,40,5,25,12
     CONTROL         "",IDC_WALL_STATIC_NOWPICPATH,"Static",SS_LEFTNOWORDWRAP | 
@@ -152,8 +153,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,1
- PRODUCTVERSION 1,0,1,1
+ FILEVERSION 1,0,1,2
+ PRODUCTVERSION 1,0,1,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -169,11 +170,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 1, 1"
+            VALUE "FileVersion", "1, 0, 1, 2"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 1, 1"
+            VALUE "ProductVersion", "1, 0, 1, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -194,9 +195,9 @@ BEGIN
     IDD_MAGICKD, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 314
+        RIGHTMARGIN, 315
         TOPMARGIN, 7
-        BOTTOMMARGIN, 233
+        BOTTOMMARGIN, 232
     END
 
     IDD_MAGICKD_CONFIG, DIALOG
@@ -233,19 +234,20 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_SEL_FOLDER          "請選擇一個資料夾"
     IDS_TRAY_OPENWINDOW     "開啟 MagicKD\t(&O)"
     IDS_TRAY_CLOSEWINDOW    "關閉 MagicKD\t(&C)"
     IDS_TRAY_WALLCHANGER    "WallChanger"
+    IDS_TRAY_RANDPIC        "立即更換隨機桌布\t(Space)& "
+    IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
+    IDS_TRAY_MOVEPIC        "移動目前桌布\t(&M)"
+    IDS_TRAY_RESTART        "重新啟動 MagicKD\t(&R)"
+    IDS_CONF_STATIC_TRANSPARENCY "透明度"
+    IDS_CONF_BTN_RESTART    "重新啟動"
+    IDS_CONF_CHECK_STARTMIN "開始時最小化"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_TRAY_RANDPIC        "立即更換隨機桌布\t(Space)& "
-    IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
-    IDS_TRAY_MOVEPIC        "移動目前桌布\t(&M)"
-    IDS_CONF_STATIC_TRANSPARENCY "透明度"
-    IDS_CONF_CHECK_STARTMIN "開始時最小化"
     IDS_CONF_CHECK_SHOWCLOSEWINDOW "顯示關閉進度"
 END
 
@@ -299,7 +301,11 @@ BEGIN
                             "資料夾不存在\n請稍後再手動更新列表\n或是等待程式自動更新"
     IDS_WALL_SETWALLPAGERFAIL "設定桌布失敗"
     IDS_WALL_SETTINGWALLPAGER "設定桌布中"
-    IDS_WALL_MSG_IMAGELOADERROR "圖檔讀取失敗\n直接刪除請選是、前往查看請選否"
+    IDS_WALL_MSG_IMAGELOADERROR 
+                            "圖檔讀取失敗\n請選擇要進行的動作\n直接刪除請按是\n前往查詢請按否"
+    IDS_WALL_MSG_IMAGELOADERROR_BTN1 "直接刪除"
+    IDS_WALL_MSG_IMAGELOADERROR_BTN2 "前往查看"
+    IDS_WALL_MSG_IMAGELOADERROR_BTN3 "不做事"
     IDS_WALL_COMBOX_ASKUSER "詢問使用者"
     IDS_WALL_COMBOX_DELETE  "直接刪除"
     IDS_WALL_COMBOX_EXPLORE "前往查看"

@@ -14,7 +14,13 @@ CMagicKDApp theApp;
 CMagicKDEndDlg *pTheAppEndDlg = NULL;
 
 CMagicKDApp::CMagicKDApp()
+	:	m_bRestart(false)
 {
+}
+
+void CMagicKDApp::SetRestart(bool bRestart/* = true*/)
+{
+	m_bRestart = bRestart;
 }
 
 BEGIN_MESSAGE_MAP(CMagicKDApp, CWinApp)
@@ -60,6 +66,9 @@ BOOL CMagicKDApp::InitInstance()
 
 	delete pTheAppEndDlg;
 	pTheAppEndDlg = NULL;
+
+	if (m_bRestart)
+		ShellExecute(NULL, _T("open"), m_sAppDir + _T("MagicKD.exe"), NULL, NULL, SW_SHOW);
 
 	// 因為已經關閉對話方塊，傳回 FALSE，所以我們會結束應用程式，
 	// 而非提示開始應用程式的訊息。

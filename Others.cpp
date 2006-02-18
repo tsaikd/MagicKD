@@ -1,5 +1,93 @@
-#include "StdAfx.h"
+#include "stdafx.h"
+
 #include "Others.h"
+
+//Move Dialog Item to a Reference Position
+//Options:
+//	pItemWnd:	The Item Wnd What you want to Move
+//	pRefWnd:	The Reference Wnd
+//	iRefWay:	Move Item Position by which way from Reference
+//		KDMOVEDLGITEM_WAY_LEFT:		Left
+//		KDMOVEDLGITEM_WAY_TOP:		Top
+//		KDMOVEDLGITEM_WAY_RIGHT:	Right
+//		KDMOVEDLGITEM_WAY_BOTTOM:	Bottom
+//
+//		Other Flags:
+//		KDMOVEDLGITEM_WAY_F_OUTSIDE: Calculate from Outside (default)
+//		KDMOVEDLGITEM_WAY_F_INSIDE: Calculate from Inside
+//	iRefDist:	The Min Distance Between nItemID and nRefID
+//		Usually Set > 0, because it is the Min Distance
+//	bExtend:	Extend Border to the Destination or not
+//	ptOffset:	Point to Offset, after Moving Item
+bool KDMoveDlgItem(CWnd *pItemWnd, CWnd *pRefWnd, int iRefWay, int iRefDist, bool bExtend/* = false*/, CPoint *ptOffset/* = NULL*/)
+{
+	if (!IsWindow(pItemWnd->GetSafeHwnd()) || !IsWindow(pRefWnd->GetSafeHwnd()))
+		return false;
+
+	CRect rcItem, rcRef;
+	pItemWnd->GetWindowRect(rcItem);
+	pRefWnd->GetWindowRect(rcRef);
+
+	switch(iRefWay) {
+	case KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE:	// OutSide Left
+		if (bExtend)
+			rcItem.right = rcRef.left - iRefDist;
+		else
+			rcItem.MoveToX(rcRef.left - rcItem.Width() - iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_INSIDE:	// InSide Left
+		if (bExtend)
+			rcItem.left = rcRef.left - iRefDist;
+		else
+			rcItem.MoveToX(rcRef.left - rcItem.Width() - iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE:	// OutSide Top
+		if (bExtend)
+			rcItem.bottom = rcRef.top - iRefDist;
+		else
+			rcItem.MoveToY(rcRef.top - rcItem.Height() - iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_INSIDE:	// InSide Top
+		if (bExtend)
+			rcItem.top = rcRef.top - iRefDist;
+		else
+			rcItem.MoveToY(rcRef.top - rcItem.Height() - iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_OUTSIDE:	// OutSide Right
+		if (bExtend)
+			rcItem.left = rcRef.right - iRefDist;
+		else
+			rcItem.MoveToX(rcRef.right + iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE:	// InSide Right
+		if (bExtend)
+				rcItem.right = rcRef.right - iRefDist;
+		else
+			rcItem.MoveToX(rcRef.right - rcItem.Width() - iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_OUTSIDE:	// OutSide Bottom
+		if (bExtend)
+			rcItem.top = rcRef.bottom - iRefDist;
+		else
+			rcItem.MoveToY(rcRef.bottom + iRefDist);
+		break;
+	case KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE:	// InSide Bottom
+		if (bExtend)
+			rcItem.bottom = rcRef.bottom - iRefDist;
+		else
+			rcItem.MoveToY(rcRef.bottom - rcItem.Height() - iRefDist);
+		break;
+	default:
+		return false;
+	}
+
+	if (ptOffset)
+		rcItem.OffsetRect(*ptOffset);
+
+	pItemWnd->GetParent()->ScreenToClient(rcItem);
+	pItemWnd->MoveWindow(rcItem, FALSE);
+	return true;
+}
 
 // return true if user choice a folder
 bool ChooseFolder(CString &sFolder, HWND hWnd/*= 0*/, LPCTSTR lpTitle/* = NULL*/)
@@ -21,8 +109,6 @@ bool ChooseFolder(LPTSTR lpFolder, HWND hWnd/*= 0*/, LPCTSTR lpTitle/* = NULL*/)
 		brInfo.pszDisplayName = lpFolder;
 		if (lpTitle)
 			brInfo.lpszTitle = lpTitle;
-		else
-			brInfo.lpszTitle = _T("Please select a folder");
 		brInfo.ulFlags = BIF_USENEWUI;
 
 		CoInitialize(NULL);

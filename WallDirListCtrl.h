@@ -11,6 +11,7 @@ public:
 	virtual void SaveIni();
 
 	void Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirLoadError);
+	void DoSize();
 	void SetListClassName(LPCTSTR sName);
 	CString GetListClassName();
 	bool AddItem(LPCTSTR sDirPath);
@@ -32,6 +33,7 @@ private:
 
 public:
 	afx_msg void OnDestroy();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDropFiles(HDROP hDropInfo);

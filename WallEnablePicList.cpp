@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "WallChangerDlg.h"
+#include "WallThreadFindPic.h"
+
 #include "WallEnablePicList.h"
 
 CWallEnablePicList::CWallEnablePicList()
@@ -68,6 +70,7 @@ CString CWallEnablePicList::GetRandPic()
 
 			pItem = m_lEnableItem.GetAt(m_posNowList);
 			if (pItem->IsOnFindPic()) {
+				WaitForSingleObject(::g_pWallThreadFindPic->GetThreadHandle(), 100);
 				m_lEnableItem.GetNext(m_posNowList);
 				continue;
 			}
@@ -176,6 +179,7 @@ bool CWallEnablePicList::RemoveFind(LPCTSTR sMatch)
 		}
 
 		if (bRes) {
+			m_uCount--;
 			pItem->SetItemFileFindNum(pItem->GetItemPicPathArray()->GetCount());
 			pItem->Invalidate();
 		}

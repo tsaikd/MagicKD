@@ -115,6 +115,11 @@ bool CKDThread::IsThreadRunning()
 	return bRes;
 }
 
+HANDLE CKDThread::GetThreadHandle()
+{
+	return m_hThread;
+}
+
 //return vale:
 //	WAIT_OBJECT_0
 //	WAIT_TIMEOUT

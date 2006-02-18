@@ -4,14 +4,9 @@ ListCtrl可按CTRL+CVX
 紀錄讀取失敗次數(順便可以刪除或查看)
 圖片讀取錯誤log
 
-重新啟動
 設假桌布
 
 整合BindWinKey
-
-OnSize
-
-螢幕解析度(ku)
 
 bug:
 	刪除多個分類列表會當

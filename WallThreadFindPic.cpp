@@ -103,6 +103,8 @@ bool CWallThreadFindPic::__bMatchSupport(LPCTSTR sPat) {
 		return true;
 	else if (PathMatchSpec(sPat, _T("*.gif")))
 		return true;
+	else if (PathMatchSpec(sPat, _T("*.png")))
+		return true;
 	return false;
 }
 
@@ -136,14 +138,11 @@ void CWallThreadFindPic::_ThreadProcStage()
 	}
 	delete pslPicPath;
 
-	bool bItemEnable = pDirItem->IsItemEnable();
-	if (bItemEnable)
-		::g_pWallEnablePicList->RemoveEnableItem(pDirItem);
 	pDirItem->SetItemFileFindNum(saPicPath.GetCount());
 	pDirItem->SetItemPicPathArray(saPicPath);
 	pDirItem->SetIniModify();
 	pDirItem->SetOnFindPic(false);
-	if (bItemEnable)
+	if (pDirItem->IsItemEnable())
 		::g_pWallEnablePicList->AddEnableItem(pDirItem);
 	pDirItem->Invalidate();
 }

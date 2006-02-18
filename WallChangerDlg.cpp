@@ -48,6 +48,50 @@ void CWallChangerDlg::DoSize()
 {
 	if (!m_bInit)
 		return;
+
+	//CWnd *pItem;
+	//CRect rcWin, rcItem;
+	//GetWindowRect(rcWin);
+	int iMarginRight = 15;
+	int iMarginBottom = 15;
+
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_BTN_ENABLETOOLTIP), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_EDIT_WAITTIME), GetDlgItem(IDC_WALL_BTN_ENABLETOOLTIP),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_RESTTIME), GetDlgItem(IDC_WALL_EDIT_WAITTIME),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_WAITTIME), GetDlgItem(IDC_WALL_STATIC_RESTTIME),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 0);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_EDIT_HISTORYNUM), GetDlgItem(IDC_WALL_STATIC_WAITTIME),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR), GetDlgItem(IDC_WALL_EDIT_HISTORYNUM),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_CHECK_SHOWDIRLOADERROR), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_NOWPICPATH), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
+
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_EDIT_ADDCLASS), this,
+		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_BTN_ADDCLASS), this,
+		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_LIST_CLASS), GetDlgItem(IDC_WALL_EDIT_ADDCLASS),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 10, true);
+
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_LIST_DIRPATH), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_LIST_DIRPATH), this,
+		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom, true);
+	if (m_pCurListDirPath) {
+		CRect rcDirList;
+		GetDlgItem(IDC_WALL_LIST_DIRPATH)->GetWindowRect(rcDirList);
+		ScreenToClient(rcDirList);
+		m_pCurListDirPath->MoveWindow(rcDirList, FALSE);
+	}
+
+	Invalidate();
 }
 
 void CWallChangerDlg::SaveIni()
@@ -157,6 +201,9 @@ bool CWallChangerDlg::SetRandWallPager()
 		}
 		RETURN(true);
 	} else {
+		// IDYES:		delete picture file
+		// IDNO:		goto directory
+		// IDCANCEL:	do nothing
 		int iRes = IDCANCEL;
 		if (m_sComboxMsg == CResString(IDS_WALL_COMBOX_NULL)) {
 			iRes = IDCANCEL;
@@ -170,7 +217,25 @@ bool CWallChangerDlg::SetRandWallPager()
 		} else {
 			CString sMsg;
 			sMsg.Format(_T("%s\n%s"), m_sNowPicPath, CResString(IDS_WALL_MSG_IMAGELOADERROR));
+
 			iRes = MessageBox(sMsg, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
+
+			//CStringArray saBtnText;
+			//saBtnText.SetSize(3);
+			//saBtnText[0] = CResString(IDS_WALL_MSG_IMAGELOADERROR_BTN1);
+			//saBtnText[1] = CResString(IDS_WALL_MSG_IMAGELOADERROR_BTN2);
+			//saBtnText[2] = CResString(IDS_WALL_MSG_IMAGELOADERROR_BTN3);
+			//switch(CKDMessageBox(_T("WallChanger"), sMsg, saBtnText, this, 2, 3, KDMSG_F_CANCANCEL)) {
+			//case 1:
+			//	iRes = IDYES;
+			//	break;
+			//case 2:
+			//	iRes = IDNO;
+			//	break;
+			//default:
+			//	iRes = IDCANCEL;
+			//	break;
+			//}
 		}
 
 		if ((iRes == IDYES) && PathFileExists(m_sNowPicPath)) {
@@ -320,8 +385,6 @@ BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_BN_CLICKED(IDC_WALL_BTN_MOVEPIC, OnBnClickedWallBtnMovepic)
 END_MESSAGE_MAP()
 
-// CWallChangerDlg 訊息處理常式
-
 BOOL CWallChangerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
@@ -375,7 +438,6 @@ BOOL CWallChangerDlg::OnInitDialog()
 	m_staticTime.SetWindowText(sBuf);
 
 	CRect rcWin;
-	m_pCurListDirPath = &m_listDirPath;
 	m_listDirPath.Init(&m_cIni, _T(""), &m_bShowDirLoadError);
 	m_listDirPath.ShowWindow(SW_SHOW);
 	m_listDirPath.GetClientRect(rcWin);
@@ -504,9 +566,13 @@ void CWallChangerDlg::OnBnClickedButtonDelpic()
 void CWallChangerDlg::OnBnClickedWallBtnMovepic()
 {
 	CString sFile = m_sNowPicPath;
-	CString sDir;
-	if (!sFile.IsEmpty() && ChooseFolder(sDir, GetSafeHwnd()))
-		MoveFileDlg(sFile, sDir, GetSafeHwnd());
+	CString sExt = PathFindExtension(sFile);
+	CString sFilter;
+	sFilter.Format(_T("Image (*%s)|*%s|All Files (*.*)|*.*|"), sExt, sExt);
+	CFileDialog fileDlg(FALSE, sExt, PathFindFileName(sFile),
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFilter, this);
+	if (IDOK == fileDlg.DoModal())
+		MoveFileDlg(sFile, fileDlg.GetPathName(), GetSafeHwnd());
 
 	if (!PathFileExists(sFile)) {
 		::g_pWallEnablePicList->RemoveFind(sFile);
@@ -552,6 +618,9 @@ void CWallChangerDlg::OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 
+	if (!pNMLV)
+		return;
+
 	if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(1)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(2))) {
 		// Check this Item
 		bool bEmptyEnable = (::g_pWallEnablePicList->GetCount() == 0);
@@ -567,31 +636,31 @@ void CWallChangerDlg::OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult)
 		m_listClass.SetIniModify();
 	} else {
 		// Change Select Items
-		Invalidate(FALSE);
 		int iSelCount = m_listClass.GetSelectedCount();
-		if ((iSelCount == 0) && (m_pCurListDirPath != &m_listDirPath)) {
+		if (iSelCount == 1) {
 			if (m_pCurListDirPath)
 				m_pCurListDirPath->ShowWindow(SW_HIDE);
-			m_pCurListDirPath = &m_listDirPath;
-			m_pCurListDirPath->ShowWindow(SW_SHOW);
-		} else if (iSelCount == 1) {
-			CRect rcWin, rcBase;
-			CPoint cpBase;
-			GetWindowRect(rcBase);
-			cpBase = rcBase.TopLeft();
-			m_listDirPath.GetWindowRect(rcWin);
-			rcWin = rcWin - cpBase;
-			if (m_pCurListDirPath)
-				m_pCurListDirPath->ShowWindow(SW_HIDE);
+			else
+				m_listDirPath.ShowWindow(SW_HIDE);
+
 			CWallClassListItem *pListItem = (CWallClassListItem *)m_listClass.GetFirstSelectedItemLParam();
 			if (pListItem)
 				m_pCurListDirPath = (CWallDirListCtrl *)pListItem->GetChildDirList();
 			if (m_pCurListDirPath) {
-				m_pCurListDirPath->MoveWindow(rcWin);
+				CRect rcDirList;
+				m_listDirPath.GetWindowRect(rcDirList);
+
+				ScreenToClient(rcDirList);
+				m_pCurListDirPath->MoveWindow(rcDirList);
 				m_pCurListDirPath->ShowWindow(SW_SHOW);
 			}
+		} else {
+			if (m_pCurListDirPath) {
+				m_pCurListDirPath->ShowWindow(SW_HIDE);
+				m_pCurListDirPath = NULL;
+			}
+			m_listDirPath.ShowWindow(SW_SHOW);
 		}
-		Invalidate();
 	}
 
 	*pResult = 0;

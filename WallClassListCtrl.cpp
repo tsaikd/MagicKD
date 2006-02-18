@@ -45,7 +45,7 @@ bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
 {
 	CWallDirListCtrl *pChildList = new CWallDirListCtrl;
 	if (! pChildList->CreateEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES | WS_EX_TRANSPARENT,
-	WS_BORDER | WS_TABSTOP | LVS_REPORT | LVS_NOSORTHEADER | LVS_SHOWSELALWAYS,
+	WS_TABSTOP | LVS_REPORT | LVS_NOSORTHEADER | LVS_SHOWSELALWAYS,
 	m_rcChildDirList, GetParent(), m_iIDC_WALLDIRLISTBASE++)) {
 		delete pChildList;
 		return false;
@@ -84,10 +84,15 @@ void CWallClassListCtrl::UpdateSelectItemFileFindNum()
 {
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirList;
-	int iCount = GetItemCount();
-	for (int i=0 ; i<iCount ; i++) {
-		if (pItem = (CWallClassListItem *)GetItemData(i)) {
-			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
+	POSITION pos = GetFirstSelectedItemPosition();
+	int nItem;
+	while (pos) {
+		nItem = GetNextSelectedItem(pos);
+
+		pItem = (CWallClassListItem *)GetItemData(nItem);
+		if (pItem) {
+			pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList();
+			if (pChildDirList) {
 				pChildDirList->UpdateAllItemFileFindNum();
 			}
 		}

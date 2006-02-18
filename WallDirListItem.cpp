@@ -87,123 +87,207 @@ BOOL CWallDirListItem::Invalidate(BOOL bErase/* = TRUE*/)
 
 CString CWallDirListItem::GetItemDirPath()
 {
-	return GetText(0);
+	CString sRes;
+	if (m_mux.Lock()) {
+		sRes = GetText(0);
+
+		m_mux.Unlock();
+	}
+	return sRes;
 }
 
 void CWallDirListItem::SetItemDirPath(LPCTSTR sPath)
 {
-	SetText(0, sPath);
+	if (m_mux.Lock()) {
+		SetText(0, sPath);
+
+		m_mux.Unlock();
+	}
 }
 
 int CWallDirListItem::GetItemFileFindNum()
 {
-	return _ttoi(GetText(1));
+	int iRes = -1;
+	if (m_mux.Lock()) {
+		iRes = _ttoi(GetText(1));
+
+		m_mux.Unlock();
+	}
+	return iRes;
 }
 
 void CWallDirListItem::SetItemFileFindNum(int iNum)
 {
-	CString sBuf;
-	sBuf.Format(_T("%d"), iNum);
-	SetText(1, sBuf);
-	Invalidate();
+	if (m_mux.Lock()) {
+		CString sBuf;
+		sBuf.Format(_T("%d"), iNum);
+		SetText(1, sBuf);
+		Invalidate();
+
+		m_mux.Unlock();
+	}
 }
 
 void CWallDirListItem::UpdateItemFileFindNum()
 {
-	SetItemFileFindNum(-1);
-	SetOnFindPic();
-	::g_pWallThreadFindPic->AddItem(this);
+	if (m_mux.Lock()) {
+		SetItemFileFindNum(-1);
+		if (IsItemEnable())
+			::g_pWallEnablePicList->RemoveEnableItem(this);
+		SetOnFindPic();
+		::g_pWallThreadFindPic->AddItem(this);
+
+		m_mux.Unlock();
+	}
 }
 
 INT_PTR CWallDirListItem::SetItemPicPathArray(CStringArray &saPicPath)
 {
-	m_saPicPath.RemoveAll();
-	return m_saPicPath.Append(saPicPath);
+	INT_PTR iRes = 0;
+	if (m_mux.Lock()) {
+		m_saPicPath.RemoveAll();
+		iRes = m_saPicPath.Append(saPicPath);
+
+		m_mux.Unlock();
+	}
+	return iRes;
 }
 
 CStringArray *CWallDirListItem::GetItemPicPathArray()
 {
-	return &m_saPicPath;
+	CStringArray *pRes = NULL;
+	if (m_mux.Lock()) {
+		pRes = &m_saPicPath;
+
+		m_mux.Unlock();
+	}
+	return pRes;
 }
 
 // if not find, then return -1
 // else return index
 int CWallDirListItem::FindPath(CString &sPath)
 {
-	int iCount = m_saPicPath.GetCount();
-	for (int i=0 ; i<iCount ; i++) {
-		if (m_saPicPath[i] == sPath)
-			return i;
+	int iRes = -1;
+	if (m_mux.Lock()) {
+		int iCount = m_saPicPath.GetCount();
+		for (int i=0 ; i<iCount ; i++) {
+			if (m_saPicPath[i] == sPath) {
+				iRes = i;
+				break;
+			}
+		}
+
+		m_mux.Unlock();
 	}
-	return -1;
+	return iRes;
 }
 
 bool CWallDirListItem::RemoveAllPath(CString &sPath)
 {
-	bool bRes;
-	int iIndex = FindPath(sPath);
-	if (iIndex >= 0) {
-		SetIniModify();
-		bRes = true;
-	} else {
-		bRes = false;
-	}
-	while (iIndex >= 0) {
-		m_saPicPath.RemoveAt(iIndex);
-		iIndex = FindPath(sPath);
+	bool bRes = false;
+	if (m_mux.Lock()) {
+		int iIndex = FindPath(sPath);
+		if (iIndex >= 0) {
+			SetIniModify();
+			bRes = true;
+		} else {
+			bRes = false;
+		}
+		while (iIndex >= 0) {
+			m_saPicPath.RemoveAt(iIndex);
+			iIndex = FindPath(sPath);
+		}
+
+		m_mux.Unlock();
 	}
 	return bRes;
 }
 
 bool CWallDirListItem::IsDirOnFixDrive()
 {
-	if (m_uDirState & DIRSTATE_FIXEDDRIVE)
-		return true;
-	else
-		return false;
+	bool bRes = false;
+	if (m_mux.Lock()) {
+		if (m_uDirState & DIRSTATE_FIXEDDRIVE)
+			bRes = true;
+		else
+			bRes = false;
+
+		m_mux.Unlock();
+	}
+	return bRes;
 }
 
 bool CWallDirListItem::IsOnFindPic()
 {
-	return m_bOnFindPic;
+	bool bRes = false;
+	if (m_mux.Lock()) {
+		bRes = m_bOnFindPic;
+
+		m_mux.Unlock();
+	}
+	return bRes;
 }
 
 bool CWallDirListItem::IsItemEnable()
 {
-	return m_bItemEnable;
+	bool bRes = false;
+	if (m_mux.Lock()) {
+		bRes = m_bItemEnable;
+
+		m_mux.Unlock();
+	}
+	return bRes;
 }
 
 void CWallDirListItem::SetItemEnable(bool bEnable)
 {
 	if (m_bItemEnable == bEnable)
 		return;
-	m_bItemEnable = bEnable;
-	if (bEnable) {
-		// Change from false to true
-		if (!m_bOnFindPic)
-			::g_pWallEnablePicList->AddEnableItem(this);
-	} else {
-		// Change from true to false
-		::g_pWallEnablePicList->RemoveEnableItem(this);
+
+	if (m_mux.Lock()) {
+		m_bItemEnable = bEnable;
+		if (bEnable) {
+			// Change from false to true
+			if (!m_bOnFindPic)
+				::g_pWallEnablePicList->AddEnableItem(this);
+		} else {
+			// Change from true to false
+			::g_pWallEnablePicList->RemoveEnableItem(this);
+		}
+
+		m_mux.Unlock();
 	}
 }
 
 void CWallDirListItem::UpdateDirState()
 {
-	m_uDirState = 0;
-	if (DRIVE_FIXED == RealDriveType(PathGetDriveNumber(GetItemDirPath()), 0))
-		m_uDirState |= DIRSTATE_FIXEDDRIVE;
-	m_pIni->WriteUInt(_T("DirState"), GetItemDirPath(), m_uDirState);
+	if (m_mux.Lock()) {
+		m_uDirState = 0;
+		if (DRIVE_FIXED == RealDriveType(PathGetDriveNumber(GetItemDirPath()), 0))
+			m_uDirState |= DIRSTATE_FIXEDDRIVE;
+		m_pIni->WriteUInt(_T("DirState"), GetItemDirPath(), m_uDirState);
+
+		m_mux.Unlock();
+	}
 }
 
 void CWallDirListItem::SetOnExit(bool bOnExit/* = true*/)
 {
-	m_bOnExit = bOnExit;
+	if (m_mux.Lock()) {
+		m_bOnExit = bOnExit;
+
+		m_mux.Unlock();
+	}
 }
 
 void CWallDirListItem::SetOnFindPic(bool bOnFindPic/* = true*/)
 {
-	m_bOnFindPic = bOnFindPic;
+	if (m_mux.Lock()) {
+		m_bOnFindPic = bOnFindPic;
+
+		m_mux.Unlock();
+	}
 }
 
 #undef DIRSTATE_FIXEDDRIVE

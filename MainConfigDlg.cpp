@@ -18,7 +18,7 @@
 
 IMPLEMENT_DYNAMIC(CMainConfigDlg, CDialog)
 CMainConfigDlg::CMainConfigDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMainConfigDlg::IDD, pParent), m_pIni(NULL), m_uTransparency(DEFAULT_TRANSPARENCY)
+	:	CDialog(CMainConfigDlg::IDD, pParent), m_pIni(NULL), m_uTransparency(DEFAULT_TRANSPARENCY), m_bInit(false)
 {
 }
 
@@ -28,6 +28,10 @@ CMainConfigDlg::~CMainConfigDlg()
 
 void CMainConfigDlg::DoSize()
 {
+	if (!m_bInit)
+		return;
+
+	Invalidate();
 }
 
 void CMainConfigDlg::SaveIni()
@@ -61,6 +65,50 @@ void CMainConfigDlg::SaveIni()
 	CKDIni::SaveIni();
 }
 
+BOOL CMainConfigDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	m_pIni = &theApp.m_cIni;
+
+	GetDlgItem(IDC_CONF_BTN_RESTART)->SetWindowText(CResString(IDS_CONF_BTN_RESTART));
+
+	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(CResString(IDS_CONF_CHECK_STARTMIN));
+	if (m_pIni->GetBool(_T("General"), _T("bStartMin"), DEFAULT_STARTMIN))
+		m_checkStartMin.SetCheck(BST_CHECKED);
+	else
+		m_checkStartMin.SetCheck(BST_UNCHECKED);
+
+	GetDlgItem(IDC_CONF_CHECK_SHOWCLOSEWINDOW)->SetWindowText(CResString(IDS_CONF_CHECK_SHOWCLOSEWINDOW));
+	if (m_pIni->GetBool(_T("General"), _T("bShowCloseWindow"), DEFAULT_SHOWCLOSEWINDOW))
+		m_checkShowCloseWindow.SetCheck(BST_CHECKED);
+	else
+		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
+
+	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), DEFAULT_WALLCHANGER))
+		m_checkWallChanger.SetCheck(BST_CHECKED);
+	else
+		m_checkWallChanger.SetCheck(BST_UNCHECKED);
+
+	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
+	m_sliderTransparency.SetRange(50, 255);
+	m_uTransparency = m_pIni->GetUInt(_T("General"), _T("uTransparency"), DEFAULT_TRANSPARENCY);
+	m_sliderTransparency.SetPos(m_uTransparency);
+
+	m_bInit = true;
+	DoSize();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX 屬性頁應傳回 FALSE
+}
+
+void CMainConfigDlg::OnDestroy()
+{
+	SaveIni();
+
+	__super::OnDestroy();
+}
+
 bool CMainConfigDlg::IsStartMin()
 {
 	return m_checkStartMin.GetCheck()==BST_CHECKED;
@@ -88,6 +136,15 @@ void CMainConfigDlg::UpdateFuncCheck()
 		m_checkWallChanger.SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
 }
 
+BEGIN_MESSAGE_MAP(CMainConfigDlg, CDialog)
+	ON_BN_CLICKED(IDC_CONF_CHECK_STARTMIN		, OnBnClickedCheckConfStartmin)
+	ON_BN_CLICKED(IDC_CONF_CHECK_SHOWCLOSEWINDOW, OnBnClickedConfCheckShowclosewindow)
+	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER	, OnBnClickedWallchangercheck)
+	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_CONF_BTN_RESTART, OnBnClickedConfBtnRestart)
+	ON_WM_SIZE()
+END_MESSAGE_MAP()
+
 void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
@@ -97,54 +154,16 @@ void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CONF_SLIDER_TRANSPARENCY	, m_sliderTransparency);
 }
 
-
-BEGIN_MESSAGE_MAP(CMainConfigDlg, CDialog)
-	ON_BN_CLICKED(IDC_CONF_CHECK_STARTMIN		, OnBnClickedCheckConfStartmin)
-	ON_BN_CLICKED(IDC_CONF_CHECK_SHOWCLOSEWINDOW, OnBnClickedConfCheckShowclosewindow)
-	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER	, OnBnClickedWallchangercheck)
-	ON_WM_DESTROY()
-END_MESSAGE_MAP()
-
-
-// CMainConfigDlg 訊息處理常式
-
-BOOL CMainConfigDlg::OnInitDialog()
+void CMainConfigDlg::OnSize(UINT nType, int cx, int cy)
 {
-	CDialog::OnInitDialog();
+	__super::OnSize(nType, cx, cy);
 
-	m_pIni = &theApp.m_cIni;
-
-	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(CResString(IDS_CONF_CHECK_STARTMIN));
-	if (m_pIni->GetBool(_T("General"), _T("bStartMin"), DEFAULT_STARTMIN))
-		m_checkStartMin.SetCheck(BST_CHECKED);
-	else
-		m_checkStartMin.SetCheck(BST_UNCHECKED);
-
-	GetDlgItem(IDC_CONF_CHECK_SHOWCLOSEWINDOW)->SetWindowText(CResString(IDS_CONF_CHECK_SHOWCLOSEWINDOW));
-	if (m_pIni->GetBool(_T("General"), _T("bShowCloseWindow"), DEFAULT_SHOWCLOSEWINDOW))
-		m_checkShowCloseWindow.SetCheck(BST_CHECKED);
-	else
-		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
-
-	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), DEFAULT_WALLCHANGER))
-		m_checkWallChanger.SetCheck(BST_CHECKED);
-	else
-		m_checkWallChanger.SetCheck(BST_UNCHECKED);
-
-	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
-	m_sliderTransparency.SetRange(50, 255);
-	m_uTransparency = m_pIni->GetUInt(_T("General"), _T("uTransparency"), DEFAULT_TRANSPARENCY);
-	m_sliderTransparency.SetPos(m_uTransparency);
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX 屬性頁應傳回 FALSE
+	DoSize();
 }
 
-void CMainConfigDlg::OnDestroy()
+void CMainConfigDlg::OnBnClickedConfBtnRestart()
 {
-	SaveIni();
-
-	__super::OnDestroy();
+	::SendMessage(GetParent()->GetSafeHwnd(), WM_COMMAND, IDS_TRAY_RESTART, 0);
 }
 
 void CMainConfigDlg::OnBnClickedCheckConfStartmin()
