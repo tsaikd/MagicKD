@@ -19,14 +19,6 @@ CWallDirListItem::~CWallDirListItem()
 	Destroy();
 }
 
-void CWallDirListItem::SaveIni()
-{
-	if (!IsIniModify())
-		return;
-
-	SetIniModify(false);
-}
-
 void CWallDirListItem::Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *pbShowDirLoadError)
 {
 	m_hWnd = pParent;
@@ -69,8 +61,6 @@ void CWallDirListItem::Destroy()
 
 	if (IsItemEnable() && !m_bOnExit)
 		::g_pWallEnablePicList->RemoveEnableItem(this);
-
-	SaveIni();
 
 	m_bInit = false;
 }
@@ -189,7 +179,6 @@ bool CWallDirListItem::RemoveAllPath(CString &sPath)
 	if (m_mux.Lock()) {
 		int iIndex = FindPath(sPath);
 		if (iIndex >= 0) {
-			SetIniModify();
 			bRes = true;
 		} else {
 			bRes = false;

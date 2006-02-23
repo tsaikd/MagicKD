@@ -1,6 +1,3 @@
-// MagicKD.h : PROJECT_NAME 應用程式的主要標頭檔
-//
-
 #pragma once
 
 #ifndef __AFXWIN_H__
@@ -10,12 +7,8 @@
 #include "resource.h"		// 主要符號
 #include "Ini.h"
 #include "KDSingleApp.h"
+#include "MagicKDConf.h"
 #include "MagicKDEndDlg.h"
-
-
-// CMagicKDApp:
-// 請參閱實作此類別的 MagicKD.cpp
-//
 
 class CMagicKDApp : public CWinApp, public CKDSingleApp
 {

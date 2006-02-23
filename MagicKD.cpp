@@ -11,6 +11,8 @@
 #endif
 
 CMagicKDApp theApp;
+CMagicKDConf theConf;
+CKDTray *pTheTray = NULL;
 CMagicKDEndDlg *pTheAppEndDlg = NULL;
 
 CMagicKDApp::CMagicKDApp()

@@ -19,10 +19,10 @@ class CMagicKDDlg : public CDialog
 	DECLARE_DYNAMIC(CMagicKDDlg)
 	DECLARE_MESSAGE_MAP()
 public:
+	enum { IDD = IDD_MAGICKD };
 	CMagicKDDlg(CWnd* pParent = NULL);	// 標準建構函式
 	virtual ~CMagicKDDlg();
 
-	enum { IDD = IDD_MAGICKD };
 	typedef enum { eFunc_WallChanger = 1 } FuncList;
 
 public:
@@ -32,7 +32,6 @@ public:
 	bool SetTransparency(UINT uAlpha);
 	BOOL ShowWindow(int nCmdShow);
 
-	CIni *m_pIni;
 	CKDTabCtrl m_cMainTab;
 	CMainConfigDlg m_cMainConfigDlg;
 	CWallChangerDlg *m_pWallChangerDlg;

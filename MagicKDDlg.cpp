@@ -6,6 +6,7 @@
 #include "Others.h"
 #include "Language.h"
 #include "MagicKD.h"
+#include "WallConf.h"
 
 #include "MagicKDDlg.h"
 
@@ -13,15 +14,9 @@
 #define new DEBUG_NEW
 #endif
 
-
-CKDTray *pTheTray = NULL;
-
-// CMagicKDDlg ¹ï¸Ü¤è¶ô
-
-
 IMPLEMENT_DYNAMIC(CMagicKDDlg, CDialog)
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CMagicKDDlg::IDD, pParent), m_pIni(NULL), m_pWallChangerDlg(NULL), m_bVisiable(true), m_bInit(false)
+	:	CDialog(CMagicKDDlg::IDD, pParent), m_pWallChangerDlg(NULL), m_bVisiable(true), m_bInit(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -49,20 +44,21 @@ BOOL CMagicKDDlg::OnInitDialog()
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
 
-	m_pIni = &theApp.m_cIni;
+	theConf.Init(&theApp.m_cIni);
 	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
 	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
-	if (m_pIni->GetBool(_T("FuncList"), _T("bWallChanger"), false))
+	if (theConf.m_FuncList_bWallChanger)
 		SetFuncEnable(eFunc_WallChanger, true, false);
 	else
 		SetFuncEnable(eFunc_WallChanger, false, false);
 
-	if (m_cMainConfigDlg.IsStartMin())
+	if (theConf.m_General_bStartMin)
 		m_bVisiable = false;
+
 	ModifyStyleEx(0, WS_EX_LAYERED);
-	SetTransparency(m_cMainConfigDlg.GetSliderTransparency());
+	SetTransparency(theConf.m_General_uTransparency);
 
 //////////////////////////////////////////////////
 	if (m_pWallChangerDlg)
@@ -77,7 +73,7 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 void CMagicKDDlg::OnDestroy()
 {
-	if (m_cMainConfigDlg.IsShowCloseWindow())
+	if (theConf.m_General_bShowCloseWindow)
 		pTheAppEndDlg->ShowWindow(SW_SHOW);
 
 	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
@@ -229,9 +225,7 @@ void CMagicKDDlg::OnOK()
 
 void CMagicKDDlg::OnCancel()
 {
-	DestroyWindow();
-
-//	CDialog::OnCancel();
+	CDialog::OnCancel();
 }
 
 void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
@@ -277,6 +271,9 @@ void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
+	//FILE *fp = fopen("C:\\abc", "a");
+	//fprintf(fp, "%08X, %08X, %08X\n", message, wParam, lParam);
+	//fflush(fp);
 	if (message == WMU_ARE_YOU_APP) {
 		ShowWindow(SW_SHOW);
 		return WMU_I_AM_APP;
@@ -317,12 +314,14 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					DestroyWindow();
 					break;
 				case IDS_TRAY_WALLCHANGER:
-					if (m_pWallChangerDlg)
+					if (m_pWallChangerDlg) {
 						SetFuncEnable(eFunc_WallChanger, false);
-					else
+						theConf.m_FuncList_bWallChanger = false;
+					} else {
 						SetFuncEnable(eFunc_WallChanger, true);
+						theConf.m_FuncList_bWallChanger = true;
+					}
 					m_cMainConfigDlg.UpdateFuncCheck();
-					m_cMainConfigDlg.SetIniModify();
 					if (-1 == m_cMainTab.GetCurSel())
 						m_cMainTab.SetCurSel(0);
 					DoSize();
@@ -332,6 +331,13 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						::SendMessage(m_pWallChangerDlg->m_hWnd, message, wParam, lParam);
 					break;
 				}
+			}
+			break;
+		case WM_QUERYENDSESSION:
+			theConf.SaveConf();
+			if (::g_pWallConf) {
+				delete ::g_pWallConf;
+				::g_pWallConf = NULL;
 			}
 			break;
 		}

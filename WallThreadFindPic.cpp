@@ -140,7 +140,6 @@ void CWallThreadFindPic::_ThreadProcStage()
 
 	pDirItem->SetItemFileFindNum(saPicPath.GetCount());
 	pDirItem->SetItemPicPathArray(saPicPath);
-	pDirItem->SetIniModify();
 	pDirItem->SetOnFindPic(false);
 	if (pDirItem->IsItemEnable())
 		::g_pWallEnablePicList->AddEnableItem(pDirItem);

@@ -143,6 +143,9 @@
 				RelativePath=".\MagicKD.cpp">
 			</File>
 			<File
+				RelativePath=".\MagicKDConf.cpp">
+			</File>
+			<File
 				RelativePath=".\MagicKDDlg.cpp">
 			</File>
 			<File
@@ -223,6 +226,9 @@
 					RelativePath=".\WallClassListCtrl.cpp">
 				</File>
 				<File
+					RelativePath=".\WallConf.cpp">
+				</File>
+				<File
 					RelativePath=".\WallDirListCtrl.cpp">
 				</File>
 				<File
@@ -259,6 +265,9 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath=".\MagicKD.h">
+			</File>
+			<File
+				RelativePath=".\MagicKDConf.h">
 			</File>
 			<File
 				RelativePath=".\MagicKDDlg.h">
@@ -301,6 +310,9 @@
 					RelativePath=".\KDComboBox.h">
 				</File>
 				<File
+					RelativePath=".\KDConf.h">
+				</File>
+				<File
 					RelativePath=".\KDEdit.h">
 				</File>
 				<File
@@ -333,6 +345,9 @@
 				</File>
 				<File
 					RelativePath=".\WallClassListCtrl.h">
+				</File>
+				<File
+					RelativePath=".\WallConf.h">
 				</File>
 				<File
 					RelativePath=".\WallDirListCtrl.h">

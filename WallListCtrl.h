@@ -21,4 +21,7 @@ private:
 	bool m_bInit;
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+public:
+	DECLARE_MESSAGE_MAP()
+	afx_msg void OnDestroy();
 };

@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "Language.h"
 #include "MagicKD.h"
+#include "WallConf.h"
 #include "WallDirListCtrl.h"
 
 #include "WallClassListCtrl.h"
@@ -39,6 +40,66 @@ void CWallClassListCtrl::SaveIni()
 	}
 
 	CWallListCtrl::SaveIni();
+}
+
+void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDirLoadError)
+{
+	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
+
+	CWallListCtrl::Init(pIni);
+	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
+	EnableDrag();
+
+	CRect rcWin;
+	GetClientRect(rcWin);
+	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, rcWin.right);
+	m_rcChildDirList = rcChildDirList;
+
+	m_pbShowDirLoadError = pbShowDirLoadError;
+
+	CStringArray saClassList;
+	m_pIni->GetArray(_T("General"), _T("ClassList"), &saClassList);
+	int iCount = saClassList.GetCount();
+	if (iCount) {
+		for (int i=0 ; i<iCount ; i++) {
+			AddItem(saClassList[i]);
+		}
+	}
+
+	m_pIni->GetArray(_T("General"), _T("EnableClassList"), &saClassList);
+	iCount = saClassList.GetCount();
+	if (iCount) {
+		for (int i=0 ; i<iCount ; i++) {
+			int nItem = FindItemByText(saClassList[i]);
+			ListView_SetCheckState(m_hWnd, nItem, true);
+			SetItemEnable(nItem, true);
+		}
+	}
+
+	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
+
+	m_bInit = true;
+}
+
+void CWallClassListCtrl::OnDestroy()
+{
+	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Freeing\tWallChanger\tClass List"));
+	CWallClassListItem *pItem;
+	CWallDirListCtrl *pChildDirList;
+	int iCount = GetItemCount();
+	for (int i=0 ; i<iCount ; i++) {
+		if (pItem = (CWallClassListItem *)GetItemData(i)) {
+			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
+				pChildDirList->SetOnExit();
+			}
+		}
+	}
+
+	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tClass List"));
+	SaveIni();
+	CWallListCtrl::OnDestroy();
+
+	pTheAppEndDlg->UnsignWnd(m_hWnd);
 }
 
 bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
@@ -135,66 +196,6 @@ BEGIN_MESSAGE_MAP(CWallClassListCtrl, CWallListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnLvnDeleteitem)
 	ON_NOTIFY_REFLECT(LVN_ENDLABELEDIT, OnLvnEndlabeledit)
 END_MESSAGE_MAP()
-
-void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDirLoadError)
-{
-	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
-
-	CWallListCtrl::Init(pIni);
-	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
-	EnableDrag();
-
-	CRect rcWin;
-	GetClientRect(rcWin);
-	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, rcWin.right);
-	m_rcChildDirList = rcChildDirList;
-
-	m_pbShowDirLoadError = pbShowDirLoadError;
-
-	CStringArray saClassList;
-	m_pIni->GetArray(_T("General"), _T("ClassList"), &saClassList);
-	int iCount = saClassList.GetCount();
-	if (iCount) {
-		for (int i=0 ; i<iCount ; i++) {
-			AddItem(saClassList[i]);
-		}
-	}
-
-	m_pIni->GetArray(_T("General"), _T("EnableClassList"), &saClassList);
-	iCount = saClassList.GetCount();
-	if (iCount) {
-		for (int i=0 ; i<iCount ; i++) {
-			int nItem = FindItemByText(saClassList[i]);
-			ListView_SetCheckState(m_hWnd, nItem, true);
-			SetItemEnable(nItem, true);
-		}
-	}
-
-	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
-
-	m_bInit = true;
-}
-
-void CWallClassListCtrl::OnDestroy()
-{
-	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Freeing\tWallChanger\tClass List"));
-	CWallClassListItem *pItem;
-	CWallDirListCtrl *pChildDirList;
-	int iCount = GetItemCount();
-	for (int i=0 ; i<iCount ; i++) {
-		if (pItem = (CWallClassListItem *)GetItemData(i)) {
-			if (pChildDirList = (CWallDirListCtrl *)pItem->GetChildDirList()) {
-				pChildDirList->SetOnExit();
-			}
-		}
-	}
-
-	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tClass List"));
-	SaveIni();
-	CWallListCtrl::OnDestroy();
-
-	pTheAppEndDlg->UnsignWnd(m_hWnd);
-}
 
 void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 {

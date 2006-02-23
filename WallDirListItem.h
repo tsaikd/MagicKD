@@ -1,16 +1,14 @@
 #pragma once
 #include "afxmt.h"
 #include "Ini.h"
-#include "KDIni.h"
 #include "KDListItem.h"
 
 class CWallDirListItem
-	:	public CKDListItem, public CKDIni
+	:	public CKDListItem
 {
 public:
 	CWallDirListItem();
 	virtual ~CWallDirListItem();
-	virtual void SaveIni();
 
 	void Init(HWND pParent, CIni *pIni, LPCTSTR sDirPath, bool *pbShowDirLoadError);
 	void Destroy();

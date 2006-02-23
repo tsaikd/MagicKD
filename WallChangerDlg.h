@@ -5,7 +5,6 @@
 #include "Resource.h"
 #include "Ini.h"
 #include "xImage.h"
-#include "KDIni.h"
 #include "KDEdit.h"
 #include "KDButton.h"
 #include "KDComboBox.h"
@@ -20,20 +19,17 @@ enum {
 
 // CWallChangerDlg 對話方塊
 
-class CWallChangerDlg : public CDialog, public CKDIni
+class CWallChangerDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CWallChangerDlg)
 	DECLARE_MESSAGE_MAP()
 public:
+	enum { IDD = IDD_MAGICKD_WALLCHANGER };
 	CWallChangerDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChangerDlg();
 
-// 對話方塊資料
-	enum { IDD = IDD_MAGICKD_WALLCHANGER };
-
 public:
 	void DoSize();
-	virtual void SaveIni();
 
 	void	SetHistoryNum(UINT uNum);
 	void	SetWaitTime(UINT uWaitTime);
@@ -72,14 +68,8 @@ private:
 
 	bool m_bInit;
 	bool m_bShowDirLoadError;
-	bool m_bEnableTip;
-	UINT m_uWaitTime;
 	int m_iTestOfflineCount;
-	// at least 1. if in history, then don't set to wallpager
-	// if larger than total list number, then equal to set 1
-	UINT m_uPicPathHistory;
 	UINT m_uTimer;
-	CString m_sComboxMsg;
 	CxImage m_imgNowPic;
 	CString m_sNowPicPath;
 	CString m_sTempFilePath;
