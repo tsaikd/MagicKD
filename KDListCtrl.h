@@ -8,6 +8,7 @@ class CKDListCtrl : public CListCtrl
 public:
 	CKDListCtrl();
 	virtual ~CKDListCtrl();
+	virtual void Init();
 
 	bool SwapItems(int iItem1, int iItem2);
 	void MoveSelectedItems(int iPos);
@@ -32,8 +33,12 @@ How To Use Drag:
 	void DrawDragMark(const POINT &pt, COLORREF clr = RGB(255, 0, 0), COLORREF bgClr = RGB(255, 255, 255));
 protected:
 	bool m_bOnDraging;
+	NMLISTVIEW	m_nmlvBeginDrag;
+	CImageList*	m_pImageList;
 private:
 	bool m_bEnableDrag;
+	COLORREF	m_clrDragLine;
+	COLORREF	m_clrBackGround;
 
 public:
 	void DeleteSelectItem();
@@ -51,14 +56,11 @@ public:
 	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
 
 protected:
-	NMLISTVIEW	m_nmlvBeginDrag;
-	CImageList*	m_pImageList;
+	CMenu		m_mContextMenu;
 
 private:
 	bool		m_bEnableToolTip;
 	CString		m_sToolTip;
-	COLORREF	m_clrDragLine;
-	COLORREF	m_clrBackGround;
 
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);

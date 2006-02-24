@@ -11,6 +11,10 @@ CKDListCtrl::~CKDListCtrl()
 {
 }
 
+void CKDListCtrl::Init()
+{
+}
+
 bool CKDListCtrl::SwapItems(int iItem1, int iItem2)
 {
 	int iCount = GetItemCount();

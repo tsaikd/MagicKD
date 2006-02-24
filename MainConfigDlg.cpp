@@ -42,10 +42,7 @@ BOOL CMainConfigDlg::OnInitDialog()
 	else
 		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
 
-	if (theConf.m_FuncList_bWallChanger)
-		m_checkWallChanger.SetCheck(BST_CHECKED);
-	else
-		m_checkWallChanger.SetCheck(BST_UNCHECKED);
+	UpdateFuncCheck();
 
 	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
 	m_sliderTransparency.SetRange(50, 255);
@@ -61,8 +58,15 @@ BOOL CMainConfigDlg::OnInitDialog()
 void CMainConfigDlg::UpdateFuncCheck()
 {
 	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-	if (pParentDlg)
-		m_checkWallChanger.SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
+	if (pParentDlg) {
+		CButton *pBtn;
+
+		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_WALLCHANGER);
+		pBtn->SetCheck(theConf.m_FuncList_bWallChanger ? BST_CHECKED : BST_UNCHECKED);
+
+		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_FINDDF);
+		pBtn->SetCheck(theConf.m_FuncList_bFindDupFile ? BST_CHECKED : BST_UNCHECKED);
+	}
 }
 
 BEGIN_MESSAGE_MAP(CMainConfigDlg, CDialog)
@@ -71,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMainConfigDlg, CDialog)
 	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER	, OnBnClickedWallchangercheck)
 	ON_BN_CLICKED(IDC_CONF_BTN_RESTART, OnBnClickedConfBtnRestart)
 	ON_WM_SIZE()
+	ON_BN_CLICKED(IDC_CONF_CHECK_FINDDF, OnBnClickedConfCheckFinddf)
 END_MESSAGE_MAP()
 
 void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
@@ -78,7 +83,6 @@ void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CONF_CHECK_STARTMIN		, m_checkStartMin);
 	DDX_Control(pDX, IDC_CONF_CHECK_SHOWCLOSEWINDOW	, m_checkShowCloseWindow);
-	DDX_Control(pDX, IDC_CONF_CHECK_WALLCHANGER		, m_checkWallChanger);
 	DDX_Control(pDX, IDC_CONF_SLIDER_TRANSPARENCY	, m_sliderTransparency);
 }
 
@@ -106,12 +110,22 @@ void CMainConfigDlg::OnBnClickedConfCheckShowclosewindow()
 
 void CMainConfigDlg::OnBnClickedWallchangercheck()
 {
-	bool bWallChanger = m_checkWallChanger.GetCheck()==BST_CHECKED;
+	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_WALLCHANGER))->GetCheck()==BST_CHECKED;
 	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
 	if (pParentDlg)
-		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_WallChanger, bWallChanger);
+		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_WallChanger, bEnable);
 
-	theConf.m_FuncList_bWallChanger = bWallChanger;
+	theConf.m_FuncList_bWallChanger = bEnable;
+}
+
+void CMainConfigDlg::OnBnClickedConfCheckFinddf()
+{
+	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_FINDDF))->GetCheck()==BST_CHECKED;
+	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
+	if (pParentDlg)
+		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_FindDupFile, bEnable);
+
+	theConf.m_FuncList_bFindDupFile = bEnable;
 }
 
 LRESULT CMainConfigDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)

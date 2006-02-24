@@ -18,7 +18,6 @@ public:
 
 	void UpdateFuncCheck();
 
-	CButton m_checkWallChanger;
 	CKDButton m_checkStartMin;
 	CKDButton m_checkShowCloseWindow;
 	CSliderCtrl m_sliderTransparency;
@@ -36,4 +35,5 @@ public:
 	afx_msg void OnBnClickedCheckConfStartmin();
 	afx_msg void OnBnClickedConfCheckShowclosewindow();
 	afx_msg void OnBnClickedConfBtnRestart();
+	afx_msg void OnBnClickedConfCheckFinddf();
 };

@@ -10,7 +10,7 @@ public:
 	virtual ~CWallDirListCtrl();
 	virtual void SaveIni();
 
-	void Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirLoadError);
+	virtual void Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirLoadError);
 	void DoSize();
 	void SetListClassName(LPCTSTR sName);
 	CString GetListClassName();

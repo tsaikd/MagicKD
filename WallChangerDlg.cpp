@@ -75,7 +75,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	GetDlgItem(IDC_WALL_BTN_DELPIC)			->SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
 	GetDlgItem(IDC_WALL_BTN_MOVEPIC)		->SetWindowText(CResString(IDS_WALL_BTN_MOVEPIC));
 	GetDlgItem(IDC_WALL_BTN_ADDCLASS)		->SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
-	m_btn_EnableToolTip.SetWindowText(CResString(::g_pWallConf->m_General_bEnableTip ? IDS_WALL_BTN_DISABLETIP : IDS_WALL_BTN_ENABLETIP));
+	m_btn_EnableToolTip.SetWindowText(CResString(::g_pWallConf->m_General_bEnableTip ? IDS_ALL_BTN_DISABLETIP : IDS_ALL_BTN_ENABLETIP));
 	((CComboBox *)GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR))->AddString(CResString(IDS_WALL_COMBOX_ASKUSER));
 	((CComboBox *)GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR))->AddString(CResString(IDS_WALL_COMBOX_ASKDELETE));
 	((CComboBox *)GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR))->AddString(CResString(IDS_WALL_COMBOX_DELETE));
@@ -541,10 +541,10 @@ void CWallChangerDlg::OnBnClickedButtonEnabletooltip()
 {
 	if (::g_pWallConf->m_General_bEnableTip) {
 		::g_pWallConf->m_General_bEnableTip = false;
-		m_btn_EnableToolTip.SetWindowText(CResString(IDS_WALL_BTN_ENABLETIP));
+		m_btn_EnableToolTip.SetWindowText(CResString(IDS_ALL_BTN_ENABLETIP));
 	} else {
 		::g_pWallConf->m_General_bEnableTip = true;
-		m_btn_EnableToolTip.SetWindowText(CResString(IDS_WALL_BTN_DISABLETIP));
+		m_btn_EnableToolTip.SetWindowText(CResString(IDS_ALL_BTN_DISABLETIP));
 	}
 
 	EnableToolTips(::g_pWallConf->m_General_bEnableTip);

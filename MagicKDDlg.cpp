@@ -16,7 +16,8 @@
 
 IMPLEMENT_DYNAMIC(CMagicKDDlg, CDialog)
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CMagicKDDlg::IDD, pParent), m_pWallChangerDlg(NULL), m_bVisiable(true), m_bInit(false)
+	:	CDialog(CMagicKDDlg::IDD, pParent), m_bVisiable(true), m_bInit(false),
+		m_pWallChangerDlg(NULL), m_pFindDupFileDlg(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -49,10 +50,10 @@ BOOL CMagicKDDlg::OnInitDialog()
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
 	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
-	if (theConf.m_FuncList_bWallChanger)
-		SetFuncEnable(eFunc_WallChanger, true, false);
-	else
-		SetFuncEnable(eFunc_WallChanger, false, false);
+	SetFuncEnable(eFunc_WallChanger, theConf.m_FuncList_bWallChanger, false);
+
+//	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
+	SetFuncEnable(eFunc_FindDupFile, theConf.m_FuncList_bFindDupFile, false);
 
 	if (theConf.m_General_bStartMin)
 		m_bVisiable = false;
@@ -63,6 +64,8 @@ BOOL CMagicKDDlg::OnInitDialog()
 //////////////////////////////////////////////////
 	if (m_pWallChangerDlg)
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
+	if (m_pFindDupFileDlg)
+		m_cMainTab.SetCurSel(eFunc_FindDupFile);
 //////////////////////////////////////////////////
 
 	m_bInit = true;
@@ -78,6 +81,7 @@ void CMagicKDDlg::OnDestroy()
 
 	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
+	SetFuncEnable(eFunc_FindDupFile, false, false);
 
 	CDialog::OnDestroy();
 
@@ -112,38 +116,64 @@ void CMagicKDDlg::DoSize()
 
 void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = true*/)
 {
+	CString sTabName;
+	CDialog *pDlg = NULL;
+	int nID = 0;
+
 	switch (eFunc) {
 		case eFunc_WallChanger:
+			sTabName = _T("WallChanger");
+			nID = IDD_MAGICKD_WALLCHANGER;
 			if (bEnable) {
 				if (m_pWallChangerDlg)
 					SetFuncEnable(eFunc_WallChanger, false, false);
-				m_pWallChangerDlg = new CWallChangerDlg;
-				m_pWallChangerDlg->Create(IDD_MAGICKD_WALLCHANGER, this);
-				m_pWallChangerDlg->ShowWindow(SW_HIDE);
-				m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc_WallChanger, _T("WallChanger"), 0, (LPARAM)m_pWallChangerDlg);
-
-				int nItem = pTheTray->FindTrayMenuItem(_T("WallChanger"));
-				if (nItem >= 0)
-					pTheTray->CheckMenuItem(nItem, MF_BYPOSITION | MF_CHECKED);
+				pDlg = m_pWallChangerDlg = new CWallChangerDlg;
 			} else {
-				if (m_pWallChangerDlg){
-					m_cMainTab.DeleteItem(eFunc_WallChanger);
-					m_pWallChangerDlg->DestroyWindow();
-                    delete m_pWallChangerDlg;
-					m_pWallChangerDlg = NULL;
-
-					int nItem = pTheTray->FindTrayMenuItem(_T("WallChanger"));
-					if (nItem >= 0)
-						pTheTray->CheckMenuItem(nItem, MF_BYPOSITION | MF_UNCHECKED);
-				}
+				pDlg = m_pWallChangerDlg;
+				m_pWallChangerDlg = NULL;
+			}
+			break;
+		case eFunc_FindDupFile:
+			sTabName = _T("FindDupFile");
+			nID = IDD_MAGICKD_FINDDUPFILE;
+			if (bEnable) {
+				if (m_pFindDupFileDlg)
+					SetFuncEnable(eFunc_FindDupFile, false, false);
+				pDlg = m_pFindDupFileDlg = new CFindDupFileDlg;
+			} else {
+				pDlg = m_pFindDupFileDlg;
+				m_pFindDupFileDlg = NULL;
 			}
 			break;
 	}
+
+	if (bEnable) {
+		if (pDlg) {
+			pDlg->Create(nID, this);
+			pDlg->ShowWindow(SW_HIDE);
+			m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc, sTabName, 0, (LPARAM)pDlg);
+
+			int nItem = pTheTray->FindTrayMenuItem(sTabName);
+			if (nItem >= 0)
+				pTheTray->CheckMenuItem(nItem, MF_BYPOSITION | MF_CHECKED);
+		}
+	} else {
+		if (pDlg){
+			m_cMainTab.DeleteItem(eFunc);
+			pDlg->DestroyWindow();
+			delete pDlg;
+
+			int nItem = pTheTray->FindTrayMenuItem(sTabName);
+			if (nItem >= 0)
+				pTheTray->CheckMenuItem(nItem, MF_BYPOSITION | MF_UNCHECKED);
+		}
+	}
+
 	if (bRedraw)
 		Invalidate();
 }
 
-bool CMagicKDDlg::SetTransparency(UINT uAlpha)
+bool CMagicKDDlg::SetTransparency(BYTE uAlpha)
 {
 	bool bRes = true;
 	ASSERT(INRANGE(uAlpha, 50, 255));

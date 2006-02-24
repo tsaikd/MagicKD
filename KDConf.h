@@ -1,12 +1,13 @@
 #pragma once
 #include "afxmt.h"
-#include "Ini.h"
+#include "KDIni.h"
 
 template <typename _Type>
 class TKDConf
 {
 public:
 	TKDConf() : m_bDirty(false) {}
+	virtual ~TKDConf() { Destroy(); }
 
 	void Init(_Type tDefault)
 	{
@@ -62,7 +63,7 @@ class CKDConfBool
 {
 public:
 	CKDConfBool() : m_pIni(NULL) {}
-	~CKDConfBool() { Destroy(); }
+	virtual ~CKDConfBool() { Destroy(); }
 
 	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, bool bDefault)
 	{
@@ -100,7 +101,7 @@ class CKDConfUINT
 {
 public:
 	CKDConfUINT() : m_pIni(NULL) {}
-	~CKDConfUINT() { Destroy(); }
+	virtual ~CKDConfUINT() { Destroy(); }
 
 	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, UINT uDefault)
 	{
@@ -138,7 +139,7 @@ class CKDConfString : public CString
 {
 public:
 	CKDConfString() : m_pIni(NULL), m_bDirty(false) {}
-	~CKDConfString() { Destroy(); }
+	virtual ~CKDConfString() { Destroy(); }
 
 	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR sDefault)
 	{
@@ -178,7 +179,7 @@ class CKDConfStringArray : public CStringArray
 {
 public:
 	CKDConfStringArray() : m_pIni(NULL), m_bDirty(false) {}
-	~CKDConfStringArray() { Destroy(); }
+	virtual ~CKDConfStringArray() { Destroy(); }
 
 	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey)
 	{
@@ -212,4 +213,24 @@ private:
 	CIni *m_pIni;
 	CString m_sSection;
 	CString m_sKey;
+};
+
+class CKDConf
+{
+public:
+	CKDConf();
+	virtual ~CKDConf();
+
+	virtual void Init(CIni *pIni);
+	virtual void SaveConf();
+
+	void AddSaveConf(CKDIni *pSaveConf);
+	void RemoveSaveConf(CKDIni *pSaveConf);
+
+protected:
+	CIni *m_pIni;
+	CList<CKDIni *, CKDIni *> m_listSaveConf;
+
+private:
+	bool m_bInit;
 };

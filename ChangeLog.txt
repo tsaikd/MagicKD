@@ -1,4 +1,5 @@
 	Can Logout without Close Application
+	Add FindDup Function
 
 Version: 1.0.1.2	(2006-02-18)
 	Fix bug: Updating Selected Class Pictures will Update all Class

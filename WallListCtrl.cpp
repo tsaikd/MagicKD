@@ -34,6 +34,10 @@ void CWallListCtrl::OnDestroy()
 	::g_pWallConf->RemoveSaveConf(this);
 }
 
+BEGIN_MESSAGE_MAP(CWallListCtrl, CKDListCtrl)
+	ON_WM_DESTROY()
+END_MESSAGE_MAP()
+
 LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
@@ -53,7 +57,3 @@ LRESULT CWallListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 	return __super::DefWindowProc(message, wParam, lParam);
 }
-
-BEGIN_MESSAGE_MAP(CWallListCtrl, CKDListCtrl)
-	ON_WM_DESTROY()
-END_MESSAGE_MAP()

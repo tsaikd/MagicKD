@@ -199,8 +199,8 @@ END_MESSAGE_MAP()
 
 void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 {
-	POSITION pos = GetFirstSelectedItemPosition();
 	m_mContextMenu.CreatePopupMenu();
+	POSITION pos = GetFirstSelectedItemPosition();
 
 	if (pos) {
 		m_mContextMenu.AppendMenu(MF_STRING, IDS_WALL_MENU_ADDENABLECLASSLIST, CResString(IDS_WALL_MENU_ADDENABLECLASSLIST));
@@ -211,7 +211,7 @@ void CWallClassListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	if (m_mContextMenu.GetMenuItemCount()) {
 		CPoint cpPopMenu;
 		GetCursorPos(&cpPopMenu);
-		m_mContextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, cpPopMenu.x, cpPopMenu.y, this->GetParent());
+		m_mContextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, cpPopMenu.x, cpPopMenu.y, GetParent());
 	}
 	m_mContextMenu.DestroyMenu();
 	Invalidate();

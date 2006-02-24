@@ -192,6 +192,9 @@
 					RelativePath=".\KDComboBox.cpp">
 				</File>
 				<File
+					RelativePath=".\KDConf.cpp">
+				</File>
+				<File
 					RelativePath=".\KDEdit.cpp">
 				</File>
 				<File
@@ -257,6 +260,31 @@
 						RelativePath=".\WallThreadFindPic.cpp">
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="FindDupFile"
+				Filter="">
+				<File
+					RelativePath=".\FindDFConf.cpp">
+				</File>
+				<File
+					RelativePath=".\FindDFListCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\FindDFOthers.cpp">
+				</File>
+				<File
+					RelativePath=".\FindDFTreeCtrl.cpp">
+				</File>
+				<File
+					RelativePath=".\FindDupFileDlg.cpp">
+				</File>
+				<File
+					RelativePath=".\FindDupFileProc.cpp">
+				</File>
+				<File
+					RelativePath=".\FindStaticShowPic.cpp">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -378,6 +406,31 @@
 						RelativePath=".\WallThreadFindPic.h">
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="FindDupFile"
+				Filter="">
+				<File
+					RelativePath=".\FindDFConf.h">
+				</File>
+				<File
+					RelativePath=".\FindDFListCtrl.h">
+				</File>
+				<File
+					RelativePath=".\FindDFOthers.h">
+				</File>
+				<File
+					RelativePath=".\FindDFTreeCtrl.h">
+				</File>
+				<File
+					RelativePath=".\FindDupFileDlg.h">
+				</File>
+				<File
+					RelativePath=".\FindDupFileProc.h">
+				</File>
+				<File
+					RelativePath=".\FindStaticShowPic.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
