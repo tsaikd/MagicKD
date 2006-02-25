@@ -1,0 +1,67 @@
+Version: 1.0.1.3	(2006-02-26)
+	Can Logout without Close Application
+	Add FindDup Function
+	Add ContextMenu on Main Tab
+	Add Version Information at Config Dialog
+
+Version: 1.0.1.2	(2006-02-18)
+	Fix bug: Updating Selected Class Pictures will Update all Class
+	Fix bug: When Remove Picture From Enable List, the Count won't Update
+	Add KDDll, but not Use it
+	WallDirListItem Modify to Thread Safe
+	Add Restart Function
+	Can Size Dialog
+
+Version: 1.0.1.1	(2006-02-15)
+	Support Work on Part of Offline Drive
+	Solve Some of Release Version Problems
+
+Version: 1.0.1.0	(2006-02-14)
+	Fix bug: If Hide Window, then Open Another Program won't Show Program
+	Fix bug: If User choice Directly Delete bad Picture File in Config, won't Update Enable List
+	Fix bug: User Can't Use Tray Icon to Control WallChanger
+	Fix bug: Change Class Name Won't Change Ini at the Same Time
+	User Can Hide Close Window
+	User Can Hide Dir Load Error Message Window
+	Add Show Total Enable Picture Number
+	Cancle Cache Functions
+
+Version: 1.0.0.9	(2006-02-10)
+	Fix bug: If First Class is Empty, then Set Wallpager at First Time Will Fail
+	Auto Detect if Dir on Removable Drive and not collect correctly
+	When Delete a Picture, Auto Update Dir List
+	When Image Load Error, User Can Choice something
+	Can Move Class List and Dir List
+	Can Rename Class
+	Changer Timer Thread to Window Timer
+
+Version: 1.0.0.8	(2006-02-08)
+	Can Disable WallChanger Timer
+	Add Program Closing Message
+
+Version: 1.0.0.7	(2006-02-07)
+	Speedup Close Program
+	More Stable
+	Disable Cache (unstable now)
+
+Version: 1.0.0.6	(2006-02-05)
+	Can Drop Dirs to DirList
+	Speedup Cache Resample
+	Fix some thread bug
+
+Version: 1.0.0.5	(2006-02-04)
+	Prevent Open multiprocess
+	Add Update Find File Number in ClassList Menu
+	Add Program Icon
+	Show Now WallPager at Tray Icon Tip
+	Add Initial Minimize Config
+	Add Transparency Config
+	Use thread to compute cache picture list (still some bug!!)
+
+Version: 1.0.0.4	(2006-02-03)
+	Tray Icon
+
+Version: 1.0.0.3	(2006-02-03)
+	Add ToolTip
+	Set Cache Picture Number
+	Set at least N Picture not repeat
