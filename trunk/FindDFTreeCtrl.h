@@ -15,5 +15,5 @@ protected:
 
 public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult);
 };

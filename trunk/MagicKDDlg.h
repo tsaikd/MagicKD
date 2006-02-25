@@ -2,7 +2,7 @@
 
 #include "afxcmn.h"
 #include "Ini.h"
-#include "KDTabCtrl.h"
+#include "MagicKDTabCtrl.h"
 #include "KDTray.h"
 
 #include "MainConfigDlg.h"
@@ -18,26 +18,25 @@ class CMagicKDDlg : public CDialog
 	DECLARE_MESSAGE_MAP()
 public:
 	enum { IDD = IDD_MAGICKD };
+	typedef enum {
+		eFunc_NULL,
+		eFunc_WallChanger,
+		eFunc_FindDupFile
+	} FuncList;
 	CMagicKDDlg(CWnd* pParent = NULL);
 	virtual ~CMagicKDDlg();
 
-	typedef enum {
-		eFunc_WallChanger = 1,
-		eFunc_FindDupFile
-	} FuncList;
-
-public:
 	void DoSize();
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
+	FuncList GetFuncFromCWnd(CWnd *pWnd);
 
 	bool SetTransparency(BYTE uAlpha);
 	BOOL ShowWindow(int nCmdShow);
 
-	CKDTabCtrl m_cMainTab;
+	CMagicKDTabCtrl m_cMainTab;
 	CMainConfigDlg m_cMainConfigDlg;
 	CWallChangerDlg *m_pWallChangerDlg;
 	CFindDupFileDlg *m_pFindDupFileDlg;
-protected:
 private:
 	bool m_bInit;
 	bool m_bIniModify;

@@ -4,7 +4,7 @@
 	#error 在對 PCH 包含此檔案前先包含 'stdafx.h'
 #endif
 
-#include "resource.h"		// 主要符號
+#include "resource.h"
 #include "Ini.h"
 #include "KDSingleApp.h"
 #include "MagicKDConf.h"
@@ -17,6 +17,8 @@ public:
 	CMagicKDApp();
 
 	void SetRestart(bool bRestart = true);
+	CString GetAppFileVer();
+	CString GetAppProductVer();
 
 	CString m_sAppDir;
 	CString m_sAppPath;

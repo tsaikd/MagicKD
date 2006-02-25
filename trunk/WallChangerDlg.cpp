@@ -437,7 +437,6 @@ void CWallChangerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_WALL_BTN_MOVEPIC, m_btn_MovePic);
 }
 
-
 BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
@@ -475,7 +474,7 @@ void CWallChangerDlg::OnOK()
 
 void CWallChangerDlg::OnCancel()
 {
-	theApp.GetMainWnd()->DestroyWindow();
+	((CDialog *)GetParent())->EndDialog(IDCANCEL);
 
 //	CDialog::OnCancel();
 }
@@ -666,8 +665,6 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 		SetRandWallPager();
 		if (::g_pWallConf->m_General_uWaitTime)
 			StartTimer();
-		break;
-	case WM_TIMER:
 		break;
 	case WM_COMMAND:
 		{

@@ -78,8 +78,8 @@ EXSTYLE WS_EX_APPWINDOW
 CAPTION "MagicKD"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_TAB_MAIN,"SysTabControl32",0x0,7,7,308,225,
-                    WS_EX_STATICEDGE
+    CONTROL         "",IDC_TAB_MAIN,"SysTabControl32",TCS_FOCUSNEVER,7,7,308,
+                    225,WS_EX_STATICEDGE
 END
 
 IDD_MAGICKD_CONFIG DIALOGEX 0, 0, 370, 250
@@ -99,6 +99,7 @@ BEGIN
     PUSHBUTTON      "重新啟動",IDC_CONF_BTN_RESTART,40,15,50,15
     CONTROL         "FindDupFile",IDC_CONF_CHECK_FINDDF,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,40,80,90,12
+    CTEXT           "Version",IDC_CONF_STATIC_VERSION,325,228,35,8
 END
 
 IDD_MAGICKD_WALLCHANGER DIALOGEX 0, 0, 370, 250
@@ -154,19 +155,28 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_FIND_LIST_FINDLIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
-                    WS_TABSTOP,10,20,350,75,WS_EX_ACCEPTFILES | 
+                    WS_TABSTOP,10,20,350,65,WS_EX_ACCEPTFILES | 
                     WS_EX_CLIENTEDGE
     PUSHBUTTON      "關閉提示",IDC_FIND_BTN_ENABLETOOLTIP,320,5,40,12
-    PUSHBUTTON      "開始尋找",IDC_FIND_BTN_STARTFIND,310,100,50,12
+    PUSHBUTTON      "開始尋找",IDC_FIND_BTN_STARTFIND,320,90,40,12
     CONTROL         "",IDC_FIND_TREE_FINDRESULT,"SysTreeView32",
                     TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
                     TVS_SHOWSELALWAYS | TVS_NOTOOLTIPS | WS_TABSTOP | 0x800,
                     10,130,225,110,WS_EX_CLIENTEDGE
     CONTROL         "",IDC_FIND_STATIC_SHOWPIC,"Static",SS_BLACKFRAME | 
                     SS_CENTERIMAGE,240,130,120,110
-    PUSHBUTTON      "選取重複",IDC_FIND_BTN_SELECTDUP,10,115,50,12
-    PUSHBUTTON      "取消選取",IDC_FIND_BTN_SELECTNONE,65,115,50,12
-    PUSHBUTTON      "刪除重複",IDC_FIND_BTN_DELETEDUP,120,115,50,12
+    PUSHBUTTON      "選取重複",IDC_FIND_BTN_SELECTDUP,100,105,40,12
+    PUSHBUTTON      "取消選取",IDC_FIND_BTN_SELECTNONE,145,105,40,12
+    PUSHBUTTON      "刪除重複",IDC_FIND_BTN_DELETEDUP,190,105,40,12
+    PUSHBUTTON      "取消尋找",IDC_FIND_BTN_STOPFIND,275,90,40,12,
+                    WS_DISABLED
+    PUSHBUTTON      "全部展開",IDC_FIND_BTN_EXPANDALL,10,105,40,12
+    PUSHBUTTON      "全部收合",IDC_FIND_BTN_COLLAPSEALL,55,105,40,12
+    LTEXT           "重複檔案列表",IDC_FIND_STATIC_DUPFILELIST,10,120,60,8
+    LTEXT           "",IDC_FIND_STATIC_NOWPICPATH,75,120,285,8,
+                    SS_PATHELLIPSIS
+    CONTROL         "",IDC_FIND_PROGRESS_FINDDF,"msctls_progress32",0x1,10,
+                    88,260,15
 END
 
 
@@ -176,8 +186,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,2
- PRODUCTVERSION 1,0,1,2
+ FILEVERSION 1,0,1,3
+ PRODUCTVERSION 1,0,1,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -193,11 +203,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 1, 2"
+            VALUE "FileVersion", "1, 0, 1, 3"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 1, 2"
+            VALUE "ProductVersion", "1, 0, 1, 3"
         END
     END
     BLOCK "VarFileInfo"
@@ -303,6 +313,7 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_MENU_CLOSE          "關閉"
     IDS_ALL_BTN_ENABLETIP   "開啟提示"
     IDS_ALL_BTN_DISABLETIP  "關閉提示"
 END
@@ -350,11 +361,10 @@ STRINGTABLE
 BEGIN
     IDS_WALL_COMBOX_NULL    "不做事"
     IDS_WALL_COMBOX_ASKDELETE "詢問刪除"
-    IDS_FIND_COLUMN_FINDLIST "尋找相同檔案列表"
-    IDS_FIND_TOOLTIP_FINDLIST 
-                            "將需要尋找的檔案或資料夾拖曳到此\n或是按右鍵加入"
     IDS_FIND_MENU_ADDFINDPATH "加入尋找路徑"
     IDS_FIND_MENU_REMOVEFINDPATH "取消尋找路徑"
+    IDS_FIND_MENU_OPENFILE  "開啟檔案"
+    IDS_FIND_MENU_OPENDIR   "開啟資料夾\t(&O)"
     IDS_FIND_BTN_STARTFIND  "開始尋找"
     IDS_FIND_BTN_SELECTDUP  "選取重複"
     IDS_FIND_BTN_SELECTNONE "取消選取"
@@ -365,8 +375,15 @@ END
 STRINGTABLE 
 BEGIN
     IDS_FIND_MSG_DOFINDFIRST "請先搜尋重複檔案"
-    IDS_FIND_MENU_OPENFILE  "開啟檔案"
-    IDS_FIND_MENU_OPENDIR   "開啟資料夾\t(&O)"
+    IDS_FIND_MSG_FINDTIME   "本次執行所耗費時間(秒)："
+    IDS_FIND_MSG_NOSAMEFILE "沒有找到任何相同的檔案"
+    IDS_FIND_BTN_STOPFIND   "取消尋找"
+    IDS_FIND_BTN_EXPANDALL  "全部展開"
+    IDS_FIND_BTN_COLLAPSEALL "全部收合"
+    IDS_FIND_COLUMN_FINDLIST "尋找相同檔案列表"
+    IDS_FIND_TOOLTIP_FINDLIST 
+                            "將需要尋找的檔案或資料夾拖曳到此\n或是按右鍵加入"
+    IDS_FIND_STATIC_DUPFILELIST "重複檔案列表"
 END
 
 #endif    // 中文 (台灣) resources

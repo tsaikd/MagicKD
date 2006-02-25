@@ -21,10 +21,12 @@ public:
 
 	void EnableToolTips(bool bEnable = true);
 	void SetFindResultTreeCheck(bool bCheck = true);
-//	void SetFindResultTreeExpand(bool bExpand = true);
+	void SetFindResultTreeExpand(bool bExpand = true);
+	void SetNowPicPath(LPCTSTR lpPath = NULL);
 
 	CIni m_cIni;
 
+	CProgressCtrl m_progress_FindDF;
 	CFindStaticShowPic m_static_ShowPic;
 	CFindDFListCtrl m_list_FindDupFileList;
 	CFindDFTreeCtrl m_tree_FindResult;
@@ -33,6 +35,7 @@ private:
 	void _FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath);
 
 	bool m_bInit;
+	int m_iSortNumber;
 
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -49,4 +52,8 @@ public:
 	afx_msg void OnBnClickedFindBtnSelectdup();
 	afx_msg void OnBnClickedFindBtnSelectnone();
 	afx_msg void OnBnClickedFindBtnDeletedup();
+	afx_msg void OnBnClickedFindBtnStopfind();
+	afx_msg void OnBnClickedFindBtnExpandall();
+	afx_msg void OnBnClickedFindBtnCollapseall();
+	afx_msg void OnTimer(UINT nIDEvent);
 };

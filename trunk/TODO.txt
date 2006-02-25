@@ -1,18 +1,9 @@
 Initial function
 
-FindDupFile:
-加入搜尋時間
-搜尋時其他東西都要disable
-
-
 WallChanger:
 取消資料夾時findpic也要取消
 ListCtrl可按CTRL+CVX
 老闆鍵
-MainTab右鍵可關閉
-
-紀錄讀取失敗次數(順便可以刪除或查看)
-圖片讀取錯誤log
 
 設假桌布
 

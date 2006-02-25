@@ -2,7 +2,9 @@
 
 #include "FindDFOthers.h"
 
-#define READ_FILE_BUFFER_SIZE 8388608
+//#define READ_FILE_BUFFER_SIZE 8388608
+#define READ_FILE_BUFFER_SIZE (1 << 20)
+#define READ_FILE_BUFFER_STEP 10
 
 int FileTimeCmp(FILETIME *pft1, FILETIME *pft2)
 {
@@ -24,17 +26,15 @@ int FileCmpCB(const void *pv1, const void *pv2)
 	CFindDupFileProc *p1 = (*(CFindDupFileProc **)pv1);
 	CFindDupFileProc *p2 = (*(CFindDupFileProc **)pv2);
 
-	if (!p1->m_bFileValid || !p2->m_bFileValid)
-		return 0;
-	if (p1->m_dwFileSize > p2->m_dwFileSize)
+	if (p1->m_u64FileSize > p2->m_u64FileSize)
 		return 1;
-	if (p1->m_dwFileSize < p2->m_dwFileSize)
+	if (p1->m_u64FileSize < p2->m_u64FileSize)
 		return -1;
 
 	HANDLE h1 = CreateFile(p1->m_sFilePath, FILE_READ_DATA | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL, NULL);
+		0, NULL);
 	HANDLE h2 = CreateFile(p2->m_sFilePath, FILE_READ_DATA | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL, NULL);
+		0, NULL);
 
 	if ((h1 == INVALID_HANDLE_VALUE) || (h2 == INVALID_HANDLE_VALUE)) {
 		// output open error
@@ -46,6 +46,7 @@ int FileCmpCB(const void *pv1, const void *pv2)
 	BOOL bRes1;
 	BOOL bRes2;
 	DWORD dwByteRead;
+	UINT uStep = READ_FILE_BUFFER_STEP;
 	BYTE *sBuf1 = new BYTE [READ_FILE_BUFFER_SIZE];
 	BYTE *sBuf2 = new BYTE [READ_FILE_BUFFER_SIZE];
 	BYTE *pBuf1;
@@ -60,13 +61,15 @@ int FileCmpCB(const void *pv1, const void *pv2)
 					}
 
 	while (1) {
-		bRes1 = ReadFile(h1, sBuf1, READ_FILE_BUFFER_SIZE, &dwByteRead, NULL);
-		bRes2 = ReadFile(h2, sBuf2, READ_FILE_BUFFER_SIZE, &dwByteRead, NULL);
+		bRes1 = ReadFile(h1, sBuf1, READ_FILE_BUFFER_SIZE >> uStep, &dwByteRead, NULL);
+		bRes2 = ReadFile(h2, sBuf2, READ_FILE_BUFFER_SIZE >> uStep, &dwByteRead, NULL);
 
-		if (bRes1 && bRes2 && (dwByteRead == 0))
-			break;
 		if (!bRes1 || !bRes2)
+			RETURN(0);
+		if (!dwByteRead)
 			break;
+		if (uStep)
+			uStep--;
 
 		pBuf1 = sBuf1;
 		pBuf2 = sBuf2;

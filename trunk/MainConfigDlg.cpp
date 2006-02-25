@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Resource.h"
 #include "Language.h"
+#include "Others.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
@@ -21,12 +22,22 @@ void CMainConfigDlg::DoSize()
 	if (!m_bInit)
 		return;
 
+	int iMarginRight = 15;
+	int iMarginBottom = 15;
+
+	KDMoveDlgItem(GetDlgItem(IDC_CONF_STATIC_VERSION), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_CONF_STATIC_VERSION), this,
+		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom);
+
 	Invalidate();
 }
 
 BOOL CMainConfigDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	GetDlgItem(IDC_CONF_STATIC_VERSION)->SetWindowText(theApp.GetAppProductVer());
 
 	GetDlgItem(IDC_CONF_BTN_RESTART)->SetWindowText(CResString(IDS_CONF_BTN_RESTART));
 
@@ -41,8 +52,6 @@ BOOL CMainConfigDlg::OnInitDialog()
 		m_checkShowCloseWindow.SetCheck(BST_CHECKED);
 	else
 		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
-
-	UpdateFuncCheck();
 
 	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
 	m_sliderTransparency.SetRange(50, 255);
@@ -62,10 +71,10 @@ void CMainConfigDlg::UpdateFuncCheck()
 		CButton *pBtn;
 
 		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_WALLCHANGER);
-		pBtn->SetCheck(theConf.m_FuncList_bWallChanger ? BST_CHECKED : BST_UNCHECKED);
+		pBtn->SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
 
 		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_FINDDF);
-		pBtn->SetCheck(theConf.m_FuncList_bFindDupFile ? BST_CHECKED : BST_UNCHECKED);
+		pBtn->SetCheck(pParentDlg->m_pFindDupFileDlg ? BST_CHECKED : BST_UNCHECKED);
 	}
 }
 

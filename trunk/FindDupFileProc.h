@@ -3,12 +3,12 @@
 class CFindDupFileProc
 {
 public:
-	CFindDupFileProc(LPCTSTR sFilePath);
+	CFindDupFileProc();
 	~CFindDupFileProc();
 
-	bool m_bFileValid;
+//	bool m_bFileValid;
 	bool m_bAddToSameList;
-	DWORD m_dwFileSize;
+	ULONGLONG m_u64FileSize;
 	CString m_sFilePath;
 	FILETIME m_ftLastWriteTime;
 	CList<CFindDupFileProc *, CFindDupFileProc *> *m_pListSameFile;

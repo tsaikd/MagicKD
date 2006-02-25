@@ -1,6 +1,3 @@
-// MagicKD.cpp : 定義應用程式的類別行為。
-//
-
 #include "stdafx.h"
 #include "MagicKDDlg.h"
 
@@ -25,8 +22,45 @@ void CMagicKDApp::SetRestart(bool bRestart/* = true*/)
 	m_bRestart = bRestart;
 }
 
+CString CMagicKDApp::GetAppFileVer()
+{
+	CString sRes;
+	DWORD dwVerInfoSize = GetFileVersionInfoSize(theApp.m_sAppPath, NULL);
+	if (dwVerInfoSize) {
+		BYTE *pData = new BYTE[dwVerInfoSize];
+		GetFileVersionInfo(theApp.m_sAppPath, NULL, dwVerInfoSize, pData);
+		TCHAR *btVersion;
+		UINT uVersionLen;
+		if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\FileVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
+			sRes = btVersion;
+			sRes.Replace(_T(" "), _T(""));
+		}
+		delete [] pData;
+	}
+
+	return sRes;
+}
+
+CString CMagicKDApp::GetAppProductVer()
+{
+	CString sRes;
+	DWORD dwVerInfoSize = GetFileVersionInfoSize(theApp.m_sAppPath, NULL);
+	if (dwVerInfoSize) {
+		BYTE *pData = new BYTE[dwVerInfoSize];
+		GetFileVersionInfo(theApp.m_sAppPath, NULL, dwVerInfoSize, pData);
+		TCHAR *btVersion;
+		UINT uVersionLen;
+		if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\ProductVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
+			sRes = btVersion;
+			sRes.Replace(_T(" "), _T(""));
+		}
+		delete [] pData;
+	}
+
+	return sRes;
+}
+
 BEGIN_MESSAGE_MAP(CMagicKDApp, CWinApp)
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 BOOL CMagicKDApp::InitInstance()

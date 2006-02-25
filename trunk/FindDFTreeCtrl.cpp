@@ -15,17 +15,17 @@ CFindDFTreeCtrl::~CFindDFTreeCtrl()
 
 BEGIN_MESSAGE_MAP(CFindDFTreeCtrl, CTreeCtrl)
 	ON_WM_CONTEXTMENU()
-	ON_WM_RBUTTONDOWN()
+	ON_NOTIFY_REFLECT(NM_RCLICK, OnNMRclick)
 END_MESSAGE_MAP()
 
 void CFindDFTreeCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 {
-	m_mContextMenu.CreatePopupMenu();
 	UINT uFlags = 0;
 	CPoint pt;
 	GetCursorPos(&pt);
 	ScreenToClient(&pt);
 	m_hContextItem = HitTest(pt, &uFlags);
+	m_mContextMenu.CreatePopupMenu();
 	if (m_hContextItem && (uFlags & TVHT_ONITEM)) {
 		m_mContextMenu.AppendMenu(MF_STRING, IDS_FIND_MENU_OPENFILE, CResString(IDS_FIND_MENU_OPENFILE));
 		m_mContextMenu.AppendMenu(MF_STRING, IDS_FIND_MENU_OPENDIR, CResString(IDS_FIND_MENU_OPENDIR));
@@ -40,9 +40,9 @@ void CFindDFTreeCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	Invalidate();
 }
 
-void CFindDFTreeCtrl::OnRButtonDown(UINT nFlags, CPoint point)
+void CFindDFTreeCtrl::OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	OnContextMenu(0, 0);
 
-//	CTreeCtrl::OnRButtonDown(nFlags, point);
+	*pResult = 0;
 }

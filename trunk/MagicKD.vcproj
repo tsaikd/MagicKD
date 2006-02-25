@@ -35,7 +35,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="KDDll/$(OutDir)/KDDll.lib CxImage/CxImage/$(OutDir)/CxImage.lib CxImage/j2k/$(OutDir)/j2k.lib CxImage/jasper/$(OutDir)/jasper.lib CxImage/jbig/$(OutDir)/jbig.lib CxImage/jpeg/$(OutDir)/jpeg.lib CxImage/png/$(OutDir)/png.lib CxImage/tiff/$(OutDir)/tiff.lib CxImage/zlib/$(OutDir)/zlib.lib"
+				AdditionalDependencies="Version.lib CxImage/CxImage/$(OutDir)/CxImage.lib CxImage/j2k/$(OutDir)/j2k.lib CxImage/jasper/$(OutDir)/jasper.lib CxImage/jbig/$(OutDir)/jbig.lib CxImage/jpeg/$(OutDir)/jpeg.lib CxImage/png/$(OutDir)/png.lib CxImage/tiff/$(OutDir)/tiff.lib CxImage/zlib/$(OutDir)/zlib.lib"
 				LinkIncremental="2"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
@@ -99,7 +99,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="KDDll/$(OutDir)/KDDll.lib CxImage/CxImage/$(OutDir)/CxImage.lib CxImage/j2k/$(OutDir)/j2k.lib CxImage/jasper/$(OutDir)/jasper.lib CxImage/jbig/$(OutDir)/jbig.lib CxImage/jpeg/$(OutDir)/jpeg.lib CxImage/png/$(OutDir)/png.lib CxImage/tiff/$(OutDir)/tiff.lib CxImage/zlib/$(OutDir)/zlib.lib"
+				AdditionalDependencies="Version.lib CxImage/CxImage/$(OutDir)/CxImage.lib CxImage/j2k/$(OutDir)/j2k.lib CxImage/jasper/$(OutDir)/jasper.lib CxImage/jbig/$(OutDir)/jbig.lib CxImage/jpeg/$(OutDir)/jpeg.lib CxImage/png/$(OutDir)/png.lib CxImage/tiff/$(OutDir)/tiff.lib CxImage/zlib/$(OutDir)/zlib.lib"
 				LinkIncremental="1"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -150,6 +150,9 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDEndDlg.cpp">
+			</File>
+			<File
+				RelativePath=".\MagicKDTabCtrl.cpp">
 			</File>
 			<File
 				RelativePath=".\MainConfigDlg.cpp">
@@ -302,6 +305,9 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDEndDlg.h">
+			</File>
+			<File
+				RelativePath=".\MagicKDTabCtrl.h">
 			</File>
 			<File
 				RelativePath=".\MainConfigDlg.h">

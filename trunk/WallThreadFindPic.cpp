@@ -14,9 +14,9 @@ CWallThreadFindPic::~CWallThreadFindPic()
 {
 	SetCanThread(false);
 	SetEvent(m_hHaveDirItem);
-	if (WAIT_TIMEOUT == WaitForThread(5000)) {
+	if (WAIT_TIMEOUT == WaitForThread(2000)) {
 #ifdef DEBUG
-		MessageBox(GetFocus(), _T("FindPic Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+		MessageBox(GetForegroundWindow(), _T("WallThreadFindPic is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
 		TerminateThread(0);
 	}
@@ -44,12 +44,10 @@ DWORD CWallThreadFindPic::ThreadProc()
 
 void CWallThreadFindPic::AddItem(CWallDirListItem *pDirItem)
 {
-	if (m_muxThread.Lock()) {
-		if (!pDirItem) {
-			m_muxThread.Unlock();
-			return;
-		}
+	if (!pDirItem)
+		return;
 
+	if (m_muxThread.Lock()) {
 		m_lDirItem.AddTail(pDirItem);
 		SetEvent(m_hHaveDirItem);
 

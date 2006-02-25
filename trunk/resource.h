@@ -8,6 +8,7 @@
 #define IDD_MAGICKD_WALLCHANGER         104
 #define IDD_MAGICKD_FINDDUPFILE         105
 #define IDR_MAINFRAME                   121
+#define IDS_MENU_CLOSE                  121
 #define IDS_ALL_BTN_ENABLETIP           122
 #define IDS_ALL_BTN_DISABLETIP          123
 #define IDS_TRAY_OPENWINDOW             131
@@ -61,18 +62,24 @@
 #define IDS_WALL_COMBOX_EXPLORE         223
 #define IDS_WALL_COMBOX_NULL            224
 #define IDS_WALL_COMBOX_ASKDELETE       225
-#define IDS_FIND_COLUMN_FINDLIST        231
-#define IDS_FIND_TOOLTIP_FINDLIST       232
-#define IDS_FIND_MENU_ADDFINDPATH       233
-#define IDS_FIND_MENU_REMOVEFINDPATH    234
-#define IDS_FIND_MENU_OPENFILE          235
-#define IDS_FIND_MENU_OPENDIR           236
-#define IDS_FIND_BTN_STARTFIND          237
-#define IDS_FIND_BTN_SELECTDUP          238
-#define IDS_FIND_BTN_SELECTNONE         239
-#define IDS_FIND_BTN_DELETEDUP          240
-#define IDS_FIND_MSG_DELETEDUP          241
-#define IDS_FIND_MSG_DOFINDFIRST        242
+#define IDS_FIND_MENU_ADDFINDPATH       231
+#define IDS_FIND_MENU_REMOVEFINDPATH    232
+#define IDS_FIND_MENU_OPENFILE          233
+#define IDS_FIND_MENU_OPENDIR           234
+#define IDS_FIND_BTN_STARTFIND          235
+#define IDS_FIND_BTN_SELECTDUP          236
+#define IDS_FIND_BTN_SELECTNONE         237
+#define IDS_FIND_BTN_DELETEDUP          238
+#define IDS_FIND_MSG_DELETEDUP          239
+#define IDS_FIND_MSG_DOFINDFIRST        240
+#define IDS_FIND_MSG_FINDTIME           241
+#define IDS_FIND_MSG_NOSAMEFILE         242
+#define IDS_FIND_BTN_STOPFIND           243
+#define IDS_FIND_BTN_EXPANDALL          244
+#define IDS_FIND_BTN_COLLAPSEALL        245
+#define IDS_FIND_COLUMN_FINDLIST        246
+#define IDS_FIND_TOOLTIP_FINDLIST       247
+#define IDS_FIND_STATIC_DUPFILELIST     248
 #define IDC_TAB_MAIN                    1000
 #define IDC_PROGRESS_END                1001
 #define IDC_MAGICKDEND_EDIT_TEXT        1002
@@ -107,7 +114,14 @@
 #define IDC_FIND_BTN_SELECTDUP          1055
 #define IDC_FIND_BTN_SELECTNONE         1056
 #define IDC_FIND_BTN_DELETEDUP          1057
+#define IDC_FIND_BTN_STOPFIND           1058
+#define IDC_FIND_BTN_EXPANDALL          1059
+#define IDC_FIND_BTN_COLLAPSEALL        1060
 #define IDC_FIND_LIST_FINDLIST          1061
+#define IDC_FIND_STATIC_DUPFILELIST     1062
+#define IDC_FIND_STATIC_NOWPICPATH      1063
+#define IDC_FIND_PROGRESS_FINDDF        1064
+#define IDC_CONF_STATIC_VERSION         1065
 
 // Next default values for new objects
 // 
@@ -115,7 +129,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        227
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1058
+#define _APS_NEXT_CONTROL_VALUE         1066
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

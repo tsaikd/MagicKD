@@ -1,6 +1,3 @@
-// MagicKDDlg.cpp : ¹ê§@ÀÉ
-//
-
 #include "stdafx.h"
 #include "Resource.h"
 #include "Others.h"
@@ -55,6 +52,8 @@ BOOL CMagicKDDlg::OnInitDialog()
 //	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
 	SetFuncEnable(eFunc_FindDupFile, theConf.m_FuncList_bFindDupFile, false);
 
+	m_cMainConfigDlg.UpdateFuncCheck();
+
 	if (theConf.m_General_bStartMin)
 		m_bVisiable = false;
 
@@ -64,8 +63,8 @@ BOOL CMagicKDDlg::OnInitDialog()
 //////////////////////////////////////////////////
 	if (m_pWallChangerDlg)
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
-	if (m_pFindDupFileDlg)
-		m_cMainTab.SetCurSel(eFunc_FindDupFile);
+//	if (m_pFindDupFileDlg)
+//		m_cMainTab.SetCurSel(eFunc_FindDupFile);
 //////////////////////////////////////////////////
 
 	m_bInit = true;
@@ -109,6 +108,7 @@ void CMagicKDDlg::DoSize()
 	if (pCurDlg) {
 		pCurDlg->MoveWindow(rcWin, FALSE);
 		pCurDlg->ShowWindow(SW_SHOW);
+		pCurDlg->SetFocus();
 	}
 
 	Invalidate();
@@ -121,30 +121,32 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 	int nID = 0;
 
 	switch (eFunc) {
-		case eFunc_WallChanger:
-			sTabName = _T("WallChanger");
-			nID = IDD_MAGICKD_WALLCHANGER;
-			if (bEnable) {
-				if (m_pWallChangerDlg)
-					SetFuncEnable(eFunc_WallChanger, false, false);
-				pDlg = m_pWallChangerDlg = new CWallChangerDlg;
-			} else {
-				pDlg = m_pWallChangerDlg;
-				m_pWallChangerDlg = NULL;
-			}
-			break;
-		case eFunc_FindDupFile:
-			sTabName = _T("FindDupFile");
-			nID = IDD_MAGICKD_FINDDUPFILE;
-			if (bEnable) {
-				if (m_pFindDupFileDlg)
-					SetFuncEnable(eFunc_FindDupFile, false, false);
-				pDlg = m_pFindDupFileDlg = new CFindDupFileDlg;
-			} else {
-				pDlg = m_pFindDupFileDlg;
-				m_pFindDupFileDlg = NULL;
-			}
-			break;
+	case eFunc_NULL:
+		break;
+	case eFunc_WallChanger:
+		sTabName = _T("WallChanger");
+		nID = IDD_MAGICKD_WALLCHANGER;
+		if (bEnable) {
+			if (m_pWallChangerDlg)
+				SetFuncEnable(eFunc_WallChanger, false, false);
+			pDlg = m_pWallChangerDlg = new CWallChangerDlg;
+		} else {
+			pDlg = m_pWallChangerDlg;
+			m_pWallChangerDlg = NULL;
+		}
+		break;
+	case eFunc_FindDupFile:
+		sTabName = _T("FindDupFile");
+		nID = IDD_MAGICKD_FINDDUPFILE;
+		if (bEnable) {
+			if (m_pFindDupFileDlg)
+				SetFuncEnable(eFunc_FindDupFile, false, false);
+			pDlg = m_pFindDupFileDlg = new CFindDupFileDlg;
+		} else {
+			pDlg = m_pFindDupFileDlg;
+			m_pFindDupFileDlg = NULL;
+		}
+		break;
 	}
 
 	if (bEnable) {
@@ -169,8 +171,24 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 		}
 	}
 
+	m_cMainConfigDlg.UpdateFuncCheck();
+	if (-1 == m_cMainTab.GetCurSel())
+		m_cMainTab.SetCurSel(0);
+
 	if (bRedraw)
 		Invalidate();
+}
+
+CMagicKDDlg::FuncList CMagicKDDlg::GetFuncFromCWnd(CWnd *pWnd)
+{
+	VERIFY(::IsWindow(pWnd->GetSafeHwnd()));
+
+	if (pWnd == m_pWallChangerDlg)
+		return eFunc_WallChanger;
+	else if (pWnd == m_pFindDupFileDlg)
+		return eFunc_FindDupFile;
+	else
+		return eFunc_NULL;
 }
 
 bool CMagicKDDlg::SetTransparency(BYTE uAlpha)
@@ -202,10 +220,10 @@ BEGIN_MESSAGE_MAP(CMagicKDDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MAIN, OnTcnSelchangeMaintab)
-	ON_NOTIFY(TCN_SELCHANGING, IDC_TAB_MAIN, OnTcnSelchangingMaintab)
 	ON_WM_SIZE()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MAIN, OnTcnSelchangeMaintab)
+	ON_NOTIFY(TCN_SELCHANGING, IDC_TAB_MAIN, OnTcnSelchangingMaintab)
 END_MESSAGE_MAP()
 
 void CMagicKDDlg::DoDataExchange(CDataExchange* pDX)
@@ -278,24 +296,18 @@ void CMagicKDDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	__super::OnWindowPosChanging(lpwndpos);
 }
 
-void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	CDialog *pCurDlg = (CDialog*)m_cMainTab.GetCurItemLParam();
-	if (pCurDlg) {
-		pCurDlg->ShowWindow(SW_SHOW);
-		pCurDlg->SetFocus();
-
-		DoSize();
-	}
-
-	*pResult = 0;
-}
-
 void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg)
 		pCurDlg->ShowWindow(SW_HIDE);
+	*pResult = 0;
+}
+
+void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	DoSize();
+
 	*pResult = 0;
 }
 
@@ -331,36 +343,39 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (message) {
 		case WM_COMMAND:
 			{
-				UINT nID = LOWORD(wParam);
-				switch (nID) {
-				case IDS_TRAY_RESTART:
-					theApp.SetRestart();
-					DestroyWindow();
-					break;
-				case IDS_TRAY_OPENWINDOW:
-					ShowWindow(SW_SHOW);
-					break;
-				case IDS_TRAY_CLOSEWINDOW:
-					DestroyWindow();
-					break;
-				case IDS_TRAY_WALLCHANGER:
-					if (m_pWallChangerDlg) {
-						SetFuncEnable(eFunc_WallChanger, false);
-						theConf.m_FuncList_bWallChanger = false;
-					} else {
-						SetFuncEnable(eFunc_WallChanger, true);
-						theConf.m_FuncList_bWallChanger = true;
-					}
-					m_cMainConfigDlg.UpdateFuncCheck();
-					if (-1 == m_cMainTab.GetCurSel())
-						m_cMainTab.SetCurSel(0);
-					DoSize();
-					break;
-				default:
-					if (m_pWallChangerDlg && m_pWallChangerDlg->m_hWnd)
-						::SendMessage(m_pWallChangerDlg->m_hWnd, message, wParam, lParam);
-					break;
+			UINT nID = LOWORD(wParam);
+			switch (nID) {
+			// TabCtrl
+			case IDS_MENU_CLOSE:
+				{
+				CDialog *pDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
+				if (pDlg)
+					SetFuncEnable(GetFuncFromCWnd(pDlg), false);
+				DoSize();
 				}
+				break;
+			// Tray Icon
+			case IDS_TRAY_RESTART:
+				theApp.SetRestart();
+				DestroyWindow();
+				break;
+			case IDS_TRAY_OPENWINDOW:
+				ShowWindow(SW_SHOW);
+				break;
+			case IDS_TRAY_CLOSEWINDOW:
+				DestroyWindow();
+				break;
+			case IDS_TRAY_WALLCHANGER:
+				SetFuncEnable(eFunc_WallChanger, m_pWallChangerDlg ? false : true);
+				DoSize();
+				break;
+			default:
+				if (m_pWallChangerDlg)
+					::PostMessage(m_pWallChangerDlg->GetSafeHwnd(), message, wParam, lParam);
+				if (m_pFindDupFileDlg)
+					::PostMessage(m_pFindDupFileDlg->GetSafeHwnd(), message, wParam, lParam);
+				break;
+			}
 			}
 			break;
 		case WM_QUERYENDSESSION:
