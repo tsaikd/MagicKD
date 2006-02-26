@@ -11,7 +11,6 @@
 	add in DefWindowProc() of Dialog
 		if (message == WMU_ARE_YOU_APP) {
 			ShowWindow(SW_SHOW);
-			SetForegroundWindow();
 			return WMU_I_AM_APP;
 		}
 */

@@ -63,7 +63,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC		, CResString(IDS_TRAY_RANDPIC), true);
 	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 6);
 
-	m_cIni.SetPathName(theApp.m_sAppDir + _T("WallChanger.ini"));
+	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("WallChanger.ini"));
 	if (!::g_pWallConf)
 		::g_pWallConf = new CWallConf;
 	::g_pWallConf->Init(&m_cIni);

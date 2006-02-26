@@ -189,6 +189,9 @@
 				Name="KDClass"
 				Filter="">
 				<File
+					RelativePath=".\KDApp.cpp">
+				</File>
+				<File
 					RelativePath=".\KDButton.cpp">
 				</File>
 				<File
@@ -337,6 +340,9 @@
 			<Filter
 				Name="KDClass"
 				Filter="">
+				<File
+					RelativePath=".\KDApp.h">
+				</File>
 				<File
 					RelativePath=".\KDButton.h">
 				</File>

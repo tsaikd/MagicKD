@@ -59,17 +59,36 @@ private:
 	_Type m_tContext;
 };
 
-class CKDConfBool
+class CKDConfType
 {
 public:
-	CKDConfBool() : m_pIni(NULL) {}
-	virtual ~CKDConfBool() { Destroy(); }
+	CKDConfType() : m_pIni(NULL) {}
+	virtual ~CKDConfType() { Destroy(); }
 
-	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, bool bDefault)
+	virtual void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey)
 	{
 		m_pIni = pIni;
 		m_sSection = lpSection;
 		m_sKey = lpKey;
+	}
+
+	virtual void Destroy() {}
+
+protected:
+	CIni *m_pIni;
+	CString m_sSection;
+	CString m_sKey;
+};
+
+class CKDConfBool : public CKDConfType
+{
+public:
+	CKDConfBool() {}
+	virtual ~CKDConfBool() { Destroy(); }
+
+	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, bool bDefault)
+	{
+		CKDConfType::Init(pIni, lpSection, lpKey);
 		m_bDefault = bDefault;
 
 		m_bContext.Init(m_pIni->GetBool(m_sSection, m_sKey, m_bDefault) == TRUE);
@@ -90,24 +109,19 @@ public:
 	__inline CKDConfBool& operator = (bool bValue) { m_bContext = bValue; return (*this); }
 
 private:
-	CIni *m_pIni;
-	CString m_sSection;
-	CString m_sKey;
 	bool m_bDefault;
 	TKDConf<bool> m_bContext;
 };
 
-class CKDConfUINT
+class CKDConfUINT : public CKDConfType
 {
 public:
-	CKDConfUINT() : m_pIni(NULL) {}
+	CKDConfUINT() {}
 	virtual ~CKDConfUINT() { Destroy(); }
 
 	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, UINT uDefault)
 	{
-		m_pIni = pIni;
-		m_sSection = lpSection;
-		m_sKey = lpKey;
+		CKDConfType::Init(pIni, lpSection, lpKey);
 		m_uDefault = uDefault;
 
 		m_uContext.Init(m_pIni->GetUInt(m_sSection, m_sKey, m_uDefault));
@@ -128,91 +142,53 @@ public:
 	__inline CKDConfUINT& operator = (UINT uValue) { m_uContext = uValue; return (*this); }
 
 private:
-	CIni *m_pIni;
-	CString m_sSection;
-	CString m_sKey;
 	UINT m_uDefault;
 	TKDConf<UINT> m_uContext;
 };
 
-class CKDConfString : public CString
+class CKDConfString : public CString, public CKDConfType
 {
 public:
-	CKDConfString() : m_pIni(NULL), m_bDirty(false) {}
+	CKDConfString() : m_bDirty(false), m_lpDefault(NULL) {}
 	virtual ~CKDConfString() { Destroy(); }
 
-	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR sDefault)
+	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR lpDefault)
 	{
-		m_pIni = pIni;
-		m_sSection = lpSection;
-		m_sKey = lpKey;
-		m_sDefault = sDefault;
-		SetString(m_pIni->GetString(m_sSection, m_sKey, m_sDefault));
+		size_t u64Len;
+
+		CKDConfType::Init(pIni, lpSection, lpKey);
+
+		if (m_lpDefault)
+			delete [] m_lpDefault;
+		u64Len = _tcslen(lpDefault);
+		m_lpDefault = new TCHAR[u64Len + 1];
+		_tcscpy((LPTSTR)m_lpDefault, lpDefault);
+
+		SetString(m_pIni->GetString(m_sSection, m_sKey, m_lpDefault));
 	}
 
 	void Destroy()
 	{
 		if (m_bDirty) {
-			if (GetString() == m_sDefault)
+			if (GetString() == CString(m_lpDefault))
 				m_pIni->DeleteKey(m_sSection, m_sKey);
 			else
 				m_pIni->WriteString(m_sSection, m_sKey, GetString());
 
 			m_bDirty = false;
 		}
-	}
 
-	void SetDirty(bool bDirty = true)
-	{
-		m_bDirty = bDirty;
-	}
-
-private:
-	bool m_bDirty;
-	CIni *m_pIni;
-	CString m_sSection;
-	CString m_sKey;
-	CString m_sDefault;
-};
-
-class CKDConfStringArray : public CStringArray
-{
-public:
-	CKDConfStringArray() : m_pIni(NULL), m_bDirty(false) {}
-	virtual ~CKDConfStringArray() { Destroy(); }
-
-	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey)
-	{
-		m_pIni = pIni;
-		m_sSection = lpSection;
-		m_sKey = lpKey;
-
-		RemoveAll();
-		m_pIni->GetArray(m_sSection, m_sKey, this);
-	}
-
-	void Destroy()
-	{
-		if (m_bDirty) {
-			if (IsEmpty())
-				m_pIni->DeleteKey(m_sSection, m_sKey);
-			else
-				m_pIni->WriteArray(m_sSection, m_sKey, this);
-
-			m_bDirty = false;
+		if (m_lpDefault) {
+			delete [] m_lpDefault;
+			m_lpDefault = NULL;
 		}
 	}
 
-	void SetDirty(bool bDirty = true)
-	{
-		m_bDirty = bDirty;
-	}
+	_inline void SetDirty(bool bDirty = true) { m_bDirty = bDirty; }
 
 private:
 	bool m_bDirty;
-	CIni *m_pIni;
-	CString m_sSection;
-	CString m_sKey;
+	LPCTSTR m_lpDefault;
 };
 
 class CKDConf

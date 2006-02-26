@@ -33,10 +33,15 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
+	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 	if (!pTheTray)
 		pTheTray = new CKDTray;
-	pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon);
-	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
+	if (!pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
+		if (IDYES == MessageBox(CResString(IDS_MSG_TRAYREGERROR), NULL, MB_YESNO | MB_ICONQUESTION)) {
+			theApp.SetRestart();
+			DestroyWindow();
+		}
+	}
 
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_RESTART, CResString(IDS_TRAY_RESTART));
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));

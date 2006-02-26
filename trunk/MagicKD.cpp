@@ -13,51 +13,7 @@ CKDTray *pTheTray = NULL;
 CMagicKDEndDlg *pTheAppEndDlg = NULL;
 
 CMagicKDApp::CMagicKDApp()
-	:	m_bRestart(false)
 {
-}
-
-void CMagicKDApp::SetRestart(bool bRestart/* = true*/)
-{
-	m_bRestart = bRestart;
-}
-
-CString CMagicKDApp::GetAppFileVer()
-{
-	CString sRes;
-	DWORD dwVerInfoSize = GetFileVersionInfoSize(theApp.m_sAppPath, NULL);
-	if (dwVerInfoSize) {
-		BYTE *pData = new BYTE[dwVerInfoSize];
-		GetFileVersionInfo(theApp.m_sAppPath, NULL, dwVerInfoSize, pData);
-		TCHAR *btVersion;
-		UINT uVersionLen;
-		if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\FileVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
-			sRes = btVersion;
-			sRes.Replace(_T(" "), _T(""));
-		}
-		delete [] pData;
-	}
-
-	return sRes;
-}
-
-CString CMagicKDApp::GetAppProductVer()
-{
-	CString sRes;
-	DWORD dwVerInfoSize = GetFileVersionInfoSize(theApp.m_sAppPath, NULL);
-	if (dwVerInfoSize) {
-		BYTE *pData = new BYTE[dwVerInfoSize];
-		GetFileVersionInfo(theApp.m_sAppPath, NULL, dwVerInfoSize, pData);
-		TCHAR *btVersion;
-		UINT uVersionLen;
-		if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\ProductVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
-			sRes = btVersion;
-			sRes.Replace(_T(" "), _T(""));
-		}
-		delete [] pData;
-	}
-
-	return sRes;
 }
 
 BEGIN_MESSAGE_MAP(CMagicKDApp, CWinApp)
@@ -70,22 +26,7 @@ BOOL CMagicKDApp::InitInstance()
 	if (IsWndRunning())
 		return FALSE;
 
-	{
-		TCHAR sBuffer[MAX_PATH], *ptr;
-		GetModuleFileName(NULL, sBuffer, MAX_PATH);
-		m_sAppPath = sBuffer;
-		ptr = _tcsrchr(sBuffer, _T('\\'));
-		if (ptr) {
-			ptr++;
-			*ptr = _T('\0');
-			SetCurrentDirectory(sBuffer);
-			m_sAppDir = sBuffer;
-			m_cIni.SetPathName(m_sAppDir + _T("MagicKD.ini"));
-		} else {
-			MessageBox(NULL, _T("Can not locate the execution file!"), _T("ERROR"), MB_OK | MB_ICONERROR);
-			return FALSE;
-		}
-	}
+	m_cIni.SetPathName(CString(GetAppConfDir()) + _T("MagicKD.ini"));
 
 	CMagicKDDlg *pDlg = NULL;
 
@@ -102,9 +43,6 @@ BOOL CMagicKDApp::InitInstance()
 
 	delete pTheAppEndDlg;
 	pTheAppEndDlg = NULL;
-
-	if (m_bRestart)
-		ShellExecute(NULL, _T("open"), m_sAppDir + _T("MagicKD.exe"), NULL, NULL, SW_SHOW);
 
 	// 因為已經關閉對話方塊，傳回 FALSE，所以我們會結束應用程式，
 	// 而非提示開始應用程式的訊息。

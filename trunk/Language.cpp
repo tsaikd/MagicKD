@@ -63,6 +63,7 @@ HINSTANCE LoadStringLib(LANGID lid)
 		if (lid == g_aLanguages[i].lid) {
 			// Need to add (CString)m_sAppDir, (CString)m_sAppPath to MainApp class
 			// Need to add the following lines to MainApp class InitInstance()
+			// or Inherit CKDApp
 			/*
 	{
 		TCHAR sBuffer[MAX_PATH], *ptr;
@@ -79,7 +80,7 @@ HINSTANCE LoadStringLib(LANGID lid)
 		}
 	}
 			*/
-			sDllPath = theApp.m_sAppDir + _T("lang\\") + g_aLanguages[i].pszISOLocale + _T(".dll");
+			sDllPath.Format(_T("%s%s.dll"), theApp.GetAppLangDir(), g_aLanguages[i].pszISOLocale);
 			g_uCurrentLang = i;
 			break;
 		}

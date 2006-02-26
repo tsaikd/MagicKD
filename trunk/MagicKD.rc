@@ -282,6 +282,7 @@ BEGIN
     IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
     IDS_TRAY_MOVEPIC        "移動目前桌布\t(&M)"
     IDS_TRAY_RESTART        "重新啟動 MagicKD\t(&R)"
+    IDS_MSG_TRAYREGERROR    "狀態圖示啟用失敗\n是否要重新啟動程式？"
     IDS_CONF_STATIC_TRANSPARENCY "透明度"
     IDS_CONF_BTN_RESTART    "重新啟動"
     IDS_CONF_CHECK_STARTMIN "開始時最小化"

@@ -116,7 +116,7 @@ BOOL CFindDupFileDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_cIni.SetPathName(theApp.m_sAppDir + _T("FindDupFile.ini"));
+	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("FindDupFile.ini"));
 	if (!::g_pFindConf) {
 		::g_pFindConf = new CFindDFConf;
 		::g_pFindConf->Init(&m_cIni);
