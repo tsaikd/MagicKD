@@ -19,6 +19,7 @@ CKDTray::~CKDTray()
 
 bool CKDTray::RegisterTray(HWND hWnd, HICON hIcon, LPCTSTR sTip/* = NULL*/)
 {
+	ASSERT(IsWindow(hWnd));
 	if (m_trayData.hWnd)
 		UnRegisterTray();
 

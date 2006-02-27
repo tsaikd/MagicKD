@@ -22,6 +22,10 @@ CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 CMagicKDDlg::~CMagicKDDlg()
 {
 	DestroyIcon(m_hIcon);
+	if (pTheTray) {
+		delete pTheTray;
+		pTheTray = NULL;
+	}
 }
 
 BOOL CMagicKDDlg::OnInitDialog()
@@ -33,23 +37,23 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
+	theConf.Init(&theApp.m_cIni);
+	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
+	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
+
 	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 	if (!pTheTray)
 		pTheTray = new CKDTray;
 	if (!pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
 		if (IDYES == MessageBox(CResString(IDS_MSG_TRAYREGERROR), NULL, MB_YESNO | MB_ICONQUESTION)) {
 			theApp.SetRestart();
-			DestroyWindow();
+			PostMessage(WM_QUIT);
 		}
 	}
 
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_RESTART, CResString(IDS_TRAY_RESTART));
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
 	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
-
-	theConf.Init(&theApp.m_cIni);
-	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
-	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
 	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
 	SetFuncEnable(eFunc_WallChanger, theConf.m_FuncList_bWallChanger, false);
@@ -93,8 +97,6 @@ void CMagicKDDlg::OnDestroy()
 	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_CLOSEWINDOW));
 	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_OPENWINDOW));
 	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_RESTART));
-	delete pTheTray;
-	pTheTray = NULL;
 }
 
 void CMagicKDDlg::DoSize()
