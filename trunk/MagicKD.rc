@@ -88,7 +88,7 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Wall Changer",IDC_CONF_CHECK_WALLCHANGER,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,40,65,90,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,40,80,90,12
     CONTROL         "開始時最小化",IDC_CONF_CHECK_STARTMIN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,40,35,90,12
     CONTROL         "",IDC_CONF_SLIDER_TRANSPARENCY,"msctls_trackbar32",
@@ -98,8 +98,13 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,40,50,90,12
     PUSHBUTTON      "重新啟動",IDC_CONF_BTN_RESTART,40,15,50,15
     CONTROL         "FindDupFile",IDC_CONF_CHECK_FINDDF,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,40,80,90,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,40,95,90,12
     CTEXT           "Version",IDC_CONF_STATIC_VERSION,325,228,35,8
+    PUSHBUTTON      "檢查更新",IDC_CONF_BTN_CHECKUPDATE,95,15,50,15
+    CONTROL         "",IDC_CONF_PROGRESS_UPDATE,"msctls_progress32",0x1,150,
+                    15,210,15
+    CONTROL         "定期檢查更新",IDC_CONF_CHECK_CHECKUPDATE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,40,65,90,12
 END
 
 IDD_MAGICKD_WALLCHANGER DIALOGEX 0, 0, 370, 250
@@ -186,8 +191,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,3
- PRODUCTVERSION 1,0,1,3
+ FILEVERSION 1,0,1,4
+ PRODUCTVERSION 1,0,1,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -203,11 +208,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 1, 3"
+            VALUE "FileVersion", "1, 0, 1, 4"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 1, 3"
+            VALUE "ProductVersion", "1, 0, 1, 4"
         END
     END
     BLOCK "VarFileInfo"
@@ -282,7 +287,6 @@ BEGIN
     IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
     IDS_TRAY_MOVEPIC        "移動目前桌布\t(&M)"
     IDS_TRAY_RESTART        "重新啟動 MagicKD\t(&R)"
-    IDS_MSG_TRAYREGERROR    "狀態圖示啟用失敗\n是否要重新啟動程式？"
     IDS_CONF_STATIC_TRANSPARENCY "透明度"
     IDS_CONF_BTN_RESTART    "重新啟動"
     IDS_CONF_CHECK_STARTMIN "開始時最小化"
@@ -290,7 +294,21 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_MENU_CLOSE          "關閉"
+    IDS_MSG_TRAYREGERROR    "狀態圖示啟用失敗\n是否要重新啟動程式？"
+    IDS_ALL_BTN_ENABLETIP   "開啟提示"
+    IDS_ALL_BTN_DISABLETIP  "關閉提示"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_CONF_CHECK_SHOWCLOSEWINDOW "顯示關閉進度"
+    IDS_CONF_CHECK_CHECKUPDATE "定期檢查更新"
+    IDS_CONF_MSG_WANTUPDATEORNOT 
+                            "目前最新的版本是 %s\n您想要更新到最新版本嗎？\n(需要重新啟動)"
+    IDS_CONF_MSG_UPDATEFAILED "更新版本失敗"
+    IDS_CONF_MSG_NOUPDATE   "此版本已經是最新版\n無需更新"
+    IDS_CONF_MSG_UPDATECONNECTFAILED "網路連線失敗"
 END
 
 STRINGTABLE 
@@ -310,13 +328,6 @@ BEGIN
     IDS_WALL_STATIC_WAITTIME "換圖間隔(秒)"
     IDS_WALL_STATIC_PICTOTALNUM "啟用列表圖檔總數"
     IDS_WALL_MENU_ADDENABLECLASSLIST "加入啟用分類列表"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_MENU_CLOSE          "關閉"
-    IDS_ALL_BTN_ENABLETIP   "開啟提示"
-    IDS_ALL_BTN_DISABLETIP  "關閉提示"
 END
 
 STRINGTABLE 

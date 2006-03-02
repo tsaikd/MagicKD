@@ -625,18 +625,18 @@ void CWallChangerDlg::OnTimer(UINT nIDEvent)
 	switch (nIDEvent) {
 	case KDT_CHANGEWALL:
 		{
-			CString sTime;
-			int iTime;
+		CString sTime;
+		int iTime;
 
-			m_staticTime.GetWindowText(sTime);
-			iTime = _ttoi(sTime) - 1;
+		m_staticTime.GetWindowText(sTime);
+		iTime = _ttoi(sTime) - 1;
 
-			if (iTime < 0) {
-				OnBnClickedButtonRandpic();
-			} else {
-				sTime.Format(_T("%d"), iTime);
-				m_staticTime.SetWindowText(sTime);
-			}
+		if (iTime < 0) {
+			OnBnClickedButtonRandpic();
+		} else {
+			sTime.Format(_T("%d"), iTime);
+			m_staticTime.SetWindowText(sTime);
+		}
 		}
 		break;
 	case KDT_OFFLINECOUNT:

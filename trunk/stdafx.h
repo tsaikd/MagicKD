@@ -42,3 +42,5 @@
 
 #define APPNAME _T("MagicKD")
 #define APPUUID _T("43863dcf-f931-443e-bee0-eba5db4083a2")
+
+#define KDAPP_ENABLE_UPDATEAPPONLINE

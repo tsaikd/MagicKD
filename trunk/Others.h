@@ -76,5 +76,7 @@ bool AddDesktopPic(LPCTSTR lpPicPath, const CSize &sizePic);
 bool RemoveDesktopPic(LPCTSTR lpPicPath);
 #endif // _UNICODE
 
+bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
+
 int GetOnInternet(LPCSTR lpszTestHost = "www.google.com", u_short uTestPort = 80);
 int GetOnOffline();

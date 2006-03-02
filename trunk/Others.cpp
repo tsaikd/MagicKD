@@ -358,6 +358,38 @@ bool RemoveDesktopPic(LPCTSTR lpPicPath)
 
 #endif // _UNICODE
 
+#include "afxinet.h"
+bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize/* = 8192*/)
+{
+	bool bRes = false;
+	CInternetSession session(_T("Download File Session"));
+	CStdioFile *pFile = session.OpenURL(lpURL);
+	HANDLE hLocalFile = CreateFile(lpLocalPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (pFile && (hLocalFile != INVALID_HANDLE_VALUE)) {
+		BYTE *pBuf = new BYTE[iQuerySize];
+		UINT uReadLen; 
+		DWORD dwWriteLen; 
+
+		while (uReadLen = pFile->Read(pBuf, iQuerySize))
+			WriteFile(hLocalFile, pBuf, uReadLen, &dwWriteLen, NULL);
+
+		delete pBuf;
+		CloseHandle(hLocalFile);
+		bRes = true;
+	} else {
+		bRes = false;
+	}
+
+	if (pFile) {
+		pFile->Close();
+		delete pFile;
+	}
+
+	session.Close();
+	return bRes;
+}
+
 //return:
 //	0: Test Success
 //	1: Can't Find a Usable WinSock DLL
