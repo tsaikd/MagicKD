@@ -48,3 +48,8 @@ BOOL CMagicKDApp::InitInstance()
 	// 而非提示開始應用程式的訊息。
 	return FALSE;
 }
+
+void CMagicKDApp::Quit()
+{
+	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd()));
+}

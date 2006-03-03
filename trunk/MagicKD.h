@@ -17,6 +17,8 @@ class CMagicKDApp : public CWinApp, public CKDSingleApp, public CKDApp
 public:
 	CMagicKDApp();
 
+	void Quit();
+
 	CIni m_cIni;
 
 public:

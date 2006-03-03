@@ -6,7 +6,6 @@
 #include "MagicKDDlg.h"
 
 #include "MainConfigDlg.h"
-#include ".\mainconfigdlg.h"
 
 enum {
 	KDT_UPDATE		= 1
