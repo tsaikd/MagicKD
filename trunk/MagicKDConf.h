@@ -5,7 +5,6 @@ class CMagicKDConf : public CKDConf
 {
 public:
 	CMagicKDConf();
-	virtual ~CMagicKDConf();
 
 	void Init(CIni *pIni);
 
@@ -17,4 +16,4 @@ public:
 	CKDConfUINT m_General_uTransparency;
 };
 
-extern CMagicKDConf theConf;
+extern CMagicKDConf *pTheConf;

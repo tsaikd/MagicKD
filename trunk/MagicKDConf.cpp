@@ -12,10 +12,6 @@ CMagicKDConf::CMagicKDConf()
 {
 }
 
-CMagicKDConf::~CMagicKDConf()
-{
-}
-
 void CMagicKDConf::Init(CIni *pIni)
 {
 	CKDConf::Init(pIni);

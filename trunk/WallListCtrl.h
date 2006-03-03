@@ -12,7 +12,6 @@ public:
 
 	void Init(CIni *pIni);
 	virtual void SaveIni();
-	CIni *m_pIni;
 
 private:
 	bool m_bInit;

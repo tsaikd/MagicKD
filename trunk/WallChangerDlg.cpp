@@ -271,11 +271,12 @@ bool CWallChangerDlg::SetRandWallPager()
 		// IDNO:		goto directory
 		// IDCANCEL:	do nothing
 		int iRes = IDCANCEL;
+		CString sNowPicPath = m_sNowPicPath; // When User Choice Option, m_sNowPicPath may change
 		CString sComboxMsg = ::g_pWallConf->m_General_sComboxMsg;
 		if (sComboxMsg == CResString(IDS_WALL_COMBOX_NULL)) {
 			iRes = IDCANCEL;
 		} else if (sComboxMsg == CResString(IDS_WALL_COMBOX_DELETE)) {
-			DeletePicFile(m_sNowPicPath, false);
+			DeletePicFile(sNowPicPath, false);
 			RETURN(false);
 		} else if (sComboxMsg == CResString(IDS_WALL_COMBOX_ASKDELETE)) {
 			iRes = IDYES;
@@ -283,7 +284,7 @@ bool CWallChangerDlg::SetRandWallPager()
 			iRes = IDNO;
 		} else {
 			CString sMsg;
-			sMsg.Format(_T("%s\n%s"), m_sNowPicPath, CResString(IDS_WALL_MSG_IMAGELOADERROR));
+			sMsg.Format(_T("%s\n%s"), sNowPicPath, CResString(IDS_WALL_MSG_IMAGELOADERROR));
 
 			iRes = MessageBox(sMsg, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
 
@@ -305,11 +306,11 @@ bool CWallChangerDlg::SetRandWallPager()
 			//}
 		}
 
-		if ((iRes == IDYES) && PathFileExists(m_sNowPicPath)) {
-			DeletePicFile(m_sNowPicPath, true);
+		if ((iRes == IDYES) && PathFileExists(sNowPicPath)) {
+			DeletePicFile(sNowPicPath, true);
 			RETURN(false);
 		} else if (iRes == IDNO) {
-			CString sBuf = m_sNowPicPath;
+			CString sBuf = sNowPicPath;
 			PathRemoveFileSpec(sBuf.GetBuffer());
 			sBuf.ReleaseBuffer();
 			ShellExecute(m_hWnd, _T("open"), sBuf, NULL, NULL, SW_SHOW);

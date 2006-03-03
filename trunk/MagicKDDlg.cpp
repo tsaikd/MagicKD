@@ -37,37 +37,39 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
-	theConf.Init(&theApp.m_cIni);
+	if (!::pTheConf)
+		::pTheConf = new CMagicKDConf;
+	::pTheConf->Init(&theApp.m_cIni);
 	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
-	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
-	if (!pTheTray)
-		pTheTray = new CKDTray;
-	if (!pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
+	::pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
+	if (!::pTheTray)
+		::pTheTray = new CKDTray;
+	if (!::pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
 		if (IDYES == MessageBox(CResString(IDS_MSG_TRAYREGERROR), NULL, MB_YESNO | MB_ICONQUESTION)) {
 			theApp.SetRestart();
 			PostMessage(WM_QUIT);
 		}
 	}
 
-	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_RESTART, CResString(IDS_TRAY_RESTART));
-	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
-	pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
+	::pTheTray->AppendMenu(MF_STRING, IDS_TRAY_RESTART, CResString(IDS_TRAY_RESTART));
+	::pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
+	::pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
 
-	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
-	SetFuncEnable(eFunc_WallChanger, theConf.m_FuncList_bWallChanger, false);
+	::pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
+	SetFuncEnable(eFunc_WallChanger, ::pTheConf->m_FuncList_bWallChanger, false);
 
-//	pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
-	SetFuncEnable(eFunc_FindDupFile, theConf.m_FuncList_bFindDupFile, false);
+//	::pTheTray->InsertMenu(0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDS_TRAY_WALLCHANGER, CResString(IDS_TRAY_WALLCHANGER));
+	SetFuncEnable(eFunc_FindDupFile, ::pTheConf->m_FuncList_bFindDupFile, false);
 
 	m_cMainConfigDlg.UpdateFuncCheck();
 
-	if (theConf.m_General_bStartMin)
+	if (::pTheConf->m_General_bStartMin)
 		m_bVisiable = false;
 
 	ModifyStyleEx(0, WS_EX_LAYERED);
-	SetTransparency(theConf.m_General_uTransparency);
+	SetTransparency(::pTheConf->m_General_uTransparency);
 
 //////////////////////////////////////////////////
 	if (m_pWallChangerDlg)
@@ -84,19 +86,24 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 void CMagicKDDlg::OnDestroy()
 {
-	if (theConf.m_General_bShowCloseWindow)
-		pTheAppEndDlg->ShowWindow(SW_SHOW);
+	if (::pTheConf->m_General_bShowCloseWindow)
+		::pTheAppEndDlg->ShowWindow(SW_SHOW);
 
-	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
+	::pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
 	SetFuncEnable(eFunc_FindDupFile, false, false);
 
 	CDialog::OnDestroy();
 
-	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Deleting\tMagicKD\tTray Menu"));
+	::pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Deleting\tMagicKD\tTray Menu"));
 	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_CLOSEWINDOW));
 	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_OPENWINDOW));
 	pTheTray->RemoveTrayMenuItem(CResString(IDS_TRAY_RESTART));
+
+	if (::pTheConf) {
+		delete ::pTheConf;
+		::pTheConf = NULL;
+	}
 }
 
 void CMagicKDDlg::DoSize()
@@ -364,13 +371,13 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			// Tray Icon
 			case IDS_TRAY_RESTART:
 				theApp.SetRestart();
-				DestroyWindow();
+				theApp.Quit();
 				break;
 			case IDS_TRAY_OPENWINDOW:
 				ShowWindow(SW_SHOW);
 				break;
 			case IDS_TRAY_CLOSEWINDOW:
-				DestroyWindow();
+				theApp.Quit();
 				break;
 			case IDS_TRAY_WALLCHANGER:
 				SetFuncEnable(eFunc_WallChanger, m_pWallChangerDlg ? false : true);
@@ -386,7 +393,10 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case WM_QUERYENDSESSION:
-			theConf.SaveConf();
+			if (::pTheConf) {
+				delete ::pTheConf;
+				::pTheConf = NULL;
+			}
 			if (::g_pWallConf) {
 				delete ::g_pWallConf;
 				::g_pWallConf = NULL;

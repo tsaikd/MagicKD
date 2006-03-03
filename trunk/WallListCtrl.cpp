@@ -3,7 +3,7 @@
 #include "WallConf.h"
 #include "WallListCtrl.h"
 
-CWallListCtrl::CWallListCtrl() : m_pIni(NULL), m_bInit(false)
+CWallListCtrl::CWallListCtrl() : m_bInit(false)
 {
 }
 
@@ -21,7 +21,7 @@ void CWallListCtrl::SaveIni()
 
 void CWallListCtrl::Init(CIni *pIni)
 {
-	m_pIni = pIni;
+	CKDIni::Init(pIni);
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 	::g_pWallConf->AddSaveConf(this);
 

@@ -40,7 +40,12 @@ void CKDConf::AddSaveConf(CKDIni *pSaveConf)
 
 void CKDConf::RemoveSaveConf(CKDIni *pSaveConf)
 {
+	CKDIni *pKDIni = NULL;
 	POSITION pos = m_listSaveConf.Find(pSaveConf);
-	if (pos)
+	if (pos) {
+		pKDIni = m_listSaveConf.GetAt(pos);
 		m_listSaveConf.RemoveAt(pos);
+		if (pKDIni)
+			pKDIni->SaveIni();
+	}
 }

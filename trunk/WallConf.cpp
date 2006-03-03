@@ -15,7 +15,7 @@ CWallConf::CWallConf()
 
 void CWallConf::Init(CIni *pIni)
 {
-	m_pIni = pIni;
+	CKDConf::Init(pIni);
 
 	m_General_sComboxMsg.Init(pIni, _T("General"), _T("sComboxMsg"), DEFAULT_COMBOX_MSG);
 	m_General_uWaitTime.Init(pIni, _T("General"), _T("uWaitTime"), DEFAULT_WAITTIME);

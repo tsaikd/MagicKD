@@ -1,15 +1,12 @@
 Initial function
 
+config dir
+
 WallChanger:
-詢問使用者刪除查看的資料過時
 資料變動偵測
 取消資料夾時findpic也要取消
 ListCtrl可按CTRL+CVX
 老闆鍵
-
 設假桌布
 
 整合BindWinKey
-
-bug:
-	刪除多個分類列表會當

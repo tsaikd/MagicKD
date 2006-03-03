@@ -49,19 +49,19 @@ BOOL CMainConfigDlg::OnInitDialog()
 	GetDlgItem(IDC_CONF_BTN_RESTART)->SetWindowText(CResString(IDS_CONF_BTN_RESTART));
 
 	GetDlgItem(IDC_CONF_CHECK_STARTMIN)->SetWindowText(CResString(IDS_CONF_CHECK_STARTMIN));
-	if (theConf.m_General_bStartMin)
+	if (::pTheConf->m_General_bStartMin)
 		m_checkStartMin.SetCheck(BST_CHECKED);
 	else
 		m_checkStartMin.SetCheck(BST_UNCHECKED);
 
 	GetDlgItem(IDC_CONF_CHECK_SHOWCLOSEWINDOW)->SetWindowText(CResString(IDS_CONF_CHECK_SHOWCLOSEWINDOW));
-	if (theConf.m_General_bShowCloseWindow)
+	if (::pTheConf->m_General_bShowCloseWindow)
 		m_checkShowCloseWindow.SetCheck(BST_CHECKED);
 	else
 		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
 
 	GetDlgItem(IDC_CONF_CHECK_CHECKUPDATE)->SetWindowText(CResString(IDS_CONF_CHECK_CHECKUPDATE));
-	if (theConf.m_General_bCheckUpdate) {
+	if (::pTheConf->m_General_bCheckUpdate) {
 		m_check_CheckUpdate.SetCheck(BST_CHECKED);
 		StartUpdateTimer();
 	} else {
@@ -71,7 +71,7 @@ BOOL CMainConfigDlg::OnInitDialog()
 
 	GetDlgItem(IDC_CONF_STATIC_TRANSPARENCY)->SetWindowText(CResString(IDS_CONF_STATIC_TRANSPARENCY));
 	m_sliderTransparency.SetRange(50, 255);
-	m_sliderTransparency.SetPos(theConf.m_General_uTransparency);
+	m_sliderTransparency.SetPos(::pTheConf->m_General_uTransparency);
 
 	m_bInit = true;
 	DoSize();
@@ -194,7 +194,7 @@ void CMainConfigDlg::OnBnClickedConfBtnCheckupdate()
 				}
 				m_progress_Update.SetPos(10000);
 				theApp.SetUpdateApp(theApp.GetAppPath(), sNewAppPath);
-				::PostMessage(GetParent()->GetSafeHwnd(), WM_QUIT, 0, 0);
+				theApp.Quit();
 			} else {
 				MessageBox(CResString(IDS_CONF_MSG_UPDATEFAILED), NULL, MB_OK | MB_ICONERROR);
 			}
@@ -208,18 +208,18 @@ void CMainConfigDlg::OnBnClickedConfBtnCheckupdate()
 
 void CMainConfigDlg::OnBnClickedCheckConfStartmin()
 {
-	theConf.m_General_bStartMin = m_checkStartMin.GetCheck()==BST_CHECKED;
+	::pTheConf->m_General_bStartMin = m_checkStartMin.GetCheck()==BST_CHECKED;
 }
 
 void CMainConfigDlg::OnBnClickedConfCheckShowclosewindow()
 {
-	theConf.m_General_bShowCloseWindow = m_checkShowCloseWindow.GetCheck()==BST_CHECKED;
+	::pTheConf->m_General_bShowCloseWindow = m_checkShowCloseWindow.GetCheck()==BST_CHECKED;
 }
 
 void CMainConfigDlg::OnBnClickedConfCheckCheckupdate()
 {
-	theConf.m_General_bCheckUpdate = m_check_CheckUpdate.GetCheck()==BST_CHECKED;
-	if (theConf.m_General_bCheckUpdate)
+	::pTheConf->m_General_bCheckUpdate = m_check_CheckUpdate.GetCheck()==BST_CHECKED;
+	if (::pTheConf->m_General_bCheckUpdate)
 		StartUpdateTimer();
 	else
 		StopUpdateTimer();
@@ -232,7 +232,7 @@ void CMainConfigDlg::OnBnClickedWallchangercheck()
 	if (pParentDlg)
 		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_WallChanger, bEnable);
 
-	theConf.m_FuncList_bWallChanger = bEnable;
+	::pTheConf->m_FuncList_bWallChanger = bEnable;
 }
 
 void CMainConfigDlg::OnBnClickedConfCheckFinddf()
@@ -242,7 +242,7 @@ void CMainConfigDlg::OnBnClickedConfCheckFinddf()
 	if (pParentDlg)
 		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_FindDupFile, bEnable);
 
-	theConf.m_FuncList_bFindDupFile = bEnable;
+	::pTheConf->m_FuncList_bFindDupFile = bEnable;
 }
 
 LRESULT CMainConfigDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -252,8 +252,8 @@ LRESULT CMainConfigDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 		{
 		CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
 		if (pParentDlg) {
-			theConf.m_General_uTransparency = m_sliderTransparency.GetPos();
-			pParentDlg->SetTransparency(theConf.m_General_uTransparency);
+			::pTheConf->m_General_uTransparency = m_sliderTransparency.GetPos();
+			pParentDlg->SetTransparency(::pTheConf->m_General_uTransparency);
 		}
 		}
 		break;

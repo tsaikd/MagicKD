@@ -8,7 +8,7 @@
 #endif
 
 CMagicKDApp theApp;
-CMagicKDConf theConf;
+CMagicKDConf *pTheConf = NULL;
 CKDTray *pTheTray = NULL;
 CMagicKDEndDlg *pTheAppEndDlg = NULL;
 
@@ -51,5 +51,6 @@ BOOL CMagicKDApp::InitInstance()
 
 void CMagicKDApp::Quit()
 {
-	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd()));
+	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd()))
+		::PostMessage(m_pMainWnd->GetSafeHwnd(), WM_QUIT, 0, 0);
 }
