@@ -36,13 +36,8 @@ CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
 
 CWallChangerDlg::~CWallChangerDlg()
 {
-	if (::g_pWallConf) {
-		delete ::g_pWallConf;
-		::g_pWallConf = NULL;
-	}
-
-	if (::g_pWallChangerDlg)
-		::g_pWallChangerDlg = NULL;
+	DEL(::g_pWallConf);
+	::g_pWallChangerDlg = NULL;
 }
 
 BOOL CWallChangerDlg::OnInitDialog()
