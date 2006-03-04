@@ -2,9 +2,9 @@
 #include "afxmt.h"
 #include "Ini.h"
 #include "KDListItem.h"
+#include "DirectoryChanges.h"
 
-class CWallDirListItem
-	:	public CKDListItem
+class CWallDirListItem : public CKDListItem, public CDirectoryChangeHandler
 {
 public:
 	CWallDirListItem();
@@ -44,4 +44,9 @@ private:
 	UINT m_uDirState;
 	CMutex m_mux;
 	CStringArray m_saPicPath;
+
+protected:
+	void On_FileAdded(const CString &strFileName);
+	void On_FileNameChanged(const CString &strOldFileName, const CString &strNewFileName);
+	void On_FileRemoved(const CString &strFileName);
 };

@@ -20,6 +20,7 @@ public:
 
 	bool IsEmpty();
 	ULONG GetCount();
+	void ModifyCount(int iAddCount);
 
 private:
 	CMutex m_mux;

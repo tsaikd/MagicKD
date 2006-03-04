@@ -8,6 +8,7 @@
 #include "KDEdit.h"
 #include "KDButton.h"
 #include "KDComboBox.h"
+#include "DirectoryChanges.h"
 #include "WallClassListCtrl.h"
 #include "WallDirListCtrl.h"
 
@@ -36,6 +37,8 @@ public:
 	bool	SetRandWallPager();
 	LPCTSTR	GetRandPicPath();
 	bool	DeletePicFile(LPCTSTR sFilePath, bool bAskForSure = true);
+	bool	AddWatchDir(const CString &sDirPath, CDirectoryChangeHandler *pHandle);
+	bool	RemoveWatchDir(const CString &sDirPath);
 
 	UINT	StartTimer();
 	UINT	StopTimer();
@@ -45,6 +48,7 @@ public:
 	CIni	m_cIni;
 	CMutex	m_muxRandPic;
 	CMutex	m_muxSetRandWallPager;
+	CDirectoryChangeWatcher m_oDirChangeWatcher;
 
 	CStatic m_staticTime;
 	CStatic m_staticNowPicPath;

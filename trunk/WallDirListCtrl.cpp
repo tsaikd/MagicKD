@@ -3,6 +3,7 @@
 #include "Language.h"
 #include "WallConf.h"
 #include "WallDirListItem.h"
+#include "WallChangerDlg.h"
 
 #include "WallDirListCtrl.h"
 
@@ -103,6 +104,7 @@ bool CWallDirListCtrl::AddItem(LPCTSTR sDirPath)
 		return false;
 	}
 	SetAllItemEnable(IsAllItemEnable());
+	ASSERT(::g_pWallChangerDlg->AddWatchDir(sDirPath, pItem));
 	return true;
 }
 
@@ -212,8 +214,10 @@ void CWallDirListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 
 	CWallDirListItem *pItem = (CWallDirListItem *)pNMLV->lParam;
-	if (pItem)
+	if (pItem) {
+		::g_pWallChangerDlg->RemoveWatchDir(pItem->GetItemDirPath());
 		delete pItem;
+	}
 
 	*pResult = 0;
 }

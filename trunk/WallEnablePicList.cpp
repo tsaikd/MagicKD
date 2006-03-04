@@ -215,6 +215,16 @@ ULONG CWallEnablePicList::GetCount()
 	return uRes;
 }
 
+void CWallEnablePicList::ModifyCount(int iAddCount)
+{
+	m_mux.Lock();
+
+	m_uCount += iAddCount;
+	UpdateWallChangerDlg();
+
+	m_mux.Unlock();
+}
+
 LPCTSTR CWallEnablePicList::_GetNextPic(UINT uJump/* = 1*/)
 {
 	CString sRes;

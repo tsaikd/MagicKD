@@ -249,6 +249,14 @@
 				Name="FuncBase"
 				>
 				<File
+					RelativePath=".\DelayedDirectoryChangeHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DirectoryChanges.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Ini.cpp"
 					>
 				</File>
@@ -348,6 +356,10 @@
 					RelativePath=".\WallOthers.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\WallThreadFindPic.cpp"
+					>
+				</File>
 				<Filter
 					Name="FuncBase"
 					>
@@ -357,14 +369,6 @@
 					</File>
 					<File
 						RelativePath=".\WallThread.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="WallThread"
-					>
-					<File
-						RelativePath=".\WallThreadFindPic.cpp"
 						>
 					</File>
 				</Filter>
@@ -446,6 +450,14 @@
 			<Filter
 				Name="FuncBase"
 				>
+				<File
+					RelativePath=".\DelayedDirectoryChangeHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DirectoryChanges.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Ini.h"
 					>
@@ -546,6 +558,10 @@
 					RelativePath=".\WallOthers.h"
 					>
 				</File>
+				<File
+					RelativePath=".\WallThreadFindPic.h"
+					>
+				</File>
 				<Filter
 					Name="FuncBase"
 					>
@@ -555,14 +571,6 @@
 					</File>
 					<File
 						RelativePath=".\WallThread.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="WallThread"
-					>
-					<File
-						RelativePath=".\WallThreadFindPic.h"
 						>
 					</File>
 				</Filter>

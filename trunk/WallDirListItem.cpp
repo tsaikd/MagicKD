@@ -279,4 +279,46 @@ void CWallDirListItem::SetOnFindPic(bool bOnFindPic/* = true*/)
 	}
 }
 
+void CWallDirListItem::On_FileAdded(const CString &strFileName)
+{
+	if (!::g_pWallThreadFindPic->IsMatchSupport(strFileName))
+		return;
+
+	m_saPicPath.Add(strFileName);
+	SetItemFileFindNum(m_saPicPath.GetCount());
+	if (IsItemEnable())
+		::g_pWallEnablePicList->ModifyCount(1);
+}
+
+void CWallDirListItem::On_FileNameChanged(const CString &strOldFileName, const CString &strNewFileName)
+{
+	if (!::g_pWallThreadFindPic->IsMatchSupport(strNewFileName))
+		return;
+
+	int i, iCount = m_saPicPath.GetCount();
+	for (i=0 ; i<iCount ; i++) {
+		if (m_saPicPath[i] == strOldFileName) {
+			m_saPicPath[i] = strNewFileName;
+			return;
+		}
+	}
+}
+
+void CWallDirListItem::On_FileRemoved(const CString &strFileName)
+{
+	if (!::g_pWallThreadFindPic->IsMatchSupport(strFileName))
+		return;
+
+	int i, iCount = m_saPicPath.GetCount();
+	for (i=0 ; i<iCount ; i++) {
+		if (m_saPicPath[i] == strFileName) {
+			m_saPicPath.RemoveAt(i);
+			SetItemFileFindNum(m_saPicPath.GetCount());
+			if (IsItemEnable())
+				::g_pWallEnablePicList->ModifyCount(-1);
+			return;
+		}
+	}
+}
+
 #undef DIRSTATE_FIXEDDRIVE

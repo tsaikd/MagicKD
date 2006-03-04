@@ -14,6 +14,8 @@ public:
 	void AddItem(CWallDirListItem *pDirItem);
 	void TestOfflineDirItem();
 
+	bool IsMatchSupport(LPCTSTR sPat);
+
 private:
 	CMutex m_muxThread;
 	HANDLE m_hHaveDirItem;
@@ -23,7 +25,6 @@ private:
 	void _ThreadProcStage();
 	int FindPicPath();
 	CStringList *__pFindPicPathDynamic(LPCTSTR sPath, bool bRecursive = false);
-	bool __bMatchSupport(LPCTSTR sPat);
 };
 
 extern CWallThreadFindPic *g_pWallThreadFindPic;

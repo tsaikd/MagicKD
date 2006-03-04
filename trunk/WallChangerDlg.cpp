@@ -111,6 +111,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 void CWallChangerDlg::OnDestroy()
 {
 	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tDialog"));
+	m_oDirChangeWatcher.UnwatchAllDirectories();
 
 	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Stoping\tWallChanger\tTimer"));
 	StopTimer();
@@ -343,8 +344,6 @@ LPCTSTR CWallChangerDlg::GetRandPicPath()
 	return sRandPicPath;
 }
 
-// Delete Picture File and Remove from Enable List if posiable
-// If Delete success, then return true
 bool CWallChangerDlg::DeletePicFile(LPCTSTR sFilePath, bool bAskForSure/* = true*/)
 {
 	if (!PathFileExists(sFilePath))
@@ -356,9 +355,18 @@ bool CWallChangerDlg::DeletePicFile(LPCTSTR sFilePath, bool bAskForSure/* = true
 	else
 		bRes = (DeleteFile(sFilePath) == TRUE);
 
-	if (!PathFileExists(sFilePath))
-		::g_pWallEnablePicList->RemoveFind(sFilePath);
 	return bRes;
+}
+
+bool CWallChangerDlg::AddWatchDir(const CString &sDirPath, CDirectoryChangeHandler *pHandle)
+{
+	return m_oDirChangeWatcher.WatchDirectory(sDirPath, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME,
+		pHandle, TRUE) == ERROR_SUCCESS;
+}
+
+bool CWallChangerDlg::RemoveWatchDir(const CString &sDirPath)
+{
+	return m_oDirChangeWatcher.UnwatchDirectory(sDirPath) == TRUE;
 }
 
 UINT CWallChangerDlg::StartTimer()
@@ -509,9 +517,10 @@ void CWallChangerDlg::OnBnClickedButtonDelpic()
 	CString sFile = m_sNowPicPath;
 	DeletePicFile(sFile, true);
 
-	if (!PathFileExists(sFile) && (sFile==m_sNowPicPath)) {
+	if (!PathFileExists(sFile)) {
 		::g_pWallEnablePicList->RemoveFind(sFile);
-		OnBnClickedButtonRandpic();
+		if (sFile==m_sNowPicPath)
+			OnBnClickedButtonRandpic();
 	}
 }
 
@@ -526,9 +535,10 @@ void CWallChangerDlg::OnBnClickedWallBtnMovepic()
 	if (IDOK == fileDlg.DoModal())
 		MoveFileDlg(sFile, fileDlg.GetPathName(), GetSafeHwnd());
 
-	if (!PathFileExists(sFile) && (sFile==m_sNowPicPath)) {
+	if (!PathFileExists(sFile)) {
 		::g_pWallEnablePicList->RemoveFind(sFile);
-		OnBnClickedButtonRandpic();
+		if (sFile==m_sNowPicPath)
+			OnBnClickedButtonRandpic();
 	}
 }
 
@@ -664,55 +674,55 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 		break;
 	case WM_COMMAND:
 		{
-			UINT nID = LOWORD(wParam);
-			switch (nID) {
-			// Tray Menu
-			case IDS_TRAY_RANDPIC:
-				OnBnClickedButtonRandpic();
+		UINT nID = LOWORD(wParam);
+		switch (nID) {
+		// Tray Menu
+		case IDS_TRAY_RANDPIC:
+			OnBnClickedButtonRandpic();
+			break;
+		case IDS_TRAY_DELNOWPIC:
+			OnBnClickedButtonDelpic();
+			break;
+		case IDS_TRAY_MOVEPIC:
+			OnBnClickedWallBtnMovepic();
+			break;
+		// ClassList
+		case IDS_WALL_MENU_ADDENABLECLASSLIST:
+			m_listClass.SetSelectItemCheckState(true);
+			m_listClass.SetIniModify();
+			break;
+		case IDS_WALL_MENU_DELCLASSLIST:
+			m_listClass.DeleteSelectItem();
+			m_listClass.SetIniModify();
+			break;
+		case IDS_WALL_MENU_UPDATEALLDIRFILEFIND:
+			m_listClass.UpdateSelectItemFileFindNum();
+			break;
+		// DirList
+		case IDS_WALL_MENU_ADDDIRPATH:
+			if (m_listClass.GetSelectedCount() != 1) {
+				MessageBox(CResString(IDS_WALL_CANONLYCHOICEONECLASS), NULL, MB_OK|MB_ICONERROR);
 				break;
-			case IDS_TRAY_DELNOWPIC:
-				OnBnClickedButtonDelpic();
-				break;
-			case IDS_TRAY_MOVEPIC:
-				OnBnClickedWallBtnMovepic();
-				break;
-			// ClassList
-			case IDS_WALL_MENU_ADDENABLECLASSLIST:
-				m_listClass.SetSelectItemCheckState(true);
-				m_listClass.SetIniModify();
-				break;
-			case IDS_WALL_MENU_DELCLASSLIST:
-				m_listClass.DeleteSelectItem();
-				m_listClass.SetIniModify();
-				break;
-			case IDS_WALL_MENU_UPDATEALLDIRFILEFIND:
-				m_listClass.UpdateSelectItemFileFindNum();
-				break;
-			// DirList
-			case IDS_WALL_MENU_ADDDIRPATH:
-				if (m_listClass.GetSelectedCount() != 1) {
-					MessageBox(CResString(IDS_WALL_CANONLYCHOICEONECLASS), NULL, MB_OK|MB_ICONERROR);
-					break;
-				} else {
-					CString sDirPath;
-					if (ChooseFolder(sDirPath, m_hWnd)) {
-						m_pCurListDirPath->AddItem(sDirPath);
-						m_pCurListDirPath->SetIniModify();
-						m_listClass.SetIniModify();
-					}
-					Invalidate();
+			} else {
+				CString sDirPath;
+				if (ChooseFolder(sDirPath, m_hWnd)) {
+					m_pCurListDirPath->AddItem(sDirPath);
+					m_pCurListDirPath->SetIniModify();
+					m_listClass.SetIniModify();
 				}
-				break;
-			case IDS_WALL_MENU_UPDATEDIRFILEFIND:
-				m_pCurListDirPath->UpdateSelectItemFileFindNum();
-				m_pCurListDirPath->SetIniModify();
-				break;
-			case IDS_WALL_MENU_DELDIRPATH:
-				m_pCurListDirPath->DeleteSelectItem();
-				m_pCurListDirPath->SetIniModify();
-				m_listClass.SetIniModify();
-				break;
+				Invalidate();
 			}
+			break;
+		case IDS_WALL_MENU_UPDATEDIRFILEFIND:
+			m_pCurListDirPath->UpdateSelectItemFileFindNum();
+			m_pCurListDirPath->SetIniModify();
+			break;
+		case IDS_WALL_MENU_DELDIRPATH:
+			m_pCurListDirPath->DeleteSelectItem();
+			m_pCurListDirPath->SetIniModify();
+			m_listClass.SetIniModify();
+			break;
+		}
 		}
 		break;
 	}

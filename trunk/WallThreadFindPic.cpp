@@ -68,6 +68,20 @@ void CWallThreadFindPic::TestOfflineDirItem()
 	}
 }
 
+bool CWallThreadFindPic::IsMatchSupport(LPCTSTR sPat) {
+	if (PathMatchSpec(sPat, _T("*.jpg")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.jpeg")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.bmp")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.gif")))
+		return true;
+	else if (PathMatchSpec(sPat, _T("*.png")))
+		return true;
+	return false;
+}
+
 CStringList *CWallThreadFindPic::__pFindPicPathDynamic(LPCTSTR sPath, bool bRecursive/* = false*/) {
 	CStringList *pslPicPath = new CStringList;
 	CFileFind finder;
@@ -86,24 +100,10 @@ CStringList *CWallThreadFindPic::__pFindPicPathDynamic(LPCTSTR sPath, bool bRecu
 				pslPicPath->AddTail(pslTmp);
 				delete pslTmp;
 			}
-		} else if (__bMatchSupport(finder.GetFileName()))
+		} else if (IsMatchSupport(finder.GetFileName()))
 			pslPicPath->AddTail(finder.GetFilePath());
 	}
 	return pslPicPath;
-}
-
-bool CWallThreadFindPic::__bMatchSupport(LPCTSTR sPat) {
-	if (PathMatchSpec(sPat, _T("*.jpg")))
-		return true;
-	else if (PathMatchSpec(sPat, _T("*.jpeg")))
-		return true;
-	else if (PathMatchSpec(sPat, _T("*.bmp")))
-		return true;
-	else if (PathMatchSpec(sPat, _T("*.gif")))
-		return true;
-	else if (PathMatchSpec(sPat, _T("*.png")))
-		return true;
-	return false;
 }
 
 void CWallThreadFindPic::_ThreadProcStage()
