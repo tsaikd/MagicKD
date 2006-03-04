@@ -5,11 +5,15 @@
 #define UPDATE_QUERY_SIZE 1024
 
 CKDApp::CKDApp()
-	:	m_bRestart(false), m_lpAppName(NULL), m_lpAppPath(NULL), m_lpAppDir(NULL),
+	:	m_bRestart(false),
+		m_lpAppConfDir(NULL), m_lpAppLangDir(NULL),
+#ifdef KDAPP_ENABLE_GETAPPVERSION
+		m_lpAppFileVer(NULL), m_lpAppProductVer(NULL),
+#endif //KDAPP_ENABLE_GETAPPVERSION
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
 		m_bUpdateApp(false), m_lpTmpBatchPath(NULL),
-#endif
-		m_lpAppConfDir(NULL), m_lpAppLangDir(NULL), m_lpAppFileVer(NULL), m_lpAppProductVer(NULL)
+#endif //KDAPP_ENABLE_UPDATEAPPONLINE
+		m_lpAppName(NULL), m_lpAppPath(NULL), m_lpAppDir(NULL)
 {
 	size_t u64Len;
 	TCHAR sBuffer[MAX_PATH], *ptr;
@@ -33,13 +37,15 @@ CKDApp::CKDApp()
 		m_lpAppDir = new TCHAR[u64Len];
 		_tcscpy((LPTSTR)m_lpAppDir, sBuffer);
 
-		m_lpAppConfDir = new TCHAR[u64Len];
-		_stprintf((LPTSTR)m_lpAppConfDir, _T("%s"), m_lpAppDir);
-//		m_lpAppConfDir = new TCHAR[u64Len + _tcslen(_T("conf\\"))];
-//		_stprintf((LPTSTR)m_lpAppConfDir, _T("%sconf\\"), m_lpAppDir);
+		m_lpAppConfDir = new TCHAR[u64Len + _tcslen(_T("conf\\"))];
+		_stprintf((LPTSTR)m_lpAppConfDir, _T("%sconf\\"), m_lpAppDir);
+		if (!PathFileExists(m_lpAppConfDir))
+			::CreateDirectory(m_lpAppConfDir, NULL);
 
 		m_lpAppLangDir = new TCHAR[u64Len + _tcslen(_T("lang\\"))];
 		_stprintf((LPTSTR)m_lpAppLangDir, _T("%slang\\"), m_lpAppDir);
+		if (!PathFileExists(m_lpAppLangDir))
+			::CreateDirectory(m_lpAppLangDir, NULL);
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
 		m_lpTmpBatchPath = new TCHAR[u64Len + _tcslen(_T("tmp.cmd"))];
@@ -49,6 +55,7 @@ CKDApp::CKDApp()
 		MessageBox(NULL, _T("Can not locate the execution file!"), _T("ERROR"), MB_OK | MB_ICONERROR);
 	}
 
+#ifdef KDAPP_ENABLE_GETAPPVERSION
 	if (m_lpAppPath) {
 		u64Len = GetFileVersionInfoSize(m_lpAppPath, NULL);
 		if (u64Len) {
@@ -74,6 +81,7 @@ CKDApp::CKDApp()
 			delete [] pData;
 		}
 	}
+#endif //KDAPP_ENABLE_GETAPPVERSION
 }
 
 CKDApp::~CKDApp()
@@ -162,10 +170,12 @@ CKDApp::~CKDApp()
 		delete [] m_lpAppConfDir;
 	if (m_lpAppLangDir)
 		delete [] m_lpAppLangDir;
+#ifdef KDAPP_ENABLE_GETAPPVERSION
 	if (m_lpAppFileVer)
 		delete [] m_lpAppFileVer;
 	if (m_lpAppProductVer)
 		delete [] m_lpAppProductVer;
+#endif //KDAPP_ENABLE_GETAPPVERSION
 }
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE

@@ -5,7 +5,7 @@
 #include "MagicKDTabCtrl.h"
 #include "KDTray.h"
 
-#include "MainConfigDlg.h"
+#include "MagicKDConfDlg.h"
 #include "FindDupFileDlg.h"
 
 #include "WallChangerDlg.h"
@@ -34,7 +34,7 @@ public:
 	BOOL ShowWindow(int nCmdShow);
 
 	CMagicKDTabCtrl m_cMainTab;
-	CMainConfigDlg m_cMainConfigDlg;
+	CMagicKDConfDlg m_cMainConfigDlg;
 	CWallChangerDlg *m_pWallChangerDlg;
 	CFindDupFileDlg *m_pFindDupFileDlg;
 private:

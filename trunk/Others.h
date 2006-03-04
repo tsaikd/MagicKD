@@ -1,5 +1,7 @@
 #pragma once
 
+#define DEL(x)					if ((x)) { delete (x); (x) = NULL; }
+
 #define INRANGE(v, m, M)		((v) >= (m) && (v) <= (M))
 #define MAKE_INRANGE(v, m, M)	((v) = min(max((v), (m)), (M)))
 

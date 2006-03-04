@@ -102,7 +102,7 @@ public:
 	// Parse the string retrieved from the ini file and split it into a set of sub strings.
 	DWORD GetArray(LPCTSTR lpSection, LPCTSTR lpKey, LPTSTR lpBuffer, DWORD dwBufSize, LPCTSTR lpDelimiter = NULL, BOOL bTrimString = TRUE) const;
 #ifdef __AFXWIN_H__
-	void GetArray(LPCTSTR lpSection, LPCTSTR lpKey, CStringArray* pArray, LPCTSTR lpDelimiter = NULL, BOOL bTrimString = TRUE) const;
+	void GetArray(LPCTSTR lpSection, LPCTSTR lpKey, CStringArray* pArray, LPCTSTR lpDelimiter = NULL) const;
 	BOOL WriteArray(LPCTSTR lpSection, LPCTSTR lpKey, const CStringArray* pArray, int nWriteCount = -1, LPCTSTR lpDelimiter = NULL) const;
 #endif
 
@@ -111,7 +111,7 @@ public:
 	//------------------------------------------------------------	
 
 #ifdef __AFXWIN_H__
-	void GetUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray* pArray, LPCTSTR lpDelimiter = NULL, BOOL bTrimString = TRUE) const;
+	void GetUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray* pArray, LPCTSTR lpDelimiter = NULL) const;
 	BOOL WriteUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, const CUIntArray* pArray, int nWriteCount = -1, LPCTSTR lpDelimiter = NULL) const;
 #endif
 	
@@ -198,7 +198,7 @@ public:
 	void TransferRect(LPCTSTR lpSection, LPCTSTR lpKey, RECT &rcValue, const RECT &rcDefault, bool bSaveToFile);
 #ifdef __AFXWIN_H__
 	void TransferString(LPCTSTR lpSection, LPCTSTR lpKey, CString &sValue, LPCTSTR sDefault, bool bSaveToFile);
-	void TransferUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray &aValue, bool bSaveToFile, int nWriteCount = -1, LPCTSTR lpDelimiter = NULL, BOOL bTrimString = TRUE);
+	void TransferUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray &aValue, bool bSaveToFile, int nWriteCount = -1, LPCTSTR lpDelimiter = NULL);
 #endif
 protected:
 

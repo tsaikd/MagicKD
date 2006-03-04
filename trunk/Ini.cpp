@@ -281,7 +281,7 @@ DWORD CIni::GetArray(LPCTSTR lpSection, LPCTSTR lpKey, LPTSTR lpBuffer, DWORD dw
 }
 
 #ifdef __AFXWIN_H__
-void CIni::GetArray(LPCTSTR lpSection, LPCTSTR lpKey, CStringArray *pArray, LPCTSTR lpDelimiter, BOOL bTrimString) const
+void CIni::GetArray(LPCTSTR lpSection, LPCTSTR lpKey, CStringArray *pArray, LPCTSTR lpDelimiter) const
 {
 	if (pArray != NULL)
 		pArray->RemoveAll();
@@ -324,7 +324,7 @@ BOOL CIni::WriteArray(LPCTSTR lpSection, LPCTSTR lpKey, const CStringArray *pArr
 // Ini File UINT Array Access
 /////////////////////////////////////////////////////////////////////////////////
 #ifdef __AFXWIN_H__
-void CIni::GetUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray* pArray, LPCTSTR lpDelimiter/* = NULL*/, BOOL bTrimString/* = TRUE*/) const
+void CIni::GetUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray* pArray, LPCTSTR lpDelimiter/* = NULL*/) const
 {
 	if (pArray == NULL)
 		return;
@@ -1261,12 +1261,12 @@ void CIni::TransferString(LPCTSTR lpSection, LPCTSTR lpKey, CString &sValue, LPC
 }
 
 void CIni::TransferUIntArray(LPCTSTR lpSection, LPCTSTR lpKey, CUIntArray &aValue, bool bSaveToFile,
-	int nWriteCount/* = -1*/, LPCTSTR lpDelimiter/* = NULL*/, BOOL bTrimString/* = TRUE*/)
+	int nWriteCount/* = -1*/, LPCTSTR lpDelimiter/* = NULL*/)
 {
 	if (bSaveToFile)
 		WriteUIntArray(lpSection, lpKey, &aValue, nWriteCount, lpDelimiter);
 	else
-		GetUIntArray(lpSection, lpKey, &aValue, lpDelimiter, bTrimString);
+		GetUIntArray(lpSection, lpKey, &aValue, lpDelimiter);
 }
 #endif
 

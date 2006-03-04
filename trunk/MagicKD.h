@@ -13,7 +13,6 @@
 
 class CMagicKDApp : public CWinApp, public CKDSingleApp, public CKDApp
 {
-	DECLARE_MESSAGE_MAP()
 public:
 	CMagicKDApp();
 

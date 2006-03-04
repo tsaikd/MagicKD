@@ -1,5 +1,6 @@
 	Fix bug: When User Choice Option in WallChanger Load Image Failed, the data may outdate
 	Fix bug: Main config won't save on shutdown
+	Change Config Directory Position from .\ to .\conf\
 
 Version: 1.0.1.4	(2006-03-02)
 	Add class CKDApp for inherit

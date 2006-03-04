@@ -1,7 +1,5 @@
 Initial function
 
-config dir
-
 WallChanger:
 資料變動偵測
 取消資料夾時findpic也要取消

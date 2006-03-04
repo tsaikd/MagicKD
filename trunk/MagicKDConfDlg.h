@@ -6,14 +6,14 @@
 #include "KDButton.h"
 #include "KDGetHttpFile.h"
 
-class CMainConfigDlg : public CDialog
+class CMagicKDConfDlg : public CDialog
 {
-	DECLARE_DYNAMIC(CMainConfigDlg)
+	DECLARE_DYNAMIC(CMagicKDConfDlg)
 	DECLARE_MESSAGE_MAP()
 public:
 	enum { IDD = IDD_MAGICKD_CONFIG };
-	CMainConfigDlg(CWnd* pParent = NULL);   // 標準建構函式
-	virtual ~CMainConfigDlg();
+	CMagicKDConfDlg(CWnd* pParent = NULL);   // 標準建構函式
+	virtual ~CMagicKDConfDlg();
 
 	void DoSize();
 

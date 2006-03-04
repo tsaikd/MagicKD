@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="CxImage\CxImage\"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;JAS_WIN_MSVC_BUILD"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;JAS_WIN_MSVC_BUILD;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -54,6 +54,7 @@
 				WarningLevel="4"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4996;4706"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -209,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKDConfDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MagicKDDlg.cpp"
 				>
 			</File>
@@ -218,10 +223,6 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDTabCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MainConfigDlg.cpp"
 				>
 			</File>
 			<File
@@ -415,6 +416,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKDConfDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MagicKDDlg.h"
 				>
 			</File>
@@ -424,10 +429,6 @@
 			</File>
 			<File
 				RelativePath=".\MagicKDTabCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MainConfigDlg.h"
 				>
 			</File>
 			<File

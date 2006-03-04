@@ -42,6 +42,7 @@ void CFindDFTreeCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 
 void CFindDFTreeCtrl::OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	ASSERT(::IsWindow(pNMHDR->hwndFrom));
 	OnContextMenu(0, 0);
 
 	*pResult = 0;

@@ -22,9 +22,9 @@ CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 CMagicKDDlg::~CMagicKDDlg()
 {
 	DestroyIcon(m_hIcon);
-	if (pTheTray) {
-		delete pTheTray;
-		pTheTray = NULL;
+	if (::pTheTray) {
+		delete ::pTheTray;
+		::pTheTray = NULL;
 	}
 }
 
@@ -69,7 +69,7 @@ BOOL CMagicKDDlg::OnInitDialog()
 		m_bVisiable = false;
 
 	ModifyStyleEx(0, WS_EX_LAYERED);
-	SetTransparency(::pTheConf->m_General_uTransparency);
+	SetTransparency((BYTE)::pTheConf->m_General_uTransparency);
 
 //////////////////////////////////////////////////
 	if (m_pWallChangerDlg)
@@ -312,6 +312,7 @@ void CMagicKDDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 
 void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	ASSERT(::IsWindow(pNMHDR->hwndFrom));
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg)
 		pCurDlg->ShowWindow(SW_HIDE);
@@ -320,6 +321,7 @@ void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	ASSERT(::IsWindow(pNMHDR->hwndFrom));
 	DoSize();
 
 	*pResult = 0;

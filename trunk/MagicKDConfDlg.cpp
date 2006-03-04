@@ -5,23 +5,23 @@
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 
-#include "MainConfigDlg.h"
+#include "MagicKDConfDlg.h"
 
 enum {
 	KDT_UPDATE		= 1
 };
 
-IMPLEMENT_DYNAMIC(CMainConfigDlg, CDialog)
-CMainConfigDlg::CMainConfigDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CMainConfigDlg::IDD, pParent), m_bInit(false), m_uUpdateTimer(0)
+IMPLEMENT_DYNAMIC(CMagicKDConfDlg, CDialog)
+CMagicKDConfDlg::CMagicKDConfDlg(CWnd* pParent /*=NULL*/)
+	:	CDialog(CMagicKDConfDlg::IDD, pParent), m_bInit(false), m_uUpdateTimer(0)
 {
 }
 
-CMainConfigDlg::~CMainConfigDlg()
+CMagicKDConfDlg::~CMagicKDConfDlg()
 {
 }
 
-void CMainConfigDlg::DoSize()
+void CMagicKDConfDlg::DoSize()
 {
 	if (!m_bInit)
 		return;
@@ -40,7 +40,7 @@ void CMainConfigDlg::DoSize()
 	Invalidate();
 }
 
-BOOL CMainConfigDlg::OnInitDialog()
+BOOL CMagicKDConfDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -80,7 +80,7 @@ BOOL CMainConfigDlg::OnInitDialog()
 	// EXCEPTION: OCX 屬性頁應傳回 FALSE
 }
 
-void CMainConfigDlg::UpdateFuncCheck()
+void CMagicKDConfDlg::UpdateFuncCheck()
 {
 	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
 	if (pParentDlg) {
@@ -94,7 +94,7 @@ void CMainConfigDlg::UpdateFuncCheck()
 	}
 }
 
-bool CMainConfigDlg::IsAppNeedUpdate()
+bool CMagicKDConfDlg::IsAppNeedUpdate()
 {
 	m_sLastVer = theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/"), _T("</ul>"), -19, 7);
 	CString sNowVer(theApp.GetAppProductVer());
@@ -107,7 +107,7 @@ bool CMainConfigDlg::IsAppNeedUpdate()
 	}
 }
 
-UINT CMainConfigDlg::StartUpdateTimer()
+UINT CMagicKDConfDlg::StartUpdateTimer()
 {
 	if (m_uUpdateTimer)
 		return 0;
@@ -118,7 +118,7 @@ UINT CMainConfigDlg::StartUpdateTimer()
 	return m_uUpdateTimer;
 }
 
-UINT CMainConfigDlg::StopUpdateTimer()
+UINT CMagicKDConfDlg::StopUpdateTimer()
 {
 	if (!m_uUpdateTimer)
 		return 0;
@@ -129,19 +129,19 @@ UINT CMainConfigDlg::StopUpdateTimer()
 	return uRes;
 }
 
-BEGIN_MESSAGE_MAP(CMainConfigDlg, CDialog)
+BEGIN_MESSAGE_MAP(CMagicKDConfDlg, CDialog)
 	ON_WM_SIZE()
+	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CONF_CHECK_STARTMIN		, OnBnClickedCheckConfStartmin)
 	ON_BN_CLICKED(IDC_CONF_CHECK_SHOWCLOSEWINDOW, OnBnClickedConfCheckShowclosewindow)
 	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER	, OnBnClickedWallchangercheck)
 	ON_BN_CLICKED(IDC_CONF_BTN_RESTART			, OnBnClickedConfBtnRestart)
 	ON_BN_CLICKED(IDC_CONF_CHECK_FINDDF			, OnBnClickedConfCheckFinddf)
 	ON_BN_CLICKED(IDC_CONF_BTN_CHECKUPDATE		, OnBnClickedConfBtnCheckupdate)
-	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CONF_CHECK_CHECKUPDATE, OnBnClickedConfCheckCheckupdate)
 END_MESSAGE_MAP()
 
-void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
+void CMagicKDConfDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CONF_CHECK_STARTMIN		, m_checkStartMin);
@@ -151,14 +151,14 @@ void CMainConfigDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CONF_CHECK_CHECKUPDATE, m_check_CheckUpdate);
 }
 
-void CMainConfigDlg::OnSize(UINT nType, int cx, int cy)
+void CMagicKDConfDlg::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 
 	DoSize();
 }
 
-void CMainConfigDlg::OnTimer(UINT nIDEvent)
+void CMagicKDConfDlg::OnTimer(UINT nIDEvent)
 {
 	switch (nIDEvent) {
 	case KDT_UPDATE:
@@ -170,12 +170,12 @@ void CMainConfigDlg::OnTimer(UINT nIDEvent)
 	CDialog::OnTimer(nIDEvent);
 }
 
-void CMainConfigDlg::OnBnClickedConfBtnRestart()
+void CMagicKDConfDlg::OnBnClickedConfBtnRestart()
 {
 	::PostMessage(GetParent()->GetSafeHwnd(), WM_COMMAND, IDS_TRAY_RESTART, 0);
 }
 
-void CMainConfigDlg::OnBnClickedConfBtnCheckupdate()
+void CMagicKDConfDlg::OnBnClickedConfBtnCheckupdate()
 {
 	if (IsAppNeedUpdate()) {
 		CString sMsg;
@@ -206,17 +206,17 @@ void CMainConfigDlg::OnBnClickedConfBtnCheckupdate()
 	}
 }
 
-void CMainConfigDlg::OnBnClickedCheckConfStartmin()
+void CMagicKDConfDlg::OnBnClickedCheckConfStartmin()
 {
 	::pTheConf->m_General_bStartMin = m_checkStartMin.GetCheck()==BST_CHECKED;
 }
 
-void CMainConfigDlg::OnBnClickedConfCheckShowclosewindow()
+void CMagicKDConfDlg::OnBnClickedConfCheckShowclosewindow()
 {
 	::pTheConf->m_General_bShowCloseWindow = m_checkShowCloseWindow.GetCheck()==BST_CHECKED;
 }
 
-void CMainConfigDlg::OnBnClickedConfCheckCheckupdate()
+void CMagicKDConfDlg::OnBnClickedConfCheckCheckupdate()
 {
 	::pTheConf->m_General_bCheckUpdate = m_check_CheckUpdate.GetCheck()==BST_CHECKED;
 	if (::pTheConf->m_General_bCheckUpdate)
@@ -225,7 +225,7 @@ void CMainConfigDlg::OnBnClickedConfCheckCheckupdate()
 		StopUpdateTimer();
 }
 
-void CMainConfigDlg::OnBnClickedWallchangercheck()
+void CMagicKDConfDlg::OnBnClickedWallchangercheck()
 {
 	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_WALLCHANGER))->GetCheck()==BST_CHECKED;
 	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
@@ -235,7 +235,7 @@ void CMainConfigDlg::OnBnClickedWallchangercheck()
 	::pTheConf->m_FuncList_bWallChanger = bEnable;
 }
 
-void CMainConfigDlg::OnBnClickedConfCheckFinddf()
+void CMagicKDConfDlg::OnBnClickedConfCheckFinddf()
 {
 	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_FINDDF))->GetCheck()==BST_CHECKED;
 	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
@@ -245,7 +245,7 @@ void CMainConfigDlg::OnBnClickedConfCheckFinddf()
 	::pTheConf->m_FuncList_bFindDupFile = bEnable;
 }
 
-LRESULT CMainConfigDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CMagicKDConfDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
 	case WM_HSCROLL:
@@ -253,7 +253,7 @@ LRESULT CMainConfigDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam
 		CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
 		if (pParentDlg) {
 			::pTheConf->m_General_uTransparency = m_sliderTransparency.GetPos();
-			pParentDlg->SetTransparency(::pTheConf->m_General_uTransparency);
+			pParentDlg->SetTransparency((BYTE)::pTheConf->m_General_uTransparency);
 		}
 		}
 		break;

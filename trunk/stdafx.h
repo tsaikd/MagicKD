@@ -1,6 +1,3 @@
-// stdafx.h : 標準系統 Include 檔的 Include 檔，
-// 或是經常使用卻很少變更的專案專用 Include 檔案
-
 #pragma once
 
 #ifndef VC_EXTRALEAN
@@ -40,7 +37,10 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdhtml.h>
 
+#include "Others.h"
+
 #define APPNAME _T("MagicKD")
 #define APPUUID _T("43863dcf-f931-443e-bee0-eba5db4083a2")
 
+#define KDAPP_ENABLE_GETAPPVERSION
 #define KDAPP_ENABLE_UPDATEAPPONLINE

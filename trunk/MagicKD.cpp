@@ -16,9 +16,6 @@ CMagicKDApp::CMagicKDApp()
 {
 }
 
-BEGIN_MESSAGE_MAP(CMagicKDApp, CWinApp)
-END_MESSAGE_MAP()
-
 BOOL CMagicKDApp::InitInstance()
 {
 	CWinApp::InitInstance();
@@ -38,8 +35,7 @@ BOOL CMagicKDApp::InitInstance()
 		pDlg = new CMagicKDDlg;
 	m_pMainWnd = pDlg;
 	pDlg->DoModal();
-	delete pDlg;
-	pDlg = NULL;
+	DEL(pDlg);
 
 	delete pTheAppEndDlg;
 	pTheAppEndDlg = NULL;
