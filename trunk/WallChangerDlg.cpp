@@ -118,16 +118,10 @@ void CWallChangerDlg::OnDestroy()
 	KillTimer(KDT_OFFLINECOUNT);
 
 	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tFind Picture Thread"));
-	if (::g_pWallThreadFindPic) {
-		delete ::g_pWallThreadFindPic;
-		::g_pWallThreadFindPic = NULL;
-	}
+	DEL(::g_pWallThreadFindPic);
 
 	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tEnable Picture List Thread"));
-	if (::g_pWallEnablePicList) {
-		delete ::g_pWallEnablePicList;
-		::g_pWallEnablePicList = NULL;
-	}
+	DEL(::g_pWallEnablePicList);
 
 	CDialog::OnDestroy();
 
@@ -434,25 +428,25 @@ void CWallChangerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_WALL_EDIT_HISTORYNUM		, m_editHistoryNum);
 	DDX_Control(pDX, IDC_WALL_BTN_RANDPIC			, m_btn_RandPic);
 	DDX_Control(pDX, IDC_WALL_BTN_DELPIC			, m_btn_DelPic);
+	DDX_Control(pDX, IDC_WALL_BTN_MOVEPIC			, m_btn_MovePic);
 	DDX_Control(pDX, IDC_WALL_BTN_ENABLETOOLTIP		, m_btn_EnableToolTip);
 	DDX_Control(pDX, IDC_WALL_BTN_ADDCLASS			, m_btn_AddClass);
 	DDX_Control(pDX, IDC_WALL_CHECK_SHOWDIRLOADERROR, m_checkShowLoadDirError);
 	DDX_Control(pDX, IDC_WALL_COMBO_IMAGELOADERROR	, m_comboxImageLoadError);
-	DDX_Control(pDX, IDC_WALL_BTN_MOVEPIC, m_btn_MovePic);
 }
 
 BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_WALL_BTN_ADDCLASS, OnBnClickedButtonAddclasslist)
-	ON_BN_CLICKED(IDC_WALL_BTN_RANDPIC, OnBnClickedButtonRandpic)
-	ON_BN_CLICKED(IDC_WALL_BTN_DELPIC, OnBnClickedButtonDelpic)
-	ON_BN_CLICKED(IDC_WALL_BTN_ENABLETOOLTIP, OnBnClickedButtonEnabletooltip)
-	ON_BN_CLICKED(IDC_WALL_CHECK_SHOWDIRLOADERROR, OnBnClickedWallCheckShowdirloaderror)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS, OnLvnItemchangedListClass)
-	ON_CBN_SELCHANGE(IDC_WALL_COMBO_IMAGELOADERROR, OnCbnSelchangeComboImageloaderror)
-	ON_BN_CLICKED(IDC_WALL_BTN_MOVEPIC, OnBnClickedWallBtnMovepic)
+	ON_BN_CLICKED(IDC_WALL_BTN_ADDCLASS				, OnBnClickedButtonAddclasslist)
+	ON_BN_CLICKED(IDC_WALL_BTN_RANDPIC				, OnBnClickedButtonRandpic)
+	ON_BN_CLICKED(IDC_WALL_BTN_DELPIC				, OnBnClickedButtonDelpic)
+	ON_BN_CLICKED(IDC_WALL_BTN_MOVEPIC				, OnBnClickedWallBtnMovepic)
+	ON_BN_CLICKED(IDC_WALL_BTN_ENABLETOOLTIP		, OnBnClickedButtonEnabletooltip)
+	ON_BN_CLICKED(IDC_WALL_CHECK_SHOWDIRLOADERROR	, OnBnClickedWallCheckShowdirloaderror)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS	, OnLvnItemchangedListClass)
+	ON_CBN_SELCHANGE(IDC_WALL_COMBO_IMAGELOADERROR	, OnCbnSelchangeComboImageloaderror)
 END_MESSAGE_MAP()
 
 void CWallChangerDlg::OnOK()

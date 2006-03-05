@@ -11,47 +11,47 @@ public:
 
 	void Init(_Type tDefault)
 	{
-		if (m_mux.Lock()) {
-			m_tContext = tDefault;
+		m_mux.Lock();
 
-			m_mux.Unlock();
-		}
+		m_tContext = tDefault;
+		m_bDirty = false;
+
+		m_mux.Unlock();
 	}
 
 	void Destroy()
 	{
-		if (m_mux.Lock()) {
-			m_bDirty = false;
+		m_mux.Lock();
 
-			m_mux.Unlock();
-		}
+		m_bDirty = false;
+
+		m_mux.Unlock();
 	}
 
 	_Type Get()
 	{
-		_Type tBuf = 0;
-		if (m_mux.Lock()) {
-			tBuf = m_tContext;
+		m_mux.Lock();
 
-			m_mux.Unlock();
-		}
+		_Type tBuf = m_tContext;
+
+		m_mux.Unlock();
 		return tBuf;
 	}
 
 	_Type Set(_Type tValue)
 	{
-		if (m_mux.Lock()) {
-			m_tContext = tValue;
-			m_bDirty = true;
+		m_mux.Lock();
 
-			m_mux.Unlock();
-		}
+		m_tContext = tValue;
+		m_bDirty = true;
+
+		m_mux.Unlock();
 		return m_tContext;
 	}
 
-	__inline bool IsDirty() { return m_bDirty; }
-	__inline operator _Type () { return Get(); }
-	__inline TKDConf& operator = (_Type tValue) { Set(tValue); return (*this); }
+	inline bool IsDirty() { return m_bDirty; }
+	inline operator _Type () { return Get(); }
+	inline TKDConf& operator = (_Type tValue) { Set(tValue); return (*this); }
 
 private:
 	bool m_bDirty;
@@ -103,10 +103,12 @@ public:
 				m_pIni->WriteBool(m_sSection, m_sKey, m_bContext);
 		}
 		m_bContext.Destroy();
+
+		CKDConfType::Destroy();
 	}
 
-	__inline operator bool () { return (bool)m_bContext; }
-	__inline CKDConfBool& operator = (bool bValue) { m_bContext = bValue; return (*this); }
+	inline operator bool () { return (bool)m_bContext; }
+	inline CKDConfBool& operator = (bool bValue) { m_bContext = bValue; return (*this); }
 
 private:
 	bool m_bDefault;
@@ -136,10 +138,12 @@ public:
 				m_pIni->WriteUInt(m_sSection, m_sKey, m_uContext);
 		}
 		m_uContext.Destroy();
+
+		CKDConfType::Destroy();
 	}
 
-	__inline operator UINT () { return (UINT)m_uContext; }
-	__inline CKDConfUINT& operator = (UINT uValue) { m_uContext = uValue; return (*this); }
+	inline operator UINT () { return (UINT)m_uContext; }
+	inline CKDConfUINT& operator = (UINT uValue) { m_uContext = uValue; return (*this); }
 
 private:
 	UINT m_uDefault;
@@ -154,14 +158,11 @@ public:
 
 	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, LPCTSTR lpDefault)
 	{
-		size_t u64Len;
-
 		CKDConfType::Init(pIni, lpSection, lpKey);
 
 		if (m_lpDefault)
 			delete [] m_lpDefault;
-		u64Len = _tcslen(lpDefault);
-		m_lpDefault = new TCHAR[u64Len + 1];
+		m_lpDefault = new TCHAR[_tcslen(lpDefault) + 1];
 		_tcscpy((LPTSTR)m_lpDefault, lpDefault);
 
 		SetString(m_pIni->GetString(m_sSection, m_sKey, m_lpDefault));
@@ -182,9 +183,11 @@ public:
 			delete [] m_lpDefault;
 			m_lpDefault = NULL;
 		}
+
+		CKDConfType::Destroy();
 	}
 
-	_inline void SetDirty(bool bDirty = true) { m_bDirty = bDirty; }
+	inline void SetDirty(bool bDirty = true) { m_bDirty = bDirty; }
 
 private:
 	bool m_bDirty;

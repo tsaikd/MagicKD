@@ -9,6 +9,14 @@ CKDConf::CKDConf()
 CKDConf::~CKDConf()
 {
 	SaveConf();
+
+	if (m_pIni && PathFileExists(m_pIni->GetPathName())) {
+		CStringArray saSection;
+		m_pIni->DeleteEmptySection();
+		m_pIni->GetSectionNames(&saSection);
+		if (saSection.IsEmpty())
+			DeleteFile(m_pIni->GetPathName());
+	}
 }
 
 void CKDConf::Init(CIni *pIni)

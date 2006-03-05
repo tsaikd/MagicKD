@@ -5,6 +5,7 @@
 #include "WallThreadFindPic.h"
 
 CWallThreadFindPic::CWallThreadFindPic()
+	:	m_pNowItem(NULL)
 {
 	m_hHaveDirItem = CreateEvent(NULL, TRUE, FALSE, NULL);
 	CreateThread(THREAD_PRIORITY_IDLE);
@@ -36,9 +37,9 @@ DWORD CWallThreadFindPic::ThreadProc()
 	}
 
 	// Stage 2: After Stage 1
-	while (IsCanThread()) {
+	while (IsCanThread())
 		_ThreadProcStage();
-	}
+
 	return 0;
 }
 
@@ -46,26 +47,59 @@ void CWallThreadFindPic::AddItem(CWallDirListItem *pDirItem)
 {
 	if (!pDirItem)
 		return;
+	m_muxThread.Lock();
 
-	if (m_muxThread.Lock()) {
-		m_lDirItem.AddTail(pDirItem);
-		SetEvent(m_hHaveDirItem);
+	m_lDirItem.AddTail(pDirItem);
+	SetEvent(m_hHaveDirItem);
 
-		m_muxThread.Unlock();
+	m_muxThread.Unlock();
+}
+
+void CWallThreadFindPic::RemoveItem(CWallDirListItem *pDirItem)
+{
+	if (!pDirItem || !pDirItem->IsOnFindPic())
+		return;
+	m_muxThread.Lock();
+
+	CWallDirListItem *pItem;
+	POSITION pos;
+
+	pos = m_lDirItemOffline.GetHeadPosition();
+	while (pos) {
+		pItem = m_lDirItemOffline.GetAt(pos);
+		if (pItem == pDirItem) {
+			m_lDirItemOffline.RemoveAt(pos);
+			break;
+		}
+
+		m_lDirItemOffline.GetNext(pos);
 	}
+
+	pos = m_lDirItem.GetHeadPosition();
+	while (pos) {
+		pItem = m_lDirItem.GetAt(pos);
+		if (pItem == pDirItem) {
+			m_lDirItem.RemoveAt(pos);
+			break;
+		}
+
+		m_lDirItem.GetNext(pos);
+	}
+
+	m_muxThread.Unlock();
 }
 
 void CWallThreadFindPic::TestOfflineDirItem()
 {
-	if (m_muxThread.Lock()) {
-		if (m_lDirItemOffline.GetCount()) {
-			m_lDirItem.AddTail(&m_lDirItemOffline);
-			m_lDirItemOffline.RemoveAll();
-			SetEvent(m_hHaveDirItem);
-		}
-
-		m_muxThread.Unlock();
+	m_muxThread.Lock();
+	
+	if (m_lDirItemOffline.GetCount()) {
+		m_lDirItem.AddTail(&m_lDirItemOffline);
+		m_lDirItemOffline.RemoveAll();
+		SetEvent(m_hHaveDirItem);
 	}
+
+	m_muxThread.Unlock();
 }
 
 bool CWallThreadFindPic::IsMatchSupport(LPCTSTR sPat) {
@@ -114,10 +148,13 @@ void CWallThreadFindPic::_ThreadProcStage()
 		return;
 	}
 
-	CWallDirListItem *pDirItem = m_lDirItem.RemoveHead();
-	CString sDirPath = pDirItem->GetItemDirPath();
-	if (!PathFileExists(sDirPath) && !pDirItem->IsDirOnFixDrive()) {
-		m_lDirItemOffline.AddTail(pDirItem);
+	m_pNowItem = m_lDirItem.RemoveHead();
+	if (!m_pNowItem)
+		return;
+
+	CString sDirPath = m_pNowItem->GetItemDirPath();
+	if (!PathFileExists(sDirPath) && !m_pNowItem->IsDirOnFixDrive()) {
+		m_lDirItemOffline.AddTail(m_pNowItem);
 		return;
 	}
 
@@ -136,10 +173,14 @@ void CWallThreadFindPic::_ThreadProcStage()
 	}
 	delete pslPicPath;
 
-	pDirItem->SetItemFileFindNum(saPicPath.GetCount());
-	pDirItem->SetItemPicPathArray(saPicPath);
-	pDirItem->SetOnFindPic(false);
-	if (pDirItem->IsItemEnable())
-		::g_pWallEnablePicList->AddEnableItem(pDirItem);
-	pDirItem->Invalidate();
+	m_muxThread.Lock();
+	if (m_pNowItem) {
+		m_pNowItem->SetItemFileFindNum(saPicPath.GetCount());
+		m_pNowItem->SetItemPicPathArray(saPicPath);
+		m_pNowItem->SetOnFindPic(false);
+		if (m_pNowItem->IsItemEnable())
+			::g_pWallEnablePicList->AddEnableItem(m_pNowItem);
+		m_pNowItem->Invalidate();
+	}
+	m_muxThread.Unlock();
 }

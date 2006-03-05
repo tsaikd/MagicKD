@@ -5,7 +5,6 @@ class CFindDFConf : public CKDConf
 {
 public:
 	CFindDFConf();
-	virtual ~CFindDFConf();
 
 	void Init(CIni *pIni);
 

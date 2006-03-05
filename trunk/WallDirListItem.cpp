@@ -59,8 +59,13 @@ void CWallDirListItem::Destroy()
 	if (!m_bInit)
 		return;
 
-	if (IsItemEnable() && !m_bOnExit)
-		::g_pWallEnablePicList->RemoveEnableItem(this);
+	if (!m_bOnExit) {
+		if (IsOnFindPic())
+			g_pWallThreadFindPic->RemoveItem(this);
+
+		if (IsItemEnable())
+			g_pWallEnablePicList->RemoveEnableItem(this);
+	}
 
 	m_bInit = false;
 }

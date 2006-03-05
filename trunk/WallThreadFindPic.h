@@ -12,6 +12,7 @@ public:
 	virtual DWORD ThreadProc();
 
 	void AddItem(CWallDirListItem *pDirItem);
+	void RemoveItem(CWallDirListItem *pDirItem);
 	void TestOfflineDirItem();
 
 	bool IsMatchSupport(LPCTSTR sPat);
@@ -19,6 +20,7 @@ public:
 private:
 	CMutex m_muxThread;
 	HANDLE m_hHaveDirItem;
+	CWallDirListItem *m_pNowItem;
 	CList<CWallDirListItem*, CWallDirListItem*> m_lDirItem;
 	CList<CWallDirListItem*, CWallDirListItem*> m_lDirItemOffline;
 

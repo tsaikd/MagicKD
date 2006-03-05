@@ -7,10 +7,6 @@ CFindDFConf::CFindDFConf()
 {
 }
 
-CFindDFConf::~CFindDFConf()
-{
-}
-
 void CFindDFConf::Init(CIni *pIni)
 {
 	CKDConf::Init(pIni);
