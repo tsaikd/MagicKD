@@ -1,0 +1,10 @@
+Initial function
+
+WallChanger:
+資料變動偵測
+取消資料夾時findpic也要取消
+ListCtrl可按CTRL+CVX
+老闆鍵
+設假桌布
+
+整合BindWinKey
