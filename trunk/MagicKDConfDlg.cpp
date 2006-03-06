@@ -125,10 +125,15 @@ bool CMagicKDConfDlg::IsAppNeedUpdate()
 {
 	m_sLastVer = theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/"), _T("</ul>"), -19, 7);
 	CString sNowVer(theApp.GetAppProductVer());
-	if ((m_sLastVer == sNowVer) || (m_sLastVer.IsEmpty())) {
+
+	if (m_sLastVer.IsEmpty()) {
+		return false;
+	} else if (m_sLastVer == sNowVer) {
+		m_sLastUrl.Format(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/%s/"), m_sLastVer);
 		return false;
 	} else {
 		m_sLastUrl.Format(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/%s/"), m_sLastVer);
+		g_pTheConf->m_General_bUpdateLastest = false;
 		return true;
 	}
 }
