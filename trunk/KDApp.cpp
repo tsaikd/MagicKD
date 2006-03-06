@@ -11,7 +11,7 @@ CKDApp::CKDApp()
 		m_lpAppFileVer(NULL), m_lpAppProductVer(NULL),
 #endif //KDAPP_ENABLE_GETAPPVERSION
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
-		m_bUpdateApp(false), m_lpTmpBatchPath(NULL),
+		m_bUpdateApp(false), m_bShowUpdateMsg(true), m_lpTmpBatchPath(NULL),
 #endif //KDAPP_ENABLE_UPDATEAPPONLINE
 		m_lpAppName(NULL), m_lpAppPath(NULL), m_lpAppDir(NULL)
 {
@@ -68,12 +68,14 @@ CKDApp::CKDApp()
 			if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\FileVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
 				sVer = btVersion;
 				sVer.Replace(_T(" "), _T(""));
+				sVer.Replace(_T(","), _T("."));
 				m_lpAppFileVer = new TCHAR[uVersionLen + 1];
 				_tcscpy((LPTSTR)m_lpAppFileVer, sVer);
 			}
 			if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\ProductVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
 				sVer = btVersion;
 				sVer.Replace(_T(" "), _T(""));
+				sVer.Replace(_T(","), _T("."));
 				m_lpAppProductVer = new TCHAR[uVersionLen + 1];
 				_tcscpy((LPTSTR)m_lpAppProductVer, sVer);
 			}
@@ -109,6 +111,7 @@ CKDApp::~CKDApp()
 			iCount - 1,
 			iCount - 1
 			);
+
 		for (i=0 ; i<iCount ; i++) {
 			sBatchContext.AppendFormat(
 				_T("sOldFile(%d) = \"%s\"\n")
@@ -117,6 +120,7 @@ CKDApp::~CKDApp()
 				i, m_saNewAppPath[i]
 				);
 		}
+
 		sBatchContext.AppendFormat(
 			_T("\n")
 			_T("Set objShell = CreateObject(\"WScript.Shell\")\n")
@@ -136,7 +140,15 @@ CKDApp::~CKDApp()
 			_T("	End If\n")
 			_T("Next\n")
 			_T("\n")
+			);
+
+		if (m_bShowUpdateMsg) {
+			sBatchContext.AppendFormat(
 			_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName\n")
+				);
+		}
+
+		sBatchContext.AppendFormat(
 			_T("If objFS.FileExists(WScript.ScriptFullName) Then\n")
 			_T("	objFS.DeleteFile WScript.ScriptFullName, True\n")
 			_T("End If\n")
@@ -155,7 +167,7 @@ CKDApp::~CKDApp()
 	}
 	if (m_lpTmpBatchPath)
 		delete [] m_lpTmpBatchPath;
-#endif
+#endif //KDAPP_ENABLE_UPDATEAPPONLINE
 
 	if (m_bRestart)
 		ShellExecute(NULL, _T("open"), m_lpAppPath, NULL, NULL, SW_SHOW);
@@ -221,27 +233,7 @@ CString CKDApp::GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, LPCTSTR lpQueryKeyword
 	return sRes;
 }
 
-bool CKDApp::SetUpdateApp(LPCTSTR lpOldAppPath, LPCTSTR lpNewAppPath)
-{
-	if (lpOldAppPath && !PathFileExists(lpOldAppPath))
-		return false;
-	if (lpNewAppPath && !PathFileExists(lpNewAppPath))
-		return false;
-
-	m_saOldAppPath.RemoveAll();
-	m_saNewAppPath.RemoveAll();
-
-	m_saOldAppPath.SetSize(1);
-	m_saNewAppPath.SetSize(1);
-
-	m_saOldAppPath[0] = lpOldAppPath;
-	m_saNewAppPath[0] = lpNewAppPath;
-
-	m_bUpdateApp = true;
-	return true;
-}
-
-bool CKDApp::SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath)
+bool CKDApp::SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath, bool bShowMsg/* = true*/)
 {
 	if (saOldAppPath.GetCount() != saNewAppPath.GetCount())
 		return false;
@@ -253,6 +245,8 @@ bool CKDApp::SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath
 		if (!saNewAppPath.GetAt(i).IsEmpty() && !PathFileExists(saNewAppPath.GetAt(i)))
 			return false;
 	}
+
+	m_bShowUpdateMsg = bShowMsg;
 
 	m_saOldAppPath.RemoveAll();
 	m_saNewAppPath.RemoveAll();

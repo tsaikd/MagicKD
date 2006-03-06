@@ -30,6 +30,7 @@ public:
 	virtual void SaveIni();
 
 	virtual void Init(CIni *pIni, CRect &rcChildDirList, bool *bShowDirLoadError);
+	void Localize();
 	bool AddItem(LPCTSTR sClassName);
 	void SetItemEnable(int nItem, bool bEnable);
 	void UpdateSelectItemFileFindNum();

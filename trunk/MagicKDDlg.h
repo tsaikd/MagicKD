@@ -10,7 +10,7 @@
 
 #include "WallChangerDlg.h"
 
-extern CKDTray *pTheTray;
+extern CKDTray *g_pTheTray;
 
 class CMagicKDDlg : public CDialog
 {
@@ -27,6 +27,8 @@ public:
 	virtual ~CMagicKDDlg();
 
 	void DoSize();
+	void Localize();
+
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
 	FuncList GetFuncFromCWnd(CWnd *pWnd);
 

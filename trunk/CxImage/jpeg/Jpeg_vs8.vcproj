@@ -120,7 +120,7 @@
 				EnableFiberSafeOptimizations="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="true"
 				PrecompiledHeaderFile=".\Release/Jpeg.pch"
 				AssemblerListingLocation=".\Release/"

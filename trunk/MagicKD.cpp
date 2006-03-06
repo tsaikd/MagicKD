@@ -8,9 +8,9 @@
 #endif
 
 CMagicKDApp theApp;
-CMagicKDConf *pTheConf = NULL;
-CKDTray *pTheTray = NULL;
-CMagicKDEndDlg *pTheAppEndDlg = NULL;
+CMagicKDConf *g_pTheConf = NULL;
+CKDTray *g_pTheTray = NULL;
+CMagicKDEndDlg *g_pTheAppEndDlg = NULL;
 
 CMagicKDApp::CMagicKDApp()
 {
@@ -27,9 +27,9 @@ BOOL CMagicKDApp::InitInstance()
 
 	CMagicKDDlg *pDlg = NULL;
 
-	if (!pTheAppEndDlg)
-		pTheAppEndDlg = new CMagicKDEndDlg;
-	pTheAppEndDlg->Create(IDD_MAGICKD_END);
+	if (!g_pTheAppEndDlg)
+		g_pTheAppEndDlg = new CMagicKDEndDlg;
+	g_pTheAppEndDlg->Create(IDD_MAGICKD_END);
 
 	if (!pDlg)
 		pDlg = new CMagicKDDlg;
@@ -37,8 +37,8 @@ BOOL CMagicKDApp::InitInstance()
 	pDlg->DoModal();
 	DEL(pDlg);
 
-	delete pTheAppEndDlg;
-	pTheAppEndDlg = NULL;
+	delete g_pTheAppEndDlg;
+	g_pTheAppEndDlg = NULL;
 
 	// 因為已經關閉對話方塊，傳回 FALSE，所以我們會結束應用程式，
 	// 而非提示開始應用程式的訊息。

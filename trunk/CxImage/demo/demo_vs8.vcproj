@@ -20,7 +20,7 @@
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			>
@@ -52,7 +52,7 @@
 				AdditionalIncludeDirectories="..\cximage"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;VATI_EXTENSIONS"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/demo.pch"
 				AssemblerListingLocation=".\Release/"

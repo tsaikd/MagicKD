@@ -8,7 +8,7 @@ public:
 
 	void Init(CIni *pIni);
 
-	CKDConfString m_General_sComboxMsg;
+	CKDConfUINT m_General_uComboxMsg;
 	CKDConfUINT m_General_uWaitTime;
 	CKDConfUINT m_General_uPicPathHistory;
 	CKDConfBool m_General_bEnableTip;

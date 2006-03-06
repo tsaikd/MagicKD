@@ -5,6 +5,7 @@
 #include "FindDFListCtrl.h"
 
 CFindDFListCtrl::CFindDFListCtrl()
+	:	m_bInit(false)
 {
 }
 
@@ -19,6 +20,18 @@ void CFindDFListCtrl::Init()
 	InsertColumn(0, CResString(IDS_FIND_COLUMN_FINDLIST), LVCFMT_LEFT, rcWin.right);
 
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
+
+	m_bInit = true;
+}
+
+void CFindDFListCtrl::Localize()
+{
+	if (!m_bInit)
+		return;
+
+	int iColWidth = GetColumnWidth(0);
+	DeleteColumn(0);
+	InsertColumn(0, CResString(IDS_FIND_COLUMN_FINDLIST), LVCFMT_LEFT, iColWidth);
 }
 
 BEGIN_MESSAGE_MAP(CFindDFListCtrl, CKDListCtrl)

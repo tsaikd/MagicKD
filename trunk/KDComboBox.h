@@ -1,8 +1,7 @@
 #pragma once
 #include "afxwin.h"
 
-class CKDComboBox :
-	public CComboBox
+class CKDComboBox : public CComboBox
 {
 public:
 	CKDComboBox();

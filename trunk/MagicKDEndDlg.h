@@ -45,4 +45,4 @@ public:
 	virtual BOOL OnInitDialog();
 };
 
-extern CMagicKDEndDlg *pTheAppEndDlg;
+extern CMagicKDEndDlg *g_pTheAppEndDlg;

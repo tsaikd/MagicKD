@@ -9,8 +9,13 @@ public:
 	virtual ~CFindDFListCtrl();
 	void Init();
 
+	void Localize();
+
 protected:
 	CMenu m_mContextMenu;
+
+private:
+	bool m_bInit;
 
 public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);

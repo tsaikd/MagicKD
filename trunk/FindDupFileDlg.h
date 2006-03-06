@@ -18,6 +18,7 @@ public:
 	virtual DWORD ThreadProc();
 
 	void DoSize();
+	void Localize();
 
 	void EnableToolTips(bool bEnable = true);
 	void SetFindResultTreeCheck(bool bCheck = true);

@@ -42,10 +42,10 @@ private:
 public:
 	CString GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, LPCTSTR lpQueryKeyword,
 		LONGLONG i64QueryOffset, short unsigned int iQueryVerSize);
-	bool SetUpdateApp(LPCTSTR lpOldAppPath, LPCTSTR lpNewAppPath);
-	bool SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath);
+	bool SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath, bool bShowMsg = true);
 private:
 	bool m_bUpdateApp;
+	bool m_bShowUpdateMsg;
 	LPCTSTR m_lpTmpBatchPath;
 	CStringArray m_saOldAppPath;
 	CStringArray m_saNewAppPath;

@@ -1,5 +1,8 @@
+Version: 1.0.1.6	(2006-03-06)
 	Add Support Picture Directory Change Detection
 	Remove Empty Ini Config File
+	Add Support Multi-language
+	Fix Update Function
 
 Version: 1.0.1.5	(2006-03-04)
 	Fix bug: When User Choice Option in WallChanger Load Image Failed, the data may outdate

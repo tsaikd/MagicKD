@@ -29,8 +29,8 @@ public:
 	CWallChangerDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CWallChangerDlg();
 
-public:
 	void DoSize();
+	void Localize();
 
 	void	SetHistoryNum(UINT uNum);
 	void	SetWaitTime(UINT uWaitTime);
@@ -44,6 +44,8 @@ public:
 	UINT	StopTimer();
 
 	bool	EnableToolTips(bool bEnable = true);
+	int		GetComboLoadImageErrorPos(UINT nID);
+	UINT	GetComboLoadImageErrorID(int iPos);
 
 	CIni	m_cIni;
 	CMutex	m_muxRandPic;

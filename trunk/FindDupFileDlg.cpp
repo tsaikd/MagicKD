@@ -117,26 +117,16 @@ BOOL CFindDupFileDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("FindDupFile.ini"));
-	if (!::g_pFindConf) {
-		::g_pFindConf = new CFindDFConf;
-		::g_pFindConf->Init(&m_cIni);
+	if (!g_pFindConf) {
+		g_pFindConf = new CFindDFConf;
+		g_pFindConf->Init(&m_cIni);
 	}
-
-	GetDlgItem(IDC_FIND_BTN_STARTFIND)->SetWindowText(CResString(IDS_FIND_BTN_STARTFIND));
-	GetDlgItem(IDC_FIND_BTN_STOPFIND)->SetWindowText(CResString(IDS_FIND_BTN_STOPFIND));
-	GetDlgItem(IDC_FIND_BTN_EXPANDALL)->SetWindowText(CResString(IDS_FIND_BTN_EXPANDALL));
-	GetDlgItem(IDC_FIND_BTN_COLLAPSEALL)->SetWindowText(CResString(IDS_FIND_BTN_COLLAPSEALL));
-	GetDlgItem(IDC_FIND_BTN_SELECTDUP)->SetWindowText(CResString(IDS_FIND_BTN_SELECTDUP));
-	GetDlgItem(IDC_FIND_BTN_SELECTNONE)->SetWindowText(CResString(IDS_FIND_BTN_SELECTNONE));
-	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->SetWindowText(CResString(IDS_FIND_BTN_DELETEDUP));
-	GetDlgItem(IDC_FIND_STATIC_DUPFILELIST)->SetWindowText(CResString(IDS_FIND_STATIC_DUPFILELIST));
 
 	m_list_FindDupFileList.Init();
 	m_tree_FindResult.ModifyStyle(0, TVS_CHECKBOXES);	// 直接在 VC 的資源選單選取會有 bug
 
-	EnableToolTips(::g_pFindConf->m_bEnableToolTip);
-
 	m_bInit = true;
+	Localize();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX 屬性頁應傳回 FALSE
 }
@@ -197,6 +187,24 @@ void CFindDupFileDlg::DoSize()
 		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
 
 	Invalidate();
+}
+
+void CFindDupFileDlg::Localize()
+{
+	if (!m_bInit)
+		return;
+
+	GetDlgItem(IDC_FIND_BTN_STARTFIND)->SetWindowText(CResString(IDS_FIND_BTN_STARTFIND));
+	GetDlgItem(IDC_FIND_BTN_STOPFIND)->SetWindowText(CResString(IDS_FIND_BTN_STOPFIND));
+	GetDlgItem(IDC_FIND_BTN_EXPANDALL)->SetWindowText(CResString(IDS_FIND_BTN_EXPANDALL));
+	GetDlgItem(IDC_FIND_BTN_COLLAPSEALL)->SetWindowText(CResString(IDS_FIND_BTN_COLLAPSEALL));
+	GetDlgItem(IDC_FIND_BTN_SELECTDUP)->SetWindowText(CResString(IDS_FIND_BTN_SELECTDUP));
+	GetDlgItem(IDC_FIND_BTN_SELECTNONE)->SetWindowText(CResString(IDS_FIND_BTN_SELECTNONE));
+	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->SetWindowText(CResString(IDS_FIND_BTN_DELETEDUP));
+	GetDlgItem(IDC_FIND_STATIC_DUPFILELIST)->SetWindowText(CResString(IDS_FIND_STATIC_DUPFILELIST));
+
+	m_list_FindDupFileList.Localize();
+	EnableToolTips(g_pFindConf->m_bEnableToolTip);
 }
 
 void CFindDupFileDlg::EnableToolTips(bool bEnable/* = true*/)

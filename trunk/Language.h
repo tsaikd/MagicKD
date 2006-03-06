@@ -54,6 +54,7 @@ CString GetResString(UINT uStringID);
 HINSTANCE LoadStringLib(LANGID lid);
 void FreeLangLib();
 bool IsLangSupport(LANGID lid);
+bool IsLangFileExists(LANGID lid);
 LANGID FindDefaultLang();
 
 class CResString : public CString

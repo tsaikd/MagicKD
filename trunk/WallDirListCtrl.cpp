@@ -55,12 +55,11 @@ void CWallDirListCtrl::Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirL
 			AddItem(saDirList[i]);
 		}
 	}
-
-	SetToolTips(CResString(IDS_WALL_TOOLTIP_DIRLIST));
 	ShowWindow(SW_HIDE);
 
 	m_bInit = true;
 	DoSize();
+	Localize();
 }
 
 void CWallDirListCtrl::OnDestroy()
@@ -82,6 +81,17 @@ void CWallDirListCtrl::DoSize()
 
 	Scroll(CSize(0, 0));	// When sizing down, update the scroll state
 	Invalidate();
+}
+
+void CWallDirListCtrl::Localize()
+{
+	SetToolTips(CResString(IDS_WALL_TOOLTIP_DIRLIST));
+	int iColWidth0 = GetColumnWidth(0);
+	int iColWidth1 = GetColumnWidth(1);
+	DeleteColumn(0);
+	DeleteColumn(0);
+	InsertColumn(0, CResString(IDS_WALL_COLUMN_DIRPATH), LVCFMT_LEFT, iColWidth0);
+	InsertColumn(1, CResString(IDS_WALL_COLUMN_PICFINDNUM), LVCFMT_CENTER, iColWidth1);
 }
 
 void CWallDirListCtrl::SetListClassName(LPCTSTR sName)

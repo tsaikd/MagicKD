@@ -1,6 +1,7 @@
 ﻿#include "StdAfx.h"
-#include "Language.h"
 #include "MagicKD.h"
+
+#include "Language.h"
 
 SLanguage g_aLanguages[] =
 {
@@ -35,7 +36,7 @@ SLanguage g_aLanguages[] =
 //	{LANGID_SV_SE,	FALSE,	_T("sv-SE"),	1252, 	_T("windows-1252"),	L"swedish"},			// Swedish
 //	{LANGID_TR_TR,	FALSE,	_T("tr-TR"),	1254, 	_T("windows-1254"),	L"turkish"},			// Turkish
 //	{LANGID_ZH_CN,	FALSE,	_T("zh-CN"),	 936, 	_T("gb2312"),		L"简体中文"},			// Chinese (P.R.C.)
-	{LANGID_ZH_TW,	FALSE,	_T("zh-TW"),	 950, 	_T("big5"),			L"正體中文"},			// Chinese (Taiwan)
+	{LANGID_ZH_TW,	FALSE,	_T("zh-TW"),	 950, 	_T("big5"),			L"繁體中文"},			// Chinese (Taiwan)
 	{0, 0, 0, 0,  NULL, NULL}
 };
 
@@ -61,25 +62,7 @@ HINSTANCE LoadStringLib(LANGID lid)
 
 	for (i = 0;i < g_iLanguageCount;i++)
 		if (lid == g_aLanguages[i].lid) {
-			// Need to add (CString)m_sAppDir, (CString)m_sAppPath to MainApp class
-			// Need to add the following lines to MainApp class InitInstance()
-			// or Inherit CKDApp
-			/*
-	{
-		TCHAR sBuffer[MAX_PATH], *ptr;
-		GetModuleFileName(NULL, sBuffer, MAX_PATH);
-		m_sAppPath = sBuffer;
-		if (ptr = _tcsrchr(sBuffer, _T('\\'))) {
-			ptr++;
-			*ptr = _T('\0');
-			SetCurrentDirectory(sBuffer);
-			m_sAppDir = sBuffer;
-		} else {
-			MessageBox(NULL, _T("Can not locate the execution file!"), _T("ERROR"), MB_OK | MB_ICONERROR);
-			return FALSE;
-		}
-	}
-			*/
+			// Need to Inherit CKDApp
 			sDllPath.Format(_T("%s%s.dll"), theApp.GetAppLangDir(), g_aLanguages[i].pszISOLocale);
 			g_uCurrentLang = i;
 			break;
@@ -108,6 +91,22 @@ bool IsLangSupport(LANGID lid)
 	for (i = 0;i < g_iLanguageCount;i++)
 		if (lid == g_aLanguages[i].lid)
 			return true;
+
+	return false;
+}
+
+bool IsLangFileExists(LANGID lid)
+{
+	CString sDllPath;
+	int i;
+
+	for (i = 0;i < g_iLanguageCount;i++) {
+		if (lid == g_aLanguages[i].lid) {
+			// Need to Inherit CKDApp
+			sDllPath.Format(_T("%s%s.dll"), theApp.GetAppLangDir(), g_aLanguages[i].pszISOLocale);
+			return true;
+		}
+	}
 
 	return false;
 }

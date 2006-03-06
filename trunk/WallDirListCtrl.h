@@ -12,6 +12,8 @@ public:
 
 	virtual void Init(CIni *pIni, LPCTSTR sListClassName, bool *pbShowDirLoadError);
 	void DoSize();
+	void Localize();
+
 	void SetListClassName(LPCTSTR sName);
 	CString GetListClassName();
 	bool AddItem(LPCTSTR sDirPath);

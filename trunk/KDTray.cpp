@@ -80,6 +80,11 @@ bool CKDTray::InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem/* = 0*
 	return bRes;
 }
 
+bool CKDTray::ModifyMenu(UINT nID, LPCTSTR lpszNewItem)
+{
+	return m_mTrayMenu.ModifyMenu(nID, MF_BYCOMMAND, nID, lpszNewItem) != FALSE;
+}
+
 int CKDTray::FindTrayMenuItem(LPCTSTR sMenuString) {
 	CString	sBuf;
 	int iCount = m_mTrayMenu.GetMenuItemCount();
@@ -95,6 +100,11 @@ bool CKDTray::RemoveTrayMenuItem(LPCTSTR sMenuString) {
 	if (iPos > -1)
 		return m_mTrayMenu.RemoveMenu(iPos, MF_BYPOSITION) != FALSE;
 	return false;
+}
+
+bool CKDTray::RemoveTrayMenuItem(int nMenuID)
+{
+	return m_mTrayMenu.RemoveMenu(nMenuID, MF_BYCOMMAND) != FALSE;
 }
 
 bool CKDTray::TrackPopupMenu(CWnd *pWnd, UINT nFlags/* = TPM_LEFTALIGN | TPM_LEFTBUTTON*/)

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "afxwin.h"
 #include "afxcmn.h"
 #include "Resource.h"
@@ -16,13 +15,17 @@ public:
 	virtual ~CMagicKDConfDlg();
 
 	void DoSize();
+	void Localize();
 
 	void UpdateFuncCheck();
 	bool IsAppNeedUpdate();
+	void DoAppUpdate();
 
 	UINT StartUpdateTimer();
 	UINT StopUpdateTimer();
 
+	bool m_bUpdateLastest;
+	CComboBox m_combo_Language;
 	CKDButton m_checkStartMin;
 	CKDButton m_checkShowCloseWindow;
 	CKDButton m_check_CheckUpdate;
@@ -43,6 +46,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnCbnSelchangeConfComboLanguage();
 	afx_msg void OnBnClickedWallchangercheck();
 	afx_msg void OnBnClickedCheckConfStartmin();
 	afx_msg void OnBnClickedConfCheckShowclosewindow();

@@ -125,7 +125,7 @@
 				AdditionalIncludeDirectories="..\zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="true"
 				PrecompiledHeaderFile=".\Release/Tiff.pch"
 				AssemblerListingLocation=".\Release/"

@@ -86,33 +86,33 @@ public:
 	CKDConfBool() {}
 	virtual ~CKDConfBool() { Destroy(); }
 
-	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, bool bDefault)
+	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, bool Default)
 	{
 		CKDConfType::Init(pIni, lpSection, lpKey);
-		m_bDefault = bDefault;
+		m_Default = Default;
 
-		m_bContext.Init(m_pIni->GetBool(m_sSection, m_sKey, m_bDefault) == TRUE);
+		m_Context.Init(m_pIni->GetBool(m_sSection, m_sKey, m_Default) == TRUE);
 	}
 
 	void Destroy()
 	{
-		if (m_bContext.IsDirty()) {
-			if (m_bContext == m_bDefault)
+		if (m_Context.IsDirty()) {
+			if (m_Context == m_Default)
 				m_pIni->DeleteKey(m_sSection, m_sKey);
 			else
-				m_pIni->WriteBool(m_sSection, m_sKey, m_bContext);
+				m_pIni->WriteBool(m_sSection, m_sKey, m_Context);
 		}
-		m_bContext.Destroy();
+		m_Context.Destroy();
 
 		CKDConfType::Destroy();
 	}
 
-	inline operator bool () { return (bool)m_bContext; }
-	inline CKDConfBool& operator = (bool bValue) { m_bContext = bValue; return (*this); }
+	inline operator bool () { return (bool)m_Context; }
+	inline CKDConfBool& operator = (bool Value) { m_Context = Value; return (*this); }
 
 private:
-	bool m_bDefault;
-	TKDConf<bool> m_bContext;
+	bool m_Default;
+	TKDConf<bool> m_Context;
 };
 
 class CKDConfUINT : public CKDConfType
@@ -121,33 +121,33 @@ public:
 	CKDConfUINT() {}
 	virtual ~CKDConfUINT() { Destroy(); }
 
-	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, UINT uDefault)
+	void Init(CIni *pIni, LPCTSTR lpSection, LPCTSTR lpKey, UINT Default)
 	{
 		CKDConfType::Init(pIni, lpSection, lpKey);
-		m_uDefault = uDefault;
+		m_Default = Default;
 
-		m_uContext.Init(m_pIni->GetUInt(m_sSection, m_sKey, m_uDefault));
+		m_Context.Init(m_pIni->GetUInt(m_sSection, m_sKey, m_Default));
 	}
 
 	void Destroy()
 	{
-		if (m_uContext.IsDirty()) {
-			if (m_uContext == m_uDefault)
+		if (m_Context.IsDirty()) {
+			if (m_Context == m_Default)
 				m_pIni->DeleteKey(m_sSection, m_sKey);
 			else
-				m_pIni->WriteUInt(m_sSection, m_sKey, m_uContext);
+				m_pIni->WriteUInt(m_sSection, m_sKey, m_Context);
 		}
-		m_uContext.Destroy();
+		m_Context.Destroy();
 
 		CKDConfType::Destroy();
 	}
 
-	inline operator UINT () { return (UINT)m_uContext; }
-	inline CKDConfUINT& operator = (UINT uValue) { m_uContext = uValue; return (*this); }
+	inline operator UINT () { return (UINT)m_Context; }
+	inline CKDConfUINT& operator = (UINT Value) { m_Context = Value; return (*this); }
 
 private:
-	UINT m_uDefault;
-	TKDConf<UINT> m_uContext;
+	UINT m_Default;
+	TKDConf<UINT> m_Context;
 };
 
 class CKDConfString : public CString, public CKDConfType

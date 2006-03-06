@@ -44,7 +44,7 @@ void CWallClassListCtrl::SaveIni()
 
 void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDirLoadError)
 {
-	pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
+	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 
 	CWallListCtrl::Init(pIni);
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_CHECKBOXES);
@@ -76,14 +76,13 @@ void CWallClassListCtrl::Init(CIni *pIni, CRect &rcChildDirList, bool *pbShowDir
 		}
 	}
 
-	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
-
 	m_bInit = true;
+	Localize();
 }
 
 void CWallClassListCtrl::OnDestroy()
 {
-	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Freeing\tWallChanger\tClass List"));
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Freeing\tWallChanger\tClass List"));
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirList;
 	int iCount = GetItemCount();
@@ -95,11 +94,31 @@ void CWallClassListCtrl::OnDestroy()
 		}
 	}
 
-	pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tClass List"));
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tClass List"));
 	SaveIni();
 	CWallListCtrl::OnDestroy();
 
-	pTheAppEndDlg->UnsignWnd(m_hWnd);
+	g_pTheAppEndDlg->UnsignWnd(m_hWnd);
+}
+
+void CWallClassListCtrl::Localize()
+{
+	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
+	int iColWidth = GetColumnWidth(0);
+	DeleteColumn(0);
+	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, iColWidth);
+
+	CWallClassListItem *pItem;
+	CWallDirListCtrl *pChildDirCtrl;
+	int i, iCount = GetItemCount();
+	for (i=0 ; i<iCount ; i++) {
+		pItem = (CWallClassListItem *)GetItemData(i);
+		if (pItem) {
+			pChildDirCtrl = (CWallDirListCtrl *)pItem->GetChildDirList();
+			if (pChildDirCtrl)
+				pChildDirCtrl->Localize();
+		}
+	}
 }
 
 bool CWallClassListCtrl::AddItem(LPCTSTR sClassName)
