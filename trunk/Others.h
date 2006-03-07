@@ -135,6 +135,14 @@ public:
 		}
 	}
 
+	~CGetFileVersion()
+	{
+		if (m_lpAppFileVer)
+			delete [] m_lpAppFileVer;
+		if (m_lpAppProductVer)
+			delete [] m_lpAppProductVer;
+	}
+
 	_inline LPCTSTR GetAppFileVer() { return m_lpAppFileVer; }
 	_inline LPCTSTR GetAppProductVer() { return m_lpAppProductVer; }
 private:

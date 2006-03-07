@@ -114,62 +114,67 @@ CKDApp::~CKDApp()
 			break;
 
 		int i, iCount = m_saOldAppPath.GetCount();
-		if (!iCount || (iCount != m_saNewAppPath.GetCount()))
-			break;
 
 		DWORD dwWriteLen;
 		CString sBatchContext;
-		sBatchContext.Format(
+
+		sBatchContext.AppendFormat(
+			_T("Set objShell = CreateObject(\"WScript.Shell\")") KDAPP_BATCHFILE_NEWLINE
+			_T("Set objFS = CreateObject(\"Scripting.FileSystemObject\")") KDAPP_BATCHFILE_NEWLINE
 			_T("sAppName = \"%s\"") KDAPP_BATCHFILE_NEWLINE
-			_T("Const iArraySize = %d") KDAPP_BATCHFILE_NEWLINE
-			_T("Dim sOldFile(%d)") KDAPP_BATCHFILE_NEWLINE
-			_T("Dim sNewFile(%d)") KDAPP_BATCHFILE_NEWLINE
-			KDAPP_BATCHFILE_NEWLINE
-			,
-			m_lpAppName,
-			iCount,
-			iCount - 1,
-			iCount - 1
+			, m_lpAppName
 			);
+
+		if (iCount && (iCount == m_saNewAppPath.GetCount())) {
+			sBatchContext.AppendFormat(
+				KDAPP_BATCHFILE_NEWLINE
+				_T("Const iArraySize = %d") KDAPP_BATCHFILE_NEWLINE
+				_T("Dim sOldFile(%d)") KDAPP_BATCHFILE_NEWLINE
+				_T("Dim sNewFile(%d)") KDAPP_BATCHFILE_NEWLINE
+				KDAPP_BATCHFILE_NEWLINE
+				, iCount
+				, iCount - 1
+				, iCount - 1
+				);
+		}
 
 		for (i=0 ; i<iCount ; i++) {
 			sBatchContext.AppendFormat(
 				_T("sOldFile(%d) = \"%s\"") KDAPP_BATCHFILE_NEWLINE
 				_T("sNewFile(%d) = \"%s\"") KDAPP_BATCHFILE_NEWLINE
-				,
-				i, m_saOldAppPath[i],
-				i, m_saNewAppPath[i]
+				, i, m_saOldAppPath[i]
+				, i, m_saNewAppPath[i]
 				);
 		}
 
-		sBatchContext.AppendFormat(
-			KDAPP_BATCHFILE_NEWLINE
-			_T("Set objShell = CreateObject(\"WScript.Shell\")") KDAPP_BATCHFILE_NEWLINE
-			_T("Set objFS = CreateObject(\"Scripting.FileSystemObject\")") KDAPP_BATCHFILE_NEWLINE
-			KDAPP_BATCHFILE_NEWLINE
-			_T("For i=0 To (iArraySize-1)") KDAPP_BATCHFILE_NEWLINE
-			_T("	iLoopMaxTimes = 30") KDAPP_BATCHFILE_NEWLINE
-			_T("	While objFS.FileExists(sOldFile(i)) And (iLoopMaxTimes > 0)") KDAPP_BATCHFILE_NEWLINE
-			_T("		objFS.DeleteFile sOldFile(i), True") KDAPP_BATCHFILE_NEWLINE
-			_T("		iLoopMaxTimes = iLoopMaxTimes - 1") KDAPP_BATCHFILE_NEWLINE
-			_T("		If (iLoopMaxTimes < 25) Then") KDAPP_BATCHFILE_NEWLINE
-			_T("			WScript.Sleep(1000)") KDAPP_BATCHFILE_NEWLINE
-			_T("		End If") KDAPP_BATCHFILE_NEWLINE
-			_T("	Wend") KDAPP_BATCHFILE_NEWLINE
-			_T("	If objFS.FileExists(sNewFile(i)) Then") KDAPP_BATCHFILE_NEWLINE
-			_T("		objFS.MoveFile sNewFile(i), sOldFile(i)") KDAPP_BATCHFILE_NEWLINE
-			_T("	End If") KDAPP_BATCHFILE_NEWLINE
-			_T("Next") KDAPP_BATCHFILE_NEWLINE
-			KDAPP_BATCHFILE_NEWLINE
-			);
-
-		if (m_bShowUpdateMsg) {
+		if (iCount && (iCount == m_saNewAppPath.GetCount())) {
 			sBatchContext.AppendFormat(
-			_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName") KDAPP_BATCHFILE_NEWLINE
+				KDAPP_BATCHFILE_NEWLINE
+				_T("For i=0 To (iArraySize-1)") KDAPP_BATCHFILE_NEWLINE
+				_T("	iLoopMaxTimes = 30") KDAPP_BATCHFILE_NEWLINE
+				_T("	While objFS.FileExists(sOldFile(i)) And (iLoopMaxTimes > 0)") KDAPP_BATCHFILE_NEWLINE
+				_T("		objFS.DeleteFile sOldFile(i), True") KDAPP_BATCHFILE_NEWLINE
+				_T("		iLoopMaxTimes = iLoopMaxTimes - 1") KDAPP_BATCHFILE_NEWLINE
+				_T("		If (iLoopMaxTimes < 25) Then") KDAPP_BATCHFILE_NEWLINE
+				_T("			WScript.Sleep(1000)") KDAPP_BATCHFILE_NEWLINE
+				_T("		End If") KDAPP_BATCHFILE_NEWLINE
+				_T("	Wend") KDAPP_BATCHFILE_NEWLINE
+				_T("	If objFS.FileExists(sNewFile(i)) Then") KDAPP_BATCHFILE_NEWLINE
+				_T("		objFS.MoveFile sNewFile(i), sOldFile(i)") KDAPP_BATCHFILE_NEWLINE
+				_T("	End If") KDAPP_BATCHFILE_NEWLINE
+				_T("Next") KDAPP_BATCHFILE_NEWLINE
 				);
+
+			if (m_bShowUpdateMsg) {
+				sBatchContext.AppendFormat(
+					KDAPP_BATCHFILE_NEWLINE
+					_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName") KDAPP_BATCHFILE_NEWLINE
+					);
+			}
 		}
 
 		sBatchContext.AppendFormat(
+			KDAPP_BATCHFILE_NEWLINE
 			_T("If objFS.FileExists(WScript.ScriptFullName) Then") KDAPP_BATCHFILE_NEWLINE
 			_T("	objFS.DeleteFile WScript.ScriptFullName, True") KDAPP_BATCHFILE_NEWLINE
 			_T("End If") KDAPP_BATCHFILE_NEWLINE
@@ -185,6 +190,7 @@ CKDApp::~CKDApp()
 
 		m_bRestart = false;
 		m_bUpdateApp = false;
+		break;
 	}
 	if (m_lpTmpBatchPath)
 		delete [] m_lpTmpBatchPath;

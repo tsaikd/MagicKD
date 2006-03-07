@@ -104,7 +104,10 @@ bool IsLangFileExists(LANGID lid)
 		if (lid == g_aLanguages[i].lid) {
 			// Need to Inherit CKDApp
 			sDllPath.Format(_T("%s%s.dll"), theApp.GetAppLangDir(), g_aLanguages[i].pszISOLocale);
-			return true;
+			if (PathFileExists(sDllPath))
+				return true;
+			else
+				return false;
 		}
 	}
 

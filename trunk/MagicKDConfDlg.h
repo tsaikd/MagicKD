@@ -34,8 +34,6 @@ public:
 private:
 	bool m_bInit;
 	UINT m_uUpdateTimer;
-//	CString m_sLastVer;
-//	CString m_sLastUrl;
 	CKDGetHttpFile m_GetHttpFile;
 	CStringArray m_saNowVersion;
 	CArray<int, int> m_aiQueryVerSize;
