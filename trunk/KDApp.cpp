@@ -250,12 +250,16 @@ bool CKDApp::GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, const CStringArray &saQue
 		}
 
 		int iPos;
+
+		iPos = sPageContext.Find(_T("404 Not Found"));
+		if (-1 != iPos) {
+			bRes = false;
+			iCount = 0;
+		}
+
 		for (i=0 ; i<iCount ; i++) {
-			iPos = sPageContext.Find(_T("404 Not Found"));
-			if (-1 != iPos) {
-				bRes = false;
-				break;
-			}
+			if (saQueryAppName[i].IsEmpty())
+				continue;
 
 			iPos = sPageContext.Find(saQueryAppName[i]);
 			if (-1 != iPos) {

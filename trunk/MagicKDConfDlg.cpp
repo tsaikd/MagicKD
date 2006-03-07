@@ -37,10 +37,12 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	m_saOldAppPath[0].Format(_T("%s.exe"), theApp.GetAppName());
 	m_saNewAppPath[0].Format(_T("%s_Update.exe"), theApp.GetAppName());
 
-	m_saNowVersion[1] = CGetFileVersion(_T("lang/zh-TW.dll"));
-	m_aiQueryVerSize[1] = 7;
-	m_saOldAppPath[1].Format(_T("lang/zh-TW.dll"));
-	m_saNewAppPath[1].Format(_T("lang/zh-TW_Update.dll"));
+	if (PathFileExists(_T("lang/zh-TW.dll"))) {
+		m_saNowVersion[1] = CGetFileVersion(_T("lang/zh-TW.dll"));
+		m_aiQueryVerSize[1] = 7;
+		m_saOldAppPath[1].Format(_T("lang/zh-TW.dll"));
+		m_saNewAppPath[1].Format(_T("lang/zh-TW_Update.dll"));
+	}
 
 	GetDlgItem(IDC_CONF_STATIC_VERSION)->SetWindowText(theApp.GetAppProductVer());
 
@@ -145,7 +147,7 @@ bool CMagicKDConfDlg::IsAppNeedUpdate()
 		int i, iCount = m_saNowVersion.GetCount();
 
 		for (i=0 ; i<iCount ; i++) {
-			if (!m_saNowVersion[i].IsEmpty() && !m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
+			if (!m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
 				return true;
 		}
 	}
@@ -165,7 +167,7 @@ void CMagicKDConfDlg::DoAppUpdate()
 
 	int i, iCount = m_saReturnUrl.GetCount();
 	for (i=0 ; i<iCount ; i++) {
-		if (!m_saNowVersion[i].IsEmpty() && !m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i])) {
+		if (!m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i])) {
 			if (!m_GetHttpFile.AddFileList(m_saReturnUrl[i], m_saNewAppPath[i])) {
 				MessageBox(CResString(IDS_CONF_MSG_UPDATEFAILED), NULL, MB_OK | MB_ICONERROR);
 				bUpdate = false;

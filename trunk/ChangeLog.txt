@@ -1,3 +1,6 @@
+Version: 1.0.1.8	(2006-03-07)
+	Fix bug: When Updating, if the older file doesn't have version information, then don't update it
+
 Version: 1.0.1.7	(2006-03-07)
 	Modify Update Function
 
