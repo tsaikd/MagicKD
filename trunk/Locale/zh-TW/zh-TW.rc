@@ -49,6 +49,44 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,1,7
+ PRODUCTVERSION 1,0,1,7
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040404b0"
+        BEGIN
+            VALUE "FileDescription", "zh-TW"
+            VALUE "FileVersion", "1, 0, 1, 7"
+            VALUE "InternalName", "zh-TW"
+            VALUE "LegalCopyright", "Copyright (C) 2006"
+            VALUE "OriginalFilename", "zh-TW"
+            VALUE "ProductName", " zh-TW"
+            VALUE "ProductVersion", "1, 0, 1, 7"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x404, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -78,7 +116,7 @@ BEGIN
     IDS_CONF_CHECK_STARTMIN "開始時最小化"
     IDS_CONF_CHECK_SHOWCLOSEWINDOW "顯示關閉進度"
     IDS_CONF_CHECK_CHECKUPDATE "定期檢查更新"
-    IDS_CONF_MSG_WANTUPDATEORNOT "目前最新的版本是 %s\n您想要更新到最新版本嗎？\n(需要重新啟動)"
+    IDS_CONF_MSG_WANTUPDATEORNOT "目前網路上有更新的版本\n您想要更新到最新版本嗎？\n(需要重新啟動)"
     IDS_CONF_MSG_UPDATEFAILED "更新版本失敗"
     IDS_CONF_MSG_NOUPDATE   "此版本已經是最新版\n無需更新"
     IDS_CONF_MSG_UPDATECONNECTFAILED "網路連線失敗"

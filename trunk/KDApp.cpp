@@ -6,7 +6,9 @@
 
 CKDApp::CKDApp()
 	:	m_bRestart(false),
+#ifdef KDAPP_ENABLE_GETAPPOTHERDIR
 		m_lpAppConfDir(NULL), m_lpAppLangDir(NULL),
+#endif //KDAPP_ENABLE_GETAPPOTHERDIR
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 		m_lpAppFileVer(NULL), m_lpAppProductVer(NULL),
 #endif //KDAPP_ENABLE_GETAPPVERSION
@@ -37,6 +39,7 @@ CKDApp::CKDApp()
 		m_lpAppDir = new TCHAR[u64Len];
 		_tcscpy((LPTSTR)m_lpAppDir, sBuffer);
 
+#ifdef KDAPP_ENABLE_GETAPPOTHERDIR
 		m_lpAppConfDir = new TCHAR[u64Len + _tcslen(_T("conf\\"))];
 		_stprintf((LPTSTR)m_lpAppConfDir, _T("%sconf\\"), m_lpAppDir);
 		if (!PathFileExists(m_lpAppConfDir))
@@ -46,6 +49,7 @@ CKDApp::CKDApp()
 		_stprintf((LPTSTR)m_lpAppLangDir, _T("%slang\\"), m_lpAppDir);
 		if (!PathFileExists(m_lpAppLangDir))
 			::CreateDirectory(m_lpAppLangDir, NULL);
+#endif //KDAPP_ENABLE_GETAPPOTHERDIR
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
 		m_lpTmpBatchPath = new TCHAR[u64Len + _tcslen(_T("tmp.cmd"))];
@@ -58,21 +62,34 @@ CKDApp::CKDApp()
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 	if (m_lpAppPath) {
 		u64Len = GetFileVersionInfoSize(m_lpAppPath, NULL);
-		if (u64Len) {
+		while (u64Len) {
+			struct LANGANDCODEPAGE {
+				WORD wLanguage;
+				WORD wCodePage;
+			} *lpTranslate;
+
+			CString sQuery;
 			CString sVer;
 			TCHAR *btVersion;
 			UINT uVersionLen;
 			BYTE *pData = new BYTE[u64Len];
 
 			GetFileVersionInfo(m_lpAppPath, NULL, u64Len, pData);
-			if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\FileVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
+
+			if (!VerQueryValue(pData, _T("\\VarFileInfo\\Translation"), (LPVOID*)&lpTranslate, &uVersionLen))
+				break;
+
+			sQuery.Format(_T("\\StringFileInfo\\%04x%04x\\FileVersion"), lpTranslate[0].wLanguage, lpTranslate[0].wCodePage);
+			if (VerQueryValue(pData, (LPTSTR)(LPCTSTR)sQuery, (LPVOID *)&btVersion, &uVersionLen)) {
 				sVer = btVersion;
 				sVer.Replace(_T(" "), _T(""));
 				sVer.Replace(_T(","), _T("."));
 				m_lpAppFileVer = new TCHAR[uVersionLen + 1];
 				_tcscpy((LPTSTR)m_lpAppFileVer, sVer);
 			}
-			if (VerQueryValue(pData, _T("\\StringFileInfo\\040403b6\\ProductVersion"), (LPVOID *)&btVersion, &uVersionLen)) {
+
+			sQuery.Format(_T("\\StringFileInfo\\%04x%04x\\ProductVersion"), lpTranslate[0].wLanguage, lpTranslate[0].wCodePage);
+			if (VerQueryValue(pData, (LPTSTR)(LPCTSTR)sQuery, (LPVOID *)&btVersion, &uVersionLen)) {
 				sVer = btVersion;
 				sVer.Replace(_T(" "), _T(""));
 				sVer.Replace(_T(","), _T("."));
@@ -81,6 +98,7 @@ CKDApp::CKDApp()
 			}
 
 			delete [] pData;
+			break;
 		}
 	}
 #endif //KDAPP_ENABLE_GETAPPVERSION
@@ -89,6 +107,7 @@ CKDApp::CKDApp()
 CKDApp::~CKDApp()
 {
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
+#define KDAPP_BATCHFILE_NEWLINE _T("\r\n")
 	while (m_bUpdateApp && m_lpTmpBatchPath) {
 		HANDLE hBatchFile = CreateFile(m_lpTmpBatchPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (hBatchFile == INVALID_HANDLE_VALUE)
@@ -101,11 +120,12 @@ CKDApp::~CKDApp()
 		DWORD dwWriteLen;
 		CString sBatchContext;
 		sBatchContext.Format(
-			_T("sAppName = \"%s\"\n")
-			_T("Const iArraySize = %d\n")
-			_T("Dim sOldFile(%d)\n")
-			_T("Dim sNewFile(%d)\n")
-			_T("\n"),
+			_T("sAppName = \"%s\"") KDAPP_BATCHFILE_NEWLINE
+			_T("Const iArraySize = %d") KDAPP_BATCHFILE_NEWLINE
+			_T("Dim sOldFile(%d)") KDAPP_BATCHFILE_NEWLINE
+			_T("Dim sNewFile(%d)") KDAPP_BATCHFILE_NEWLINE
+			KDAPP_BATCHFILE_NEWLINE
+			,
 			m_lpAppName,
 			iCount,
 			iCount - 1,
@@ -114,45 +134,46 @@ CKDApp::~CKDApp()
 
 		for (i=0 ; i<iCount ; i++) {
 			sBatchContext.AppendFormat(
-				_T("sOldFile(%d) = \"%s\"\n")
-				_T("sNewFile(%d) = \"%s\"\n"),
+				_T("sOldFile(%d) = \"%s\"") KDAPP_BATCHFILE_NEWLINE
+				_T("sNewFile(%d) = \"%s\"") KDAPP_BATCHFILE_NEWLINE
+				,
 				i, m_saOldAppPath[i],
 				i, m_saNewAppPath[i]
 				);
 		}
 
 		sBatchContext.AppendFormat(
-			_T("\n")
-			_T("Set objShell = CreateObject(\"WScript.Shell\")\n")
-			_T("Set objFS = CreateObject(\"Scripting.FileSystemObject\")\n")
-			_T("\n")
-			_T("For i=0 To (iArraySize-1)\n")
-			_T("	iLoopMaxTimes = 30\n")
-			_T("	While objFS.FileExists(sOldFile(i)) And (iLoopMaxTimes > 0)\n")
-			_T("		objFS.DeleteFile sOldFile(i), True\n")
-			_T("		iLoopMaxTimes = iLoopMaxTimes - 1\n")
-			_T("		If (iLoopMaxTimes < 25) Then\n")
-			_T("			WScript.Sleep(1000)\n")
-			_T("		End If\n")
-			_T("	Wend\n")
-			_T("	If objFS.FileExists(sNewFile(i)) Then\n")
-			_T("		objFS.MoveFile sNewFile(i), sOldFile(i)\n")
-			_T("	End If\n")
-			_T("Next\n")
-			_T("\n")
+			KDAPP_BATCHFILE_NEWLINE
+			_T("Set objShell = CreateObject(\"WScript.Shell\")") KDAPP_BATCHFILE_NEWLINE
+			_T("Set objFS = CreateObject(\"Scripting.FileSystemObject\")") KDAPP_BATCHFILE_NEWLINE
+			KDAPP_BATCHFILE_NEWLINE
+			_T("For i=0 To (iArraySize-1)") KDAPP_BATCHFILE_NEWLINE
+			_T("	iLoopMaxTimes = 30") KDAPP_BATCHFILE_NEWLINE
+			_T("	While objFS.FileExists(sOldFile(i)) And (iLoopMaxTimes > 0)") KDAPP_BATCHFILE_NEWLINE
+			_T("		objFS.DeleteFile sOldFile(i), True") KDAPP_BATCHFILE_NEWLINE
+			_T("		iLoopMaxTimes = iLoopMaxTimes - 1") KDAPP_BATCHFILE_NEWLINE
+			_T("		If (iLoopMaxTimes < 25) Then") KDAPP_BATCHFILE_NEWLINE
+			_T("			WScript.Sleep(1000)") KDAPP_BATCHFILE_NEWLINE
+			_T("		End If") KDAPP_BATCHFILE_NEWLINE
+			_T("	Wend") KDAPP_BATCHFILE_NEWLINE
+			_T("	If objFS.FileExists(sNewFile(i)) Then") KDAPP_BATCHFILE_NEWLINE
+			_T("		objFS.MoveFile sNewFile(i), sOldFile(i)") KDAPP_BATCHFILE_NEWLINE
+			_T("	End If") KDAPP_BATCHFILE_NEWLINE
+			_T("Next") KDAPP_BATCHFILE_NEWLINE
+			KDAPP_BATCHFILE_NEWLINE
 			);
 
 		if (m_bShowUpdateMsg) {
 			sBatchContext.AppendFormat(
-			_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName\n")
+			_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName") KDAPP_BATCHFILE_NEWLINE
 				);
 		}
 
 		sBatchContext.AppendFormat(
-			_T("If objFS.FileExists(WScript.ScriptFullName) Then\n")
-			_T("	objFS.DeleteFile WScript.ScriptFullName, True\n")
-			_T("End If\n")
-			_T("objShell.Run sAppName + \".exe\"\n")
+			_T("If objFS.FileExists(WScript.ScriptFullName) Then") KDAPP_BATCHFILE_NEWLINE
+			_T("	objFS.DeleteFile WScript.ScriptFullName, True") KDAPP_BATCHFILE_NEWLINE
+			_T("End If") KDAPP_BATCHFILE_NEWLINE
+			_T("objShell.Run sAppName + \".exe\"") KDAPP_BATCHFILE_NEWLINE
 			);
 
 		CStringA sBatchContextA;
@@ -178,10 +199,12 @@ CKDApp::~CKDApp()
 		delete [] m_lpAppPath;
 	if (m_lpAppDir)
 		delete [] m_lpAppDir;
+#ifdef KDAPP_ENABLE_GETAPPOTHERDIR
 	if (m_lpAppConfDir)
 		delete [] m_lpAppConfDir;
 	if (m_lpAppLangDir)
 		delete [] m_lpAppLangDir;
+#endif //KDAPP_ENABLE_GETAPPOTHERDIR
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 	if (m_lpAppFileVer)
 		delete [] m_lpAppFileVer;
@@ -191,12 +214,86 @@ CKDApp::~CKDApp()
 }
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
+// AppName Version Url
+bool CKDApp::GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, const CStringArray &saQueryAppName,
+	const CArray<int, int> &aiQueryVerSize, CStringArray &saReturnVer, CStringArray &saReturnUrl)
+{
+	saReturnVer.RemoveAll();
+	saReturnUrl.RemoveAll();
+	int i, iCount = saQueryAppName.GetCount();
+	if ((iCount < 1) || (iCount != aiQueryVerSize.GetCount()))
+		return false;
+	saReturnVer.SetSize(iCount);
+	saReturnUrl.SetSize(iCount);
+
+	bool bRes = true;
+	CInternetSession session(_T("Check Update App Session"));
+	CStdioFile *pFile = NULL;
+	TRY {
+		pFile = session.OpenURL(lpQueryUrl);
+	} CATCH_ALL(e) {
+	} END_CATCH_ALL
+	if (pFile) {
+		CString sPageContext;
+		CString sBuf;
+		char *pBuf = new char[UPDATE_QUERY_SIZE];
+
+		while (pFile->Read(pBuf, UPDATE_QUERY_SIZE)) {
+			sBuf = pBuf;
+			sPageContext.Append(sBuf);
+		}
+
+		int iPos;
+		for (i=0 ; i<iCount ; i++) {
+			iPos = sPageContext.Find(_T("404 Not Found"));
+			if (-1 != iPos) {
+				bRes = false;
+				break;
+			}
+
+			iPos = sPageContext.Find(saQueryAppName[i]);
+			if (-1 != iPos) {
+				LPCTSTR lpPageContext = sPageContext;
+				lpPageContext += iPos + _tcslen(saQueryAppName[i]) + 1;
+
+				CString *psReturnVer = (CString *)&saReturnVer.GetAt(i);
+				LPTSTR lpVersion = psReturnVer->GetBuffer(aiQueryVerSize[i] + 1);
+				_tcsncpy(lpVersion, lpPageContext, aiQueryVerSize[i]);
+				*(lpVersion + aiQueryVerSize[i]) = _T('\0');
+				psReturnVer->ReleaseBuffer();
+
+				int iTextWrite = 0;
+				psReturnVer = (CString *)&saReturnUrl.GetAt(i);
+				lpVersion = psReturnVer->GetBuffer(MAX_PATH);
+				lpPageContext += aiQueryVerSize[i] + 1;
+				while ((*lpPageContext != _T('\0')) && (*lpPageContext != _T('\n')) && (iTextWrite < MAX_PATH)) {
+					*lpVersion = *lpPageContext;
+					lpVersion++;
+					lpPageContext++;
+					iTextWrite++;
+				}
+				*lpVersion = _T('\0');
+				psReturnVer->ReleaseBuffer();
+			}
+		}
+
+		delete pBuf;
+		pFile->Close();
+		delete pFile;
+	} else {
+		bRes = false;
+	}
+
+	session.Close();
+	return bRes;
+}
+
 CString CKDApp::GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, LPCTSTR lpQueryKeyword,
-	LONGLONG i64QueryOffset, short unsigned int iQueryVerSize)
+	const LONGLONG i64QueryOffset, const short unsigned int iQueryVerSize)
 {
 	CString sRes;
 
-	CInternetSession session(_T("Update App Session"));
+	CInternetSession session(_T("Check Update App Session"));
 	CStdioFile *pFile = NULL;
 	TRY {
 		pFile = session.OpenURL(lpQueryUrl);

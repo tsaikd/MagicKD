@@ -145,6 +145,7 @@
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
+				DisableSpecificWarnings="4996;4706"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

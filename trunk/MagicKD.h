@@ -4,7 +4,6 @@
 	#error 在對 PCH 包含此檔案前先包含 'stdafx.h'
 #endif
 
-#include "resource.h"
 #include "Ini.h"
 #include "KDApp.h"
 #include "KDSingleApp.h"

@@ -1,5 +1,7 @@
 /*
 
+If You Want to Support GetAppOtherDir, in StdAfx.h
+	#define KDAPP_ENABLE_GETAPPOTHERDIR
 If You Want to Support UpdateAppOnLine, in StdAfx.h
 	#define KDAPP_ENABLE_UPDATEAPPONLINE
 If You Want to Support GetAppVersion, in StdAfx.h
@@ -18,16 +20,21 @@ public:
 	_inline LPCTSTR GetAppName() { return m_lpAppName; }
 	_inline LPCTSTR GetAppPath() { return m_lpAppPath; }
 	_inline LPCTSTR GetAppDir() { return m_lpAppDir; }
-	_inline LPCTSTR GetAppConfDir() { return m_lpAppConfDir; }
-	_inline LPCTSTR GetAppLangDir() { return m_lpAppLangDir; }
 
 private:
 	bool m_bRestart;
 	LPCTSTR m_lpAppName;
 	LPCTSTR m_lpAppPath;
 	LPCTSTR m_lpAppDir;
+
+#ifdef KDAPP_ENABLE_GETAPPOTHERDIR
+public:
+	_inline LPCTSTR GetAppConfDir() { return m_lpAppConfDir; }
+	_inline LPCTSTR GetAppLangDir() { return m_lpAppLangDir; }
+private:
 	LPCTSTR m_lpAppConfDir;
 	LPCTSTR m_lpAppLangDir;
+#endif //KDAPP_ENABLE_GETAPPOTHERDIR
 
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 public:
@@ -40,8 +47,10 @@ private:
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
 public:
+	bool GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, const CStringArray &saQueryAppName,
+		const CArray<int, int> &aiQueryVerSize, CStringArray &saReturnVer, CStringArray &saReturnUrl);
 	CString GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, LPCTSTR lpQueryKeyword,
-		LONGLONG i64QueryOffset, short unsigned int iQueryVerSize);
+		const LONGLONG i64QueryOffset, const short unsigned int iQueryVerSize);
 	bool SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath, bool bShowMsg = true);
 private:
 	bool m_bUpdateApp;

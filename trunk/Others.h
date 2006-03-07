@@ -82,3 +82,62 @@ bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8
 
 int GetOnInternet(LPCSTR lpszTestHost = "www.google.com", u_short uTestPort = 80);
 int GetOnOffline();
+
+class CGetFileVersion : public CString
+{
+public:
+	CGetFileVersion(LPCTSTR lpFilePath)
+		:	m_lpAppFileVer(NULL), m_lpAppProductVer(NULL)
+	{
+		DWORD dwLen = GetFileVersionInfoSize(lpFilePath, NULL);
+		while (dwLen) {
+			struct LANGANDCODEPAGE {
+				WORD wLanguage;
+				WORD wCodePage;
+			} *lpTranslate;
+
+			CString sQuery;
+			CString sVer;
+			TCHAR *btVersion;
+			UINT uVersionLen;
+			BYTE *pData = new BYTE[dwLen];
+
+			GetFileVersionInfo(lpFilePath, NULL, dwLen, pData);
+
+			if (!VerQueryValue(pData, _T("\\VarFileInfo\\Translation"), (LPVOID*)&lpTranslate, &uVersionLen))
+				break;
+
+			sQuery.Format(_T("\\StringFileInfo\\%04x%04x\\FileVersion"), lpTranslate[0].wLanguage, lpTranslate[0].wCodePage);
+			if (VerQueryValue(pData, (LPTSTR)(LPCTSTR)sQuery, (LPVOID *)&btVersion, &uVersionLen)) {
+				sVer = btVersion;
+				sVer.Replace(_T(" "), _T(""));
+				sVer.Replace(_T(","), _T("."));
+				m_lpAppFileVer = new TCHAR[uVersionLen + 1];
+				_tcscpy((LPTSTR)m_lpAppFileVer, sVer);
+			}
+
+			sQuery.Format(_T("\\StringFileInfo\\%04x%04x\\ProductVersion"), lpTranslate[0].wLanguage, lpTranslate[0].wCodePage);
+			if (VerQueryValue(pData, (LPTSTR)(LPCTSTR)sQuery, (LPVOID *)&btVersion, &uVersionLen)) {
+				sVer = btVersion;
+				sVer.Replace(_T(" "), _T(""));
+				sVer.Replace(_T(","), _T("."));
+				m_lpAppProductVer = new TCHAR[uVersionLen + 1];
+				_tcscpy((LPTSTR)m_lpAppProductVer, sVer);
+			}
+
+			if (m_lpAppProductVer)
+				SetString(m_lpAppProductVer);
+			else if (m_lpAppFileVer)
+				SetString(m_lpAppFileVer);
+
+			delete [] pData;
+			break;
+		}
+	}
+
+	_inline LPCTSTR GetAppFileVer() { return m_lpAppFileVer; }
+	_inline LPCTSTR GetAppProductVer() { return m_lpAppProductVer; }
+private:
+	LPCTSTR m_lpAppFileVer;
+	LPCTSTR m_lpAppProductVer;
+};

@@ -140,7 +140,7 @@ bool CWallEnablePicList::RemoveFind(LPCTSTR sMatch)
 		return NULL;
 
 	m_mux.Lock();
-	bool bRes;
+	bool bRes = false;
 
 	if (m_lEnableItem.IsEmpty()) {
 		m_mux.Unlock();

@@ -160,8 +160,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,6
- PRODUCTVERSION 1,0,1,6
+ FILEVERSION 1,0,1,7
+ PRODUCTVERSION 1,0,1,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -177,11 +177,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 1, 6"
+            VALUE "FileVersion", "1, 0, 1, 7"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 1, 6"
+            VALUE "ProductVersion", "1, 0, 1, 7"
         END
     END
     BLOCK "VarFileInfo"
@@ -274,7 +274,7 @@ BEGIN
     IDS_CONF_CHECK_SHOWCLOSEWINDOW "Show Close Window"
     IDS_CONF_CHECK_CHECKUPDATE "Auto Check Update"
     IDS_CONF_MSG_WANTUPDATEORNOT 
-                            "The lastest version: %s\nDo you want to update?\n(Need to restart)"
+                            "There is lastest version on the internet\nDo you want to update?\n(Need to restart)"
     IDS_CONF_MSG_UPDATEFAILED "Failed to update"
     IDS_CONF_MSG_NOUPDATE   "This is the lastest version now\nNo need to update"
     IDS_CONF_MSG_UPDATECONNECTFAILED "Failed to net connection"

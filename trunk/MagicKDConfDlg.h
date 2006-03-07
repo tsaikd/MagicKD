@@ -31,13 +31,18 @@ public:
 	CKDButton m_check_CheckUpdate;
 	CSliderCtrl m_sliderTransparency;
 	CProgressCtrl m_progress_Update;
-protected:
 private:
 	bool m_bInit;
 	UINT m_uUpdateTimer;
-	CString m_sLastVer;
-	CString m_sLastUrl;
+//	CString m_sLastVer;
+//	CString m_sLastUrl;
 	CKDGetHttpFile m_GetHttpFile;
+	CStringArray m_saNowVersion;
+	CArray<int, int> m_aiQueryVerSize;
+	CStringArray m_saReturnVer;
+	CStringArray m_saReturnUrl;
+	CStringArray m_saOldAppPath;
+	CStringArray m_saNewAppPath;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ¤ä´©

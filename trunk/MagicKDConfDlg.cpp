@@ -25,6 +25,23 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	// Set Update Infomation
+	int iArraySize = 2;
+	m_saNowVersion.SetSize(iArraySize);
+	m_aiQueryVerSize.SetSize(iArraySize);
+	m_saOldAppPath.SetSize(iArraySize);
+	m_saNewAppPath.SetSize(iArraySize);
+
+	m_saNowVersion[0] = theApp.GetAppProductVer();
+	m_aiQueryVerSize[0] = 7;
+	m_saOldAppPath[0].Format(_T("%s.exe"), theApp.GetAppName());
+	m_saNewAppPath[0].Format(_T("%s_Update.exe"), theApp.GetAppName());
+
+	m_saNowVersion[1] = CGetFileVersion(_T("lang/zh-TW.dll"));
+	m_aiQueryVerSize[1] = 7;
+	m_saOldAppPath[1].Format(_T("lang/zh-TW.dll"));
+	m_saNewAppPath[1].Format(_T("lang/zh-TW_Update.dll"));
+
 	GetDlgItem(IDC_CONF_STATIC_VERSION)->SetWindowText(theApp.GetAppProductVer());
 
 	while (m_combo_Language.GetCount())
@@ -123,19 +140,17 @@ void CMagicKDConfDlg::UpdateFuncCheck()
 
 bool CMagicKDConfDlg::IsAppNeedUpdate()
 {
-	m_sLastVer = theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/"), _T("</ul>"), -19, 7);
-	CString sNowVer(theApp.GetAppProductVer());
+	if (theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/UpdateList.txt"),
+		m_saOldAppPath, m_aiQueryVerSize, m_saReturnVer, m_saReturnUrl)) {
+		int i, iCount = m_saNowVersion.GetCount();
 
-	if (m_sLastVer.IsEmpty()) {
-		return false;
-	} else if (m_sLastVer == sNowVer) {
-		m_sLastUrl.Format(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/%s/"), m_sLastVer);
-		return false;
-	} else {
-		m_sLastUrl.Format(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/%s/"), m_sLastVer);
-		g_pTheConf->m_General_bUpdateLastest = false;
-		return true;
+		for (i=0 ; i<iCount ; i++) {
+			if (!m_saNowVersion[i].IsEmpty() && !m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
+				return true;
+		}
 	}
+
+	return false;
 }
 
 void CMagicKDConfDlg::DoAppUpdate()
@@ -147,20 +162,17 @@ void CMagicKDConfDlg::DoAppUpdate()
 
 	CStringArray saOldAppPath;
 	CStringArray saNewAppPath;
-	saOldAppPath.SetSize(2);
-	saNewAppPath.SetSize(2);
 
-	saOldAppPath[0].Format(_T("%s.exe"), theApp.GetAppName());
-	saNewAppPath[0].Format(_T("%s_Update.exe"), theApp.GetAppName());
-	saOldAppPath[1].Format(_T("lang/zh-TW.dll"));
-	saNewAppPath[1].Format(_T("lang/zh-TW_Update.dll"));
-
-	int i, iCount = saNewAppPath.GetCount();
+	int i, iCount = m_saReturnUrl.GetCount();
 	for (i=0 ; i<iCount ; i++) {
-		if (!m_GetHttpFile.AddFileList(m_sLastUrl + saOldAppPath[i], saNewAppPath[i])) {
-			MessageBox(CResString(IDS_CONF_MSG_UPDATEFAILED), NULL, MB_OK | MB_ICONERROR);
-			bUpdate = false;
-			break;
+		if (!m_saNowVersion[i].IsEmpty() && !m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i])) {
+			if (!m_GetHttpFile.AddFileList(m_saReturnUrl[i], m_saNewAppPath[i])) {
+				MessageBox(CResString(IDS_CONF_MSG_UPDATEFAILED), NULL, MB_OK | MB_ICONERROR);
+				bUpdate = false;
+				break;
+			}
+			saOldAppPath.Add(m_saOldAppPath[i]);
+			saNewAppPath.Add(m_saNewAppPath[i]);
 		}
 	}
 
@@ -256,14 +268,11 @@ void CMagicKDConfDlg::OnBnClickedConfBtnRestart()
 
 void CMagicKDConfDlg::OnBnClickedConfBtnCheckupdate()
 {
-	if (IsAppNeedUpdate()) {
-		CString sMsg;
-		sMsg.Format(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), m_sLastVer);
-		if (IDYES == MessageBox(sMsg, NULL, MB_YESNO | MB_ICONQUESTION)) {
-			DoAppUpdate();
-		}
-	} else if (m_sLastVer.IsEmpty()) {
+	if (GetOnInternet() != 0) {
 		MessageBox(CResString(IDS_CONF_MSG_UPDATECONNECTFAILED), NULL, MB_OK | MB_ICONERROR);
+	} else if (IsAppNeedUpdate()) {
+		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), NULL, MB_YESNO | MB_ICONQUESTION))
+			DoAppUpdate();
 	} else {
 		MessageBox(CResString(IDS_CONF_MSG_NOUPDATE), NULL, MB_OK | MB_ICONINFORMATION);
 	}
