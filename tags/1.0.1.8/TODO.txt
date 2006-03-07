@@ -1,0 +1,10 @@
+Initial function
+
+WallChanger:
+ListCtrl可按CTRL+CVX
+老闆鍵
+設假桌布
+
+整合BindWinKey
+
+論壇抓圖程式
