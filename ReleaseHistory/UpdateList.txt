@@ -1,0 +1,2 @@
+MagicKD.exe 1.0.1.7 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.7/MagicKD.exe
+lang/zh-TW.dll 1.0.1.7 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.7/lang/zh-TW.dll
