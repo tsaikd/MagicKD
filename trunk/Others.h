@@ -149,3 +149,5 @@ private:
 	LPCTSTR m_lpAppFileVer;
 	LPCTSTR m_lpAppProductVer;
 };
+
+bool ExplorerFile(LPCTSTR lpFilePath);

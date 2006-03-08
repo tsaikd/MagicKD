@@ -301,15 +301,10 @@ bool CWallChangerDlg::SetRandWallPager()
 			break;
 		}
 
-		if ((iRes == IDYES) && PathFileExists(sNowPicPath)) {
+		if ((iRes == IDYES) && PathFileExists(sNowPicPath))
 			DeletePicFile(sNowPicPath, true);
-			RETURN(false);
-		} else if (iRes == IDNO) {
-			CString sBuf = sNowPicPath;
-			PathRemoveFileSpec(sBuf.GetBuffer());
-			sBuf.ReleaseBuffer();
-			ShellExecute(m_hWnd, _T("open"), sBuf, NULL, NULL, SW_SHOW);
-		}
+		else if (iRes == IDNO)
+			ExplorerFile(sNowPicPath);
 
 		RETURN(false);
 	}
@@ -509,7 +504,7 @@ void CWallChangerDlg::OnOK()
 
 void CWallChangerDlg::OnCancel()
 {
-	((CDialog *)GetParent())->EndDialog(IDCANCEL);
+	theApp.Quit();
 
 //	CDialog::OnCancel();
 }

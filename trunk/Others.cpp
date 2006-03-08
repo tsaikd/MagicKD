@@ -475,3 +475,23 @@ int GetOnOffline()
 		return 1;
 	}
 }
+
+// Open explorer at the directory of file and select the file
+bool ExplorerFile(LPCTSTR lpFilePath)
+{
+	if (PathFileExists(lpFilePath)) {
+		CString sExplorer;
+		GetSystemWindowsDirectory(sExplorer.GetBuffer(MAX_PATH), MAX_PATH);
+		sExplorer.ReleaseBuffer();
+		sExplorer.AppendFormat(_T("\\explorer.exe"));
+
+		if (PathFileExists(sExplorer)) {
+			CString sParam;
+			sParam.Format(_T("/select,\"%s\""), lpFilePath);
+			ShellExecute(NULL, _T("open"), sExplorer, sParam, NULL, SW_SHOW);
+			return true;
+		}
+	}
+
+	return false;
+}
