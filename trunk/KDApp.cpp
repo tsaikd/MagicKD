@@ -1,21 +1,28 @@
 #include "StdAfx.h"
 #include "afxinet.h"
+#include "shlwapi.h"
 #include "KDApp.h"
 
-#define UPDATE_QUERY_SIZE 1024
+#ifdef KDAPP_ENABLE_UPDATEAPPONLINE
+	#define UPDATE_QUERY_SIZE 1024
+	#define KDAPP_BATCHFILE_EOL _T("\r\n")
+#endif //KDAPP_ENABLE_UPDATEAPPONLINE
 
 CKDApp::CKDApp()
-	:	m_bRestart(false),
+	:	m_bRestart(false),m_lpAppName(NULL), m_lpAppPath(NULL), m_lpAppDir(NULL)
 #ifdef KDAPP_ENABLE_GETAPPOTHERDIR
-		m_lpAppConfDir(NULL), m_lpAppLangDir(NULL),
+		,m_lpAppConfDir(NULL), m_lpAppLangDir(NULL)
 #endif //KDAPP_ENABLE_GETAPPOTHERDIR
 #ifdef KDAPP_ENABLE_GETAPPVERSION
-		m_lpAppFileVer(NULL), m_lpAppProductVer(NULL),
+		,m_lpAppFileVer(NULL), m_lpAppProductVer(NULL)
 #endif //KDAPP_ENABLE_GETAPPVERSION
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
-		m_bUpdateApp(false), m_bShowUpdateMsg(true), m_lpTmpBatchPath(NULL),
+		,m_bUpdateApp(false), m_bShowUpdateMsg(true), m_lpTmpBatchPath(NULL)
 #endif //KDAPP_ENABLE_UPDATEAPPONLINE
-		m_lpAppName(NULL), m_lpAppPath(NULL), m_lpAppDir(NULL)
+#ifdef KDAPP_ENABLE_GETCHANGEDDLLDIR
+		,m_lpAppDllDir(NULL)
+#endif //KDAPP_ENABLE_GETCHANGEDDLLDIR
+		
 {
 	size_t u64Len;
 	TCHAR sBuffer[MAX_PATH], *ptr;
@@ -54,15 +61,15 @@ CKDApp::CKDApp()
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
 		m_lpTmpBatchPath = new TCHAR[u64Len + _tcslen(_T("tmp.cmd"))];
 		_stprintf((LPTSTR)m_lpTmpBatchPath, _T("%stmp.vbs"), m_lpAppDir);
-#endif
+#endif //KDAPP_ENABLE_UPDATEAPPONLINE
 	} else {
 		MessageBox(NULL, _T("Can not locate the execution file!"), _T("ERROR"), MB_OK | MB_ICONERROR);
 	}
 
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 	if (m_lpAppPath) {
-		u64Len = GetFileVersionInfoSize(m_lpAppPath, NULL);
-		while (u64Len) {
+		DWORD dwRes = GetFileVersionInfoSize(m_lpAppPath, NULL);
+		while (dwRes) {
 			struct LANGANDCODEPAGE {
 				WORD wLanguage;
 				WORD wCodePage;
@@ -72,9 +79,9 @@ CKDApp::CKDApp()
 			CString sVer;
 			TCHAR *btVersion;
 			UINT uVersionLen;
-			BYTE *pData = new BYTE[u64Len];
+			BYTE *pData = new BYTE[dwRes];
 
-			GetFileVersionInfo(m_lpAppPath, NULL, u64Len, pData);
+			GetFileVersionInfo(m_lpAppPath, NULL, dwRes, pData);
 
 			if (!VerQueryValue(pData, _T("\\VarFileInfo\\Translation"), (LPVOID*)&lpTranslate, &uVersionLen))
 				break;
@@ -102,12 +109,48 @@ CKDApp::CKDApp()
 		}
 	}
 #endif //KDAPP_ENABLE_GETAPPVERSION
+
+#ifdef KDAPP_ENABLE_GETCHANGEDDLLDIR
+	#ifndef BUFSIZE
+		#define BUFSIZE MAX_PATH
+	#endif //BUFSIZE
+
+	if (m_lpAppPath) {
+		m_lpAppDllDir = new TCHAR[u64Len + _tcslen(_T("dll\\"))];
+		_stprintf((LPTSTR)m_lpAppDllDir, _T("%sdll\\"), m_lpAppDir);
+		if (!PathFileExists(m_lpAppDllDir))
+			::CreateDirectory(m_lpAppDllDir, NULL);
+
+		bool bRes = false;
+		DWORD dwRes;
+		TCHAR *lpData = new TCHAR[BUFSIZE];
+		dwRes = GetEnvironmentVariable(_T("PATH"), lpData, BUFSIZE);
+
+		if (dwRes) {
+			if (BUFSIZE < dwRes) {
+				delete [] lpData;
+				lpData = new TCHAR[dwRes];
+
+				if (GetEnvironmentVariable(_T("PATH"), lpData, dwRes))
+					bRes = true;
+			} else {
+				bRes = true;
+			}
+			if (bRes) {
+				CString sNewEnvPath;
+				sNewEnvPath.Format(_T("%s;%s"), lpData, m_lpAppDllDir);
+				SetEnvironmentVariable(_T("PATH"), sNewEnvPath);
+			}
+		}
+
+		delete [] lpData;
+	}
+#endif //KDAPP_ENABLE_GETCHANGEDDLLDIR
 }
 
 CKDApp::~CKDApp()
 {
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
-#define KDAPP_BATCHFILE_NEWLINE _T("\r\n")
 	while (m_bUpdateApp && m_lpTmpBatchPath) {
 		HANDLE hBatchFile = CreateFile(m_lpTmpBatchPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (hBatchFile == INVALID_HANDLE_VALUE)
@@ -119,19 +162,19 @@ CKDApp::~CKDApp()
 		CString sBatchContext;
 
 		sBatchContext.AppendFormat(
-			_T("Set objShell = CreateObject(\"WScript.Shell\")") KDAPP_BATCHFILE_NEWLINE
-			_T("Set objFS = CreateObject(\"Scripting.FileSystemObject\")") KDAPP_BATCHFILE_NEWLINE
-			_T("sAppName = \"%s\"") KDAPP_BATCHFILE_NEWLINE
+			_T("Set objShell = CreateObject(\"WScript.Shell\")") KDAPP_BATCHFILE_EOL
+			_T("Set objFS = CreateObject(\"Scripting.FileSystemObject\")") KDAPP_BATCHFILE_EOL
+			_T("sAppName = \"%s\"") KDAPP_BATCHFILE_EOL
 			, m_lpAppName
 			);
 
 		if (iCount && (iCount == m_saNewAppPath.GetCount())) {
 			sBatchContext.AppendFormat(
-				KDAPP_BATCHFILE_NEWLINE
-				_T("Const iArraySize = %d") KDAPP_BATCHFILE_NEWLINE
-				_T("Dim sOldFile(%d)") KDAPP_BATCHFILE_NEWLINE
-				_T("Dim sNewFile(%d)") KDAPP_BATCHFILE_NEWLINE
-				KDAPP_BATCHFILE_NEWLINE
+				KDAPP_BATCHFILE_EOL
+				_T("Const iArraySize = %d") KDAPP_BATCHFILE_EOL
+				_T("Dim sOldFile(%d)") KDAPP_BATCHFILE_EOL
+				_T("Dim sNewFile(%d)") KDAPP_BATCHFILE_EOL
+				KDAPP_BATCHFILE_EOL
 				, iCount
 				, iCount - 1
 				, iCount - 1
@@ -140,8 +183,8 @@ CKDApp::~CKDApp()
 
 		for (i=0 ; i<iCount ; i++) {
 			sBatchContext.AppendFormat(
-				_T("sOldFile(%d) = \"%s\"") KDAPP_BATCHFILE_NEWLINE
-				_T("sNewFile(%d) = \"%s\"") KDAPP_BATCHFILE_NEWLINE
+				_T("sOldFile(%d) = \"%s\"") KDAPP_BATCHFILE_EOL
+				_T("sNewFile(%d) = \"%s\"") KDAPP_BATCHFILE_EOL
 				, i, m_saOldAppPath[i]
 				, i, m_saNewAppPath[i]
 				);
@@ -149,36 +192,36 @@ CKDApp::~CKDApp()
 
 		if (iCount && (iCount == m_saNewAppPath.GetCount())) {
 			sBatchContext.AppendFormat(
-				KDAPP_BATCHFILE_NEWLINE
-				_T("For i=0 To (iArraySize-1)") KDAPP_BATCHFILE_NEWLINE
-				_T("	iLoopMaxTimes = 30") KDAPP_BATCHFILE_NEWLINE
-				_T("	While objFS.FileExists(sOldFile(i)) And (iLoopMaxTimes > 0)") KDAPP_BATCHFILE_NEWLINE
-				_T("		objFS.DeleteFile sOldFile(i), True") KDAPP_BATCHFILE_NEWLINE
-				_T("		iLoopMaxTimes = iLoopMaxTimes - 1") KDAPP_BATCHFILE_NEWLINE
-				_T("		If (iLoopMaxTimes < 25) Then") KDAPP_BATCHFILE_NEWLINE
-				_T("			WScript.Sleep(1000)") KDAPP_BATCHFILE_NEWLINE
-				_T("		End If") KDAPP_BATCHFILE_NEWLINE
-				_T("	Wend") KDAPP_BATCHFILE_NEWLINE
-				_T("	If objFS.FileExists(sNewFile(i)) Then") KDAPP_BATCHFILE_NEWLINE
-				_T("		objFS.MoveFile sNewFile(i), sOldFile(i)") KDAPP_BATCHFILE_NEWLINE
-				_T("	End If") KDAPP_BATCHFILE_NEWLINE
-				_T("Next") KDAPP_BATCHFILE_NEWLINE
+				KDAPP_BATCHFILE_EOL
+				_T("For i=0 To (iArraySize-1)") KDAPP_BATCHFILE_EOL
+				_T("	iLoopMaxTimes = 30") KDAPP_BATCHFILE_EOL
+				_T("	While objFS.FileExists(sOldFile(i)) And (iLoopMaxTimes > 0)") KDAPP_BATCHFILE_EOL
+				_T("		objFS.DeleteFile sOldFile(i), True") KDAPP_BATCHFILE_EOL
+				_T("		iLoopMaxTimes = iLoopMaxTimes - 1") KDAPP_BATCHFILE_EOL
+				_T("		If (iLoopMaxTimes < 25) Then") KDAPP_BATCHFILE_EOL
+				_T("			WScript.Sleep(1000)") KDAPP_BATCHFILE_EOL
+				_T("		End If") KDAPP_BATCHFILE_EOL
+				_T("	Wend") KDAPP_BATCHFILE_EOL
+				_T("	If objFS.FileExists(sNewFile(i)) Then") KDAPP_BATCHFILE_EOL
+				_T("		objFS.MoveFile sNewFile(i), sOldFile(i)") KDAPP_BATCHFILE_EOL
+				_T("	End If") KDAPP_BATCHFILE_EOL
+				_T("Next") KDAPP_BATCHFILE_EOL
 				);
 
 			if (m_bShowUpdateMsg) {
 				sBatchContext.AppendFormat(
-					KDAPP_BATCHFILE_NEWLINE
-					_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName") KDAPP_BATCHFILE_NEWLINE
+					KDAPP_BATCHFILE_EOL
+					_T("MsgBox \"Application Updated\", vbOKOnly + vbInformation , sAppName") KDAPP_BATCHFILE_EOL
 					);
 			}
 		}
 
 		sBatchContext.AppendFormat(
-			KDAPP_BATCHFILE_NEWLINE
-			_T("If objFS.FileExists(WScript.ScriptFullName) Then") KDAPP_BATCHFILE_NEWLINE
-			_T("	objFS.DeleteFile WScript.ScriptFullName, True") KDAPP_BATCHFILE_NEWLINE
-			_T("End If") KDAPP_BATCHFILE_NEWLINE
-			_T("objShell.Run sAppName + \".exe\"") KDAPP_BATCHFILE_NEWLINE
+			KDAPP_BATCHFILE_EOL
+			_T("If objFS.FileExists(WScript.ScriptFullName) Then") KDAPP_BATCHFILE_EOL
+			_T("	objFS.DeleteFile WScript.ScriptFullName, True") KDAPP_BATCHFILE_EOL
+			_T("End If") KDAPP_BATCHFILE_EOL
+			_T("objShell.Run sAppName + \".exe\"") KDAPP_BATCHFILE_EOL
 			);
 
 		CStringA sBatchContextA;
@@ -217,6 +260,10 @@ CKDApp::~CKDApp()
 	if (m_lpAppProductVer)
 		delete [] m_lpAppProductVer;
 #endif //KDAPP_ENABLE_GETAPPVERSION
+#ifdef KDAPP_ENABLE_GETCHANGEDDLLDIR
+	if (m_lpAppDllDir)
+		delete [] m_lpAppDllDir;
+#endif //KDAPP_ENABLE_GETCHANGEDDLLDIR
 }
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE

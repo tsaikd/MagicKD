@@ -1,11 +1,15 @@
 /*
 
-If You Want to Support GetAppOtherDir, in StdAfx.h
+Inherit CKDApp in MainApp class
+
+If You Want to Support "Get App Other Dir", in StdAfx.h
 	#define KDAPP_ENABLE_GETAPPOTHERDIR
-If You Want to Support UpdateAppOnLine, in StdAfx.h
+If You Want to Support "Update App Online", in StdAfx.h
 	#define KDAPP_ENABLE_UPDATEAPPONLINE
-If You Want to Support GetAppVersion, in StdAfx.h
+If You Want to Support "Get App Version", in StdAfx.h
 	#define KDAPP_ENABLE_GETAPPVERSION
+If You Want to Support "Get Changed Dll Dir", in StdAfx.h
+	#define KDAPP_ENABLE_GETCHANGEDDLLDIR
 
 */
 #pragma once
@@ -59,4 +63,11 @@ private:
 	CStringArray m_saOldAppPath;
 	CStringArray m_saNewAppPath;
 #endif //KDAPP_ENABLE_UPDATEAPPONLINE
+
+#ifdef KDAPP_ENABLE_GETCHANGEDDLLDIR
+public:
+	_inline LPCTSTR GetAppDllDir() { return m_lpAppDllDir; }
+private:
+	LPCTSTR m_lpAppDllDir;
+#endif //KDAPP_ENABLE_GETCHANGEDDLLDIR
 };
