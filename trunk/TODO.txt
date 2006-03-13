@@ -1,6 +1,7 @@
 Initial function
 
 WallChanger:
+先搜尋enable list
 ListCtrl可按CTRL+CVX
 老闆鍵
 設假桌布

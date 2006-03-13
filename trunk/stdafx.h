@@ -1,5 +1,7 @@
 #pragma once
 
+#define _CRT_NON_CONFORMING_SWPRINTFS
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN		// 從 Windows 標頭排除不常使用的成員
 #endif
