@@ -1,4 +1,5 @@
 	Fix bug: Explore the Picture File will not select it at first
+	Change CxImage Library from static to dynamic linking
 	Add CKDApp new support
 
 Version: 1.0.1.8	(2006-03-07)

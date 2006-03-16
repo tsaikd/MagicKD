@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CxImage", "cximage\cximage_vs8.vcproj", "{3C5D5D12-45C5-4F29-B695-A5435BEBB404}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CxImage", "CxImage\cximage_vs8.vcproj", "{3C5D5D12-45C5-4F29-B695-A5435BEBB404}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CxImageCrtDll", "CxImage\CxImageDLL\CxImageCrtDll_vs8.vcproj", "{5B433B5D-B37E-43D5-9172-1104A11577A9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -63,17 +63,17 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3C5D5D12-45C5-4F29-B695-A5435BEBB404}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3C5D5D12-45C5-4F29-B695-A5435BEBB404}.Debug|Win32.Build.0 = Debug|Win32
 		{3C5D5D12-45C5-4F29-B695-A5435BEBB404}.Release|Win32.ActiveCfg = Release|Win32
-		{3C5D5D12-45C5-4F29-B695-A5435BEBB404}.Release|Win32.Build.0 = Release|Win32
 		{3C5D5D12-45C5-4F29-B695-A5435BEBB404}.ReleaseSSE2|Win32.ActiveCfg = ReleaseSSE2|Win32
-		{3C5D5D12-45C5-4F29-B695-A5435BEBB404}.ReleaseSSE2|Win32.Build.0 = ReleaseSSE2|Win32
 		{5B433B5D-B37E-43D5-9172-1104A11577A9}.Debug|Win32.ActiveCfg = Debug|Win32
 		{5B433B5D-B37E-43D5-9172-1104A11577A9}.Release|Win32.ActiveCfg = Release|Win32
 		{5B433B5D-B37E-43D5-9172-1104A11577A9}.ReleaseSSE2|Win32.ActiveCfg = ReleaseSSE2|Win32
 		{01E38C09-06C1-428F-819A-55C95758325F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{01E38C09-06C1-428F-819A-55C95758325F}.Debug|Win32.Build.0 = Debug|Win32
 		{01E38C09-06C1-428F-819A-55C95758325F}.Release|Win32.ActiveCfg = Release|Win32
+		{01E38C09-06C1-428F-819A-55C95758325F}.Release|Win32.Build.0 = Release|Win32
 		{01E38C09-06C1-428F-819A-55C95758325F}.ReleaseSSE2|Win32.ActiveCfg = ReleaseSSE2|Win32
+		{01E38C09-06C1-428F-819A-55C95758325F}.ReleaseSSE2|Win32.Build.0 = ReleaseSSE2|Win32
 		{118C0047-C6AC-419C-A02A-CBC425C32DF8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{118C0047-C6AC-419C-A02A-CBC425C32DF8}.Release|Win32.ActiveCfg = Release|Win32
 		{118C0047-C6AC-419C-A02A-CBC425C32DF8}.ReleaseSSE2|Win32.ActiveCfg = ReleaseSSE2|Win32

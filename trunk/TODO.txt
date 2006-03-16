@@ -1,6 +1,9 @@
 Initial function
 
+只開finddup會有tabctrl上的問題
+
 WallChanger:
+沒開wallchanger不會顯示關閉進度dialog
 先搜尋enable list
 ListCtrl可按CTRL+CVX
 老闆鍵

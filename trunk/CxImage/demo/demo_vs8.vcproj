@@ -22,7 +22,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -145,7 +145,6 @@
 				AdditionalIncludeDirectories="..\cximage"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;VATI_EXTENSIONS"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile=".\Debug/demo.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"

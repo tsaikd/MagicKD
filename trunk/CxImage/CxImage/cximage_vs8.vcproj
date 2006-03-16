@@ -16,7 +16,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -52,7 +52,6 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;JAS_WIN_MSVC_BUILD"
 				StringPooling="true"
 				RuntimeLibrary="0"
-				TreatWChar_tAsBuiltInType="true"
 				PrecompiledHeaderFile=".\Release/cximage.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -94,8 +93,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory=".\$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
@@ -124,7 +123,6 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;JAS_WIN_MSVC_BUILD"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="true"
 				PrecompiledHeaderFile=".\Debug/cximage.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -168,7 +166,7 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseSSE2|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
