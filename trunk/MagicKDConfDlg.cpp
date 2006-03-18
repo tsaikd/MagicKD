@@ -79,7 +79,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	else
 		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
 
-	if (!g_pTheConf->m_General_bUpdateLastest && !IsAppNeedUpdate()) {
+	if (!g_pTheConf->m_General_bUpdateLastest && IsAppNeedUpdate()) {
 		DoAppUpdate();
 		theApp.SetUpdateAppShowMsg(false);
 		g_pTheConf->m_General_bUpdateLastest = m_bUpdateLastest = true;
@@ -157,7 +157,7 @@ bool CMagicKDConfDlg::IsAppNeedUpdate()
 		int i, iCount = m_saNowVersion.GetCount();
 
 		for (i=0 ; i<iCount ; i++) {
-			if (!m_saReturnUrl[i].IsEmpty() && !m_saNowVersion[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
+			if (!m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
 				return true;
 		}
 	}
@@ -195,6 +195,7 @@ void CMagicKDConfDlg::DoAppUpdate()
 			Sleep(350);
 		}
 		m_progress_Update.SetPos(10000);
+		g_pTheConf->m_General_bUpdateLastest = false;
 		theApp.SetUpdateApp(saOldAppPath, saNewAppPath);
 		theApp.Quit();
 	} else {
