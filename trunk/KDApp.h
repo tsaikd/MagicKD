@@ -55,6 +55,7 @@ public:
 		const CArray<int, int> &aiQueryVerSize, CStringArray &saReturnVer, CStringArray &saReturnUrl);
 	CString GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, LPCTSTR lpQueryKeyword,
 		const LONGLONG i64QueryOffset, const short unsigned int iQueryVerSize);
+	void SetUpdateAppShowMsg(bool bShowMsg);
 	bool SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath, bool bShowMsg = true);
 private:
 	bool m_bUpdateApp;

@@ -79,18 +79,18 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	else
 		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
 
-	if (g_pTheConf->m_General_bCheckUpdate) {
-		m_check_CheckUpdate.SetCheck(BST_CHECKED);
-		StartUpdateTimer();
-	} else {
-		m_check_CheckUpdate.SetCheck(BST_UNCHECKED);
-		StopUpdateTimer();
-	}
-
 	if (!g_pTheConf->m_General_bUpdateLastest && !IsAppNeedUpdate()) {
 		DoAppUpdate();
-
+		theApp.SetUpdateAppShowMsg(false);
 		g_pTheConf->m_General_bUpdateLastest = m_bUpdateLastest = true;
+	} else {
+		if (g_pTheConf->m_General_bCheckUpdate) {
+			m_check_CheckUpdate.SetCheck(BST_CHECKED);
+			StartUpdateTimer();
+		} else {
+			m_check_CheckUpdate.SetCheck(BST_UNCHECKED);
+			StopUpdateTimer();
+		}
 	}
 
 	m_sliderTransparency.SetRange(50, 255);
@@ -157,7 +157,7 @@ bool CMagicKDConfDlg::IsAppNeedUpdate()
 		int i, iCount = m_saNowVersion.GetCount();
 
 		for (i=0 ; i<iCount ; i++) {
-			if (!m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
+			if (!m_saReturnUrl[i].IsEmpty() && !m_saNowVersion[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
 				return true;
 		}
 	}

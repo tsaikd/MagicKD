@@ -387,20 +387,17 @@ CString CKDApp::GetUpdateAppOnLineVer(LPCTSTR lpQueryUrl, LPCTSTR lpQueryKeyword
 	return sRes;
 }
 
+void CKDApp::SetUpdateAppShowMsg(bool bShowMsg)
+{
+	m_bShowUpdateMsg = bShowMsg;
+}
+
 bool CKDApp::SetUpdateApp(CStringArray &saOldAppPath, CStringArray &saNewAppPath, bool bShowMsg/* = true*/)
 {
 	if (saOldAppPath.GetCount() != saNewAppPath.GetCount())
 		return false;
 
-	int i, iCount = saOldAppPath.GetCount();
-	for (i=0 ; i<iCount ; i++) {
-		if (!saOldAppPath.GetAt(i).IsEmpty() && !PathFileExists(saOldAppPath.GetAt(i)))
-			return false;
-		if (!saNewAppPath.GetAt(i).IsEmpty() && !PathFileExists(saNewAppPath.GetAt(i)))
-			return false;
-	}
-
-	m_bShowUpdateMsg = bShowMsg;
+	SetUpdateAppShowMsg(bShowMsg);
 
 	m_saOldAppPath.RemoveAll();
 	m_saNewAppPath.RemoveAll();

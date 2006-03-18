@@ -41,47 +41,45 @@ BOOL CMagicKDDlg::OnInitDialog()
 		g_pTheConf = new CMagicKDConf;
 	g_pTheConf->Init(&theApp.m_cIni);
 	LoadStringLib((LANGID)(UINT)g_pTheConf->m_General_uLangID);
-
-	// Check Necessary Library
-	HMODULE hLibTest;
-	hLibTest = LoadLibrary(CString(theApp.GetAppDllDir()) + _T("cximage.dll"));
-	if (hLibTest) {
-		FreeLibrary(hLibTest);
-	} else {
-		CString sMsg;
-		sMsg.Format(CResString(IDS_MSG_NONECESSARYDLL), _T("cximage.dll"));
-		MessageBox(sMsg, NULL, MB_OK | MB_ICONERROR);
-		m_bVisiable = false;
-		theApp.Quit();
-	}
-
-	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
-	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
-	if (m_cMainConfigDlg.m_bUpdateLastest)
-		m_bVisiable = false;
-
 	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 	if (!g_pTheTray)
 		g_pTheTray = new CKDTray;
-	if (!g_pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
-		if (IDYES == MessageBox(CResString(IDS_MSG_TRAYREGERROR), NULL, MB_YESNO | MB_ICONQUESTION)) {
-			theApp.SetRestart();
-			theApp.Quit();
-		}
-	}
+
+	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
+	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 
 	g_pTheTray->AppendMenu(MF_STRING, IDS_TRAY_RESTART, CResString(IDS_TRAY_RESTART));
 	g_pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
 	g_pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
 
+	// Check Necessary Library
 	if (!theApp.IsOnQuit()) {
+		HMODULE hLibTest;
+		hLibTest = LoadLibrary(CString(theApp.GetAppDllDir()) + _T("cximage.dll"));
+		if (hLibTest) {
+			FreeLibrary(hLibTest);
+		} else {
+			CString sMsg;
+			sMsg.Format(CResString(IDS_MSG_NONECESSARYDLL), _T("cximage.dll"));
+			MessageBox(sMsg, NULL, MB_OK | MB_ICONERROR);
+			m_bVisiable = false;
+			theApp.Quit();
+		}
+
+		if (!g_pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
+			if (IDYES == MessageBox(CResString(IDS_MSG_TRAYREGERROR), NULL, MB_YESNO | MB_ICONQUESTION)) {
+				theApp.SetRestart();
+				theApp.Quit();
+			}
+		}
+
 		SetFuncEnable(eFunc_WallChanger, g_pTheConf->m_FuncList_bWallChanger, false);
 		SetFuncEnable(eFunc_FindDupFile, g_pTheConf->m_FuncList_bFindDupFile, false);
 	}
 
 	m_cMainConfigDlg.UpdateFuncCheck();
 
-	if (g_pTheConf->m_General_bStartMin)
+	if (theApp.IsOnQuit() || g_pTheConf->m_General_bStartMin)
 		m_bVisiable = false;
 
 	ModifyStyleEx(0, WS_EX_LAYERED);
