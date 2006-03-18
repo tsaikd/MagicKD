@@ -4,8 +4,9 @@
 //
 #define IDS_MENU_CLOSE                  121
 #define IDS_MSG_TRAYREGERROR            122
-#define IDS_ALL_BTN_ENABLETIP           123
-#define IDS_ALL_BTN_DISABLETIP          124
+#define IDS_MSG_NONECESSARYDLL          123
+#define IDS_ALL_BTN_ENABLETIP           124
+#define IDS_ALL_BTN_DISABLETIP          125
 #define IDS_TRAY_OPENWINDOW             131
 #define IDS_TRAY_CLOSEWINDOW            132
 #define IDS_TRAY_RANDPIC                134

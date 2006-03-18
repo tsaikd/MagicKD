@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,7
- PRODUCTVERSION 1,0,1,7
+ FILEVERSION 1,0,1,9
+ PRODUCTVERSION 1,0,1,9
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "zh-TW"
-            VALUE "FileVersion", "1, 0, 1, 7"
+            VALUE "FileVersion", "1, 0, 1, 9"
             VALUE "InternalName", "zh-TW"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "zh-TW"
             VALUE "ProductName", " zh-TW"
-            VALUE "ProductVersion", "1, 0, 1, 7"
+            VALUE "ProductVersion", "1, 0, 1, 9"
         END
     END
     BLOCK "VarFileInfo"
@@ -107,6 +107,7 @@ STRINGTABLE
 BEGIN
     IDS_MENU_CLOSE          "關閉"
     IDS_MSG_TRAYREGERROR    "狀態圖示啟用失敗\n是否要重新啟動程式？"
+    IDS_MSG_NONECESSARYDLL  "無法找到 %s\n請到 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/ 下載\n放到 lib 資料夾中"
     IDS_ALL_BTN_ENABLETIP   "開啟提示"
     IDS_ALL_BTN_DISABLETIP  "關閉提示"
 END

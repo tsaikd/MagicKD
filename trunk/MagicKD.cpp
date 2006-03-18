@@ -13,6 +13,7 @@ CKDTray *g_pTheTray = NULL;
 CMagicKDEndDlg *g_pTheAppEndDlg = NULL;
 
 CMagicKDApp::CMagicKDApp()
+	:	m_bOnQuit(false)
 {
 }
 
@@ -47,6 +48,13 @@ BOOL CMagicKDApp::InitInstance()
 
 void CMagicKDApp::Quit()
 {
-	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd()))
+	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd())) {
 		::PostMessage(m_pMainWnd->GetSafeHwnd(), WM_QUIT, 0, 0);
+		m_bOnQuit = true;
+	}
+}
+
+bool CMagicKDApp::IsOnQuit()
+{
+	return m_bOnQuit;
 }

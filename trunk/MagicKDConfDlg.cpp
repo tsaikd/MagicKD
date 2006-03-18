@@ -26,7 +26,9 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// Set Update Infomation
-	int iArraySize = 2;
+	int i;
+	CString sCheckFileName;
+	int iArraySize = 3;
 	m_saNowVersion.SetSize(iArraySize);
 	m_aiQueryVerSize.SetSize(iArraySize);
 	m_saOldAppPath.SetSize(iArraySize);
@@ -37,11 +39,20 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	m_saOldAppPath[0].Format(_T("%s.exe"), theApp.GetAppName());
 	m_saNewAppPath[0].Format(_T("%s_Update.exe"), theApp.GetAppName());
 
-	if (PathFileExists(_T("lang/zh-TW.dll"))) {
-		m_saNowVersion[1] = CGetFileVersion(_T("lang/zh-TW.dll"));
-		m_aiQueryVerSize[1] = 7;
-		m_saOldAppPath[1].Format(_T("lang/zh-TW.dll"));
-		m_saNewAppPath[1].Format(_T("lang/zh-TW_Update.dll"));
+	sCheckFileName = _T("lib/cximage.dll");
+	i = 1;
+	m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
+	m_aiQueryVerSize[i] = 7;
+	m_saOldAppPath[i] = sCheckFileName;
+	m_saNewAppPath[i] = sCheckFileName + _T(".Update");
+
+	sCheckFileName = _T("lang/zh-TW.dll");
+	if (PathFileExists(sCheckFileName)) {
+		i = 2;
+		m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
+		m_aiQueryVerSize[i] = 7;
+		m_saOldAppPath[i] = sCheckFileName;
+		m_saNewAppPath[i] = sCheckFileName + _T(".Update");
 	}
 
 	GetDlgItem(IDC_CONF_STATIC_VERSION)->SetWindowText(theApp.GetAppProductVer());
@@ -50,7 +61,6 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 		m_combo_Language.DeleteString(0);
 	m_combo_Language.InsertString(0, _T("English"));
 	m_combo_Language.SetCurSel(0);
-	int i;
 	for (i=0 ; i<g_iLanguageCount ; i++) {
 		if (!g_aLanguages[i].bSupported && g_aLanguages[i].lid != 0 && IsLangFileExists(g_aLanguages[i].lid)) {
 			int iCur = m_combo_Language.InsertString(-1, g_aLanguages[i].pszLocale);

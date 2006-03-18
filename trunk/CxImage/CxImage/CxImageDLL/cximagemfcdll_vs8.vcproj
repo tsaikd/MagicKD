@@ -75,7 +75,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../../../$(ConfigurationName)/cximage.dll"
+				OutputFile="../../../$(ConfigurationName)/lib/cximage.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -175,7 +175,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../../../$(ConfigurationName)/cximage.dll"
+				OutputFile="../../../$(ConfigurationName)/lib/cximage.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/cximage.pdb"
@@ -269,7 +269,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../../../$(ConfigurationName)/cximage.dll"
+				OutputFile="../../../$(ConfigurationName)/lib/cximage.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/cximage.pdb"

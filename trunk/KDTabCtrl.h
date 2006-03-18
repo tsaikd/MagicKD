@@ -9,4 +9,5 @@ public:
 	virtual ~CKDTabCtrl();
 
 	LPARAM GetCurItemLParam();
+	int FindItemPos(LPCTSTR lpItemText);
 };

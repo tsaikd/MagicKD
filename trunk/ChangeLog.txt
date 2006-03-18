@@ -1,4 +1,6 @@
+Version: 1.0.1.9	(2006-03-18)
 	Fix bug: Explore the Picture File will not select it at first
+	Fix bug: CTabCtrl won't delete item when only exists FindDupFile function
 	Change CxImage Library from static to dynamic linking
 	Add CKDApp new support
 

@@ -16,8 +16,11 @@ public:
 	CMagicKDApp();
 
 	void Quit();
+	bool IsOnQuit();
 
 	CIni m_cIni;
+private:
+	bool m_bOnQuit;
 
 public:
 	virtual BOOL InitInstance();

@@ -42,6 +42,19 @@ BOOL CMagicKDDlg::OnInitDialog()
 	g_pTheConf->Init(&theApp.m_cIni);
 	LoadStringLib((LANGID)(UINT)g_pTheConf->m_General_uLangID);
 
+	// Check Necessary Library
+	HMODULE hLibTest;
+	hLibTest = LoadLibrary(CString(theApp.GetAppDllDir()) + _T("cximage.dll"));
+	if (hLibTest) {
+		FreeLibrary(hLibTest);
+	} else {
+		CString sMsg;
+		sMsg.Format(CResString(IDS_MSG_NONECESSARYDLL), _T("cximage.dll"));
+		MessageBox(sMsg, NULL, MB_OK | MB_ICONERROR);
+		m_bVisiable = false;
+		theApp.Quit();
+	}
+
 	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
 	if (m_cMainConfigDlg.m_bUpdateLastest)
@@ -61,8 +74,10 @@ BOOL CMagicKDDlg::OnInitDialog()
 	g_pTheTray->AppendMenu(MF_STRING, IDS_TRAY_OPENWINDOW, CResString(IDS_TRAY_OPENWINDOW));
 	g_pTheTray->AppendMenu(MF_STRING, IDS_TRAY_CLOSEWINDOW, CResString(IDS_TRAY_CLOSEWINDOW), true);
 
-	SetFuncEnable(eFunc_WallChanger, g_pTheConf->m_FuncList_bWallChanger, false);
-	SetFuncEnable(eFunc_FindDupFile, g_pTheConf->m_FuncList_bFindDupFile, false);
+	if (!theApp.IsOnQuit()) {
+		SetFuncEnable(eFunc_WallChanger, g_pTheConf->m_FuncList_bWallChanger, false);
+		SetFuncEnable(eFunc_FindDupFile, g_pTheConf->m_FuncList_bFindDupFile, false);
+	}
 
 	m_cMainConfigDlg.UpdateFuncCheck();
 
@@ -147,6 +162,7 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 	CString sTabName;
 	CDialog *pDlg = NULL;
 	int nID = 0;
+	int iItemPos = -1;
 
 	switch (eFunc) {
 	case eFunc_NULL:
@@ -189,7 +205,9 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 		}
 	} else {
 		if (pDlg){
-			m_cMainTab.DeleteItem(eFunc);
+			iItemPos = m_cMainTab.FindItemPos(sTabName);
+			if (iItemPos >=0)
+				m_cMainTab.DeleteItem(iItemPos);
 			pDlg->DestroyWindow();
 			delete pDlg;
 

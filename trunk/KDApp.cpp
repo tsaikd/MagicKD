@@ -116,8 +116,8 @@ CKDApp::CKDApp()
 	#endif //BUFSIZE
 
 	if (m_lpAppPath) {
-		m_lpAppDllDir = new TCHAR[u64Len + _tcslen(_T("dll\\"))];
-		_stprintf((LPTSTR)m_lpAppDllDir, _T("%sdll\\"), m_lpAppDir);
+		m_lpAppDllDir = new TCHAR[u64Len + _tcslen(_T("lib\\"))];
+		_stprintf((LPTSTR)m_lpAppDllDir, _T("%slib\\"), m_lpAppDir);
 		if (!PathFileExists(m_lpAppDllDir))
 			::CreateDirectory(m_lpAppDllDir, NULL);
 
