@@ -1,2 +1,3 @@
-MagicKD.exe 1.0.1.8 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.8/MagicKD.exe
-lang/zh-TW.dll 1.0.1.7 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.7/lang/zh-TW.dll
+MagicKD.exe 1.0.1.9 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.9/MagicKD.exe
+lib/cximage.dll 5.9.9.c http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.9/lib/cximage.dll
+lang/zh-TW.dll 1.0.1.9 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.9/lang/zh-TW.dll
