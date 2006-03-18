@@ -120,7 +120,7 @@
 				EnableFiberSafeOptimizations="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;LIBJ2K_EXPORTS"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				PrecompiledHeaderFile=".\Release/j2k.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
