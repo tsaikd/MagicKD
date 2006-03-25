@@ -99,6 +99,8 @@ public:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnBnClickedWallCheckShowdirloaderror();
 	afx_msg void OnBnClickedWallBtnMovepic();
+public:
+	afx_msg void OnBnClickedWallBtnExplore();
 };
 
 extern CWallChangerDlg *g_pWallChangerDlg;

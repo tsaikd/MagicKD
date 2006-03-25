@@ -20,6 +20,7 @@
 #define IDS_TRAY_DELNOWPIC              135
 #define IDS_TRAY_MOVEPIC                136
 #define IDS_TRAY_RESTART                137
+#define IDS_TRAY_EXPLOREPIC             138
 #define IDS_CONF_STATIC_TRANSPARENCY    141
 #define IDS_CONF_BTN_RESTART            142
 #define IDS_CONF_BTN_CHECKUPDATE        143
@@ -37,6 +38,7 @@
 #define IDS_WALL_BTN_DELPIC             172
 #define IDS_WALL_BTN_MOVEPIC            173
 #define IDS_WALL_BTN_ADDCLASS           174
+#define IDS_WALL_BTN_EXPLORE            175
 #define IDS_WALL_CHECK_SHOWDIRLOADERROR 177
 #define IDS_WALL_STATIC_WAITTIME        181
 #define IDS_WALL_STATIC_PICTOTALNUM     182
@@ -133,6 +135,7 @@
 #define IDC_COMBO1                      1069
 #define IDC_CONF_COMBO_LANGUAGE         1069
 #define IDC_CONF_STATIC_LANGUAGE        1070
+#define IDC_WALL_BTN_EXPLORE            1071
 
 // Next default values for new objects
 // 
@@ -140,7 +143,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        227
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1071
+#define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

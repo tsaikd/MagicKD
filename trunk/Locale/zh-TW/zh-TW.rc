@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,9
- PRODUCTVERSION 1,0,1,9
+ FILEVERSION 1,0,2,0
+ PRODUCTVERSION 1,0,2,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "zh-TW"
-            VALUE "FileVersion", "1, 0, 1, 9"
+            VALUE "FileVersion", "1, 0, 2, 0"
             VALUE "InternalName", "zh-TW"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "zh-TW"
             VALUE "ProductName", " zh-TW"
-            VALUE "ProductVersion", "1, 0, 1, 9"
+            VALUE "ProductVersion", "1, 0, 2, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -98,6 +98,7 @@ BEGIN
     IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
     IDS_TRAY_MOVEPIC        "移動目前桌布 ...\t(&M)"
     IDS_TRAY_RESTART        "重新啟動 MagicKD\t(&R)"
+    IDS_TRAY_EXPLOREPIC     "瀏覽目前桌布檔案\t(&E)"
     IDS_CONF_STATIC_TRANSPARENCY "透明度"
     IDS_CONF_BTN_RESTART    "重新啟動"
     IDS_CONF_BTN_CHECKUPDATE "檢查更新"
@@ -132,6 +133,7 @@ BEGIN
     IDS_WALL_BTN_DELPIC     "刪除"
     IDS_WALL_BTN_MOVEPIC    "移動"
     IDS_WALL_BTN_ADDCLASS   "新增"
+    IDS_WALL_BTN_EXPLORE    "瀏覽"
 END
 
 STRINGTABLE 

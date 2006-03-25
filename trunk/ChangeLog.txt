@@ -1,3 +1,6 @@
+Version: 1.0.2.0	(2006-03-25)
+	Add Explore Button in WallChanger Dialog and Tray Menu
+
 Version: 1.0.1.9	(2006-03-18)
 	Fix bug: Explore the Picture File will not select it at first
 	Fix bug: CTabCtrl won't delete item when only exists FindDupFile function

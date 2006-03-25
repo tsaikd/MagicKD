@@ -13,6 +13,7 @@
 #define IDS_TRAY_DELNOWPIC              135
 #define IDS_TRAY_MOVEPIC                136
 #define IDS_TRAY_RESTART                137
+#define IDS_TRAY_EXPLOREPIC             138
 #define IDS_CONF_STATIC_TRANSPARENCY    141
 #define IDS_CONF_BTN_RESTART            142
 #define IDS_CONF_BTN_CHECKUPDATE        143
@@ -30,6 +31,7 @@
 #define IDS_WALL_BTN_DELPIC             172
 #define IDS_WALL_BTN_MOVEPIC            173
 #define IDS_WALL_BTN_ADDCLASS           174
+#define IDS_WALL_BTN_EXPLORE            175
 #define IDS_WALL_CHECK_SHOWDIRLOADERROR 177
 #define IDS_WALL_STATIC_WAITTIME        181
 #define IDS_WALL_STATIC_PICTOTALNUM     182

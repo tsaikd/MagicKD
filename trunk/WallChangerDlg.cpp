@@ -53,6 +53,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	::g_pWallThreadFindPic->SetMsgWnd(m_hWnd);
 
 	srand((UINT)time(NULL));
+	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_EXPLOREPIC	, CResString(IDS_TRAY_EXPLOREPIC));
 	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_MOVEPIC		, CResString(IDS_TRAY_MOVEPIC));
 	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_DELNOWPIC		, CResString(IDS_TRAY_DELNOWPIC));
 	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC		, CResString(IDS_TRAY_RANDPIC), true);
@@ -141,11 +142,11 @@ void CWallChangerDlg::DoSize()
 		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 0);
 	KDMoveDlgItem(GetDlgItem(IDC_WALL_EDIT_HISTORYNUM), GetDlgItem(IDC_WALL_STATIC_WAITTIME),
 		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
-	KDMoveDlgItem(GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR), GetDlgItem(IDC_WALL_EDIT_HISTORYNUM),
-		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
 
 	KDMoveDlgItem(GetDlgItem(IDC_WALL_CHECK_SHOWDIRLOADERROR), this,
 		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR), GetDlgItem(IDC_WALL_CHECK_SHOWDIRLOADERROR),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
 	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_NOWPICPATH), this,
 		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
 
@@ -175,6 +176,7 @@ void CWallChangerDlg::Localize()
 	if (!m_bInit)
 		return;
 
+	g_pTheTray->ModifyMenu(IDS_TRAY_EXPLOREPIC, CResString(IDS_TRAY_EXPLOREPIC));
 	g_pTheTray->ModifyMenu(IDS_TRAY_MOVEPIC, CResString(IDS_TRAY_MOVEPIC));
 	g_pTheTray->ModifyMenu(IDS_TRAY_DELNOWPIC, CResString(IDS_TRAY_DELNOWPIC));
 	g_pTheTray->ModifyMenu(IDS_TRAY_RANDPIC, CResString(IDS_TRAY_RANDPIC));
@@ -184,6 +186,7 @@ void CWallChangerDlg::Localize()
 	GetDlgItem(IDC_WALL_BTN_DELPIC)->SetWindowText(CResString(IDS_WALL_BTN_DELPIC));
 	GetDlgItem(IDC_WALL_BTN_MOVEPIC)->SetWindowText(CResString(IDS_WALL_BTN_MOVEPIC));
 	GetDlgItem(IDC_WALL_BTN_ADDCLASS)->SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
+	GetDlgItem(IDC_WALL_BTN_EXPLORE)->SetWindowText(CResString(IDS_WALL_BTN_EXPLORE));
 	m_btn_EnableToolTip.SetWindowText(CResString(::g_pWallConf->m_General_bEnableTip ? IDS_ALL_BTN_DISABLETIP : IDS_ALL_BTN_ENABLETIP));
 	GetDlgItem(IDC_WALL_CHECK_SHOWDIRLOADERROR)->SetWindowText(CResString(IDS_WALL_CHECK_SHOWDIRLOADERROR));
 
@@ -475,6 +478,7 @@ BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_BN_CLICKED(IDC_WALL_BTN_RANDPIC				, OnBnClickedButtonRandpic)
 	ON_BN_CLICKED(IDC_WALL_BTN_DELPIC				, OnBnClickedButtonDelpic)
 	ON_BN_CLICKED(IDC_WALL_BTN_MOVEPIC				, OnBnClickedWallBtnMovepic)
+	ON_BN_CLICKED(IDC_WALL_BTN_EXPLORE				, &CWallChangerDlg::OnBnClickedWallBtnExplore)
 	ON_BN_CLICKED(IDC_WALL_BTN_ENABLETOOLTIP		, OnBnClickedButtonEnabletooltip)
 	ON_BN_CLICKED(IDC_WALL_CHECK_SHOWDIRLOADERROR	, OnBnClickedWallCheckShowdirloaderror)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS	, OnLvnItemchangedListClass)
@@ -566,6 +570,13 @@ void CWallChangerDlg::OnBnClickedWallBtnMovepic()
 		if (sFile==m_sNowPicPath)
 			OnBnClickedButtonRandpic();
 	}
+}
+
+void CWallChangerDlg::OnBnClickedWallBtnExplore()
+{
+	CString sPicPath = m_sNowPicPath;
+	if (PathFileExists(sPicPath))
+		ExplorerFile(sPicPath);
 }
 
 void CWallChangerDlg::OnBnClickedButtonEnabletooltip()
@@ -710,6 +721,9 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		case IDS_TRAY_MOVEPIC:
 			OnBnClickedWallBtnMovepic();
+			break;
+		case IDS_TRAY_EXPLOREPIC:
+			OnBnClickedWallBtnExplore();
 			break;
 		// ClassList
 		case IDS_WALL_MENU_ADDENABLECLASSLIST:
