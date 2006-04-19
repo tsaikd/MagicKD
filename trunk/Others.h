@@ -1,4 +1,7 @@
 #pragma once
+#if !defined(_INC_SHLWAPI)
+#error Please include <shlwapi.h> and add "shlwapi.lib" to import library
+#endif
 
 #define DEL(x)					if ((x)) { delete (x); (x) = NULL; }
 
@@ -69,19 +72,22 @@ public:
 	}
 };
 
-#ifdef _UNICODE
+#if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
 /*
 	Must Turn On Unicode
+	include <wininet.h> before include <afxdtctl.h>
 */
 bool SetWallpaper(LPCTSTR lpFilePath, DWORD dwStyle = WPSTYLE_STRETCH);
 bool AddDesktopPic(LPCTSTR lpPicPath, const CSize &sizePic);
 bool RemoveDesktopPic(LPCTSTR lpPicPath);
-#endif // _UNICODE
+#endif //defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
 
+#if defined(_WINSOCK2API_) && defined(_WININET_)
 bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
 
 int GetOnInternet(LPCSTR lpszTestHost = "www.google.com", u_short uTestPort = 80);
 int GetOnOffline();
+#endif //defined(_WINSOCK2API_) && defined(_WININET_)
 
 class CGetFileVersion : public CString
 {

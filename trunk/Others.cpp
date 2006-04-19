@@ -205,7 +205,7 @@ void GetTempFilePath(LPTSTR lpTempFilePath, LPCTSTR lpTempDir/* = NULL*/, LPCTST
 		delete [] lpTempDirBuf;
 }
 
-#ifdef _UNICODE
+#if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
 
 //WallPaper Options
 //	WPSTYLE_CENTER
@@ -356,8 +356,9 @@ bool RemoveDesktopPic(LPCTSTR lpPicPath)
 	return bRes;
 }
 
-#endif // _UNICODE
+#endif // defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
 
+#if defined(_WINSOCK2API_) && defined(_WININET_)
 #include "afxinet.h"
 bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize/* = 8192*/)
 {
@@ -475,6 +476,7 @@ int GetOnOffline()
 		return 1;
 	}
 }
+#endif //defined(_WINSOCK2API_) && defined(_WININET_)
 
 // Open explorer at the directory of file and select the file
 bool ExplorerFile(LPCTSTR lpFilePath)
