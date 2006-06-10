@@ -1,6 +1,7 @@
 Initial function
 
 WallChanger:
+可暫停
 先搜尋enable list
 顯示圖片大小及檔案大小
 老闆鍵
