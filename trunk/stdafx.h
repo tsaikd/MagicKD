@@ -39,6 +39,9 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdhtml.h>
 
+#import "msxml4.dll" named_guids
+#import "msado15.dll" no_namespace rename("EOF", "adoEOF")
+
 #include "Others.h"
 
 #define APPNAME _T("MagicKD")

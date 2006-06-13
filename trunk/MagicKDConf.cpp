@@ -8,6 +8,7 @@
 #define DEFAULT_UPDATELASTEST		false
 #define DEFAULT_WALLCHANGER			false
 #define DEFAULT_FINFDUPFILE			false
+#define DEFAULT_PICCOLLECTOR		false
 #define DEFAULT_TRANSPARENCY		255
 #define DEFAULT_LANGID				FindDefaultLang()
 
@@ -25,4 +26,5 @@ void CMagicKDConf::Init(CIni *pIni)
 	m_General_uLangID.Init(pIni, _T("General"), _T("uLangID"), DEFAULT_LANGID);
 	m_FuncList_bWallChanger.Init(pIni, _T("FuncList"), _T("bWallChanger"), DEFAULT_WALLCHANGER);
 	m_FuncList_bFindDupFile.Init(pIni, _T("FuncList"), _T("bFindDupFile"), DEFAULT_FINFDUPFILE);
+	m_FuncList_bPicCollector.Init(pIni, _T("FuncList"), _T("bPicCollector"), DEFAULT_PICCOLLECTOR);
 }

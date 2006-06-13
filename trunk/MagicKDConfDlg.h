@@ -55,6 +55,7 @@ public:
 	afx_msg void OnBnClickedConfCheckShowclosewindow();
 	afx_msg void OnBnClickedConfBtnRestart();
 	afx_msg void OnBnClickedConfCheckFinddf();
+	afx_msg void OnBnClickedConfPiccollector();
 	afx_msg void OnBnClickedConfBtnCheckupdate();
 	afx_msg void OnBnClickedConfCheckCheckupdate();
 };

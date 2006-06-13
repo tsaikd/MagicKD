@@ -235,10 +235,11 @@ BEGIN_MESSAGE_MAP(CMagicKDConfDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CONF_CHECK_STARTMIN		, OnBnClickedCheckConfStartmin)
-	ON_BN_CLICKED(IDC_CONF_CHECK_FINDDF			, OnBnClickedConfCheckFinddf)
 	ON_BN_CLICKED(IDC_CONF_CHECK_CHECKUPDATE	, OnBnClickedConfCheckCheckupdate)
 	ON_BN_CLICKED(IDC_CONF_CHECK_SHOWCLOSEWINDOW, OnBnClickedConfCheckShowclosewindow)
 	ON_BN_CLICKED(IDC_CONF_CHECK_WALLCHANGER	, OnBnClickedWallchangercheck)
+	ON_BN_CLICKED(IDC_CONF_CHECK_FINDDF			, OnBnClickedConfCheckFinddf)
+	ON_BN_CLICKED(IDC_CONF_CHECK_PICCOLLECTOR	, &CMagicKDConfDlg::OnBnClickedConfPiccollector)
 	ON_BN_CLICKED(IDC_CONF_BTN_RESTART			, OnBnClickedConfBtnRestart)
 	ON_BN_CLICKED(IDC_CONF_BTN_CHECKUPDATE		, OnBnClickedConfBtnCheckupdate)
 	ON_CBN_SELCHANGE(IDC_CONF_COMBO_LANGUAGE	, OnCbnSelchangeConfComboLanguage)
@@ -328,6 +329,16 @@ void CMagicKDConfDlg::OnBnClickedConfCheckFinddf()
 		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_FindDupFile, bEnable);
 
 	g_pTheConf->m_FuncList_bFindDupFile = bEnable;
+}
+
+void CMagicKDConfDlg::OnBnClickedConfPiccollector()
+{
+	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_PICCOLLECTOR))->GetCheck()==BST_CHECKED;
+	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
+	if (pParentDlg)
+		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_PicCollector, bEnable);
+
+	g_pTheConf->m_FuncList_bPicCollector = bEnable;
 }
 
 void CMagicKDConfDlg::OnCbnSelchangeConfComboLanguage()

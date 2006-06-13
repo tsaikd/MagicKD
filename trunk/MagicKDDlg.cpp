@@ -14,7 +14,7 @@
 IMPLEMENT_DYNAMIC(CMagicKDDlg, CDialog)
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CMagicKDDlg::IDD, pParent), m_bVisiable(true), m_bInit(false),
-		m_pWallChangerDlg(NULL), m_pFindDupFileDlg(NULL)
+		m_pWallChangerDlg(NULL), m_pFindDupFileDlg(NULL), m_pPicCollectorDlg(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -75,6 +75,7 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 		SetFuncEnable(eFunc_WallChanger, g_pTheConf->m_FuncList_bWallChanger, false);
 		SetFuncEnable(eFunc_FindDupFile, g_pTheConf->m_FuncList_bFindDupFile, false);
+		SetFuncEnable(eFunc_PicCollector, g_pTheConf->m_FuncList_bPicCollector, false);
 	}
 
 	m_cMainConfigDlg.UpdateFuncCheck();
@@ -90,6 +91,8 @@ BOOL CMagicKDDlg::OnInitDialog()
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
 //	if (m_pFindDupFileDlg)
 //		m_cMainTab.SetCurSel(eFunc_FindDupFile);
+//	if (m_pPicCollectorDlg)
+//		m_cMainTab.SetCurSel(eFunc_PicCollector);
 //////////////////////////////////////////////////
 
 	m_bInit = true;
@@ -106,6 +109,7 @@ void CMagicKDDlg::OnDestroy()
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
 	SetFuncEnable(eFunc_FindDupFile, false, false);
+	SetFuncEnable(eFunc_PicCollector, false, false);
 
 	CDialog::OnDestroy();
 
@@ -153,6 +157,8 @@ void CMagicKDDlg::Localize()
 		m_pWallChangerDlg->Localize();
 	if (m_pFindDupFileDlg)
 		m_pFindDupFileDlg->Localize();
+	if (m_pPicCollectorDlg)
+		m_pPicCollectorDlg->Localize();
 }
 
 void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = true*/)
@@ -170,7 +176,7 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 		nID = IDD_MAGICKD_WALLCHANGER;
 		if (bEnable) {
 			if (m_pWallChangerDlg)
-				SetFuncEnable(eFunc_WallChanger, false, false);
+				SetFuncEnable(eFunc, false, false);
 			pDlg = m_pWallChangerDlg = new CWallChangerDlg;
 		} else {
 			pDlg = m_pWallChangerDlg;
@@ -182,11 +188,23 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 		nID = IDD_MAGICKD_FINDDUPFILE;
 		if (bEnable) {
 			if (m_pFindDupFileDlg)
-				SetFuncEnable(eFunc_FindDupFile, false, false);
+				SetFuncEnable(eFunc, false, false);
 			pDlg = m_pFindDupFileDlg = new CFindDupFileDlg;
 		} else {
 			pDlg = m_pFindDupFileDlg;
 			m_pFindDupFileDlg = NULL;
+		}
+		break;
+	case eFunc_PicCollector:
+		sTabName = _T("PicCollector");
+		nID = IDD_MAGICKD_PICCOLLECTOR;
+		if (bEnable) {
+			if (m_pPicCollectorDlg)
+				SetFuncEnable(eFunc, false, false);
+			pDlg = m_pPicCollectorDlg = new CPicCollectorDlg;
+		} else {
+			pDlg = m_pPicCollectorDlg;
+			m_pPicCollectorDlg = NULL;
 		}
 		break;
 	}
@@ -231,6 +249,8 @@ CMagicKDDlg::FuncList CMagicKDDlg::GetFuncFromCWnd(CWnd *pWnd)
 		return eFunc_WallChanger;
 	else if (pWnd == m_pFindDupFileDlg)
 		return eFunc_FindDupFile;
+	else if (pWnd == m_pPicCollectorDlg)
+		return eFunc_PicCollector;
 	else
 		return eFunc_NULL;
 }

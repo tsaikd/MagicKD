@@ -256,6 +256,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FeedSource.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Ini.cpp"
 					>
 				</File>
@@ -404,6 +408,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="PicCollector"
+				>
+				<File
+					RelativePath=".\PicCollectorDlg.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="¼ÐÀYÀÉ"
@@ -451,6 +463,10 @@
 				</File>
 				<File
 					RelativePath=".\DirectoryChanges.h"
+					>
+				</File>
+				<File
+					RelativePath=".\FeedSource.h"
 					>
 				</File>
 				<File
@@ -599,6 +615,14 @@
 				</File>
 				<File
 					RelativePath=".\FindStaticShowPic.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="PicCollector"
+				>
+				<File
+					RelativePath=".\PicCollectorDlg.h"
 					>
 				</File>
 			</Filter>

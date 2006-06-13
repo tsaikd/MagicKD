@@ -9,6 +9,7 @@
 #include "FindDupFileDlg.h"
 
 #include "WallChangerDlg.h"
+#include "PicCollectorDlg.h"
 
 extern CKDTray *g_pTheTray;
 
@@ -21,7 +22,8 @@ public:
 	typedef enum {
 		eFunc_NULL,
 		eFunc_WallChanger,
-		eFunc_FindDupFile
+		eFunc_FindDupFile,
+		eFunc_PicCollector
 	} FuncList;
 	CMagicKDDlg(CWnd* pParent = NULL);
 	virtual ~CMagicKDDlg();
@@ -39,6 +41,7 @@ public:
 	CMagicKDConfDlg m_cMainConfigDlg;
 	CWallChangerDlg *m_pWallChangerDlg;
 	CFindDupFileDlg *m_pFindDupFileDlg;
+	CPicCollectorDlg *m_pPicCollectorDlg;
 private:
 	bool m_bInit;
 	bool m_bIniModify;

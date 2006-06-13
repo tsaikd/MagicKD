@@ -14,6 +14,7 @@ public:
 	CKDConfBool m_General_bUpdateLastest;
 	CKDConfBool m_FuncList_bWallChanger;
 	CKDConfBool m_FuncList_bFindDupFile;
+	CKDConfBool m_FuncList_bPicCollector;
 	CKDConfUINT m_General_uTransparency;
 	CKDConfUINT m_General_uLangID;
 };
