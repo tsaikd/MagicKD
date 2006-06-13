@@ -53,10 +53,11 @@ BOOL CWallChangerDlg::OnInitDialog()
 	::g_pWallThreadFindPic->SetMsgWnd(m_hWnd);
 
 	srand((UINT)time(NULL));
-	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_EXPLOREPIC	, CResString(IDS_TRAY_EXPLOREPIC));
-	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_MOVEPIC		, CResString(IDS_TRAY_MOVEPIC));
-	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_DELNOWPIC		, CResString(IDS_TRAY_DELNOWPIC));
-	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC		, CResString(IDS_TRAY_RANDPIC), true);
+	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_PAUSEWALLCHANGER	, CResString(IDS_TRAY_PAUSEWALLCHANGER));
+	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_EXPLOREPIC		, CResString(IDS_TRAY_EXPLOREPIC));
+	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_MOVEPIC			, CResString(IDS_TRAY_MOVEPIC));
+	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_DELNOWPIC			, CResString(IDS_TRAY_DELNOWPIC));
+	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC			, CResString(IDS_TRAY_RANDPIC), true);
 	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 6);
 
 	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("WallChanger.ini"));
@@ -120,6 +121,8 @@ void CWallChangerDlg::OnDestroy()
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_RANDPIC);
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_DELNOWPIC);
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_MOVEPIC);
+	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_EXPLOREPIC);
+	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_PAUSEWALLCHANGER);
 
 	g_pTheAppEndDlg->UnsignWnd(GetSafeHwnd());
 }
@@ -176,6 +179,7 @@ void CWallChangerDlg::Localize()
 	if (!m_bInit)
 		return;
 
+	g_pTheTray->ModifyMenu(IDS_TRAY_PAUSEWALLCHANGER, CResString(IDS_TRAY_PAUSEWALLCHANGER));
 	g_pTheTray->ModifyMenu(IDS_TRAY_EXPLOREPIC, CResString(IDS_TRAY_EXPLOREPIC));
 	g_pTheTray->ModifyMenu(IDS_TRAY_MOVEPIC, CResString(IDS_TRAY_MOVEPIC));
 	g_pTheTray->ModifyMenu(IDS_TRAY_DELNOWPIC, CResString(IDS_TRAY_DELNOWPIC));
@@ -724,6 +728,15 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		case IDS_TRAY_EXPLOREPIC:
 			OnBnClickedWallBtnExplore();
+			break;
+		case IDS_TRAY_PAUSEWALLCHANGER:
+			if (m_uTimer && (g_pWallConf->m_General_uWaitTime > 0)) {
+				g_pTheTray->CheckMenuItem(IDS_TRAY_PAUSEWALLCHANGER, MF_BYCOMMAND|MF_CHECKED);
+				StopTimer();
+			} else {
+				g_pTheTray->CheckMenuItem(IDS_TRAY_PAUSEWALLCHANGER, MF_BYCOMMAND|MF_UNCHECKED);
+				StartTimer();
+			}
 			break;
 		// ClassList
 		case IDS_WALL_MENU_ADDENABLECLASSLIST:

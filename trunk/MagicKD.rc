@@ -161,8 +161,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,2,0
- PRODUCTVERSION 1,0,2,0
+ FILEVERSION 1,0,2,1
+ PRODUCTVERSION 1,0,2,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -178,11 +178,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 2, 0"
+            VALUE "FileVersion", "1, 0, 2, 1"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 2, 0"
+            VALUE "ProductVersion", "1, 0, 2, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -257,6 +257,7 @@ BEGIN
     IDS_TRAY_MOVEPIC        "Move Current Wallpaper To ...\t(&M)"
     IDS_TRAY_RESTART        "Restart MagicKD\t(&R)"
     IDS_TRAY_EXPLOREPIC     "Explore now picture\t(&E)"
+    IDS_TRAY_PAUSEWALLCHANGER "Pause WallChanger\t(&P)"
     IDS_CONF_STATIC_TRANSPARENCY "Transparency"
     IDS_CONF_BTN_RESTART    "Restart"
     IDS_CONF_BTN_CHECKUPDATE "Check Update"

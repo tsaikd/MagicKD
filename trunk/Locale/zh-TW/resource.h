@@ -14,6 +14,7 @@
 #define IDS_TRAY_MOVEPIC                136
 #define IDS_TRAY_RESTART                137
 #define IDS_TRAY_EXPLOREPIC             138
+#define IDS_TRAY_PAUSEWALLCHANGER       139
 #define IDS_CONF_STATIC_TRANSPARENCY    141
 #define IDS_CONF_BTN_RESTART            142
 #define IDS_CONF_BTN_CHECKUPDATE        143
