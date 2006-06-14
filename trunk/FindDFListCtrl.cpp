@@ -15,6 +15,8 @@ CFindDFListCtrl::~CFindDFListCtrl()
 
 void CFindDFListCtrl::Init()
 {
+	CKDListCtrl::Init();
+
 	CRect rcWin;
 	GetClientRect(rcWin);
 	InsertColumn(0, CResString(IDS_FIND_COLUMN_FINDLIST), LVCFMT_LEFT, rcWin.right);

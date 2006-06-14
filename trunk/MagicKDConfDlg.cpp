@@ -147,6 +147,9 @@ void CMagicKDConfDlg::UpdateFuncCheck()
 
 		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_FINDDF);
 		pBtn->SetCheck(pParentDlg->m_pFindDupFileDlg ? BST_CHECKED : BST_UNCHECKED);
+
+		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_PICCOLLECTOR);
+		pBtn->SetCheck(pParentDlg->m_pPicCollectorDlg ? BST_CHECKED : BST_UNCHECKED);
 	}
 }
 

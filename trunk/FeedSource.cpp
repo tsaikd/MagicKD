@@ -43,41 +43,57 @@ CFeedSource::~CFeedSource()
 }
 
 CFeed::CFeed()
+	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false)
 {
-	m_pDoc = NULL;
-	m_nDepth = 0;
-	m_bAdded = FALSE;
 }
 
-CFeed::CFeed( CString strXMLFile )
+CFeed::CFeed( CString sDBPath )
+	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false)
 {
-	m_pDoc = NULL;
-	m_nDepth = 0;
-	m_bAdded = FALSE;
-	BuildFromFile( strXMLFile );
+	SetDBPath(sDBPath);
+}
+
+CFeed::CFeed( CString sDBPath, CString strXMLURL )
+	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false)
+{
+	SetDBPath(sDBPath);
+	BuildFromFile(strXMLURL);
 }
 
 CFeed::~CFeed()
 {
+}
 
+void CFeed::SetDBPath(CString sDBPath)
+{
+	if (sDBPath.IsEmpty())
+		return;
+	if (PathFileExists(sDBPath)) {
+		m_sDBPath = sDBPath;
+		m_bDBPath = true;
+		return;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Build XML Feed Information from an XML File
 //
-// strXMLFile:		Parsed in XML File Name
+// strXMLURL:		Parsed in XML File Name
 // This function will build Feed Object from scratch by parsing XML Feed Information
 // Result is stored in m_source and m_item objects
 //
-void CFeed::BuildFromFile(CString strXMLFile)
+void CFeed::BuildFromFile(CString strXMLURL)
 {
+	if (!m_bDBPath)
+		return;
+
 	CString		strTmpFile = GetModuleFileDir() + _T("\\FeedSource_tmp.xml");
 
 	// Step 0. Download XML File
-	if (( URLDownloadToFile( NULL, strXMLFile, strTmpFile,0, NULL ) != S_OK )
+	if (( URLDownloadToFile( NULL, strXMLURL, strTmpFile,0, NULL ) != S_OK )
 		|| (!PathFileExists(strTmpFile)))
 	{
-		AfxMessageBox( _T("Failed to download ") + strXMLFile );
+		AfxMessageBox( _T("Failed to download ") + strXMLURL );
 		return;
 	}
 
@@ -143,8 +159,8 @@ void CFeed::BuildFromFile(CString strXMLFile)
 		pNode = NULL;
 	}
 
-//	DeleteFile(strTmpFile);
-	m_source.m_strLink = strXMLFile;
+	DeleteFile(strTmpFile);
+	m_source.m_strLink = strXMLURL;
 
 	// We are not using smart pointer, so we have to release it outself
 	if ( m_pDoc )
@@ -458,6 +474,9 @@ void CFeed::Save( BOOL bSaveSource /*= TRUE*/ )
 	CString				strMsg;
 	int					nIndex;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -470,7 +489,7 @@ void CFeed::Save( BOOL bSaveSource /*= TRUE*/ )
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )
@@ -511,7 +530,7 @@ void CFeed::Save( BOOL bSaveSource /*= TRUE*/ )
 		}
 	}
 
-  // Step 4. Execute Insert Statement on FeedItem
+	// Step 4. Execute Insert Statement on FeedItem
 	for( nIndex = 0; nIndex < m_item.GetSize(); nIndex++ )
 	{
 		strSQL.Format( _T("insert into FeedItem (FeedLink, title, link, description, pubdate, author, category, subject) values('%s','%s','%s','%s','%s','%s','%s','%s')"),
@@ -578,6 +597,9 @@ void CFeed::LoadLocal(CString &strLink)
 	CString				strMsg;
 	_RecordsetPtr		rs = NULL;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -590,7 +612,7 @@ void CFeed::LoadLocal(CString &strLink)
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )
@@ -691,6 +713,9 @@ void CFeed::GetFeedSourceList( CStringArray& strTitleArray, CStringArray& strLin
 	CString				strMsg;
 	_RecordsetPtr		rs = NULL;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -703,7 +728,7 @@ void CFeed::GetFeedSourceList( CStringArray& strTitleArray, CStringArray& strLin
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )
@@ -779,6 +804,9 @@ void CFeed::DeleteListArray(CStringArray &strLinkArray)
 	CString				strMsg;
 	int					nIndex;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -791,7 +819,7 @@ void CFeed::DeleteListArray(CStringArray &strLinkArray)
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )
@@ -821,6 +849,9 @@ void CFeed::DeleteFeedSource(CString strLink)
 	CString				strSQL;
 	CString				strMsg;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -833,7 +864,7 @@ void CFeed::DeleteFeedSource(CString strLink)
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )
@@ -860,6 +891,9 @@ void CFeed::MarkItemRead(CString strLink)
 	CString				strSQL;
 	CString				strMsg;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -872,7 +906,7 @@ void CFeed::MarkItemRead(CString strLink)
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )
@@ -901,6 +935,9 @@ void CFeed::RefreshAll()
 	CStringArray		strLinkArray;
 	_RecordsetPtr		rs = NULL;
 
+	if (!m_bDBPath)
+		return;
+
 	// Step 1. Create object
 	pCnn.CreateInstance( __uuidof( Connection ) );
 	if ( pCnn == NULL )
@@ -913,7 +950,7 @@ void CFeed::RefreshAll()
 	try
 	{
 		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s\\FreeSource.mdb;Jet OLEDB:Database Password=philips;"), GetModuleFileDir() );
+		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
 		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
 	}
 	catch( _com_error& e )

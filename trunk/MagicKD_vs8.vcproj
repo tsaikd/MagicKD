@@ -412,6 +412,14 @@
 				Name="PicCollector"
 				>
 				<File
+					RelativePath=".\PicCConf.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PicCFeedListCtrl.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\PicCollectorDlg.cpp"
 					>
 				</File>
@@ -621,6 +629,14 @@
 			<Filter
 				Name="PicCollector"
 				>
+				<File
+					RelativePath=".\PicCConf.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PicCFeedListCtrl.h"
+					>
+				</File>
 				<File
 					RelativePath=".\PicCollectorDlg.h"
 					>

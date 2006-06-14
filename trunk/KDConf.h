@@ -188,6 +188,7 @@ public:
 	}
 
 	inline void SetDirty(bool bDirty = true) { m_bDirty = bDirty; }
+	using CString::operator =;
 
 private:
 	bool m_bDirty;

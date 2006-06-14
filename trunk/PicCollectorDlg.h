@@ -1,5 +1,6 @@
 #pragma once
-#include "KDListCtrl.h"
+#include "Ini.h"
+#include "PicCFeedListCtrl.h"
 
 
 // CPicCollectorDlg dialog
@@ -17,8 +18,13 @@ public:
 	afx_msg void OnDestroy();
 	void Localize();
 
-	CKDListCtrl m_list_Feed;
+	CIni m_Ini;
+	CPicCFeedListCtrl m_list_Feed;
 
+public:
+	afx_msg void OnBnClickedPiccBtnChangedldir();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void OnOK();
+	virtual void OnCancel();
 };

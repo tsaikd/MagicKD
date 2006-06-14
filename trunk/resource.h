@@ -138,8 +138,10 @@
 #define IDC_FIND_STATIC_DUPFILELIST     1062
 #define IDC_FIND_STATIC_NOWPICPATH      1063
 #define IDC_FIND_PROGRESS_FINDDF        1064
-#define IDC_LIST1                       1073
-#define IDC_PICC_LIST_FEED              1073
+#define IDC_PICC_LIST_FEED              1081
+#define IDC_PICC_STATIC_DLDIRHELP       1082
+#define IDC_PICC_STATIC_DLDIR           1083
+#define IDC_PICC_BTN_CHANGEDLDIR        1084
 
 // Next default values for new objects
 // 
@@ -147,7 +149,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        228
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1074
+#define _APS_NEXT_CONTROL_VALUE         1085
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

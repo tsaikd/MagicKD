@@ -87,12 +87,12 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetTransparency((BYTE)(UINT)g_pTheConf->m_General_uTransparency);
 
 //////////////////////////////////////////////////
-	if (m_pWallChangerDlg)
-		m_cMainTab.SetCurSel(eFunc_WallChanger);
+//	if (m_pWallChangerDlg)
+//		m_cMainTab.SetCurSel(eFunc_WallChanger);
 //	if (m_pFindDupFileDlg)
 //		m_cMainTab.SetCurSel(eFunc_FindDupFile);
-//	if (m_pPicCollectorDlg)
-//		m_cMainTab.SetCurSel(eFunc_PicCollector);
+	if (m_pPicCollectorDlg)
+		m_cMainTab.SetCurSel(eFunc_PicCollector);
 //////////////////////////////////////////////////
 
 	m_bInit = true;
