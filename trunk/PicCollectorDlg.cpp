@@ -41,8 +41,9 @@ BOOL CPicCollectorDlg::OnInitDialog()
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
 
 	CString sUrl = _T("http://forum.p2pzone.org/rss.php?fid=13&limit=10&auth=AFcMVFwHMAwJUFAFUVsD");
-	CFeed feed(_T(".\\FreeSource.mdb"), sUrl);
+	CFeed feed(_T(".\\aaa.db"), sUrl);
 	feed.Save();
+	feed.LoadLocal(sUrl);
 	// TODO:  Add extra initialization here
 
 	return TRUE;  // return TRUE unless you set the focus to a control

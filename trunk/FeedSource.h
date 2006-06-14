@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "sqlite3.h"
+
 class CFeedItem
 {
 public:
@@ -68,10 +70,11 @@ public:
 	void GetFeedSourceList( CStringArray& strTitleArray, CStringArray& strLinkArray );
 	void LoadLocal( CString& strLink );
 	void BuildFromFile( CString strXMLURL );
+	void Save( BOOL bSaveSource = TRUE );
 	CFeedSource						m_source;		// Feed Source
 	CArray<CFeedItem,CFeedItem>		m_item;			// Feed Item
 	BOOL							m_bAdded;
-	void Save( BOOL bSaveSource = TRUE );
+	sqlite3							*m_pDB;
 private:
 	CString EscapeQuote( CString strValue );
 	CString GetModuleFileDir();
@@ -82,9 +85,11 @@ private:
 	void IterateChildNodes(MSXML2::IXMLDOMNode *pNode);
 	void BuildImage(MSXML2::IXMLDOMNode *pNode);
 	void BuildItem(MSXML2::IXMLDOMNode *pNode);
+	bool ExecSQL(CString &strSQL);
+	bool GetTableSQL(CString &strSQL, CStringArray &saTable, int *nFields, int *nRow);
     MSXML2::IXMLDOMDocument2*		m_pDoc;			// XML DOM Document
 	int								m_nDepth;
-	CString							m_sDBPath;
+	CString							m_sDBPath;/////////////////////////
 	bool							m_bDBPath;
 };
 

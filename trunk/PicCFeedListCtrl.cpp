@@ -25,9 +25,9 @@ void CPicCFeedListCtrl::Init()
 
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 
-	CFeed feed(_T(".\\FreeSource.mdb"));
-	CString sLink = _T("http://forum.p2pzone.org/rss.php?fid=13&limit=10&auth=AFcMVFwHMAwJUFAFUVsD");
-	feed.LoadLocal(sLink);
+//	CFeed feed(_T(".\\FreeSource.mdb"));
+//	CString sLink = _T("http://forum.p2pzone.org/rss.php?fid=13&limit=10&auth=AFcMVFwHMAwJUFAFUVsD");
+//	feed.LoadLocal(sLink);
 
 	m_bInit = true;
 }

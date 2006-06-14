@@ -68,8 +68,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Version.lib $(ConfigurationName)/cximage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
+				AdditionalDependencies="debug/sqlite.lib Version.lib $(ConfigurationName)/cximage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
 				LinkIncremental="2"
+				ModuleDefinitionFile=""
 				DelayLoadDLLs="cximage.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
