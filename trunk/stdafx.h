@@ -42,6 +42,8 @@
 #import "msxml4.dll" named_guids
 #import "msado15.dll" no_namespace rename("EOF", "adoEOF")
 
+//#pragma warning (disable : 4199)
+
 #include "Others.h"
 
 #define APPNAME _T("MagicKD")

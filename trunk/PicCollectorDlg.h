@@ -1,10 +1,10 @@
 #pragma once
 #include "Ini.h"
-#include "FeedSource.h"
+#include "PicCFeed.h"
 #include "PicCFeedListCtrl.h"
+#include "KDGetHttpFile.h"
+#include "PicCHTMLEventHandler.h"
 
-
-// CPicCollectorDlg dialog
 
 class CPicCollectorDlg : public CDialog
 {
@@ -19,11 +19,18 @@ public:
 	afx_msg void OnDestroy();
 	void Localize();
 
+	void AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName);
+	void RefreshFeed(LPCTSTR lpURL);
 	void RefreshAllFeed();
 
-	CIni				m_Ini;
-	CPicCFeedListCtrl	m_list_Feed;
-	CFeed				m_Feed;
+	CIni					m_Ini;
+	CPicCFeedListCtrl		m_list_Feed;
+	CPicCFeed				m_Feed;
+	CKDGetHttpFile			m_DownLoader;
+
+private:
+	CPicCHTMLEventHandler	m_HTMLEventHandler;
+	CLiteHTMLReader			m_HTMLReader;
 
 public:
 	afx_msg void OnBnClickedPiccBtnChangedldir();

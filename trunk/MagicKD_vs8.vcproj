@@ -417,13 +417,37 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PicCFeed.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\PicCFeedListCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PicCHTMLEventHandler.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\PicCollectorDlg.cpp"
 					>
 				</File>
+				<Filter
+					Name="HTMLReader"
+					>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLAttributes.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLEntityResolver.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLReader.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -635,13 +659,45 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PicCFeed.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PicCFeedListCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PicCHTMLEventHandler.h"
 					>
 				</File>
 				<File
 					RelativePath=".\PicCollectorDlg.h"
 					>
 				</File>
+				<Filter
+					Name="HTMLReader"
+					>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLAttributes.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLCommon.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLEntityResolver.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLReader.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\HTMLReader\LiteHTMLTag.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

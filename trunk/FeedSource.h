@@ -80,7 +80,7 @@ public:
 	BOOL							m_bAdded;
 	sqlite3							*m_pDB;
 
-private:
+protected:
 	bool	ExecSQL(LPCTSTR strSQL);
 	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields, int *nRow);
 
@@ -89,6 +89,7 @@ private:
 //	BOOL ExecuteSQL( _ConnectionPtr& pCnn, CString& strSQL, CString& strMsg );
 
 	CString EscapeQuote(CString strValue);
+private:
 	CString GetModuleFileDir();
 
 	void	GetVersion(MSXML2::IXMLDOMNode *pNode);

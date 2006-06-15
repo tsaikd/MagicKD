@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "MagicKD.h"
+#include "PicCollector/HTMLReader/LiteHTMLReader.h"
+#include "PicCHTMLEventHandler.h"
 
 #include "PicCollectorDlg.h"
 
@@ -36,6 +38,12 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	if (PathIsDirectory(g_pPicCConf->m_sDlDir))
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
 
+	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
+
+	AddNewFeed(_T("http://forum.p2pzone.org/rss.php?fid=13&limit=10&auth=AFcMVFwHMAwJUFAFUVsD"), _T("test1"));
+	RefreshAllFeed();
+//	m_Feed.LoadLocal(_T("http://forum.p2pzone.org/rss.php?fid=13&limit=10&auth=AFcMVFwHMAwJUFAFUVsD"));
+//	rd.Read(m_Feed.m_item[0].m_strDescription);
 	// TODO:  Add extra initialization here
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -54,25 +62,58 @@ void CPicCollectorDlg::Localize()
 {
 }
 
+void CPicCollectorDlg::AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName)
+{
+	CString strSQL;
+	strSQL.Format(_T("INSERT INTO PicFeed (FeedLink, name) values ('%s', '%s');"),
+		m_Feed.EscapeQuote(lpURL),
+		m_Feed.EscapeQuote(lpLocalName));
+	m_Feed.ExecSQL(strSQL);
+	RefreshFeed(lpURL);
+}
+
+void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
+{
+	m_Feed.BuildFromFile(lpURL);
+	m_Feed.Save();
+
+	CTime curTime(time(0));
+	CString strLink, strName, strLocalPath;
+	UINT uPicNum = 1;
+	int i;
+	for (i=0 ; i<m_Feed.m_item.GetCount() ; i++) {
+		strLink = m_Feed.m_item[i].m_strLink;
+		if (!m_Feed.IsItemRead(strLink)) {
+			strName = m_Feed.GetFeedName(lpURL);
+			if (strName.IsEmpty())
+				return;
+
+			// Parse HTML statement
+			m_HTMLReader.Read(m_Feed.m_item[i].m_strDescription);
+
+			// check download list for black list
+			// Create serial number for this link
+			uPicNum = m_Ini.GetUInt(_T("PicNum"), strName, 1);
+
+			// check necessary dir
+			strLocalPath.Format(_T("%s\\%s\\%s"), CString(g_pPicCConf->m_sDlDir), strName, curTime.Format(_T("%Y_%m\\%d")));
+			// download to local own dir and clear old list
+			strLocalPath.AppendFormat(_T("\\%05d.jpg"), uPicNum);
+
+			m_Ini.WriteUInt(_T("PicNum"), strName, uPicNum+1);
+			m_Feed.MarkItemRead(strLink);
+		}
+	}
+}
+
 void CPicCollectorDlg::RefreshAllFeed()
 {
-	int i, j;
-	CString strLink;
+	int i;
 	CStringArray strTitleArray, strLinkArray;
 
 	m_Feed.GetFeedSourceList(strTitleArray, strLinkArray);
-	for (i=0 ; i<strLinkArray.GetCount() ; i++) {
-		m_Feed.BuildFromFile(strLinkArray[i]);
-		m_Feed.Save();
-
-		for (j=0 ; j<m_Feed.m_item.GetCount() ; j++) {
-			strLink = m_Feed.m_item[j].m_strLink;
-			if (!m_Feed.IsItemRead(strLink)) {
-				// do something
-				m_Feed.MarkItemRead(strLink);
-			}
-		}
-	}
+	for (i=0 ; i<strLinkArray.GetCount() ; i++)
+		RefreshFeed(strLinkArray[i]);
 }
 
 BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
