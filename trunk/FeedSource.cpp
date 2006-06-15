@@ -34,12 +34,10 @@ CFeedItem::~CFeedItem()
 
 CFeedSource::CFeedSource()
 {
-
 }
 
 CFeedSource::~CFeedSource()
 {
-
 }
 
 CFeed::CFeed()
@@ -47,13 +45,13 @@ CFeed::CFeed()
 {
 }
 
-CFeed::CFeed( CString sDBPath )
+CFeed::CFeed(LPCTSTR sDBPath)
 	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
 {
 	SetDBPath(sDBPath);
 }
 
-CFeed::CFeed( CString sDBPath, CString strXMLURL )
+CFeed::CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL)
 	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
 {
 	SetDBPath(sDBPath);
@@ -66,28 +64,7 @@ CFeed::~CFeed()
 		sqlite3_close(m_pDB);
 }
 
-void CFeed::SetDBPath(CString sDBPath)
-{
-	if (sDBPath.IsEmpty())
-		return;
-	char *zErrMsg = 0;
-	sqlite3_open16(sDBPath, &m_pDB);
-	CString strSQL;
-
-	strSQL.Format(_T("CREATE TABLE `FeedItem` (`FeedLink` VARCHAR, `title` VARCHAR, `link` VARCHAR UNIQUE, `description` VARCHAR, `pubdate` VARCHAR, `author` VARCHAR, `category` VARCHAR, `subject` VARCHAR, `readstatus` VARCHAR);"));
-	sqlite3_exec(m_pDB, CStringA(strSQL), NULL, NULL, &zErrMsg);
-	if (zErrMsg)
-		sqlite3_free(zErrMsg);
-
-	strSQL.Format(_T("CREATE TABLE `FeedSource` (`FeedLink` VARCHAR PRIMARY KEY, `description` VARCHAR, `title` VARCHAR, `version` VARCHAR, `copyright` VARCHAR, `generator` VARCHAR, `feedlanguage` VARCHAR, `lastbuilddate` VARCHAR, `ttl` VARCHAR, `webmaster` VARCHAR, `imagedescription` VARCHAR, `imageheight` VARCHAR, `imagewidth` VARCHAR, `imagelink` VARCHAR, `imagetitle` VARCHAR, `imageurl` VARCHAR);"));
-	sqlite3_exec(m_pDB, CStringA(strSQL), NULL, NULL, &zErrMsg);
-	if (zErrMsg)
-		sqlite3_free(zErrMsg);
-
-	m_bDBPath = true;
-}
-
-bool CFeed::ExecSQL(CString &strSQL)
+bool CFeed::ExecSQL(LPCTSTR strSQL)
 {
 	if (!m_bDBPath)
 		return false;
@@ -100,7 +77,7 @@ bool CFeed::ExecSQL(CString &strSQL)
 	return true;
 }
 
-bool CFeed::GetTableSQL(CString &strSQL, CStringArray &saTable, int *nFields, int *nRow)
+bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields, int *nRow)
 {
 	if (!m_bDBPath)
 		return false;
@@ -126,6 +103,20 @@ bool CFeed::GetTableSQL(CString &strSQL, CStringArray &saTable, int *nFields, in
 	return true;
 }
 
+void CFeed::SetDBPath(LPCTSTR sDBPath)
+{
+	sqlite3_open16(sDBPath, &m_pDB);
+	CString strSQL;
+
+	strSQL.Format(_T("CREATE TABLE FeedItem (`FeedLink` VARCHAR, `title` VARCHAR, `link` VARCHAR UNIQUE, `description` VARCHAR, `pubdate` VARCHAR, `author` VARCHAR, `category` VARCHAR, `subject` VARCHAR, `readstatus` VARCHAR);"));
+	ExecSQL(strSQL);
+
+	strSQL.Format(_T("CREATE TABLE FeedSource (`FeedLink` VARCHAR PRIMARY KEY, `description` VARCHAR, `title` VARCHAR, `version` VARCHAR, `copyright` VARCHAR, `generator` VARCHAR, `feedlanguage` VARCHAR, `lastbuilddate` VARCHAR, `ttl` VARCHAR, `webmaster` VARCHAR, `imagedescription` VARCHAR, `imageheight` VARCHAR, `imagewidth` VARCHAR, `imagelink` VARCHAR, `imagetitle` VARCHAR, `imageurl` VARCHAR);"));
+	ExecSQL(strSQL);
+
+	m_bDBPath = true;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // Build XML Feed Information from an XML File
 //
@@ -133,18 +124,19 @@ bool CFeed::GetTableSQL(CString &strSQL, CStringArray &saTable, int *nFields, in
 // This function will build Feed Object from scratch by parsing XML Feed Information
 // Result is stored in m_source and m_item objects
 //
-void CFeed::BuildFromFile(CString strXMLURL)
+void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
 	if (!m_bDBPath)
 		return;
 
-	CString		strTmpFile = GetModuleFileDir() + _T("\\FeedSource_tmp.xml");
+	ClearLoadedItems();
+	CString strTmpFile = GetModuleFileDir() + _T("\\FeedSource_tmp.xml");
 
 	// Step 0. Download XML File
 	if (( URLDownloadToFile( NULL, strXMLURL, strTmpFile,0, NULL ) != S_OK )
 		|| (!PathFileExists(strTmpFile)))
 	{
-		AfxMessageBox( _T("Failed to download ") + strXMLURL );
+		AfxMessageBox( _T("Failed to download ") + CString(strXMLURL) );
 		return;
 	}
 
@@ -219,6 +211,196 @@ void CFeed::BuildFromFile(CString strXMLURL)
 		m_pDoc->Release();
 		m_pDoc = NULL;
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Save Feed Information into Database
+//
+void CFeed::Save(bool bSaveSource /*= true*/)
+{
+	CString	strSQL;
+	int		nIndex;
+
+	if (!m_bDBPath)
+		return;
+
+	// Step 3. Execute Insert Statement on FeedSource
+	// In double click case, we don't want to save this
+	if ( bSaveSource )
+	{
+		strSQL.Format( _T("INSERT INTO FeedSource (FeedLink, description, title, version, copyright, generator, feedlanguage, lastbuilddate, ttl, webmaster, imagedescription, imageheight, imagewidth, imagelink, imagetitle, imageurl ) values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s')"),
+			EscapeQuote( m_source.m_strLink ),
+			EscapeQuote( m_source.m_strDescription ),
+			EscapeQuote( m_source.m_strTitle ),
+			_T("2.0"),
+			EscapeQuote( m_source.m_strCopyright ),
+			EscapeQuote( m_source.m_strGenerator ),
+			EscapeQuote( m_source.m_strLanguage ),
+			EscapeQuote( m_source.m_strLastBuildDate ),
+			EscapeQuote( m_source.m_strTtl ),
+			EscapeQuote( m_source.m_strWebMaster ),
+			EscapeQuote( m_source.m_strImageDescription ),
+			EscapeQuote( m_source.m_strImageHeight ),
+			EscapeQuote( m_source.m_strImageWidth ),
+			EscapeQuote( m_source.m_strImageLink ),
+			EscapeQuote( m_source.m_strImageTitle ),
+			EscapeQuote( m_source.m_strImageUrl ) );
+		if ( ExecSQL(strSQL) )
+			m_bAdded = TRUE;
+	}
+
+	// Step 4. Execute Insert Statement on FeedItem
+	for( nIndex = 0; nIndex < m_item.GetSize(); nIndex++ )
+	{
+		strSQL.Format( _T("INSERT INTO FeedItem (FeedLink, title, link, description, pubdate, author, category, subject) values('%s','%s','%s','%s','%s','%s','%s','%s')"),
+			EscapeQuote( m_source.m_strLink ),
+			EscapeQuote( m_item[nIndex].m_strTitle ),
+			EscapeQuote( m_item[nIndex].m_strLink ),
+			EscapeQuote( m_item[nIndex].m_strDescription ),
+			EscapeQuote( m_item[nIndex].m_strPubDate ),
+			EscapeQuote( m_item[nIndex].m_strAuthor ),
+			EscapeQuote( m_item[nIndex].m_strCategory ),
+			EscapeQuote( m_item[nIndex].m_strSubject )
+			);
+		ExecSQL(strSQL);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Load Feed Information from database
+//
+void CFeed::LoadLocal(LPCTSTR strLink)
+{
+	CString			strSQL;
+	CStringArray	saTable;
+	int				nFields;
+	int				nRow;
+
+	if (!m_bDBPath)
+		return;
+
+	ClearLoadedItems();
+	strSQL.Format(_T("select * from FeedSource where FeedLink = '%s'"), EscapeQuote(strLink));
+	if (!GetTableSQL(strSQL, saTable, &nFields, &nRow))
+		return;
+
+	m_source.m_strLink				= strLink;
+	m_source.m_strDescription		= saTable[nFields + 1];
+	m_source.m_strTitle				= saTable[nFields + 2];
+	m_source.m_strVersion			= saTable[nFields + 3];
+	m_source.m_strCopyright			= saTable[nFields + 4];
+	m_source.m_strGenerator			= saTable[nFields + 5];
+	m_source.m_strLanguage			= saTable[nFields + 6];
+	m_source.m_strLastBuildDate		= saTable[nFields + 7];
+	m_source.m_strTtl				= saTable[nFields + 8];
+	m_source.m_strWebMaster			= saTable[nFields + 9];
+	m_source.m_strImageDescription	= saTable[nFields + 10];
+	m_source.m_strImageHeight		= saTable[nFields + 11];
+	m_source.m_strImageWidth		= saTable[nFields + 12];
+	m_source.m_strImageLink			= saTable[nFields + 13];
+	m_source.m_strImageTitle		= saTable[nFields + 14];
+	m_source.m_strImageUrl			= saTable[nFields + 15];
+
+
+	// Step 4. Read FeedItem and populate it into m_item object
+	strSQL.Format(_T("select * from FeedItem where FeedLink = '%s' order by pubDate desc, title asc"), EscapeQuote(strLink));
+	if (!GetTableSQL(strSQL, saTable, &nFields, &nRow))
+		return;
+
+	int i;
+	CFeedItem item;
+	for (i=nFields ; i<saTable.GetCount() ; ) {
+		i++; // ignore FeedLink
+		item.m_strTitle			= saTable[i++];
+		item.m_strLink			= saTable[i++];
+		item.m_strDescription	= saTable[i++];
+		item.m_strPubDate		= saTable[i++];
+		item.m_strAuthor		= saTable[i++];
+		item.m_strCategory		= saTable[i++];
+		item.m_strSubject		= saTable[i++];
+		item.m_strReadStatus	= saTable[i++];
+
+		m_item.Add(item);
+	}
+}
+
+void CFeed::GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLinkArray)
+{
+	CString			strSQL;
+	CStringArray	saTable;
+	int				nFields;
+	int				nRow;
+
+	if (!m_bDBPath)
+		return;
+
+	// Step 3. Read FeedSource and populate it into m_source object
+	strSQL = _T("SELECT DISTINCT title, FeedLink FROM FeedSource ORDER BY title");
+	GetTableSQL(strSQL, saTable, &nFields, &nRow);
+
+	int i;
+	for (i=nFields ; i<saTable.GetCount() ; ) {
+		strTitleArray.Add(saTable[i++]);
+		strLinkArray.Add(saTable[i++]);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Mark an item as read
+//
+void CFeed::MarkItemRead(LPCTSTR strLink)
+{
+	if (!m_bDBPath)
+		return;
+
+	CString strSQL;
+	strSQL.Format(_T("UPDATE FeedItem SET readstatus = 1 WHERE link = '%s'"), EscapeQuote(strLink));
+	ExecSQL(strSQL);
+}
+
+bool CFeed::IsItemRead(LPCTSTR strLink)
+{
+	int nFields, nRow;
+	CStringArray saTable;
+	CString strSQL;
+	strSQL.Format(_T("SELECT DISTINCT readstatus FROM FeedItem WHERE link = '%s'"), EscapeQuote(strLink));
+	GetTableSQL(strSQL, saTable, &nFields, &nRow);
+
+	if ((saTable.GetCount() < 2) || (saTable[1]!=_T("1")))
+		return false;
+
+	return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Escape Single Quote
+//
+CString CFeed::EscapeQuote(CString strValue)
+{
+	strValue.Replace( _T("'"), _T("''") );
+	return strValue;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Get Module File Path
+//
+CString CFeed::GetModuleFileDir()
+{
+	DWORD	dwLength, dwSize;
+	TCHAR	szFileName [MAX_PATH];
+	CString	strFileName;
+	int		nPos;
+	
+	dwSize = sizeof (szFileName) / sizeof (szFileName [0]);
+	dwLength = ::GetModuleFileName (AfxGetInstanceHandle(), szFileName, dwSize);
+	if (dwLength <= 0) 
+	{
+		return _T("");
+	}
+
+	strFileName = szFileName;
+	nPos = strFileName.ReverseFind( '\\' );
+	return strFileName.Left( nPos );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -515,450 +697,213 @@ void CFeed::BuildItem(MSXML2::IXMLDOMNode *pNode)
 	m_item.Add( item );
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// Save Feed Information into Database
-//
-void CFeed::Save( BOOL bSaveSource /*= TRUE*/ )
+void CFeed::ClearLoadedItems()
 {
-	//_ConnectionPtr		pCnn = NULL;
-	CString				strSQL;
-	CString				strMsg;
-	int					nIndex;
-
-	if (!m_bDBPath)
-		return;
-
-	// Step 3. Execute Insert Statement on FeedSource
-	// In double click case, we don't want to save this
-	if ( bSaveSource )
-	{
-		strSQL.Format( _T("INSERT INTO FeedSource (FeedLink, description, title, version, copyright, generator, feedlanguage, lastbuilddate, ttl, webmaster, imagedescription, imageheight, imagewidth, imagelink, imagetitle, imageurl ) values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s')"),
-			EscapeQuote( m_source.m_strLink ),
-			EscapeQuote( m_source.m_strDescription ),
-			EscapeQuote( m_source.m_strTitle ),
-			_T("2.0"),
-			EscapeQuote( m_source.m_strCopyright ),
-			EscapeQuote( m_source.m_strGenerator ),
-			EscapeQuote( m_source.m_strLanguage ),
-			EscapeQuote( m_source.m_strLastBuildDate ),
-			EscapeQuote( m_source.m_strTtl ),
-			EscapeQuote( m_source.m_strWebMaster ),
-			EscapeQuote( m_source.m_strImageDescription ),
-			EscapeQuote( m_source.m_strImageHeight ),
-			EscapeQuote( m_source.m_strImageWidth ),
-			EscapeQuote( m_source.m_strImageLink ),
-			EscapeQuote( m_source.m_strImageTitle ),
-			EscapeQuote( m_source.m_strImageUrl ) );
-		if ( ExecSQL(strSQL) )
-			m_bAdded = TRUE;
-	}
-
-	// Step 4. Execute Insert Statement on FeedItem
-	for( nIndex = 0; nIndex < m_item.GetSize(); nIndex++ )
-	{
-		strSQL.Format( _T("INSERT INTO FeedItem (FeedLink, title, link, description, pubdate, author, category, subject) values('%s','%s','%s','%s','%s','%s','%s','%s')"),
-			EscapeQuote( m_source.m_strLink ),
-			EscapeQuote( m_item[nIndex].m_strTitle ),
-			EscapeQuote( m_item[nIndex].m_strLink ),
-			EscapeQuote( m_item[nIndex].m_strDescription ),
-			EscapeQuote( m_item[nIndex].m_strPubDate ),
-			EscapeQuote( m_item[nIndex].m_strAuthor ),
-			EscapeQuote( m_item[nIndex].m_strCategory ),
-			EscapeQuote( m_item[nIndex].m_strSubject )
-			);
-		ExecSQL(strSQL);
-	}
+	m_item.RemoveAll();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Execute SQL Statement and return error message if any
 //
-BOOL CFeed::ExecuteSQL(_ConnectionPtr &pCnn, CString &strSQL, CString& strMsg)
-{
-	try
-	{
-		pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
-	}
-	catch( _com_error& e )
-	{
-		strMsg = GetComError( e );
-		return FALSE;
-	}
-	return TRUE;
-}
+//BOOL CFeed::ExecuteSQL(_ConnectionPtr &pCnn, CString &strSQL, CString& strMsg)
+//{
+//	try
+//	{
+//		pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
+//	}
+//	catch( _com_error& e )
+//	{
+//		strMsg = GetComError( e );
+//		return FALSE;
+//	}
+//	return TRUE;
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Retrieve Com Error Information
 //
-CString CFeed::GetComError( _com_error& e )
-{
-	CString		strMsg;
-
-    _bstr_t bstrSource(e.Source());
-    _bstr_t bstrDescription(e.Description());
-    
-    strMsg.Format( _T("Code = %08lx\nCode meaning = %s\nSource = %s\nDescription = %s"),
-		e.Error(),
-		e.ErrorMessage(),
-		(LPCSTR) bstrSource,
-		(LPCSTR) bstrDescription );
-	return strMsg;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Load Feed Information from database
+//CString CFeed::GetComError( _com_error& e )
+//{
+//	CString		strMsg;
 //
-void CFeed::LoadLocal(CString &strLink)
-{
-	CString				strSQL;
-	CString				strMsg;
-	CStringArray		saTable;
-	int nFields = 0;
-	int nRow = 0;
-
-	if (!m_bDBPath)
-		return;
-
-	strSQL.Format( _T("select * from FeedSource where FeedLink = '%s'"), strLink );
-	if (!GetTableSQL(strSQL, saTable, &nFields, &nRow))
-		return;
-
-	m_source.m_strLink				= strLink;
-	m_source.m_strDescription		= saTable[nFields + 1];
-	m_source.m_strTitle				= saTable[nFields + 2];
-	m_source.m_strVersion			= saTable[nFields + 3];
-	m_source.m_strCopyright			= saTable[nFields + 4];
-	m_source.m_strGenerator			= saTable[nFields + 5];
-	m_source.m_strLanguage			= saTable[nFields + 6];
-	m_source.m_strLastBuildDate		= saTable[nFields + 7];
-	m_source.m_strTtl				= saTable[nFields + 8];
-	m_source.m_strWebMaster			= saTable[nFields + 9];
-	m_source.m_strImageDescription	= saTable[nFields + 10];
-	m_source.m_strImageHeight		= saTable[nFields + 11];
-	m_source.m_strImageWidth		= saTable[nFields + 12];
-	m_source.m_strImageLink			= saTable[nFields + 13];
-	m_source.m_strImageTitle		= saTable[nFields + 14];
-	m_source.m_strImageUrl			= saTable[nFields + 15];
-
-
-	// Step 4. Read FeedItem and populate it into m_item object
-	strSQL.Format( _T("select * from FeedItem where FeedLink = '%s' order by pubDate desc, title asc"), strLink );
-	if (!GetTableSQL(strSQL, saTable, &nFields, &nRow))
-		return;
-
-	int i;
-	CFeedItem item;
-	for (i=nFields ; i<saTable.GetCount() ; ) {
-		item.m_strTitle			= saTable[i++];
-		item.m_strLink			= saTable[i++];
-		item.m_strDescription	= saTable[i++];
-		item.m_strPubDate		= saTable[i++];
-		item.m_strAuthor		= saTable[i++];
-		item.m_strCategory		= saTable[i++];
-		item.m_strSubject		= saTable[i++];
-		item.m_strReadStatus	= saTable[i++];
-
-		m_item.Add(item);
-	}
-}
+//    _bstr_t bstrSource(e.Source());
+//    _bstr_t bstrDescription(e.Description());
+//    
+//    strMsg.Format( _T("Code = %08lx\nCode meaning = %s\nSource = %s\nDescription = %s"),
+//		e.Error(),
+//		e.ErrorMessage(),
+//		(LPCSTR) bstrSource,
+//		(LPCSTR) bstrDescription );
+//	return strMsg;
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Get Field Value
 //
-CString CFeed::GetFieldValue(FieldsPtr fields, long nIndex)
-{
-	_variant_t vt = fields->GetItem( nIndex )->Value;
-	if ( vt.vt == VT_NULL || vt.vt == VT_EMPTY )
-	{
-		return _T("");
-	}
-	return CString( (char*)_bstr_t( vt ) );
-}
-
-void CFeed::GetFeedSourceList( CStringArray& strTitleArray, CStringArray& strLinkArray )
-{
-	_ConnectionPtr		pCnn = NULL;
-	CString				strSQL;
-	CString				strMsg;
-	_RecordsetPtr		rs = NULL;
-
-	if (!m_bDBPath)
-		return;
-
-	// Step 1. Create object
-	pCnn.CreateInstance( __uuidof( Connection ) );
-	if ( pCnn == NULL )
-	{
-		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-		return;
-	}
-
-	// Step 2. Open connection
-	try
-	{
-		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
-		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-		pCnn.Release();
-		return;
-	}
-
-	// Step 3. Read FeedSource and populate it into m_source object
-	strSQL = _T("select distinct title, FeedLink from FeedSource order by title");
-	try
-	{
-		rs = pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
-		while ( rs != NULL && rs->adoEOF != TRUE && rs->BOF != TRUE )
-		{
-			if ( rs->adoEOF )
-			{
-				break;
-			}
-			strTitleArray.Add( GetFieldValue( rs->Fields, 0 ) );
-			strLinkArray.Add( GetFieldValue( rs->Fields, 1 ) );
-			rs->MoveNext();
-		}
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( GetComError( e ) );
-	}
-	rs.Release();
-	rs = NULL;
-	pCnn.Release();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Get Module File Path
-//
-CString CFeed::GetModuleFileDir()
-{
-	DWORD	dwLength, dwSize;
-	TCHAR	szFileName [MAX_PATH];
-	CString	strFileName;
-	int		nPos;
-	
-	dwSize = sizeof (szFileName) / sizeof (szFileName [0]);
-	dwLength = ::GetModuleFileName (AfxGetInstanceHandle(), szFileName, dwSize);
-	if (dwLength <= 0) 
-	{
-		return _T("");
-	}
-
-	strFileName = szFileName;
-	nPos = strFileName.ReverseFind( '\\' );
-	return strFileName.Left( nPos );
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Escape Single Quote
-//
-CString CFeed::EscapeQuote(CString strValue)
-{
-	strValue.Replace( _T("'"), _T("''") );
-	return strValue;
-}
+//CString CFeed::GetFieldValue(FieldsPtr fields, long nIndex)
+//{
+//	_variant_t vt = fields->GetItem( nIndex )->Value;
+//	if ( vt.vt == VT_NULL || vt.vt == VT_EMPTY )
+//	{
+//		return _T("");
+//	}
+//	return CString( (char*)_bstr_t( vt ) );
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Delete list from Database
 //
-void CFeed::DeleteListArray(CStringArray &strLinkArray)
-{
-	_ConnectionPtr		pCnn = NULL;
-	CString				strSQL;
-	CString				strMsg;
-	int					nIndex;
-
-	if (!m_bDBPath)
-		return;
-
-	// Step 1. Create object
-	pCnn.CreateInstance( __uuidof( Connection ) );
-	if ( pCnn == NULL )
-	{
-		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-		return;
-	}
-
-	// Step 2. Open connection
-	try
-	{
-		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
-		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-		pCnn.Release();
-		return;
-	}
-
-	// Step 3. Delete Link from FeedList table
-	for(nIndex = 0; nIndex < strLinkArray.GetSize(); nIndex++ )
-	{
-		strSQL.Format( _T("delete from FeedItem where link = '%s'"), EscapeQuote( strLinkArray[nIndex] ) );
-		ExecuteSQL( pCnn, strSQL, strMsg );
-	}
-
-	// Step 4. Done!
-	pCnn.Release();
-}
+//void CFeed::DeleteListArray(CStringArray &strLinkArray)
+//{
+//	_ConnectionPtr		pCnn = NULL;
+//	CString				strSQL;
+//	CString				strMsg;
+//	int					nIndex;
+//
+//	if (!m_bDBPath)
+//		return;
+//
+//	// Step 1. Create object
+//	pCnn.CreateInstance( __uuidof( Connection ) );
+//	if ( pCnn == NULL )
+//	{
+//		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
+//		return;
+//	}
+//
+//	// Step 2. Open connection
+//	try
+//	{
+//		CString		strCnn;
+//		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), _T("") );
+//		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
+//	}
+//	catch( _com_error& e )
+//	{
+//		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
+//		pCnn.Release();
+//		return;
+//	}
+//
+//	// Step 3. Delete Link from FeedList table
+//	for(nIndex = 0; nIndex < strLinkArray.GetSize(); nIndex++ )
+//	{
+//		strSQL.Format( _T("delete from FeedItem where link = '%s'"), EscapeQuote( strLinkArray[nIndex] ) );
+//		ExecuteSQL( pCnn, strSQL, strMsg );
+//	}
+//
+//	// Step 4. Done!
+//	pCnn.Release();
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Delete Feed Source
 //
-void CFeed::DeleteFeedSource(CString strLink)
-{
-	_ConnectionPtr		pCnn = NULL;
-	CString				strSQL;
-	CString				strMsg;
-
-	if (!m_bDBPath)
-		return;
-
-	// Step 1. Create object
-	pCnn.CreateInstance( __uuidof( Connection ) );
-	if ( pCnn == NULL )
-	{
-		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-		return;
-	}
-
-	// Step 2. Open connection
-	try
-	{
-		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
-		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-		pCnn.Release();
-		return;
-	}
-
-	// Step 3. Delete Link from FeedList table
-	strSQL.Format( _T("delete from FeedSource where FeedLink = '%s'"), EscapeQuote( strLink ) );
-	ExecuteSQL( pCnn, strSQL, strMsg );
-
-	// Step 4. Done!
-	pCnn.Release();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Mark an item as read
+//void CFeed::DeleteFeedSource(CString strLink)
+//{
+//	_ConnectionPtr		pCnn = NULL;
+//	CString				strSQL;
+//	CString				strMsg;
 //
-void CFeed::MarkItemRead(CString strLink)
-{
-	_ConnectionPtr		pCnn = NULL;
-	CString				strSQL;
-	CString				strMsg;
-
-	if (!m_bDBPath)
-		return;
-
-	// Step 1. Create object
-	pCnn.CreateInstance( __uuidof( Connection ) );
-	if ( pCnn == NULL )
-	{
-		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-		return;
-	}
-
-	// Step 2. Open connection
-	try
-	{
-		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
-		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-		pCnn.Release();
-		return;
-	}
-
-	// Step 3. Delete Link from FeedList table
-	strSQL.Format( _T("update FeedItem set readstatus = 1 where link = '%s'"), EscapeQuote( strLink ) );
-	ExecuteSQL( pCnn, strSQL, strMsg );
-
-	// Step 4. Done!
-	pCnn.Release();
-}
+//	if (!m_bDBPath)
+//		return;
+//
+//	// Step 1. Create object
+//	pCnn.CreateInstance( __uuidof( Connection ) );
+//	if ( pCnn == NULL )
+//	{
+//		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
+//		return;
+//	}
+//
+//	// Step 2. Open connection
+//	try
+//	{
+//		CString		strCnn;
+//		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), _T("") );
+//		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
+//	}
+//	catch( _com_error& e )
+//	{
+//		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
+//		pCnn.Release();
+//		return;
+//	}
+//
+//	// Step 3. Delete Link from FeedList table
+//	strSQL.Format( _T("delete from FeedSource where FeedLink = '%s'"), EscapeQuote( strLink ) );
+//	ExecuteSQL( pCnn, strSQL, strMsg );
+//
+//	// Step 4. Done!
+//	pCnn.Release();
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Refresh All SubScriptions
 //
-void CFeed::RefreshAll()
-{
-	_ConnectionPtr		pCnn = NULL;
-	CString				strSQL;
-	CString				strMsg;
-	CStringArray		strLinkArray;
-	_RecordsetPtr		rs = NULL;
-
-	if (!m_bDBPath)
-		return;
-
-	// Step 1. Create object
-	pCnn.CreateInstance( __uuidof( Connection ) );
-	if ( pCnn == NULL )
-	{
-		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-		return;
-	}
-
-	// Step 2. Open connection
-	try
-	{
-		CString		strCnn;
-		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), m_sDBPath );
-		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-		pCnn.Release();
-		return;
-	}
-
-	// Step 3. Get all the subscriptions
-	strSQL = _T("select FeedLink from FeedSource");
-	try
-	{
-		rs = pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
-		while ( rs != NULL && rs->adoEOF != TRUE )
-		{
-			if ( rs->adoEOF )
-			{
-				break;
-			}
-			strLinkArray.Add( GetFieldValue( rs->Fields, 0 ) );
-			rs->MoveNext();
-		}
-	}
-	catch( _com_error& e )
-	{
-		AfxMessageBox( GetComError( e ) );
-	}
-	rs.Release();
-	rs = NULL;
-
-	// Step 4. Refreah each link
-	for( int nIndex = 0; nIndex < strLinkArray.GetSize(); nIndex++ )
-	{
-		CFeed	feed( strLinkArray.GetAt( nIndex ) );
-		feed.m_source.m_strLink = strLinkArray.GetAt( nIndex );
-		feed.Save();
-	}
-
-	// Step 5. Done!
-	pCnn.Release();
-}
+//void CFeed::RefreshAll()
+//{
+//	_ConnectionPtr		pCnn = NULL;
+//	CString				strSQL;
+//	CString				strMsg;
+//	CStringArray		strLinkArray;
+//	_RecordsetPtr		rs = NULL;
+//
+//	if (!m_bDBPath)
+//		return;
+//
+//	// Step 1. Create object
+//	pCnn.CreateInstance( __uuidof( Connection ) );
+//	if ( pCnn == NULL )
+//	{
+//		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
+//		return;
+//	}
+//
+//	// Step 2. Open connection
+//	try
+//	{
+//		CString		strCnn;
+//		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), _T("") );
+//		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
+//	}
+//	catch( _com_error& e )
+//	{
+//		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
+//		pCnn.Release();
+//		return;
+//	}
+//
+//	// Step 3. Get all the subscriptions
+//	strSQL = _T("select FeedLink from FeedSource");
+//	try
+//	{
+//		rs = pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
+//		while ( rs != NULL && rs->adoEOF != TRUE )
+//		{
+//			if ( rs->adoEOF )
+//			{
+//				break;
+//			}
+//			strLinkArray.Add( GetFieldValue( rs->Fields, 0 ) );
+//			rs->MoveNext();
+//		}
+//	}
+//	catch( _com_error& e )
+//	{
+//		AfxMessageBox( GetComError( e ) );
+//	}
+//	rs.Release();
+//	rs = NULL;
+//
+//	// Step 4. Refreah each link
+//	for( int nIndex = 0; nIndex < strLinkArray.GetSize(); nIndex++ )
+//	{
+//		CFeed	feed( strLinkArray.GetAt( nIndex ) );
+//		feed.m_source.m_strLink = strLinkArray.GetAt( nIndex );
+//		feed.Save();
+//	}
+//
+//	// Step 5. Done!
+//	pCnn.Release();
+//}

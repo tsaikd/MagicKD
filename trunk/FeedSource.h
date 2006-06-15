@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "sqlite3.h"
+#include "sqlite/sqlite3.h"
 
 class CFeedItem
 {
@@ -58,38 +58,47 @@ class CFeed
 {
 public:
 	CFeed();
-	CFeed( CString sDBPath );
-	CFeed( CString sDBPath, CString strXMLURL );
+	CFeed(LPCTSTR sDBPath);
+	CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL);
 	virtual ~CFeed();
-public:
-	void SetDBPath(CString sDBPath);
-	void RefreshAll();
-	void MarkItemRead( CString strLink );
-	void DeleteFeedSource( CString strLink );
-	void DeleteListArray( CStringArray& strLinkArray );
-	void GetFeedSourceList( CStringArray& strTitleArray, CStringArray& strLinkArray );
-	void LoadLocal( CString& strLink );
-	void BuildFromFile( CString strXMLURL );
-	void Save( BOOL bSaveSource = TRUE );
+
+	void	SetDBPath(LPCTSTR sDBPath);
+	void	BuildFromFile(LPCTSTR strXMLURL);
+	void	Save(bool bSaveSource = true);
+	void	LoadLocal(LPCTSTR strLink);
+
+	void	GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLinkArray);
+	void	MarkItemRead(LPCTSTR strLink);
+	bool	IsItemRead(LPCTSTR strLink);
+
+	//void	RefreshAll();
+	//void	DeleteFeedSource( CString strLink );
+	//void	DeleteListArray( CStringArray& strLinkArray );
+
 	CFeedSource						m_source;		// Feed Source
 	CArray<CFeedItem,CFeedItem>		m_item;			// Feed Item
 	BOOL							m_bAdded;
 	sqlite3							*m_pDB;
+
 private:
-	CString EscapeQuote( CString strValue );
+	bool	ExecSQL(LPCTSTR strSQL);
+	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields, int *nRow);
+
+//	CString GetFieldValue( FieldsPtr fields, long nIndex );
+//	CString GetComError( _com_error& e );
+//	BOOL ExecuteSQL( _ConnectionPtr& pCnn, CString& strSQL, CString& strMsg );
+
+	CString EscapeQuote(CString strValue);
 	CString GetModuleFileDir();
-	CString GetFieldValue( FieldsPtr fields, long nIndex );
-	CString GetComError( _com_error& e );
-	BOOL ExecuteSQL( _ConnectionPtr& pCnn, CString& strSQL, CString& strMsg );
-	void GetVersion(MSXML2::IXMLDOMNode *pNode);
-	void IterateChildNodes(MSXML2::IXMLDOMNode *pNode);
-	void BuildImage(MSXML2::IXMLDOMNode *pNode);
-	void BuildItem(MSXML2::IXMLDOMNode *pNode);
-	bool ExecSQL(CString &strSQL);
-	bool GetTableSQL(CString &strSQL, CStringArray &saTable, int *nFields, int *nRow);
+
+	void	GetVersion(MSXML2::IXMLDOMNode *pNode);
+	void	IterateChildNodes(MSXML2::IXMLDOMNode *pNode);
+	void	BuildImage(MSXML2::IXMLDOMNode *pNode);
+	void	BuildItem(MSXML2::IXMLDOMNode *pNode);
+	void	ClearLoadedItems();
+
     MSXML2::IXMLDOMDocument2*		m_pDoc;			// XML DOM Document
 	int								m_nDepth;
-	CString							m_sDBPath;/////////////////////////
 	bool							m_bDBPath;
 };
 

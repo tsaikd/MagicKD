@@ -1,5 +1,6 @@
 #pragma once
 #include "Ini.h"
+#include "FeedSource.h"
 #include "PicCFeedListCtrl.h"
 
 
@@ -18,8 +19,11 @@ public:
 	afx_msg void OnDestroy();
 	void Localize();
 
-	CIni m_Ini;
-	CPicCFeedListCtrl m_list_Feed;
+	void RefreshAllFeed();
+
+	CIni				m_Ini;
+	CPicCFeedListCtrl	m_list_Feed;
+	CFeed				m_Feed;
 
 public:
 	afx_msg void OnBnClickedPiccBtnChangedldir();
@@ -28,3 +32,5 @@ protected:
 	virtual void OnOK();
 	virtual void OnCancel();
 };
+
+extern CPicCollectorDlg *g_pPicCollectorDlg;
