@@ -77,29 +77,34 @@ bool CFeed::ExecSQL(LPCTSTR strSQL)
 	return true;
 }
 
-bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields, int *nRow)
+bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields/* = NULL*/, int *nRow/* = NULL*/)
 {
 	if (!m_bDBPath)
 		return false;
 
-	int nCol = 0;
+	int nCol;
 	sqlite3_stmt *stmt;
 	sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0);
-	*nFields = sqlite3_column_count(stmt);
-	*nRow = 0;
+	int iFields = sqlite3_column_count(stmt);
+	int iRow = 0;
 	saTable.RemoveAll();
 
-	for(nCol=0; nCol < *nFields; nCol++)
+	for(nCol=0; nCol < iFields; nCol++)
 		saTable.Add(LPCTSTR(sqlite3_column_name16(stmt, nCol)));
 
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
-         for(nCol=0; nCol < *nFields; nCol++)
+         for(nCol=0; nCol < iFields; nCol++)
             saTable.Add(LPCTSTR(sqlite3_column_text16(stmt, nCol)));
 
-         (*nRow)++;
+         iRow++;
 	}
 
 	sqlite3_finalize(stmt);
+
+	if (nFields)
+		*nFields = iFields;
+	if (nRow)
+		*nRow = iRow;
 	return true;
 }
 
@@ -108,10 +113,10 @@ void CFeed::SetDBPath(LPCTSTR sDBPath)
 	sqlite3_open16(sDBPath, &m_pDB);
 	CString strSQL;
 
-	strSQL.Format(_T("CREATE TABLE FeedItem (`FeedLink` VARCHAR, `title` VARCHAR, `link` VARCHAR UNIQUE, `description` VARCHAR, `pubdate` VARCHAR, `author` VARCHAR, `category` VARCHAR, `subject` VARCHAR, `readstatus` VARCHAR);"));
+	strSQL.Format(_T("CREATE TABLE FeedItem (FeedLink VARCHAR, title VARCHAR, link VARCHAR UNIQUE, description VARCHAR, pubdate VARCHAR, author VARCHAR, category VARCHAR, subject VARCHAR, readstatus VARCHAR);"));
 	ExecSQL(strSQL);
 
-	strSQL.Format(_T("CREATE TABLE FeedSource (`FeedLink` VARCHAR PRIMARY KEY, `description` VARCHAR, `title` VARCHAR, `version` VARCHAR, `copyright` VARCHAR, `generator` VARCHAR, `feedlanguage` VARCHAR, `lastbuilddate` VARCHAR, `ttl` VARCHAR, `webmaster` VARCHAR, `imagedescription` VARCHAR, `imageheight` VARCHAR, `imagewidth` VARCHAR, `imagelink` VARCHAR, `imagetitle` VARCHAR, `imageurl` VARCHAR);"));
+	strSQL.Format(_T("CREATE TABLE FeedSource (FeedLink VARCHAR PRIMARY KEY, description VARCHAR, title VARCHAR, version VARCHAR, copyright VARCHAR, generator VARCHAR, feedlanguage VARCHAR, lastbuilddate VARCHAR, ttl VARCHAR, webmaster VARCHAR, imagedescription VARCHAR, imageheight VARCHAR, imagewidth VARCHAR, imagelink VARCHAR, imagetitle VARCHAR, imageurl VARCHAR);"));
 	ExecSQL(strSQL);
 
 	m_bDBPath = true;
@@ -131,15 +136,17 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 
 	ClearLoadedItems();
 	CString strTmpFile = GetModuleFileDir() + _T("\\FeedSource_tmp.xml");
+	CoInitialize(NULL);
 
 	// Step 0. Download XML File
 	if (( URLDownloadToFile( NULL, strXMLURL, strTmpFile,0, NULL ) != S_OK )
 		|| (!PathFileExists(strTmpFile)))
 	{
-		AfxMessageBox( _T("Failed to download ") + CString(strXMLURL) );
+		AfxMessageBox(_T("Failed to download ") + CString(strXMLURL));
 		return;
 	}
-
+	//while (!PathFileExists(strTmpFile))
+	//	Sleep(2000);
 
 	// Step 1. Open XML Document, if open fails, then return
 	if ( m_pDoc != NULL )
@@ -211,6 +218,7 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 		m_pDoc->Release();
 		m_pDoc = NULL;
 	}
+	CoUninitialize();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -328,18 +336,16 @@ void CFeed::GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLink
 {
 	CString			strSQL;
 	CStringArray	saTable;
-	int				nFields;
-	int				nRow;
 
 	if (!m_bDBPath)
 		return;
 
 	// Step 3. Read FeedSource and populate it into m_source object
 	strSQL = _T("SELECT DISTINCT title, FeedLink FROM FeedSource ORDER BY title");
-	GetTableSQL(strSQL, saTable, &nFields, &nRow);
+	GetTableSQL(strSQL, saTable);
 
 	int i;
-	for (i=nFields ; i<saTable.GetCount() ; ) {
+	for (i=2 ; i<saTable.GetCount() ; ) {
 		strTitleArray.Add(saTable[i++]);
 		strLinkArray.Add(saTable[i++]);
 	}
@@ -360,11 +366,10 @@ void CFeed::MarkItemRead(LPCTSTR strLink)
 
 bool CFeed::IsItemRead(LPCTSTR strLink)
 {
-	int nFields, nRow;
 	CStringArray saTable;
 	CString strSQL;
 	strSQL.Format(_T("SELECT DISTINCT readstatus FROM FeedItem WHERE link = '%s'"), EscapeQuote(strLink));
-	GetTableSQL(strSQL, saTable, &nFields, &nRow);
+	GetTableSQL(strSQL, saTable);
 
 	if ((saTable.GetCount() < 2) || (saTable[1]!=_T("1")))
 		return false;

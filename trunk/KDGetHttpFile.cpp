@@ -11,7 +11,7 @@ CKDGetHttpFile::~CKDGetHttpFile()
 	SetCanThread(false);
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {
 #ifdef DEBUG
-		MessageBox(GetForegroundWindow(), _T("CKDGetHttpFile Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+		AfxMessageBox(_T("CKDGetHttpFile Thread is running!!"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
 		TerminateThread(0);
 	}
@@ -19,16 +19,16 @@ CKDGetHttpFile::~CKDGetHttpFile()
 
 DWORD CKDGetHttpFile::ThreadProc()
 {
-	CInternetSession session(_T("Download File Session"));
+	CInternetSession session(_T("Download File Thread Session"));
+//	session.SetOption(INTERNET_OPTION_CONNECT_TIMEOUT, _T("1000"), _tcslen(_T("1000")));
+//	session.SetOption(INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT, _T("1000"), _tcslen(_T("1000")));
 	CStdioFile *pFile = NULL;
 	HANDLE hLocalFile = INVALID_HANDLE_VALUE;
 	CString sMaxSize;
-	static const int iQuerySize = 8192;
+	static const int iQuerySize = 16384;
 	BYTE *pBuf = new BYTE[iQuerySize];
 	UINT uReadLen;
 	DWORD dwWriteLen;
-	const int iTestCanThreadTimes = 50;
-	int i;
 
 	while (IsCanThread() && !m_slURL.IsEmpty()) {
 		m_muxNowDLURL.Lock();
@@ -36,8 +36,10 @@ DWORD CKDGetHttpFile::ThreadProc()
 		m_ulNowDLSize = m_ulNowDLMaxSize = 0;
 		m_muxNowDLURL.Unlock();
 
+		m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
+
 		pFile = session.OpenURL(m_sNowDLURL);
-		hLocalFile = CreateFile(m_slLocalPath.RemoveHead(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		hLocalFile = CreateFile(m_sNowDLLocalPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		if (pFile && (hLocalFile != INVALID_HANDLE_VALUE)) {
 			((CHttpFile *)pFile)->QueryInfo(HTTP_QUERY_CONTENT_LENGTH, sMaxSize);
@@ -45,16 +47,10 @@ DWORD CKDGetHttpFile::ThreadProc()
 			m_ulNowDLMaxSize = _ttoi64(sMaxSize);
 			m_muxNowDLURL.Unlock();
 
-			i = 0;
-			while (uReadLen = pFile->Read(pBuf, iQuerySize)) {
+			while ((uReadLen = pFile->Read(pBuf, iQuerySize)) && (IsCanThread())) {
 				WriteFile(hLocalFile, pBuf, uReadLen, &dwWriteLen, NULL);
 				m_ulNowDLSize += dwWriteLen;
 				m_ulTotalDLSize += dwWriteLen;
-				if (i++ >= iTestCanThreadTimes) {
-					if (!IsCanThread())
-						break;
-					i = 0;
-				}
 			}
 		}
 		if (hLocalFile != INVALID_HANDLE_VALUE) {
@@ -78,10 +74,9 @@ bool CKDGetHttpFile::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 	bool bRes = false;
 	CInternetSession session(CString(_T("Download File Session")) + lpLocalPath);
 	CStdioFile *pFile = session.OpenURL(lpURL);
-	HANDLE hLocalFile = CreateFile(lpLocalPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	CString sMaxSize;
 
-	if (pFile && (hLocalFile != INVALID_HANDLE_VALUE)) {
+	if (pFile) {
 		((CHttpFile *)pFile)->QueryInfo(HTTP_QUERY_CONTENT_LENGTH, sMaxSize);
 		m_muxNowDLURL.Lock();
 		m_ulTotalDLMaxSize += _ttoi64(sMaxSize);
@@ -98,8 +93,6 @@ bool CKDGetHttpFile::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 		bRes = false;
 	}
 
-	if (hLocalFile != INVALID_HANDLE_VALUE)
-		CloseHandle(hLocalFile);
 	if (pFile) {
 		pFile->Close();
 		delete pFile;
@@ -107,6 +100,17 @@ bool CKDGetHttpFile::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 	session.Close();
 
 	return bRes;
+}
+
+bool CKDGetHttpFile::AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath)
+{
+	m_slURL.AddTail(lpURL);
+	m_slLocalPath.AddTail(lpLocalPath);
+
+	if (!IsThreadRunning())
+		CreateThread(THREAD_PRIORITY_LOWEST);
+
+	return true;
 }
 
 double CKDGetHttpFile::GetPercentOfNowDL()

@@ -10,7 +10,7 @@
 		SetCanThread(false);
 		if (WAIT_TIMEOUT == WaitForThread(10000)) {
 #ifdef DEBUG
-			MessageBox(GetForegroundWindow(), _T("Thread is running!!"), _T("ERROR"), MB_OK | MB_ICONERROR);
+			AfxMessageBox(_T("Thread is running!!"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
 			TerminateThread(0);
 		}

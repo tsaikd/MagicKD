@@ -14,7 +14,9 @@ void CPicCFeed::SetDBPath(LPCTSTR sDBPath)
 	CFeed::SetDBPath(sDBPath);
 
 	CString strSQL;
-	strSQL.Format(_T("CREATE TABLE PicFeed (FeedLink VARCHAR, name VARCHAR);"));
+	strSQL.Format(_T("CREATE TABLE PicFeed (FeedLink VARCHAR PRIMARY KEY, name VARCHAR);"));
+	ExecSQL(strSQL);
+	strSQL.Format(_T("CREATE TABLE PicUnDownload (Url VARCHAR PRIMARY KEY, Localpath VARCHAR);"));
 	ExecSQL(strSQL);
 }
 

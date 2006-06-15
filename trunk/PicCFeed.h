@@ -11,6 +11,7 @@ public:
 
 	CString GetFeedName(LPCTSTR lpURL);
 
+	using CFeed::GetTableSQL;
 	using CFeed::ExecSQL;
 	using CFeed::EscapeQuote;
 };

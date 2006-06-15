@@ -82,7 +82,7 @@ public:
 
 protected:
 	bool	ExecSQL(LPCTSTR strSQL);
-	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields, int *nRow);
+	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields = NULL, int *nRow = NULL);
 
 //	CString GetFieldValue( FieldsPtr fields, long nIndex );
 //	CString GetComError( _com_error& e );

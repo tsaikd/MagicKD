@@ -1,5 +1,14 @@
 Initial function
 
+PicCollector(rss):
+圖片黑名單
+預設存圖路徑
+設定本機feed名稱
+DoSize
+Localize
+
+PicCollector(html):
+
 WallChanger:
 先搜尋enable list
 顯示圖片大小及檔案大小
@@ -8,5 +17,3 @@ ListCtrl可按CTRL+CVX
 設假桌布
 
 整合BindWinKey
-
-論壇抓圖程式

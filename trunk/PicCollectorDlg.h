@@ -3,10 +3,11 @@
 #include "PicCFeed.h"
 #include "PicCFeedListCtrl.h"
 #include "KDGetHttpFile.h"
+#include "KDThread.h"
 #include "PicCHTMLEventHandler.h"
 
 
-class CPicCollectorDlg : public CDialog
+class CPicCollectorDlg : public CDialog, public CKDThread
 {
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DYNAMIC(CPicCollectorDlg)
@@ -17,6 +18,7 @@ public:
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
+	virtual DWORD ThreadProc();
 	void Localize();
 
 	void AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName);
@@ -24,13 +26,14 @@ public:
 	void RefreshAllFeed();
 
 	CIni					m_Ini;
-	CPicCFeedListCtrl		m_list_Feed;
 	CPicCFeed				m_Feed;
 	CKDGetHttpFile			m_DownLoader;
+	CPicCFeedListCtrl		m_list_Feed;
 
 private:
 	CPicCHTMLEventHandler	m_HTMLEventHandler;
 	CLiteHTMLReader			m_HTMLReader;
+	UINT					m_uTimerShowDownload;
 
 public:
 	afx_msg void OnBnClickedPiccBtnChangedldir();
@@ -38,6 +41,9 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnOK();
 	virtual void OnCancel();
+public:
+public:
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 extern CPicCollectorDlg *g_pPicCollectorDlg;
