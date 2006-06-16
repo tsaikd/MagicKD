@@ -2,6 +2,7 @@
 #include "MagicKD.h"
 #include "PicCollector/HTMLReader/LiteHTMLReader.h"
 #include "PicCHTMLEventHandler.h"
+#include "InputBox.h"
 
 #include "PicCollectorDlg.h"
 
@@ -29,22 +30,26 @@ CPicCollectorDlg::~CPicCollectorDlg()
 BOOL CPicCollectorDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	CoInitialize(NULL);
 
-	CString sIniPath;
-	sIniPath.Format(_T("%sPicCollector.ini"), theApp.GetAppConfDir());
-	m_Ini.SetPathName(sIniPath);
+	CString sPath;
+	sPath.Format(_T("%sPicCollector.ini"), theApp.GetAppConfDir());
+	m_Ini.SetPathName(sPath);
 	g_pPicCConf = new CPicCConf;
 	g_pPicCConf->Init(&m_Ini);
-	m_Feed.SetDBPath(_T(".\\PicCollector.db"));
+	sPath.Format(_T("%sPicCollector.db"), theApp.GetAppConfDir());
+	m_Feed.SetDBPath(sPath);
 	m_list_Feed.Init();
 
-	if (PathIsDirectory(g_pPicCConf->m_sDlDir))
+	if (PathIsDirectory(g_pPicCConf->m_sDlDir)) {
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
+	} else {
+		g_pPicCConf->m_sDlDir.Format(_T("%sPicCollector\\"), theApp.GetAppDir());
+		if (!PathIsDirectory(g_pPicCConf->m_sDlDir))
+			SHCreateDirectoryEx(GetSafeHwnd(), g_pPicCConf->m_sDlDir, NULL);
+		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
+	}
 
 	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
-
-//	AddNewFeed(_T("http://forum.p2pzone.org/rss.php?fid=13&limit=10&auth=AFcMVFwHMAwJUFAFUVsD"), _T("test1"));
 
 	CStringArray saTable;
 	int i;
@@ -53,6 +58,9 @@ BOOL CPicCollectorDlg::OnInitDialog()
 		m_DownLoader.AddFileListQuick(saTable[i], saTable[i+1]);
 	m_Feed.ExecSQL(_T("DELETE FROM PicUnDownload"));
 	CreateThread(THREAD_PRIORITY_BELOW_NORMAL);
+
+//	AddNewFeed(_T("http://forum.p2pzone.org/rss.php?fid=13,117&limit=50&auth=AFcMVFwHMAwJUFAFUVsD"), _T("P2PZone_Beauty"));
+//	AddNewFeed(_T("http://forum.p2pzone.org/rss.php?fid=57&limit=50&auth=AFcMVFwHMAwJUFAFUVsD"), _T("P2PZone_Pretty"));
 	// TODO:  Add extra initialization here
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -70,11 +78,16 @@ void CPicCollectorDlg::OnDestroy()
 	}
 
 	m_DownLoader.SetCanThread(false);
-	CString strSQL;
-	strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
-		m_Feed.EscapeQuote(m_DownLoader.GetNowDLURL()),
-		m_Feed.EscapeQuote(m_DownLoader.GetNowDLLocalPath()));
-	m_Feed.ExecSQL(strSQL);
+	CString strSQL = m_DownLoader.GetNowDLURL();
+	if (!strSQL.IsEmpty()) {
+		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
+			m_Feed.EscapeQuote(m_DownLoader.GetNowDLURL()),
+			m_Feed.EscapeQuote(m_DownLoader.GetNowDLLocalPath()));
+		m_Feed.ExecSQL(strSQL);
+	}
+	strSQL = _T("PRAGMA synchronous = OFF");
+	CString err;
+	m_Feed.ExecSQL(strSQL, &err);
 	while (!m_DownLoader.m_slURL.IsEmpty()) {
 		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
 			m_Feed.EscapeQuote(m_DownLoader.m_slURL.RemoveHead()),
@@ -94,16 +107,12 @@ void CPicCollectorDlg::OnDestroy()
 	}
 
 	CDialog::OnDestroy();
-	CoUninitialize();
 
 	DEL(g_pPicCConf);
 }
 
 DWORD CPicCollectorDlg::ThreadProc()
 {
-	if (!m_uTimerShowDownload)
-		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
-
 	RefreshAllFeed();
 
 	return 0;
@@ -120,6 +129,8 @@ void CPicCollectorDlg::AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName)
 		m_Feed.EscapeQuote(lpURL),
 		m_Feed.EscapeQuote(lpLocalName));
 	m_Feed.ExecSQL(strSQL);
+	m_Feed.BuildFromFile(lpURL);
+	m_Feed.Save();
 	CreateThread();
 }
 
@@ -129,6 +140,9 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 		return;
 	if (!IsCanThread())
 		return;
+	if (!m_uTimerShowDownload)
+		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
+
 	m_Feed.BuildFromFile(lpURL);
 	m_Feed.Save();
 
@@ -182,8 +196,9 @@ void CPicCollectorDlg::RefreshAllFeed()
 
 BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_PICC_BTN_CHANGEDLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnChangedldir)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_PICC_BTN_CHANGEDLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnChangedldir)
+	ON_BN_CLICKED(IDC_PICC_BTN_ADDNEWFEED, &CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -205,6 +220,23 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 		CString sBuf;
 		sBuf.Format(_T("%d: %s"), m_DownLoader.m_slURL.GetCount()+1, m_DownLoader.GetNowDLURL());
 		GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
+		if (!m_DownLoader.IsThreadRunning()) {
+			Sleep(3000);
+			if (m_DownLoader.IsThreadRunning())
+				break;
+			Sleep(3000);
+			if (m_DownLoader.IsThreadRunning())
+				break;
+			Sleep(3000);
+			if (m_DownLoader.IsThreadRunning())
+				break;
+			Sleep(3000);
+			if (m_DownLoader.IsThreadRunning())
+				break;
+			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
+			KillTimer(nIDEvent);
+			m_uTimerShowDownload = 0;
+		}
 		}
 		break;
 	}
@@ -232,6 +264,22 @@ void CPicCollectorDlg::OnBnClickedPiccBtnChangedldir()
 			GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(sDlDir);
 			g_pPicCConf->m_sDlDir = sDlDir;
 			g_pPicCConf->m_sDlDir.SetDirty();
+		}
+	}
+}
+
+void CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed()
+{
+	CString strURL;
+	CString strName;
+	CInputBox input(this, false);
+	if (IDOK == input.Show(_T("請輸入 rss 網址"), strURL)) {
+		if (strURL.IsEmpty())
+			return;
+		if (IDOK == input.Show(_T("請輸入 rss 本機名稱"), strName)) {
+			if (strName.IsEmpty())
+				return;
+			AddNewFeed(strURL, strName);
 		}
 	}
 }

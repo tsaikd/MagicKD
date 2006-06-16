@@ -4,7 +4,7 @@
 class CPicCFeedListItem : public CKDListItem
 {
 public:
-	CPicCFeedListItem() : CKDListItem(2) {}
+	CPicCFeedListItem() : CKDListItem(3) {}
 	virtual ~CPicCFeedListItem() {}
 };
 

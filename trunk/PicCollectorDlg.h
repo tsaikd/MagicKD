@@ -37,13 +37,12 @@ private:
 
 public:
 	afx_msg void OnBnClickedPiccBtnChangedldir();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedPiccBtnAddnewfeed();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnOK();
 	virtual void OnCancel();
-public:
-public:
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 extern CPicCollectorDlg *g_pPicCollectorDlg;

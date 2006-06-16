@@ -143,6 +143,7 @@
 #define IDC_PICC_STATIC_DLDIR           1083
 #define IDC_PICC_STATIC_DOWNLOAD        1084
 #define IDC_PICC_BTN_CHANGEDLDIR        1085
+#define IDC_PICC_BTN_ADDNEWFEED         1086
 
 // Next default values for new objects
 // 
@@ -150,7 +151,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        249
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1086
+#define _APS_NEXT_CONTROL_VALUE         1087
 #define _APS_NEXT_SYMED_VALUE           107
 #endif
 #endif

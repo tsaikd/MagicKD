@@ -21,8 +21,9 @@ void CPicCFeedListCtrl::Init()
 	CRect rcWin;
 	GetClientRect(rcWin);
 //	InsertColumn(0, CResString(IDS_FIND_COLUMN_FINDLIST), LVCFMT_LEFT, rcWin.right);
-	InsertColumn(0, _T("Feed Title"), LVCFMT_LEFT, 100);
-	InsertColumn(1, _T("Feed URL"), LVCFMT_LEFT, rcWin.right-100);
+	InsertColumn(0, _T("Name"), LVCFMT_LEFT, 50);
+	InsertColumn(1, _T("Feed Title"), LVCFMT_LEFT, 100);
+	InsertColumn(2, _T("Feed URL"), LVCFMT_LEFT, rcWin.right-150);
 
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 
@@ -47,9 +48,10 @@ void CPicCFeedListCtrl::ReloadItems()
 	CPicCFeedListItem *pItem;
 	int i;
 	for (i=0 ; i<strTitleArray.GetCount() ; i++) {
-	pItem = new CPicCFeedListItem;
-		pItem->SetText(0, strTitleArray[0]);
-		pItem->SetText(1, strLinkArray[0]);
+		pItem = new CPicCFeedListItem;
+		pItem->SetText(0, g_pPicCollectorDlg->m_Feed.GetFeedName(strLinkArray[i]));
+		pItem->SetText(1, strTitleArray[i]);
+		pItem->SetText(2, strLinkArray[i]);
 		AddItem(pItem);
 	}
 }

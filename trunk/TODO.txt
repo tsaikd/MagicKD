@@ -2,7 +2,6 @@ Initial function
 
 PicCollector(rss):
 圖片黑名單
-預設存圖路徑
 設定本機feed名稱
 DoSize
 Localize

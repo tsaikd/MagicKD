@@ -22,14 +22,12 @@ void CPicCFeed::SetDBPath(LPCTSTR sDBPath)
 
 CString CPicCFeed::GetFeedName(LPCTSTR lpURL)
 {
-	int nFields;
-	int nRow;
 	CStringArray saTable;
 	CString strSQL;
 	strSQL.Format(_T("SELECT DISTINCT name FROM PicFeed WHERE FeedLink = '%s';"), EscapeQuote(lpURL));
-	GetTableSQL(strSQL, saTable, &nFields, &nRow);
+	GetTableSQL(strSQL, saTable);
 
-	if (nRow)
+	if (saTable.GetCount() > 1)
 		return saTable[1];
 	else
 		return _T("");

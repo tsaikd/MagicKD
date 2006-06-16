@@ -64,27 +64,42 @@ CFeed::~CFeed()
 		sqlite3_close(m_pDB);
 }
 
-bool CFeed::ExecSQL(LPCTSTR strSQL)
+bool CFeed::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
 {
 	if (!m_bDBPath)
 		return false;
 
+	m_muxDB.Lock();
 	sqlite3_stmt *stmt = NULL;
 	sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0);
+	if (strErrMsg)
+		*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
+	m_muxDB.Unlock();
 
 	return true;
 }
 
-bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields/* = NULL*/, int *nRow/* = NULL*/)
+bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg/* = NULL*/, int *nFields/* = NULL*/, int *nRow/* = NULL*/)
 {
 	if (!m_bDBPath)
 		return false;
 
+	m_muxDB.Lock();
 	int nCol;
-	sqlite3_stmt *stmt;
-	sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0);
+	sqlite3_stmt *stmt = NULL;
+	if (SQLITE_OK != sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0)) {
+		if (strErrMsg)
+			*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
+		//CString sErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
+		//sErrMsg.AppendFormat(_T("\n%s\nSQL ERROR: Prepare stmt Failed"), strSQL);
+		//AfxMessageBox(sErrMsg);
+		if (!stmt) {
+			m_muxDB.Unlock();
+			return false;
+		}
+	}
 	int iFields = sqlite3_column_count(stmt);
 	int iRow = 0;
 	saTable.RemoveAll();
@@ -100,6 +115,7 @@ bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields/* = 
 	}
 
 	sqlite3_finalize(stmt);
+	m_muxDB.Unlock();
 
 	if (nFields)
 		*nFields = iFields;
@@ -111,15 +127,15 @@ bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields/* = 
 void CFeed::SetDBPath(LPCTSTR sDBPath)
 {
 	sqlite3_open16(sDBPath, &m_pDB);
-	CString strSQL;
 
+	m_bDBPath = true;
+
+	CString strSQL;
 	strSQL.Format(_T("CREATE TABLE FeedItem (FeedLink VARCHAR, title VARCHAR, link VARCHAR UNIQUE, description VARCHAR, pubdate VARCHAR, author VARCHAR, category VARCHAR, subject VARCHAR, readstatus VARCHAR);"));
 	ExecSQL(strSQL);
 
 	strSQL.Format(_T("CREATE TABLE FeedSource (FeedLink VARCHAR PRIMARY KEY, description VARCHAR, title VARCHAR, version VARCHAR, copyright VARCHAR, generator VARCHAR, feedlanguage VARCHAR, lastbuilddate VARCHAR, ttl VARCHAR, webmaster VARCHAR, imagedescription VARCHAR, imageheight VARCHAR, imagewidth VARCHAR, imagelink VARCHAR, imagetitle VARCHAR, imageurl VARCHAR);"));
 	ExecSQL(strSQL);
-
-	m_bDBPath = true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -129,6 +145,7 @@ void CFeed::SetDBPath(LPCTSTR sDBPath)
 // This function will build Feed Object from scratch by parsing XML Feed Information
 // Result is stored in m_source and m_item objects
 //
+#define RETURN { CoUninitialize(); return; }
 void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
 	if (!m_bDBPath)
@@ -143,7 +160,7 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 		|| (!PathFileExists(strTmpFile)))
 	{
 		AfxMessageBox(_T("Failed to download ") + CString(strXMLURL));
-		return;
+		RETURN;
 	}
 	//while (!PathFileExists(strTmpFile))
 	//	Sleep(2000);
@@ -162,15 +179,20 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	{
 		// Failed to load XML Document, report error message
 		AfxMessageBox( _T("Failed to CoCreateInstance") );
-		return;
+		RETURN;
 	}
 
 	m_pDoc->put_async( VARIANT_FALSE );
 	if ( m_pDoc->load( _bstr_t(strTmpFile) ) == VARIANT_FALSE )
 	{
+		//MSXML2::IXMLDOMParseErrorPtr errPtr = m_pDoc->GetparseError();
+		//_bstr_t bstrErr(errPtr->reason);
+		//CString sErrMsg;
+		//sErrMsg.Format(_T("Reason: %s\nError Code: 0x%x\nLine: %ldPos: %ld\n"), CString((char*)bstrErr), errPtr->errorCode, errPtr->line, errPtr->linepos);
+
 		// Failed to load XML Document, report error message
-		AfxMessageBox( _T("Failed to load XML Document") );
-		return;
+		AfxMessageBox(_T("Failed to load XML Document"));
+		RETURN;
 	}
 
 	// Step 2. Get version property if it is available
@@ -218,8 +240,9 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 		m_pDoc->Release();
 		m_pDoc = NULL;
 	}
-	CoUninitialize();
+	RETURN;
 }
+#undef RETURN
 
 /////////////////////////////////////////////////////////////////////////////
 // Save Feed Information into Database
@@ -230,6 +253,8 @@ void CFeed::Save(bool bSaveSource /*= true*/)
 	int		nIndex;
 
 	if (!m_bDBPath)
+		return;
+	if (m_source.m_strLink.IsEmpty())
 		return;
 
 	// Step 3. Execute Insert Statement on FeedSource
@@ -281,44 +306,41 @@ void CFeed::LoadLocal(LPCTSTR strLink)
 {
 	CString			strSQL;
 	CStringArray	saTable;
-	int				nFields;
-	int				nRow;
 
 	if (!m_bDBPath)
 		return;
 
 	ClearLoadedItems();
-	strSQL.Format(_T("select * from FeedSource where FeedLink = '%s'"), EscapeQuote(strLink));
-	if (!GetTableSQL(strSQL, saTable, &nFields, &nRow))
+	strSQL.Format(_T("SELECT DISTINCT description, title, version, copyright, generator, feedlanguage, lastbuilddate, ttl, webmaster, imagedescription, imageheight, imagewidth, imagelink, imagetitle, imageurl FROM FeedSource WHERE FeedLink = '%s'"), EscapeQuote(strLink));
+	if (!GetTableSQL(strSQL, saTable))
 		return;
 
 	m_source.m_strLink				= strLink;
-	m_source.m_strDescription		= saTable[nFields + 1];
-	m_source.m_strTitle				= saTable[nFields + 2];
-	m_source.m_strVersion			= saTable[nFields + 3];
-	m_source.m_strCopyright			= saTable[nFields + 4];
-	m_source.m_strGenerator			= saTable[nFields + 5];
-	m_source.m_strLanguage			= saTable[nFields + 6];
-	m_source.m_strLastBuildDate		= saTable[nFields + 7];
-	m_source.m_strTtl				= saTable[nFields + 8];
-	m_source.m_strWebMaster			= saTable[nFields + 9];
-	m_source.m_strImageDescription	= saTable[nFields + 10];
-	m_source.m_strImageHeight		= saTable[nFields + 11];
-	m_source.m_strImageWidth		= saTable[nFields + 12];
-	m_source.m_strImageLink			= saTable[nFields + 13];
-	m_source.m_strImageTitle		= saTable[nFields + 14];
-	m_source.m_strImageUrl			= saTable[nFields + 15];
+	m_source.m_strDescription		= saTable[15 + 0];
+	m_source.m_strTitle				= saTable[15 + 1];
+	m_source.m_strVersion			= saTable[15 + 2];
+	m_source.m_strCopyright			= saTable[15 + 3];
+	m_source.m_strGenerator			= saTable[15 + 4];
+	m_source.m_strLanguage			= saTable[15 + 5];
+	m_source.m_strLastBuildDate		= saTable[15 + 6];
+	m_source.m_strTtl				= saTable[15 + 7];
+	m_source.m_strWebMaster			= saTable[15 + 8];
+	m_source.m_strImageDescription	= saTable[15 + 9];
+	m_source.m_strImageHeight		= saTable[15 + 10];
+	m_source.m_strImageWidth		= saTable[15 + 11];
+	m_source.m_strImageLink			= saTable[15 + 12];
+	m_source.m_strImageTitle		= saTable[15 + 13];
+	m_source.m_strImageUrl			= saTable[15 + 14];
 
 
 	// Step 4. Read FeedItem and populate it into m_item object
-	strSQL.Format(_T("select * from FeedItem where FeedLink = '%s' order by pubDate desc, title asc"), EscapeQuote(strLink));
-	if (!GetTableSQL(strSQL, saTable, &nFields, &nRow))
+	strSQL.Format(_T("SELECT DISTINCT title, link, description, pubdate, author, category, subject, readstatus FROM FeedItem WHERE FeedLink = '%s' ORDER BY pubdate DESC, title ASC"), EscapeQuote(strLink));
+	if (!GetTableSQL(strSQL, saTable))
 		return;
 
 	int i;
 	CFeedItem item;
-	for (i=nFields ; i<saTable.GetCount() ; ) {
-		i++; // ignore FeedLink
+	for (i=8 ; i<saTable.GetCount() ; ) {
 		item.m_strTitle			= saTable[i++];
 		item.m_strLink			= saTable[i++];
 		item.m_strDescription	= saTable[i++];

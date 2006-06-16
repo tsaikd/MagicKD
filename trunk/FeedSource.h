@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <afxmt.h>
 #include "sqlite/sqlite3.h"
 
 class CFeedItem
@@ -81,13 +82,14 @@ public:
 	sqlite3							*m_pDB;
 
 protected:
-	bool	ExecSQL(LPCTSTR strSQL);
-	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, int *nFields = NULL, int *nRow = NULL);
+	bool	ExecSQL(LPCTSTR strSQL, CString *strErrMsg = NULL);
+	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg = NULL, int *nFields = NULL, int *nRow = NULL);
 
 //	CString GetFieldValue( FieldsPtr fields, long nIndex );
 //	CString GetComError( _com_error& e );
 //	BOOL ExecuteSQL( _ConnectionPtr& pCnn, CString& strSQL, CString& strMsg );
 
+	CMutex							m_muxDB;
 	CString EscapeQuote(CString strValue);
 private:
 	CString GetModuleFileDir();
