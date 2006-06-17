@@ -20,7 +20,6 @@ void CPicCFeedListCtrl::Init()
 
 	CRect rcWin;
 	GetClientRect(rcWin);
-//	InsertColumn(0, CResString(IDS_FIND_COLUMN_FINDLIST), LVCFMT_LEFT, rcWin.right);
 	InsertColumn(0, _T("Name"), LVCFMT_LEFT, 50);
 	InsertColumn(1, _T("Feed Title"), LVCFMT_LEFT, 100);
 	InsertColumn(2, _T("Feed URL"), LVCFMT_LEFT, rcWin.right-150);
@@ -42,6 +41,8 @@ void CPicCFeedListCtrl::AddItem(CPicCFeedListItem *pItem)
 
 void CPicCFeedListCtrl::ReloadItems()
 {
+	DeleteAllItems();
+
 	CStringArray strTitleArray, strLinkArray;
 	g_pPicCollectorDlg->m_Feed.GetFeedSourceList(strTitleArray, strLinkArray);
 

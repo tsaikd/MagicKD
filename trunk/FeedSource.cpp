@@ -145,12 +145,13 @@ void CFeed::SetDBPath(LPCTSTR sDBPath)
 // This function will build Feed Object from scratch by parsing XML Feed Information
 // Result is stored in m_source and m_item objects
 //
-#define RETURN { CoUninitialize(); return; }
+#define RETURN { if (m_pDoc) { m_pDoc->Release(); m_pDoc = NULL; } CoUninitialize(); m_muxDLInet.Unlock(); return; }
 void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
 	if (!m_bDBPath)
 		return;
 
+	m_muxDLInet.Lock();
 	ClearLoadedItems();
 	CString strTmpFile = GetModuleFileDir() + _T("\\FeedSource_tmp.xml");
 	CoInitialize(NULL);
@@ -182,17 +183,43 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 		RETURN;
 	}
 
-	m_pDoc->put_async( VARIANT_FALSE );
-	if ( m_pDoc->load( _bstr_t(strTmpFile) ) == VARIANT_FALSE )
+	UINT uMaxRepairTimes = 50;
+	m_pDoc->put_validateOnParse(VARIANT_FALSE);
+	m_pDoc->put_async(VARIANT_FALSE);
+	while ( m_pDoc->load( _bstr_t(strTmpFile) ) == VARIANT_FALSE )
 	{
-		//MSXML2::IXMLDOMParseErrorPtr errPtr = m_pDoc->GetparseError();
+		MSXML2::IXMLDOMParseErrorPtr errPtr = m_pDoc->GetparseError();
 		//_bstr_t bstrErr(errPtr->reason);
 		//CString sErrMsg;
-		//sErrMsg.Format(_T("Reason: %s\nError Code: 0x%x\nLine: %ldPos: %ld\n"), CString((char*)bstrErr), errPtr->errorCode, errPtr->line, errPtr->linepos);
+		//sErrMsg.Format(_T("Reason: %s\nError Code: 0x%x\nLine: %ld\nPos: %ld\nFile Pos:%ld\n"), CString((char*)errPtr->reason), errPtr->errorCode, errPtr->line, errPtr->linepos, errPtr->filepos);
+
+		CString sFile, sNewXML;
+		int i, iLine = errPtr->line;
+		CStdioFile fFile(strTmpFile, CFile::modeRead);
+		fFile.ReadString(sFile);
+		for (i=1 ; i<iLine ; i++) {
+			sNewXML.AppendFormat(_T("%s\n"), sFile);
+			fFile.ReadString(sFile);
+		}
+		TCHAR bch = sFile.GetAt(errPtr->linepos - 1);
+		sFile.Remove(bch);
+		sNewXML.Append(sFile);
+		while (fFile.ReadString(sFile))
+			sNewXML.AppendFormat(_T("%s\n"), sFile);
+		fFile.Close();
+		DeleteFile(strTmpFile);
+		fFile.Open(strTmpFile, CFile::modeCreate | CFile::modeWrite);
+		fFile.WriteString(sNewXML);
+		fFile.Close();
+
+		if (!uMaxRepairTimes--) {
+			AfxMessageBox(_T("Failed to load XML Document, and tried 50 times"));
+			RETURN;
+		}
 
 		// Failed to load XML Document, report error message
-		AfxMessageBox(_T("Failed to load XML Document"));
-		RETURN;
+//		AfxMessageBox(_T("Failed to load XML Document"));
+//		RETURN;
 	}
 
 	// Step 2. Get version property if it is available

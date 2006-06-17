@@ -421,6 +421,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PicCDLManager.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\PicCFeed.cpp"
 					>
 				</File>
@@ -664,6 +668,10 @@
 				>
 				<File
 					RelativePath=".\PicCConf.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PicCDLManager.h"
 					>
 				</File>
 				<File

@@ -12,12 +12,13 @@ CPicCollectorDlg *g_pPicCollectorDlg = NULL;
 CPicCConf *g_pPicCConf = NULL;
 
 enum {
-	KDT_SHOWDOWNLOAD		= 1
+	KDT_SHOWDOWNLOAD	= 1,
+	KDT_REFRESH
 };
 
 IMPLEMENT_DYNAMIC(CPicCollectorDlg, CDialog)
 CPicCollectorDlg::CPicCollectorDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CPicCollectorDlg::IDD, pParent), m_uTimerShowDownload(0)
+	: CDialog(CPicCollectorDlg::IDD, pParent), m_uTimerShowDownload(0), m_uTimerRefresh(0), m_uLastDLDay(0)
 {
 	g_pPicCollectorDlg = this;
 }
@@ -30,6 +31,8 @@ CPicCollectorDlg::~CPicCollectorDlg()
 BOOL CPicCollectorDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 3);
 
 	CString sPath;
 	sPath.Format(_T("%sPicCollector.ini"), theApp.GetAppConfDir());
@@ -56,12 +59,9 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	m_Feed.GetTableSQL(_T("SELECT Url, Localpath FROM PicUnDownload"), saTable);
 	for (i=2 ; i<saTable.GetCount() ; i+=2)
 		m_DownLoader.AddFileListQuick(saTable[i], saTable[i+1]);
-	m_Feed.ExecSQL(_T("DELETE FROM PicUnDownload"));
-	CreateThread(THREAD_PRIORITY_BELOW_NORMAL);
+	m_DownLoader.CreateThread(THREAD_PRIORITY_LOWEST);
 
-//	AddNewFeed(_T("http://forum.p2pzone.org/rss.php?fid=13,117&limit=50&auth=AFcMVFwHMAwJUFAFUVsD"), _T("P2PZone_Beauty"));
-//	AddNewFeed(_T("http://forum.p2pzone.org/rss.php?fid=57&limit=50&auth=AFcMVFwHMAwJUFAFUVsD"), _T("P2PZone_Pretty"));
-	// TODO:  Add extra initialization here
+	OnBnClickedPiccBtnRefreshfeed();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -69,6 +69,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 void CPicCollectorDlg::OnDestroy()
 {
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tThread"));
 	SetCanThread(false);
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {
 #ifdef DEBUG
@@ -77,33 +78,34 @@ void CPicCollectorDlg::OnDestroy()
 		TerminateThread(0);
 	}
 
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tDownload Thread"));
 	m_DownLoader.SetCanThread(false);
-	CString strSQL = m_DownLoader.GetNowDLURL();
-	if (!strSQL.IsEmpty()) {
-		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
-			m_Feed.EscapeQuote(m_DownLoader.GetNowDLURL()),
-			m_Feed.EscapeQuote(m_DownLoader.GetNowDLLocalPath()));
-		m_Feed.ExecSQL(strSQL);
-	}
-	strSQL = _T("PRAGMA synchronous = OFF");
-	CString err;
-	m_Feed.ExecSQL(strSQL, &err);
-	while (!m_DownLoader.m_slURL.IsEmpty()) {
-		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
-			m_Feed.EscapeQuote(m_DownLoader.m_slURL.RemoveHead()),
-			m_Feed.EscapeQuote(m_DownLoader.m_slLocalPath.RemoveHead()));
-		m_Feed.ExecSQL(strSQL);
-	}
 	if (WAIT_TIMEOUT == m_DownLoader.WaitForThread(10000)) {
 #ifdef DEBUG
 		AfxMessageBox(_T("CPicCollectorDlg.m_DownLoader Thread is running!!"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
+		m_DownLoader.SaveNowDLToList();
 		m_DownLoader.TerminateThread(0);
 	}
 
 	if (m_uTimerShowDownload) {
 		KillTimer(m_uTimerShowDownload);
 		m_uTimerShowDownload = 0;
+	}
+	if (m_uTimerRefresh) {
+		KillTimer(m_uTimerRefresh);
+		m_uTimerRefresh = 0;
+	}
+
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Saving\tPicCollector\tUndownload List"));
+	m_Feed.ExecSQL(_T("DELETE FROM PicUnDownload"));
+	m_Feed.ExecSQL(_T("PRAGMA synchronous = OFF"));
+	CString strSQL;
+	while (!m_DownLoader.IsDownloadAllOver()) {
+		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
+			m_Feed.EscapeQuote(m_DownLoader.RemoveHeadDLURL()),
+			m_Feed.EscapeQuote(m_DownLoader.RemoveHeadLocalPath()));
+		m_Feed.ExecSQL(strSQL);
 	}
 
 	CDialog::OnDestroy();
@@ -113,7 +115,9 @@ void CPicCollectorDlg::OnDestroy()
 
 DWORD CPicCollectorDlg::ThreadProc()
 {
+	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->EnableWindow(FALSE);
 	RefreshAllFeed();
+	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->EnableWindow(TRUE);
 
 	return 0;
 }
@@ -131,6 +135,7 @@ void CPicCollectorDlg::AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName)
 	m_Feed.ExecSQL(strSQL);
 	m_Feed.BuildFromFile(lpURL);
 	m_Feed.Save();
+	m_list_Feed.ReloadItems();
 	CreateThread();
 }
 
@@ -149,6 +154,9 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 	CTime curTime(time(0));
 	CString strLink, strName, strLocalDir, strLocalPath;
 	UINT uPicNum = 1;
+	if (!m_Ini.IsKeyExist(_T("General"), _T("uLastDLDay")))
+		m_Ini.WriteUInt(_T("General"), _T("uLastDLDay"), _ttoi(curTime.Format(_T("%d"))));
+
 	int i;
 	for (i=0 ; i<m_Feed.m_item.GetCount() ; i++) {
 		strLink = m_Feed.m_item[i].m_strLink;
@@ -162,7 +170,14 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 
 			// check download list for black list
 			// Create serial number for this link
-			uPicNum = m_Ini.GetUInt(_T("PicNum"), strName, 1);
+			m_uLastDLDay = m_Ini.GetUInt(_T("General"), _T("uLastDLDay"), _ttoi(curTime.Format(_T("%d"))));
+			if (m_uLastDLDay == (UINT)_ttoi(curTime.Format(_T("%d")))) {
+				uPicNum = m_Ini.GetUInt(_T("PicNum"), strName, 1);
+			} else {
+				uPicNum = 1;
+				m_uLastDLDay = _ttoi(curTime.Format(_T("%d")));
+				m_Ini.WriteUInt(_T("General"), _T("uLastDLDay"), m_uLastDLDay);
+			}
 
 			// Check necessary dir (parent dir)
 			strLocalDir.Format(_T("%s\\%s\\%s"), CString(g_pPicCConf->m_sDlDir), strName, curTime.Format(_T("%Y_%m\\%d")));
@@ -177,6 +192,7 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 				if (!IsCanThread())
 					return;
 			}
+			m_DownLoader.CreateThread(THREAD_PRIORITY_LOWEST);
 
 			m_Ini.WriteUInt(_T("PicNum"), strName, uPicNum);
 			m_Feed.MarkItemRead(strLink);
@@ -199,6 +215,8 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_PICC_BTN_CHANGEDLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnChangedldir)
 	ON_BN_CLICKED(IDC_PICC_BTN_ADDNEWFEED, &CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed)
+	ON_BN_CLICKED(IDC_PICC_BTN_REFRESHFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed)
+	ON_BN_CLICKED(IDC_PICC_BTN_REMOVEFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -218,26 +236,31 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 	case KDT_SHOWDOWNLOAD:
 		{
 		CString sBuf;
-		sBuf.Format(_T("%d: %s"), m_DownLoader.m_slURL.GetCount()+1, m_DownLoader.GetNowDLURL());
+		sBuf.Format(_T("%d:(%d%%) %s"), m_DownLoader.GetDownloadCount()+1, (int)(m_DownLoader.GetPercentOfNowDL()*100), m_DownLoader.GetNowDLURL());
 		GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
+		GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_DownLoader.GetNowDLLocalPath());
 		if (!m_DownLoader.IsThreadRunning()) {
-			Sleep(3000);
+			Sleep(2000);
 			if (m_DownLoader.IsThreadRunning())
 				break;
-			Sleep(3000);
+			Sleep(2000);
 			if (m_DownLoader.IsThreadRunning())
 				break;
-			Sleep(3000);
+			Sleep(2000);
 			if (m_DownLoader.IsThreadRunning())
 				break;
-			Sleep(3000);
+			Sleep(2000);
 			if (m_DownLoader.IsThreadRunning())
 				break;
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
+			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(_T(""));
 			KillTimer(nIDEvent);
 			m_uTimerShowDownload = 0;
 		}
 		}
+		break;
+	case KDT_REFRESH:
+		CreateThread();
 		break;
 	}
 
@@ -280,6 +303,34 @@ void CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed()
 			if (strName.IsEmpty())
 				return;
 			AddNewFeed(strURL, strName);
+		}
+	}
+}
+
+void CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed()
+{
+	if (m_uTimerRefresh)
+		KillTimer(m_uTimerRefresh);
+	m_uTimerRefresh = SetTimer(KDT_REFRESH, 10*60*1000, NULL);
+	CreateThread();
+}
+
+void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()
+{
+	CPicCFeedListItem *pItem = (CPicCFeedListItem *)m_list_Feed.GetFirstSelectedItemLParam();
+	if (pItem) {
+		CString strURL(pItem->GetFeedURL());
+		if (!strURL.IsEmpty()) {
+			CString strSQL;
+
+			strSQL.Format(_T("DELETE FROM FeedItem WHERE FeedLink = '%s'"), m_Feed.EscapeQuote(strURL));
+			m_Feed.ExecSQL(strSQL);
+			strSQL.Format(_T("DELETE FROM FeedSource WHERE FeedLink = '%s'"), m_Feed.EscapeQuote(strURL));
+			m_Feed.ExecSQL(strSQL);
+			strSQL.Format(_T("DELETE FROM PicFeed WHERE FeedLink = '%s'"), m_Feed.EscapeQuote(strURL));
+			m_Feed.ExecSQL(strSQL);
+
+			m_list_Feed.ReloadItems();
 		}
 	}
 }

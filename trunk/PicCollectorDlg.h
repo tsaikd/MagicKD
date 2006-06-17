@@ -1,10 +1,11 @@
 #pragma once
+#include "Resource.h"
 #include "Ini.h"
 #include "PicCFeed.h"
 #include "PicCFeedListCtrl.h"
-#include "KDGetHttpFile.h"
 #include "KDThread.h"
 #include "PicCHTMLEventHandler.h"
+#include "PicCDLManager.h"
 
 
 class CPicCollectorDlg : public CDialog, public CKDThread
@@ -27,18 +28,22 @@ public:
 
 	CIni					m_Ini;
 	CPicCFeed				m_Feed;
-	CKDGetHttpFile			m_DownLoader;
+	CPicCDLManager			m_DownLoader;
 	CPicCFeedListCtrl		m_list_Feed;
 
 private:
 	CPicCHTMLEventHandler	m_HTMLEventHandler;
 	CLiteHTMLReader			m_HTMLReader;
+	UINT					m_uLastDLDay;
 	UINT					m_uTimerShowDownload;
+	UINT					m_uTimerRefresh;
 
 public:
 	afx_msg void OnBnClickedPiccBtnChangedldir();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPiccBtnAddnewfeed();
+	afx_msg void OnBnClickedPiccBtnRefreshfeed();
+	afx_msg void OnBnClickedPiccBtnRemovefeed();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnOK();

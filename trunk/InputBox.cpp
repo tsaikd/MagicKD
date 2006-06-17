@@ -131,7 +131,7 @@ LRESULT CInputBox::OnInitMsgBox(WPARAM wParam, LPARAM lParam)
 	CenterMe(rcDlg);
 	CRect rcEdit = CreateEdit(rcDlg, rcStatic, hFont);
 
-	CenterButtons(rcDlg, rcEdit);	 	
+	CenterButtons(rcEdit);	 	
 	return lRes;
 }
 
@@ -143,7 +143,7 @@ BOOL CInputBox::CenterMe(CRect& rect)
 	return TRUE;
 }
 
-BOOL CInputBox::CenterButtons(IN CRect& rcDlg, CRect& rcEdit)
+BOOL CInputBox::CenterButtons(CRect& rcEdit)
 {
 	CRect rcOldDlg;
 	GetDlgRect(rcOldDlg);

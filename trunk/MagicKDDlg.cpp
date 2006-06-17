@@ -106,7 +106,7 @@ void CMagicKDDlg::OnDestroy()
 	if (g_pTheConf->m_General_bShowCloseWindow && !m_cMainConfigDlg.m_bUpdateLastest)
 		g_pTheAppEndDlg->ShowWindow(SW_SHOW);
 
-	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\tDialog"));
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\t\tDialog"));
 	SetFuncEnable(eFunc_WallChanger, false, false);
 	SetFuncEnable(eFunc_FindDupFile, false, false);
 	SetFuncEnable(eFunc_PicCollector, false, false);

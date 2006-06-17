@@ -6,6 +6,10 @@ class CPicCFeedListItem : public CKDListItem
 public:
 	CPicCFeedListItem() : CKDListItem(3) {}
 	virtual ~CPicCFeedListItem() {}
+
+	LPCTSTR GetName() { return GetText(0); }
+	LPCTSTR GetFeedTitle() { return GetText(1); }
+	LPCTSTR GetFeedURL() { return GetText(2); }
 };
 
 

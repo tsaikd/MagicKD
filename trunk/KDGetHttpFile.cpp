@@ -20,34 +20,53 @@ CKDGetHttpFile::~CKDGetHttpFile()
 DWORD CKDGetHttpFile::ThreadProc()
 {
 	CInternetSession session(_T("Download File Thread Session"));
-//	session.SetOption(INTERNET_OPTION_CONNECT_TIMEOUT, _T("1000"), _tcslen(_T("1000")));
-//	session.SetOption(INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT, _T("1000"), _tcslen(_T("1000")));
-	CStdioFile *pFile = NULL;
+	session.SetOption(INTERNET_OPTION_CONNECT_TIMEOUT, 6000);
+	session.SetOption(INTERNET_OPTION_RECEIVE_TIMEOUT, 6000);
+	CHttpFile *pFile = NULL;
 	HANDLE hLocalFile = INVALID_HANDLE_VALUE;
 	CString sMaxSize;
-	static const int iQuerySize = 16384;
+	static const int iQuerySize = 8192;
+	const int iQueryMaxTimes = 50;
+	int iQueryTimes = 0;
 	BYTE *pBuf = new BYTE[iQuerySize];
 	UINT uReadLen;
 	DWORD dwWriteLen;
+	bool bDLOver = true;
 
 	while (IsCanThread() && !m_slURL.IsEmpty()) {
 		m_muxNowDLURL.Lock();
 		m_sNowDLURL = m_slURL.RemoveHead();
+		m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
 		m_ulNowDLSize = m_ulNowDLMaxSize = 0;
+		hLocalFile = CreateFile(m_sNowDLLocalPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		m_muxNowDLURL.Unlock();
 
-		m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
-
-		pFile = session.OpenURL(m_sNowDLURL);
-		hLocalFile = CreateFile(m_sNowDLLocalPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		bDLOver = true;
+		TRY {
+			pFile = (CHttpFile *)session.OpenURL(m_sNowDLURL);
+		} CATCH_ALL (e) {
+#ifdef DEBUG
+			e->ReportError();
+#endif //DEBUG
+		} END_CATCH_ALL;
 
 		if (pFile && (hLocalFile != INVALID_HANDLE_VALUE)) {
-			((CHttpFile *)pFile)->QueryInfo(HTTP_QUERY_CONTENT_LENGTH, sMaxSize);
+			pFile->QueryInfo(HTTP_QUERY_CONTENT_LENGTH, sMaxSize);
 			m_muxNowDLURL.Lock();
 			m_ulNowDLMaxSize = _ttoi64(sMaxSize);
 			m_muxNowDLURL.Unlock();
 
-			while ((uReadLen = pFile->Read(pBuf, iQuerySize)) && (IsCanThread())) {
+			uReadLen = 1;
+			while (uReadLen && IsCanThread()) {
+				TRY {
+					uReadLen = pFile->Read(pBuf, iQuerySize);
+				} CATCH_ALL (e) {
+#ifdef DEBUG
+					e->ReportError();
+#endif //DEBUG
+					bDLOver = false;
+					break;
+				} END_CATCH_ALL;
 				WriteFile(hLocalFile, pBuf, uReadLen, &dwWriteLen, NULL);
 				m_ulNowDLSize += dwWriteLen;
 				m_ulTotalDLSize += dwWriteLen;
@@ -61,6 +80,14 @@ DWORD CKDGetHttpFile::ThreadProc()
 			pFile->Close();
 			delete pFile;
 			pFile = NULL;
+		}
+		if (!bDLOver || !IsCanThread()) {
+			DeleteFile(m_sNowDLLocalPath);
+			if (iQueryTimes++ < iQueryMaxTimes)
+				SaveNowDLToList();
+		} else {
+			iQueryTimes = 0;
+			OnDownloadFileOver();
 		}
 	}
 
@@ -107,9 +134,6 @@ bool CKDGetHttpFile::AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 	m_slURL.AddTail(lpURL);
 	m_slLocalPath.AddTail(lpLocalPath);
 
-	if (!IsThreadRunning())
-		CreateThread(THREAD_PRIORITY_LOWEST);
-
 	return true;
 }
 
@@ -139,6 +163,52 @@ double CKDGetHttpFile::GetPercentOfTotalDL()
 
 	m_muxNowDLURL.Unlock();
 	return fRes;
+}
+
+int CKDGetHttpFile::GetDownloadCount()
+{
+	int iRes;
+	m_muxNowDLURL.Lock();
+	iRes = max(m_slURL.GetCount(), m_slLocalPath.GetCount());
+	m_muxNowDLURL.Unlock();
+	return iRes;
+}
+
+CString CKDGetHttpFile::RemoveHeadDLURL()
+{
+	CString sRes;
+	m_muxNowDLURL.Lock();
+	sRes = m_slURL.RemoveHead();
+	m_muxNowDLURL.Unlock();
+	return sRes;
+}
+
+CString CKDGetHttpFile::RemoveHeadLocalPath()
+{
+	CString sRes;
+	m_muxNowDLURL.Lock();
+	sRes = m_slLocalPath.RemoveHead();
+	m_muxNowDLURL.Unlock();
+	return sRes;
+}
+
+bool CKDGetHttpFile::SaveNowDLToList(bool bHead/* = true*/)
+{
+	if (m_sNowDLURL.IsEmpty())
+		return false;
+	if (m_sNowDLLocalPath.IsEmpty())
+		return false;
+
+	m_muxNowDLURL.Lock();
+	if (bHead) {
+		m_slURL.AddHead(m_sNowDLURL);
+		m_slLocalPath.AddHead(m_sNowDLLocalPath);
+	} else {
+		m_slURL.AddTail(m_sNowDLURL);
+		m_slLocalPath.AddTail(m_sNowDLLocalPath);
+	}
+	m_muxNowDLURL.Unlock();
+	return true;
 }
 
 bool CKDGetHttpFile::DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize/* = 8192*/)

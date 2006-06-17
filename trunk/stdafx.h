@@ -46,7 +46,7 @@
 
 #include "Others.h"
 
-#define CoInitialize(x)		CoInitializeEx((x), COINIT_MULTITHREADED)
+//#define CoInitialize(x)		CoInitializeEx((x), COINIT_MULTITHREADED)
 
 #define APPNAME _T("MagicKD")
 #define APPUUID _T("43863dcf-f931-443e-bee0-eba5db4083a2")

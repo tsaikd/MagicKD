@@ -179,12 +179,16 @@ void CKDListCtrl::CancleAllSelected()
 
 LPARAM CKDListCtrl::GetFirstSelectedItemLParam()
 {
+	if (!GetSelectedCount())
+		return NULL;
 	POSITION pos = GetFirstSelectedItemPosition();
 	return (LPARAM)GetItemData(GetNextSelectedItem(pos));
 }
 
 int CKDListCtrl::GetFirstSelectedItemNum()
 {
+	if (!GetSelectedCount())
+		return -1;
 	POSITION pos = GetFirstSelectedItemPosition();
 	return GetNextSelectedItem(pos);
 }

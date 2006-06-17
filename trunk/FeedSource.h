@@ -90,6 +90,7 @@ protected:
 //	BOOL ExecuteSQL( _ConnectionPtr& pCnn, CString& strSQL, CString& strMsg );
 
 	CMutex							m_muxDB;
+	CMutex							m_muxDLInet;
 	CString EscapeQuote(CString strValue);
 private:
 	CString GetModuleFileDir();

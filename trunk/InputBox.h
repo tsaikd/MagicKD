@@ -39,7 +39,7 @@ protected:
 	int			m_iAddDlgWidth;
 	
 	BOOL	CenterMe(IN CRect& rect);
-	BOOL	CenterButtons(IN OUT CRect& rcDlg, IN CRect& rcEdit);
+	BOOL	CenterButtons(IN CRect& rcEdit);
 	CRect	CreateEdit(IN OUT CRect& rcDlg, IN CRect& rcStatic, IN HFONT& hFont);
 	BOOL	GetStaticFontNRect(OUT CRect& rcStatic, OUT HFONT& hFont);
 	BOOL	GetDlgRect(IN OUT CRect& rcDlg);

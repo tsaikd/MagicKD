@@ -12,24 +12,29 @@ public:
 	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 	bool AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 
-	__inline bool IsDownloadAllOver() { return (!IsThreadRunning() && m_slURL.IsEmpty()); }
+	__inline bool IsDownloadAllOver() { return (m_slURL.IsEmpty() && m_slLocalPath.IsEmpty()); }
 	CString GetNowDLURL() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLURL; m_muxNowDLURL.Unlock(); return sRes; }
-	CString GetNowDLLocalPath() { CString sRes = m_sNowDLLocalPath; return sRes; }
+	CString GetNowDLLocalPath() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLLocalPath; m_muxNowDLURL.Unlock(); return sRes; }
 	double GetPercentOfNowDL();
 	double GetPercentOfTotalDL();
+	int GetDownloadCount();
+	CString RemoveHeadDLURL();
+	CString RemoveHeadLocalPath();
+	bool SaveNowDLToList(bool bHead = true);
 
-	CStringList m_slURL;
-	CStringList m_slLocalPath;
+protected:
+	virtual void OnDownloadFileOver() {}
 
-private:
-	bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
-
-private:
 	CMutex m_muxNowDLURL;
 	CString m_sNowDLURL;
 	CString m_sNowDLLocalPath;
+	CStringList m_slURL;
+	CStringList m_slLocalPath;
 	ULONGLONG m_ulNowDLMaxSize;
 	ULONGLONG m_ulNowDLSize;
 	ULONGLONG m_ulTotalDLMaxSize;
 	ULONGLONG m_ulTotalDLSize;
+
+private:
+	bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
 };
