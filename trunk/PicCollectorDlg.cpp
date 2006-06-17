@@ -18,7 +18,8 @@ enum {
 
 IMPLEMENT_DYNAMIC(CPicCollectorDlg, CDialog)
 CPicCollectorDlg::CPicCollectorDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CPicCollectorDlg::IDD, pParent), m_uTimerShowDownload(0), m_uTimerRefresh(0), m_uLastDLDay(0)
+	:	CDialog(CPicCollectorDlg::IDD, pParent), m_uTimerShowDownload(0), m_uTimerRefresh(0), m_uLastDLDay(0),
+		m_pDownLoader(NULL)
 {
 	g_pPicCollectorDlg = this;
 }
@@ -32,7 +33,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 3);
+	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
 
 	CString sPath;
 	sPath.Format(_T("%sPicCollector.ini"), theApp.GetAppConfDir());
@@ -54,12 +55,10 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
 
-	CStringArray saTable;
-	int i;
-	m_Feed.GetTableSQL(_T("SELECT Url, Localpath FROM PicUnDownload"), saTable);
-	for (i=2 ; i<saTable.GetCount() ; i+=2)
-		m_DownLoader.AddFileListQuick(saTable[i], saTable[i+1]);
-	m_DownLoader.CreateThread(THREAD_PRIORITY_LOWEST);
+	if (!m_pDownLoader) {
+		m_pDownLoader = new CPicCDLManager;
+		m_pDownLoader->Init(&m_Feed);
+	}
 
 	OnBnClickedPiccBtnRefreshfeed();
 
@@ -78,16 +77,6 @@ void CPicCollectorDlg::OnDestroy()
 		TerminateThread(0);
 	}
 
-	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tDownload Thread"));
-	m_DownLoader.SetCanThread(false);
-	if (WAIT_TIMEOUT == m_DownLoader.WaitForThread(10000)) {
-#ifdef DEBUG
-		AfxMessageBox(_T("CPicCollectorDlg.m_DownLoader Thread is running!!"), MB_OK | MB_ICONERROR);
-#endif //DEBUG
-		m_DownLoader.SaveNowDLToList();
-		m_DownLoader.TerminateThread(0);
-	}
-
 	if (m_uTimerShowDownload) {
 		KillTimer(m_uTimerShowDownload);
 		m_uTimerShowDownload = 0;
@@ -97,15 +86,11 @@ void CPicCollectorDlg::OnDestroy()
 		m_uTimerRefresh = 0;
 	}
 
-	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Saving\tPicCollector\tUndownload List"));
-	m_Feed.ExecSQL(_T("DELETE FROM PicUnDownload"));
-	m_Feed.ExecSQL(_T("PRAGMA synchronous = OFF"));
-	CString strSQL;
-	while (!m_DownLoader.IsDownloadAllOver()) {
-		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
-			m_Feed.EscapeQuote(m_DownLoader.RemoveHeadDLURL()),
-			m_Feed.EscapeQuote(m_DownLoader.RemoveHeadLocalPath()));
-		m_Feed.ExecSQL(strSQL);
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tDownload Thread"));
+	if (m_pDownLoader) {
+		m_pDownLoader->Destroy();
+		delete m_pDownLoader;
+		m_pDownLoader = NULL;
 	}
 
 	CDialog::OnDestroy();
@@ -150,6 +135,8 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 
 	m_Feed.BuildFromFile(lpURL);
 	m_Feed.Save();
+	if (!IsCanThread())
+		return;
 
 	CTime curTime(time(0));
 	CString strLink, strName, strLocalDir, strLocalPath;
@@ -159,6 +146,9 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 
 	int i;
 	for (i=0 ; i<m_Feed.m_item.GetCount() ; i++) {
+		if (!IsCanThread())
+			return;
+
 		strLink = m_Feed.m_item[i].m_strLink;
 		if (!m_Feed.IsItemRead(strLink)) {
 			strName = m_Feed.GetFeedName(lpURL);
@@ -174,7 +164,14 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 			if (m_uLastDLDay == (UINT)_ttoi(curTime.Format(_T("%d")))) {
 				uPicNum = m_Ini.GetUInt(_T("PicNum"), strName, 1);
 			} else {
+				CStringArray saNames;
+				int i;
+
 				uPicNum = 1;
+				m_Ini.GetKeyNames(_T("PicNum"), &saNames);
+				for (i=0 ; i<saNames.GetCount() ; i++)
+					m_Ini.WriteUInt(_T("PicNum"), saNames[i], 1);
+
 				m_uLastDLDay = _ttoi(curTime.Format(_T("%d")));
 				m_Ini.WriteUInt(_T("General"), _T("uLastDLDay"), m_uLastDLDay);
 			}
@@ -187,12 +184,15 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 			// Download to local own dir and clear old list
 			while (!m_HTMLEventHandler.m_slParsedPic.IsEmpty()) {
 				strLocalPath.Format(_T("%s\\%05d.jpg"), strLocalDir, uPicNum++);
-				m_DownLoader.AddFileListQuick(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath);
+				m_pDownLoader->AddFileListQuick(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath);
 
 				if (!IsCanThread())
 					return;
 			}
-			m_DownLoader.CreateThread(THREAD_PRIORITY_LOWEST);
+
+			if (!IsCanThread())
+				return;
+			m_pDownLoader->CreateThread();
 
 			m_Ini.WriteUInt(_T("PicNum"), strName, uPicNum);
 			m_Feed.MarkItemRead(strLink);
@@ -217,6 +217,7 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_ADDNEWFEED, &CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_REFRESHFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_REMOVEFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed)
+	ON_BN_CLICKED(IDC_PICC_BTN_DELAYDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelaydl)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -235,23 +236,41 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent) {
 	case KDT_SHOWDOWNLOAD:
 		{
-		CString sBuf;
-		sBuf.Format(_T("%d:(%d%%) %s"), m_DownLoader.GetDownloadCount()+1, (int)(m_DownLoader.GetPercentOfNowDL()*100), m_DownLoader.GetNowDLURL());
-		GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
-		GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_DownLoader.GetNowDLLocalPath());
-		if (!m_DownLoader.IsThreadRunning()) {
+		if (m_pDownLoader->IsThreadRunning()) {
+			CString sBuf;
+			if (m_pDownLoader->GetNowDLRetryTimes()) {
+				sBuf.Format(_T("%d:(%d%% retry: %d) %s"), m_pDownLoader->GetDownloadCount()+1, (int)(m_pDownLoader->GetPercentOfNowDL()*100), m_pDownLoader->GetNowDLRetryTimes(), m_pDownLoader->GetNowDLURL());
+			} else {
+				sBuf.Format(_T("%d:(%d%%) %s"), m_pDownLoader->GetDownloadCount()+1, (int)(m_pDownLoader->GetPercentOfNowDL()*100), m_pDownLoader->GetNowDLURL());
+			}
+			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
+			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_pDownLoader->GetNowDLLocalPath());
+		} else {
 			Sleep(2000);
-			if (m_DownLoader.IsThreadRunning())
+			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;
 			Sleep(2000);
-			if (m_DownLoader.IsThreadRunning())
+			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;
 			Sleep(2000);
-			if (m_DownLoader.IsThreadRunning())
+			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;
 			Sleep(2000);
-			if (m_DownLoader.IsThreadRunning())
+			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;
+			if (m_pDownLoader->GetDownloadCount()) {
+				KillTimer(nIDEvent);
+				m_uTimerShowDownload = 0;
+#ifdef DEBUG
+//				AfxMessageBox(_T("WARNNING: Downloader exit by some reason!"));
+#endif //DEBUG
+				DeleteFile(m_pDownLoader->GetNowDLLocalPath());
+				delete m_pDownLoader;
+				m_pDownLoader = new CPicCDLManager;
+				m_pDownLoader->Init(&m_Feed);
+				m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
+				break;
+			}
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(_T(""));
 			KillTimer(nIDEvent);
@@ -333,4 +352,10 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()
 			m_list_Feed.ReloadItems();
 		}
 	}
+}
+
+void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()
+{
+	m_pDownLoader->SaveNowDLToList(false);
+	m_pDownLoader->SetDiscardNowDL();
 }

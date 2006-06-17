@@ -28,7 +28,7 @@ public:
 
 	CIni					m_Ini;
 	CPicCFeed				m_Feed;
-	CPicCDLManager			m_DownLoader;
+	CPicCDLManager			*m_pDownLoader;
 	CPicCFeedListCtrl		m_list_Feed;
 
 private:
@@ -44,6 +44,7 @@ public:
 	afx_msg void OnBnClickedPiccBtnAddnewfeed();
 	afx_msg void OnBnClickedPiccBtnRefreshfeed();
 	afx_msg void OnBnClickedPiccBtnRemovefeed();
+	afx_msg void OnBnClickedPiccBtnDelaydl();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnOK();

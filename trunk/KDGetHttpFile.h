@@ -18,23 +18,28 @@ public:
 	double GetPercentOfNowDL();
 	double GetPercentOfTotalDL();
 	int GetDownloadCount();
+	UINT GetNowDLRetryTimes();
 	CString RemoveHeadDLURL();
 	CString RemoveHeadLocalPath();
 	bool SaveNowDLToList(bool bHead = true);
+	void SetDiscardNowDL(bool bDiscard = true);
 
 protected:
 	virtual void OnDownloadFileOver() {}
 
-	CMutex m_muxNowDLURL;
-	CString m_sNowDLURL;
-	CString m_sNowDLLocalPath;
-	CStringList m_slURL;
-	CStringList m_slLocalPath;
-	ULONGLONG m_ulNowDLMaxSize;
-	ULONGLONG m_ulNowDLSize;
-	ULONGLONG m_ulTotalDLMaxSize;
-	ULONGLONG m_ulTotalDLSize;
+	UINT			m_uQueryRetryTimes;
+	CMutex			m_muxNowDLURL;
+	CString			m_sNowDLURL;
+	CString			m_sNowDLLocalPath;
+	CStringList		m_slURL;
+	CStringList		m_slLocalPath;
+	ULONGLONG		m_ulNowDLMaxSize;
+	ULONGLONG		m_ulNowDLSize;
+	ULONGLONG		m_ulTotalDLMaxSize;
+	ULONGLONG		m_ulTotalDLSize;
 
 private:
 	bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
+
+	bool			m_bDiscardNowDL;
 };

@@ -2,7 +2,8 @@
 #include "KDGetHttpFile.h"
 
 CKDGetHttpFile::CKDGetHttpFile()
-	:	m_ulNowDLMaxSize(0), m_ulNowDLSize(0), m_ulTotalDLMaxSize(0), m_ulTotalDLSize(0)
+	:	m_ulNowDLMaxSize(0), m_ulNowDLSize(0), m_ulTotalDLMaxSize(0), m_ulTotalDLSize(0), m_uQueryRetryTimes(0),
+		m_bDiscardNowDL(false)
 {
 }
 
@@ -25,29 +26,38 @@ DWORD CKDGetHttpFile::ThreadProc()
 	CHttpFile *pFile = NULL;
 	HANDLE hLocalFile = INVALID_HANDLE_VALUE;
 	CString sMaxSize;
+	CString sLocalDir;
 	static const int iQuerySize = 8192;
 	const int iQueryMaxTimes = 50;
-	int iQueryTimes = 0;
+//	int iQueryTimes = 0;
 	BYTE *pBuf = new BYTE[iQuerySize];
 	UINT uReadLen;
 	DWORD dwWriteLen;
 	bool bDLOver = true;
+	m_uQueryRetryTimes = 0;
 
 	while (IsCanThread() && !m_slURL.IsEmpty()) {
 		m_muxNowDLURL.Lock();
 		m_sNowDLURL = m_slURL.RemoveHead();
-		m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
+		sLocalDir = m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
 		m_ulNowDLSize = m_ulNowDLMaxSize = 0;
 		hLocalFile = CreateFile(m_sNowDLLocalPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		m_muxNowDLURL.Unlock();
 
+		PathRemoveFileSpec(sLocalDir.GetBuffer());
+		sLocalDir.ReleaseBuffer();
+		if (!PathIsDirectory(sLocalDir))
+			SHCreateDirectoryEx(NULL, sLocalDir, NULL);
+
+		m_bDiscardNowDL = false;
 		bDLOver = true;
 		TRY {
 			pFile = (CHttpFile *)session.OpenURL(m_sNowDLURL);
 		} CATCH_ALL (e) {
 #ifdef DEBUG
-			e->ReportError();
+//			e->ReportError();
 #endif //DEBUG
+			bDLOver = false;
 		} END_CATCH_ALL;
 
 		if (pFile && (hLocalFile != INVALID_HANDLE_VALUE)) {
@@ -57,12 +67,12 @@ DWORD CKDGetHttpFile::ThreadProc()
 			m_muxNowDLURL.Unlock();
 
 			uReadLen = 1;
-			while (uReadLen && IsCanThread()) {
+			while (uReadLen && IsCanThread() && !m_bDiscardNowDL) {
 				TRY {
 					uReadLen = pFile->Read(pBuf, iQuerySize);
 				} CATCH_ALL (e) {
 #ifdef DEBUG
-					e->ReportError();
+//					e->ReportError();
 #endif //DEBUG
 					bDLOver = false;
 					break;
@@ -81,12 +91,12 @@ DWORD CKDGetHttpFile::ThreadProc()
 			delete pFile;
 			pFile = NULL;
 		}
-		if (!bDLOver || !IsCanThread()) {
+		if (!bDLOver || !IsCanThread() || m_bDiscardNowDL) {
 			DeleteFile(m_sNowDLLocalPath);
-			if (iQueryTimes++ < iQueryMaxTimes)
+			if (!m_bDiscardNowDL && (m_uQueryRetryTimes++ < iQueryMaxTimes))
 				SaveNowDLToList();
 		} else {
-			iQueryTimes = 0;
+			m_uQueryRetryTimes = 0;
 			OnDownloadFileOver();
 		}
 	}
@@ -174,6 +184,11 @@ int CKDGetHttpFile::GetDownloadCount()
 	return iRes;
 }
 
+UINT CKDGetHttpFile::GetNowDLRetryTimes()
+{
+	return m_uQueryRetryTimes;
+}
+
 CString CKDGetHttpFile::RemoveHeadDLURL()
 {
 	CString sRes;
@@ -209,6 +224,11 @@ bool CKDGetHttpFile::SaveNowDLToList(bool bHead/* = true*/)
 	}
 	m_muxNowDLURL.Unlock();
 	return true;
+}
+
+void CKDGetHttpFile::SetDiscardNowDL(bool bDiscard/* = true*/)
+{
+	m_bDiscardNowDL = bDiscard;
 }
 
 bool CKDGetHttpFile::DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize/* = 8192*/)

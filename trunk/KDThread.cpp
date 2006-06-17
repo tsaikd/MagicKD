@@ -102,17 +102,18 @@ bool CKDThread::IsCanThread() {
 
 bool CKDThread::IsThreadRunning()
 {
-	bool bRes = false;
-	if (m_muxThread.Lock()) {
-		if (m_semThread.Lock(0)) {
-			m_semThread.Unlock();
-			bRes = false;
-		} else {
-			bRes = true;
-		}
-		m_muxThread.Unlock();
-	}
-	return bRes;
+	return ::WaitForSingleObject(m_hThread, 0) == WAIT_TIMEOUT;
+	//bool bRes = false;
+	//if (m_muxThread.Lock()) {
+	//	if (m_semThread.Lock(0)) {
+	//		m_semThread.Unlock();
+	//		bRes = false;
+	//	} else {
+	//		bRes = true;
+	//	}
+	//	m_muxThread.Unlock();
+	//}
+	//return bRes;
 }
 
 HANDLE CKDThread::GetThreadHandle()
