@@ -32,6 +32,7 @@ public:
 	CPicCFeedListCtrl		m_list_Feed;
 
 private:
+	bool					m_bInit;
 	CPicCHTMLEventHandler	m_HTMLEventHandler;
 	CLiteHTMLReader			m_HTMLReader;
 	UINT					m_uLastDLDay;

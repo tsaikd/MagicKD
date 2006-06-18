@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,2,1
- PRODUCTVERSION 1,0,2,1
+ FILEVERSION 1,0,2,2
+ PRODUCTVERSION 1,0,2,2
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "zh-TW"
-            VALUE "FileVersion", "1, 0, 2, 1"
+            VALUE "FileVersion", "1, 0, 2, 2"
             VALUE "InternalName", "zh-TW"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "zh-TW"
             VALUE "ProductName", " zh-TW"
-            VALUE "ProductVersion", "1, 0, 2, 1"
+            VALUE "ProductVersion", "1, 0, 2, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -203,6 +203,21 @@ BEGIN
     IDS_FIND_COLUMN_FINDLIST "尋找相同檔案列表"
     IDS_FIND_TOOLTIP_FINDLIST "將需要尋找的檔案或資料夾拖曳到此\n或是按右鍵加入"
     IDS_FIND_STATIC_DUPFILELIST "重複檔案列表"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_LIST_COLUMN_NAME "本機名稱"
+    IDS_PICC_LIST_COLUMN_TITLE "Feed 標題"
+    IDS_PICC_LIST_COLUMN_URL "Feed 網址"
+    IDS_PICC_MSG_ENTER_FEED_URL "請輸入 rss feed 的網址"
+    IDS_PICC_MSG_ENTER_FEED_NAME "請輸入 rdd feed 的本機名稱"
+    IDS_PICC_STATIC_DLDIR   "下載資料夾:"
+    IDS_PICC_BTN_CHANGE_DLDIR "變更 ..."
+    IDS_PICC_BTN_ADD_NEW_FEED "新增訂閱"
+    IDS_PICC_BTN_REFRESH_FEED "更新訂閱"
+    IDS_PICC_BTN_DEL_FEED   "刪除訂閱"
+    IDS_PICC_BTN_DELAY_DL   "延後下載"
 END
 
 #endif    // Chinese (Taiwan) resources

@@ -26,6 +26,8 @@ public:
 
 protected:
 	virtual void OnDownloadFileOver() {}
+	virtual void OnDownloadFileDiscard() {}
+	virtual void OnDownloadFileRetryFailed() {}
 
 	UINT			m_uQueryRetryTimes;
 	CMutex			m_muxNowDLURL;

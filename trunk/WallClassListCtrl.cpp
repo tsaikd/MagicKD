@@ -103,15 +103,29 @@ void CWallClassListCtrl::OnDestroy()
 
 void CWallClassListCtrl::Localize()
 {
+	if (!m_bInit)
+		return;
+
+	int i;
+	const int iCount = 1;
+
+	LVCOLUMN Column = {0};
+	Column.mask = LVCF_TEXT;
+
+	CString sColName[iCount];
+	sColName[0] = CResString(IDS_WALL_COLUMN_CLASSLIST);
+
+	for (i=0 ; i<iCount ; i++) {
+		Column.pszText = (LPTSTR)(LPCTSTR)sColName[i];
+		SetColumn(i, &Column);
+	}
+
 	SetToolTips(CResString(IDS_WALL_TOOLTIP_CLASSLIST));
-	int iColWidth = GetColumnWidth(0);
-	DeleteColumn(0);
-	InsertColumn(0, CResString(IDS_WALL_COLUMN_CLASSLIST), LVCFMT_LEFT, iColWidth);
 
 	CWallClassListItem *pItem;
 	CWallDirListCtrl *pChildDirCtrl;
-	int i, iCount = GetItemCount();
-	for (i=0 ; i<iCount ; i++) {
+	int iItemCount = GetItemCount();
+	for (i=0 ; i<iItemCount ; i++) {
 		pItem = (CWallClassListItem *)GetItemData(i);
 		if (pItem) {
 			pChildDirCtrl = (CWallDirListCtrl *)pItem->GetChildDirList();

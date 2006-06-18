@@ -66,6 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\lib\$(ProjectName).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile=".\sqlite3.def"
 				GenerateDebugInformation="true"
@@ -102,7 +103,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -125,9 +126,16 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="true"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -146,9 +154,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\lib\$(ProjectName).dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile=".\sqlite.def"
-				GenerateDebugInformation="true"
+				ModuleDefinitionFile=".\sqlite3.def"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -395,6 +403,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\sqlite3.h"
 				>
 			</File>
@@ -411,6 +423,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\sqlite.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

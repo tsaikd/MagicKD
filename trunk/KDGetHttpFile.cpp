@@ -29,7 +29,6 @@ DWORD CKDGetHttpFile::ThreadProc()
 	CString sLocalDir;
 	static const int iQuerySize = 8192;
 	const int iQueryMaxTimes = 50;
-//	int iQueryTimes = 0;
 	BYTE *pBuf = new BYTE[iQuerySize];
 	UINT uReadLen;
 	DWORD dwWriteLen;
@@ -93,14 +92,23 @@ DWORD CKDGetHttpFile::ThreadProc()
 		}
 		if (!bDLOver || !IsCanThread() || m_bDiscardNowDL) {
 			DeleteFile(m_sNowDLLocalPath);
-			if (!m_bDiscardNowDL && (m_uQueryRetryTimes++ < iQueryMaxTimes))
+			if (m_bDiscardNowDL) {
+				OnDownloadFileDiscard();
+			} else if (m_uQueryRetryTimes++ >= iQueryMaxTimes) {
+				OnDownloadFileRetryFailed();
+			} else {
 				SaveNowDLToList();
+			}
 		} else {
 			m_uQueryRetryTimes = 0;
 			OnDownloadFileOver();
 		}
 	}
 
+	m_muxNowDLURL.Lock();
+	m_sNowDLURL.Empty();
+	m_sNowDLLocalPath.Empty();
+	m_muxNowDLURL.Unlock();
 	session.Close();
 	delete [] pBuf;
 	return 0;

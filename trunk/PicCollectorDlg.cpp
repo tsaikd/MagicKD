@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "Resource.h"
+#include "Language.h"
 #include "MagicKD.h"
 #include "PicCollector/HTMLReader/LiteHTMLReader.h"
 #include "PicCHTMLEventHandler.h"
@@ -19,7 +21,7 @@ enum {
 IMPLEMENT_DYNAMIC(CPicCollectorDlg, CDialog)
 CPicCollectorDlg::CPicCollectorDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CPicCollectorDlg::IDD, pParent), m_uTimerShowDownload(0), m_uTimerRefresh(0), m_uLastDLDay(0),
-		m_pDownLoader(NULL)
+		m_pDownLoader(NULL), m_bInit(false)
 {
 	g_pPicCollectorDlg = this;
 }
@@ -54,6 +56,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	}
 
 	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
+	GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
 
 	if (!m_pDownLoader) {
 		m_pDownLoader = new CPicCDLManager;
@@ -62,6 +65,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 	OnBnClickedPiccBtnRefreshfeed();
 
+	m_bInit = true;
+	Localize();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -109,6 +114,16 @@ DWORD CPicCollectorDlg::ThreadProc()
 
 void CPicCollectorDlg::Localize()
 {
+	if (!m_bInit)
+		return;
+
+	m_list_Feed.Localize();
+	GetDlgItem(IDC_PICC_STATIC_DLDIRHELP)->SetWindowText(CResString(IDS_PICC_STATIC_DLDIR));
+	GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR)->SetWindowText(CResString(IDS_PICC_BTN_CHANGE_DLDIR));
+	GetDlgItem(IDC_PICC_BTN_ADDNEWFEED)->SetWindowText(CResString(IDS_PICC_BTN_ADD_NEW_FEED));
+	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->SetWindowText(CResString(IDS_PICC_BTN_REFRESH_FEED));
+	GetDlgItem(IDC_PICC_BTN_REMOVEFEED)->SetWindowText(CResString(IDS_PICC_BTN_DEL_FEED));
+	GetDlgItem(IDC_PICC_BTN_DELAYDL)->SetWindowText(CResString(IDS_PICC_BTN_DELAY_DL));
 }
 
 void CPicCollectorDlg::AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName)
@@ -245,6 +260,7 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_pDownLoader->GetNowDLLocalPath());
+			GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow();
 		} else {
 			Sleep(2000);
 			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
@@ -262,10 +278,12 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 				KillTimer(nIDEvent);
 				m_uTimerShowDownload = 0;
 #ifdef DEBUG
-//				AfxMessageBox(_T("WARNNING: Downloader exit by some reason!"));
+				AfxMessageBox(_T("WARNNING: Downloader exit by unknown reason!"));
 #endif //DEBUG
-				DeleteFile(m_pDownLoader->GetNowDLLocalPath());
+				m_pDownLoader->SaveNowDLToList();
+				m_pDownLoader->Destroy();
 				delete m_pDownLoader;
+				m_Feed.ReloadDB();
 				m_pDownLoader = new CPicCDLManager;
 				m_pDownLoader->Init(&m_Feed);
 				m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
@@ -273,6 +291,7 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(_T(""));
+			GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
 			KillTimer(nIDEvent);
 			m_uTimerShowDownload = 0;
 		}
@@ -315,10 +334,10 @@ void CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed()
 	CString strURL;
 	CString strName;
 	CInputBox input(this, false);
-	if (IDOK == input.Show(_T("請輸入 rss 網址"), strURL)) {
+	if (IDOK == input.Show(CResString(IDS_PICC_MSG_ENTER_FEED_URL), strURL)) {
 		if (strURL.IsEmpty())
 			return;
-		if (IDOK == input.Show(_T("請輸入 rss 本機名稱"), strName)) {
+		if (IDOK == input.Show(CResString(IDS_PICC_MSG_ENTER_FEED_NAME), strName)) {
 			if (strName.IsEmpty())
 				return;
 			AddNewFeed(strURL, strName);
@@ -331,7 +350,9 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed()
 	if (m_uTimerRefresh)
 		KillTimer(m_uTimerRefresh);
 	m_uTimerRefresh = SetTimer(KDT_REFRESH, 10*60*1000, NULL);
-	CreateThread();
+
+	if (m_bInit)
+		CreateThread();
 }
 
 void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()

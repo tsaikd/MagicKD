@@ -26,6 +26,9 @@ DWORD CKDThread::ThreadProc() {
 //	THREAD_PRIORITY_LOWEST
 //	THREAD_PRIORITY_IDLE
 void CKDThread::CreateThread(int nPriority/* = THREAD_PRIORITY_NORMAL*/, bool bSuspend/* = false*/) {
+	if (IsThreadRunning())
+		return;
+
 	if (m_muxThread.Lock()) {
 		TerminateThread(0);
 

@@ -35,7 +35,7 @@ void CPicCDLManager::Destroy()
 		TerminateThread(0);
 	}
 
-	m_pFeed->ExecSQL(_T("DELETE FROM PicUnDownload"));
+//	m_pFeed->ExecSQL(_T("DELETE FROM PicUnDownload"));
 	m_pFeed->ExecSQL(_T("PRAGMA synchronous = OFF"));
 	CString strSQL;
 	while (!IsDownloadAllOver()) {
@@ -52,6 +52,15 @@ void CPicCDLManager::OnDownloadFileOver()
 	m_muxNowDLURL.Lock();
 	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
 	m_muxNowDLURL.Unlock();
-	CString b;
-	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL, &b);
+	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+}
+
+void CPicCDLManager::OnDownloadFileDiscard()
+{
+	OnDownloadFileOver();
+}
+
+void CPicCDLManager::OnDownloadFileRetryFailed()
+{
+	OnDownloadFileOver();
 }

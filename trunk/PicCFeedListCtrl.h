@@ -21,6 +21,8 @@ public:
 	virtual ~CPicCFeedListCtrl();
 	virtual void Init();
 
+	void Localize();
+
 	void AddItem(CPicCFeedListItem *pItem);
 	void ReloadItems();
 

@@ -68,10 +68,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="debug/sqlite.lib Version.lib $(ConfigurationName)/cximage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
+				AdditionalDependencies="Version.lib $(ConfigurationName)/cximage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
 				LinkIncremental="2"
 				ModuleDefinitionFile=""
-				DelayLoadDLLs="cximage.dll"
+				DelayLoadDLLs="cximage.dll;sqlite.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -161,7 +161,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="Version.lib $(ConfigurationName)/cximage.lib CxImage/j2k/$(ConfigurationName)/j2k.lib CxImage/jasper/$(ConfigurationName)/jasper.lib CxImage/jbig/$(ConfigurationName)/jbig.lib CxImage/jpeg/$(ConfigurationName)/jpeg.lib CxImage/png/$(ConfigurationName)/png.lib CxImage/tiff/$(ConfigurationName)/tiff.lib CxImage/zlib/$(ConfigurationName)/zlib.lib"
 				LinkIncremental="1"
-				DelayLoadDLLs="cximage.dll"
+				DelayLoadDLLs="cximage.dll;sqlite.dll"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

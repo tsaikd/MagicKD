@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Resource.h"
+#include "Language.h"
 #include "FeedSource.h"
 #include "PicCollectorDlg.h"
 
@@ -20,9 +21,9 @@ void CPicCFeedListCtrl::Init()
 
 	CRect rcWin;
 	GetClientRect(rcWin);
-	InsertColumn(0, _T("Name"), LVCFMT_LEFT, 50);
+	InsertColumn(0, _T("Name"), LVCFMT_LEFT, 100);
 	InsertColumn(1, _T("Feed Title"), LVCFMT_LEFT, 100);
-	InsertColumn(2, _T("Feed URL"), LVCFMT_LEFT, rcWin.right-150);
+	InsertColumn(2, _T("Feed URL"), LVCFMT_LEFT, rcWin.right-200);
 
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 
@@ -32,6 +33,29 @@ void CPicCFeedListCtrl::Init()
 	ReloadItems();
 
 	m_bInit = true;
+	Localize();
+}
+
+void CPicCFeedListCtrl::Localize()
+{
+	if (!m_bInit)
+		return;
+
+	int i;
+	const int iCount = 3;
+
+	LVCOLUMN Column = {0};
+	Column.mask = LVCF_TEXT;
+
+	CString sColName[iCount];
+	sColName[0] = CResString(IDS_PICC_LIST_COLUMN_NAME);
+	sColName[1] = CResString(IDS_PICC_LIST_COLUMN_TITLE);
+	sColName[2] = CResString(IDS_PICC_LIST_COLUMN_URL);
+
+	for (i=0 ; i<iCount ; i++) {
+		Column.pszText = (LPTSTR)(LPCTSTR)sColName[i];
+		SetColumn(i, &Column);
+	}
 }
 
 void CPicCFeedListCtrl::AddItem(CPicCFeedListItem *pItem)

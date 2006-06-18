@@ -60,8 +60,7 @@ CFeed::CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL)
 
 CFeed::~CFeed()
 {
-	if (m_pDB)
-		sqlite3_close(m_pDB);
+	CloseDB();
 }
 
 bool CFeed::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
@@ -126,7 +125,9 @@ bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMs
 
 void CFeed::SetDBPath(LPCTSTR sDBPath)
 {
+	CloseDB();
 	sqlite3_open16(sDBPath, &m_pDB);
+	m_sDBPath = sDBPath;
 
 	m_bDBPath = true;
 
@@ -136,6 +137,25 @@ void CFeed::SetDBPath(LPCTSTR sDBPath)
 
 	strSQL.Format(_T("CREATE TABLE FeedSource (FeedLink VARCHAR PRIMARY KEY, description VARCHAR, title VARCHAR, version VARCHAR, copyright VARCHAR, generator VARCHAR, feedlanguage VARCHAR, lastbuilddate VARCHAR, ttl VARCHAR, webmaster VARCHAR, imagedescription VARCHAR, imageheight VARCHAR, imagewidth VARCHAR, imagelink VARCHAR, imagetitle VARCHAR, imageurl VARCHAR);"));
 	ExecSQL(strSQL);
+}
+
+void CFeed::ReloadDB()
+{
+	if (!m_bDBPath || !PathFileExists(m_sDBPath))
+		return;
+
+	CloseDB();
+	SetDBPath(m_sDBPath);
+}
+
+void CFeed::CloseDB()
+{
+	if (m_pDB) {
+		sqlite3_close(m_pDB);
+		m_pDB = NULL;
+	}
+
+	m_bDBPath = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////

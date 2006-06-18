@@ -13,6 +13,8 @@ public:
 
 protected:
 	virtual void OnDownloadFileOver();
+	virtual void OnDownloadFileDiscard();
+	virtual void OnDownloadFileRetryFailed();
 
 private:
 	CPicCFeed *m_pFeed;

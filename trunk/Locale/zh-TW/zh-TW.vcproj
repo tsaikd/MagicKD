@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)\..\..\$(ConfigurationName)\lang\$(ProjectName).dll"
+				OutputFile="$(OutDir)\lang\$(ProjectName).dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)\..\..\$(ConfigurationName)\lang\$(ProjectName).dll"
+				OutputFile="$(OutDir)\lang\$(ProjectName).dll"
 				LinkIncremental="1"
 				SubSystem="2"
 				OptimizeReferences="2"

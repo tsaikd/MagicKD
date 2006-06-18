@@ -31,9 +31,19 @@ void CFindDFListCtrl::Localize()
 	if (!m_bInit)
 		return;
 
-	int iColWidth = GetColumnWidth(0);
-	DeleteColumn(0);
-	InsertColumn(0, CResString(IDS_FIND_COLUMN_FINDLIST), LVCFMT_LEFT, iColWidth);
+	int i;
+	const int iCount = 1;
+
+	LVCOLUMN Column = {0};
+	Column.mask = LVCF_TEXT;
+
+	CString sColName[iCount];
+	sColName[0] = CResString(IDS_FIND_COLUMN_FINDLIST);
+
+	for (i=0 ; i<iCount ; i++) {
+		Column.pszText = (LPTSTR)(LPCTSTR)sColName[i];
+		SetColumn(i, &Column);
+	}
 }
 
 BEGIN_MESSAGE_MAP(CFindDFListCtrl, CKDListCtrl)

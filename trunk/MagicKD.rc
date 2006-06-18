@@ -159,18 +159,16 @@ IDD_MAGICKD_PICCOLLECTOR DIALOGEX 0, 0, 370, 250
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,313,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,313,24,50,14
     CONTROL         "",IDC_PICC_LIST_FEED,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_TABSTOP,17,76,336,135,WS_EX_CLIENTEDGE
     RTEXT           "下載資料夾:",IDC_PICC_STATIC_DLDIRHELP,26,17,55,8
     LTEXT           "",IDC_PICC_STATIC_DLDIR,87,17,170,8,SS_PATHELLIPSIS
-    PUSHBUTTON      "更變",IDC_PICC_BTN_CHANGEDLDIR,263,15,40,12
+    PUSHBUTTON      "變更資料夾",IDC_PICC_BTN_CHANGEDLDIR,298,15,50,12
     LTEXT           "",IDC_PICC_STATIC_DOWNLOAD,11,217,285,8,SS_WORDELLIPSIS
-    PUSHBUTTON      "新增訂閱",IDC_PICC_BTN_ADDNEWFEED,33,53,40,12
-    PUSHBUTTON      "更新訂閱",IDC_PICC_BTN_REFRESHFEED,93,53,40,12
-    PUSHBUTTON      "刪除訂閱",IDC_PICC_BTN_REMOVEFEED,153,53,40,12
+    PUSHBUTTON      "新增訂閱",IDC_PICC_BTN_ADDNEWFEED,28,53,50,12
+    PUSHBUTTON      "更新訂閱",IDC_PICC_BTN_REFRESHFEED,93,53,50,12
+    PUSHBUTTON      "刪除訂閱",IDC_PICC_BTN_REMOVEFEED,153,53,50,12
     LTEXT           "",IDC_PICC_STATIC_DLLOCALPATH,14,230,344,8,SS_PATHELLIPSIS
-    PUSHBUTTON      "延後下載",IDC_PICC_BTN_DELAYDL,316,214,40,12
+    PUSHBUTTON      "延後下載",IDC_PICC_BTN_DELAYDL,296,214,60,12
 END
 
 
@@ -180,8 +178,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,2,1
- PRODUCTVERSION 1,0,2,1
+ FILEVERSION 1,0,2,2
+ PRODUCTVERSION 1,0,2,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -197,11 +195,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 2, 1"
+            VALUE "FileVersion", "1, 0, 2, 2"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 2, 1"
+            VALUE "ProductVersion", "1, 0, 2, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -399,6 +397,21 @@ BEGIN
     IDS_FIND_TOOLTIP_FINDLIST 
                             "Right click menu to add directory\nor draging from outside is permited"
     IDS_FIND_STATIC_DUPFILELIST "File list of duplications"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_LIST_COLUMN_NAME "Local Name"
+    IDS_PICC_LIST_COLUMN_TITLE "Feed Title"
+    IDS_PICC_LIST_COLUMN_URL "Feed URL"
+    IDS_PICC_MSG_ENTER_FEED_URL "Please enter the URL of rss feed"
+    IDS_PICC_MSG_ENTER_FEED_NAME "Please enter the local name of rss feed"
+    IDS_PICC_STATIC_DLDIR   "Download Dir:"
+    IDS_PICC_BTN_CHANGE_DLDIR "Change ..."
+    IDS_PICC_BTN_ADD_NEW_FEED "Add rss feed"
+    IDS_PICC_BTN_REFRESH_FEED "Refresh feed"
+    IDS_PICC_BTN_DEL_FEED   "Delete feed"
+    IDS_PICC_BTN_DELAY_DL   "Delay Download"
 END
 
 #endif    // Chinese (Taiwan) resources

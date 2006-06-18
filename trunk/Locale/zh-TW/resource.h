@@ -84,6 +84,17 @@
 #define IDS_FIND_COLUMN_FINDLIST        246
 #define IDS_FIND_TOOLTIP_FINDLIST       247
 #define IDS_FIND_STATIC_DUPFILELIST     248
+#define IDS_PICC_LIST_COLUMN_NAME       261
+#define IDS_PICC_LIST_COLUMN_TITLE      262
+#define IDS_PICC_LIST_COLUMN_URL        263
+#define IDS_PICC_MSG_ENTER_FEED_URL     264
+#define IDS_PICC_MSG_ENTER_FEED_NAME    265
+#define IDS_PICC_STATIC_DLDIR           266
+#define IDS_PICC_BTN_CHANGE_DLDIR       267
+#define IDS_PICC_BTN_ADD_NEW_FEED       268
+#define IDS_PICC_BTN_REFRESH_FEED       269
+#define IDS_PICC_BTN_DEL_FEED           270
+#define IDS_PICC_BTN_DELAY_DL           271
 
 // Next default values for new objects
 // 

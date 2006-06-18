@@ -64,6 +64,8 @@ public:
 	virtual ~CFeed();
 
 	void	SetDBPath(LPCTSTR sDBPath);
+	void	ReloadDB();
+	void	CloseDB();
 	void	BuildFromFile(LPCTSTR strXMLURL);
 	void	Save(bool bSaveSource = true);
 	void	LoadLocal(LPCTSTR strLink);
@@ -84,6 +86,7 @@ public:
 protected:
 	bool	ExecSQL(LPCTSTR strSQL, CString *strErrMsg = NULL);
 	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg = NULL, int *nFields = NULL, int *nRow = NULL);
+	CString EscapeQuote(CString strValue);
 
 //	CString GetFieldValue( FieldsPtr fields, long nIndex );
 //	CString GetComError( _com_error& e );
@@ -91,7 +94,8 @@ protected:
 
 	CMutex							m_muxDB;
 	CMutex							m_muxDLInet;
-	CString EscapeQuote(CString strValue);
+	CString							m_sDBPath;
+
 private:
 	CString GetModuleFileDir();
 
