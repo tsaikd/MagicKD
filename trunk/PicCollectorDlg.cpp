@@ -62,6 +62,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 		m_pDownLoader = new CPicCDLManager;
 		m_pDownLoader->Init(&m_Feed);
 	}
+	if (!m_uTimerShowDownload)
+		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
 
 	OnBnClickedPiccBtnRefreshfeed();
 
