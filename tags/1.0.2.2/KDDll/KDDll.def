@@ -1,7 +1,0 @@
-; KDDll.def : Declares the module parameters for the DLL.
-
-LIBRARY      "KDDll"
-
-EXPORTS
-    ; Explicit exports can go here
-;    KDMessageBox		@2
