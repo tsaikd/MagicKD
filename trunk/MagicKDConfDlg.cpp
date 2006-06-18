@@ -28,7 +28,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	// Set Update Infomation
 	int i;
 	CString sCheckFileName;
-	int iArraySize = 3;
+	const int iArraySize = 4;
 	m_saNowVersion.SetSize(iArraySize);
 	m_aiQueryVerSize.SetSize(iArraySize);
 	m_saOldAppPath.SetSize(iArraySize);
@@ -46,9 +46,16 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	m_saOldAppPath[i] = sCheckFileName;
 	m_saNewAppPath[i] = sCheckFileName + _T(".Update");
 
+	sCheckFileName = _T("lib/sqlite.dll");
+	i = 2;
+	m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
+	m_aiQueryVerSize[i] = 7;
+	m_saOldAppPath[i] = sCheckFileName;
+	m_saNewAppPath[i] = sCheckFileName + _T(".Update");
+
 	sCheckFileName = _T("lang/zh-TW.dll");
 	if (PathFileExists(sCheckFileName)) {
-		i = 2;
+		i = 3;
 		m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
 		m_aiQueryVerSize[i] = 7;
 		m_saOldAppPath[i] = sCheckFileName;

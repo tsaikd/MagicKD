@@ -54,16 +54,26 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 	// Check Necessary Library
 	if (!theApp.IsOnQuit()) {
-		HMODULE hLibTest;
-		hLibTest = LoadLibrary(CString(theApp.GetAppDllDir()) + _T("cximage.dll"));
-		if (hLibTest) {
-			FreeLibrary(hLibTest);
-		} else {
-			CString sMsg;
-			sMsg.Format(CResString(IDS_MSG_NONECESSARYDLL), _T("cximage.dll"));
-			MessageBox(sMsg, NULL, MB_OK | MB_ICONERROR);
-			m_bVisiable = false;
-			theApp.Quit();
+		HMODULE hLibTest = NULL;
+		CStringList slTestLibName;
+		CString sPath;
+		CString sName;
+		slTestLibName.AddTail(_T("cximage.dll"));
+		slTestLibName.AddTail(_T("sqlite.dll"));
+
+		while (!slTestLibName.IsEmpty()) {
+			sName = slTestLibName.RemoveHead();
+			sPath.Format(_T("%s%s"), theApp.GetAppDllDir(), sName);
+			hLibTest = LoadLibrary(sPath);
+			if (hLibTest) {
+				FreeLibrary(hLibTest);
+			} else {
+				CString sMsg;
+				sMsg.Format(CResString(IDS_MSG_NONECESSARYDLL), sPath);
+				MessageBox(sMsg, NULL, MB_OK | MB_ICONERROR);
+				m_bVisiable = false;
+				theApp.Quit();
+			}
 		}
 
 		if (!g_pTheTray->RegisterTray(GetSafeHwnd(), m_hIcon)) {
@@ -87,12 +97,12 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetTransparency((BYTE)(UINT)g_pTheConf->m_General_uTransparency);
 
 //////////////////////////////////////////////////
-//	if (m_pWallChangerDlg)
-//		m_cMainTab.SetCurSel(eFunc_WallChanger);
+	if (m_pWallChangerDlg)
+		m_cMainTab.SetCurSel(eFunc_WallChanger);
 //	if (m_pFindDupFileDlg)
 //		m_cMainTab.SetCurSel(eFunc_FindDupFile);
-	if (m_pPicCollectorDlg)
-		m_cMainTab.SetCurSel(eFunc_PicCollector);
+//	if (m_pPicCollectorDlg)
+//		m_cMainTab.SetCurSel(eFunc_PicCollector);
 //////////////////////////////////////////////////
 
 	m_bInit = true;

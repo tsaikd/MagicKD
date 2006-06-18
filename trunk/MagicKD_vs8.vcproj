@@ -202,10 +202,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\InputBox.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\MagicKD.cpp"
 				>
 			</File>
@@ -266,6 +262,10 @@
 				</File>
 				<File
 					RelativePath=".\Ini.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\InputBox.cpp"
 					>
 				</File>
 				<File
@@ -464,10 +464,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\InputBox.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MagicKD.h"
 				>
 			</File>
@@ -516,6 +512,10 @@
 				</File>
 				<File
 					RelativePath=".\Ini.h"
+					>
+				</File>
+				<File
+					RelativePath=".\InputBox.h"
 					>
 				</File>
 				<File
