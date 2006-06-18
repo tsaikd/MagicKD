@@ -100,6 +100,7 @@
 #define IDS_PICC_BTN_REFRESH_FEED       269
 #define IDS_PICC_BTN_DEL_FEED           270
 #define IDS_PICC_BTN_DELAY_DL           271
+#define IDS_PICC_BTN_VIEW_DLDIR         272
 #define IDC_TAB_MAIN                    1000
 #define IDC_PROGRESS_END                1001
 #define IDC_MAGICKDEND_EDIT_TEXT        1002
@@ -159,6 +160,7 @@
 #define IDC_PICC_BTN_REFRESHFEED        1088
 #define IDC_PICC_BTN_REMOVEFEED         1089
 #define IDC_PICC_BTN_DELAYDL            1090
+#define IDC_PICC_BTN_VIEW_DLDIR         1091
 
 // Next default values for new objects
 // 
@@ -166,7 +168,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        272
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1091
+#define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           107
 #endif
 #endif

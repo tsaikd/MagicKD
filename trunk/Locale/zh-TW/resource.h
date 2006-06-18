@@ -95,6 +95,7 @@
 #define IDS_PICC_BTN_REFRESH_FEED       269
 #define IDS_PICC_BTN_DEL_FEED           270
 #define IDS_PICC_BTN_DELAY_DL           271
+#define IDS_PICC_BTN_VIEW_DLDIR         272
 
 // Next default values for new objects
 // 

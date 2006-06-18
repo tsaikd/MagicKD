@@ -122,6 +122,7 @@ void CPicCollectorDlg::Localize()
 	m_list_Feed.Localize();
 	GetDlgItem(IDC_PICC_STATIC_DLDIRHELP)->SetWindowText(CResString(IDS_PICC_STATIC_DLDIR));
 	GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR)->SetWindowText(CResString(IDS_PICC_BTN_CHANGE_DLDIR));
+	GetDlgItem(IDC_PICC_BTN_VIEW_DLDIR)->SetWindowText(CResString(IDS_PICC_BTN_VIEW_DLDIR));
 	GetDlgItem(IDC_PICC_BTN_ADDNEWFEED)->SetWindowText(CResString(IDS_PICC_BTN_ADD_NEW_FEED));
 	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->SetWindowText(CResString(IDS_PICC_BTN_REFRESH_FEED));
 	GetDlgItem(IDC_PICC_BTN_REMOVEFEED)->SetWindowText(CResString(IDS_PICC_BTN_DEL_FEED));
@@ -235,6 +236,7 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_REFRESHFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_REMOVEFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_DELAYDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelaydl)
+	ON_BN_CLICKED(IDC_PICC_BTN_VIEW_DLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnViewDldir)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -329,6 +331,11 @@ void CPicCollectorDlg::OnBnClickedPiccBtnChangedldir()
 			g_pPicCConf->m_sDlDir.SetDirty();
 		}
 	}
+}
+
+void CPicCollectorDlg::OnBnClickedPiccBtnViewDldir()
+{
+	ExplorerDir(g_pPicCConf->m_sDlDir);
 }
 
 void CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed()

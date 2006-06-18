@@ -40,8 +40,9 @@ private:
 	UINT					m_uTimerRefresh;
 
 public:
-	afx_msg void OnBnClickedPiccBtnChangedldir();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedPiccBtnChangedldir();
+	afx_msg void OnBnClickedPiccBtnViewDldir();
 	afx_msg void OnBnClickedPiccBtnAddnewfeed();
 	afx_msg void OnBnClickedPiccBtnRefreshfeed();
 	afx_msg void OnBnClickedPiccBtnRemovefeed();

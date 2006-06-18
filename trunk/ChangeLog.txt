@@ -1,3 +1,5 @@
+	Add PicCollector View Download Directory button
+
 Version: 1.0.2.2	(2006-06-18)
 	Add PicCollector function
 

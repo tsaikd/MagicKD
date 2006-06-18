@@ -213,11 +213,16 @@ BEGIN
     IDS_PICC_MSG_ENTER_FEED_URL "請輸入 rss feed 的網址"
     IDS_PICC_MSG_ENTER_FEED_NAME "請輸入 rdd feed 的本機名稱"
     IDS_PICC_STATIC_DLDIR   "下載資料夾:"
-    IDS_PICC_BTN_CHANGE_DLDIR "變更 ..."
+    IDS_PICC_BTN_CHANGE_DLDIR "變更資料夾"
     IDS_PICC_BTN_ADD_NEW_FEED "新增訂閱"
     IDS_PICC_BTN_REFRESH_FEED "更新訂閱"
     IDS_PICC_BTN_DEL_FEED   "刪除訂閱"
     IDS_PICC_BTN_DELAY_DL   "延後下載"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_BTN_VIEW_DLDIR "檢視"
 END
 
 #endif    // Chinese (Taiwan) resources

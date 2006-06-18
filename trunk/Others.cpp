@@ -497,3 +497,23 @@ bool ExplorerFile(LPCTSTR lpFilePath)
 
 	return false;
 }
+
+// Open explorer at the directory
+bool ExplorerDir(LPCTSTR lpDirPath)
+{
+	if (PathIsDirectory(lpDirPath)) {
+		CString sExplorer;
+		GetSystemWindowsDirectory(sExplorer.GetBuffer(MAX_PATH), MAX_PATH);
+		sExplorer.ReleaseBuffer();
+		sExplorer.AppendFormat(_T("\\explorer.exe"));
+
+		if (PathFileExists(sExplorer)) {
+			CString sParam;
+			sParam.Format(_T("\"%s\""), lpDirPath);
+			ShellExecute(NULL, _T("open"), sExplorer, sParam, NULL, SW_SHOW);
+			return true;
+		}
+	}
+
+	return false;
+}

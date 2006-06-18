@@ -157,3 +157,4 @@ private:
 };
 
 bool ExplorerFile(LPCTSTR lpFilePath);
+bool ExplorerDir(LPCTSTR lpDirPath);
