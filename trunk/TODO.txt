@@ -4,7 +4,6 @@ PicCollector(rss):
 圖片黑名單
 更改本機feed名稱
 DoSize
-Localize
 
 PicCollector(html):
 
