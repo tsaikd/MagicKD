@@ -1,4 +1,6 @@
 Initial function
+整理資料夾
+中鍵關tab
 
 PicCollector(rss):
 啟動有點慢
@@ -7,6 +9,9 @@ PicCollector(rss):
 DoSize
 
 PicCollector(html):
+
+FindDupFile:
+開啟重複檔案
 
 WallChanger:
 先搜尋enable list
