@@ -1,3 +1,4 @@
+Version: 1.0.2.3	(2006-06-22)
 	Add PicCollector View Download Directory button
 	Fix bug: Start PicCollector will delay for some time
 	Rewrite FeedSource without bad MSXML library

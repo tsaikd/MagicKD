@@ -14,23 +14,24 @@ public:
 	CMagicKDConfDlg(CWnd* pParent = NULL);   // 標準建構函式
 	virtual ~CMagicKDConfDlg();
 
-	void DoSize();
-	void Localize();
+	void	DoSize();
+	void	Localize();
 
-	void UpdateFuncCheck();
-	bool IsAppNeedUpdate();
-	void DoAppUpdate();
+	void	UpdateFuncCheck();
+	int		CmpFileVer(LPCTSTR lpVer1, LPCTSTR lpVer2);
+	bool	IsAppNeedUpdate();
+	void	DoAppUpdate();
 
-	UINT StartUpdateTimer();
-	UINT StopUpdateTimer();
+	UINT	StartUpdateTimer();
+	UINT	StopUpdateTimer();
 
-	bool m_bUpdateLastest;
-	CComboBox m_combo_Language;
-	CKDButton m_checkStartMin;
-	CKDButton m_checkShowCloseWindow;
-	CKDButton m_check_CheckUpdate;
-	CSliderCtrl m_sliderTransparency;
-	CProgressCtrl m_progress_Update;
+	bool			m_bUpdateLastest;
+	CComboBox		m_combo_Language;
+	CKDButton		m_checkStartMin;
+	CKDButton		m_checkShowCloseWindow;
+	CKDButton		m_check_CheckUpdate;
+	CSliderCtrl		m_sliderTransparency;
+	CProgressCtrl	m_progress_Update;
 private:
 	bool m_bInit;
 	UINT m_uUpdateTimer;

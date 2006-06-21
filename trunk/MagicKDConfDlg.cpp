@@ -160,6 +160,40 @@ void CMagicKDConfDlg::UpdateFuncCheck()
 	}
 }
 
+int CMagicKDConfDlg::CmpFileVer(LPCTSTR lpVer1, LPCTSTR lpVer2)
+{
+	CString sVer1(lpVer1);
+	CString sVer2(lpVer2);
+	CString sBuf1, sBuf2;
+	int iBuf1 = 0, iBuf2 = 0;
+	int iPos1 = 0, iPos2 = 0;
+
+	sVer1.Replace(_T(','), _T('.'));
+	sVer2.Replace(_T(','), _T('.'));
+
+	while (1) {
+		sBuf1 = sVer1.Tokenize(_T("."), iPos1);
+		sBuf2 = sVer2.Tokenize(_T("."), iPos2);
+		if (sBuf1.IsEmpty() || sBuf2.IsEmpty())
+			break;
+
+		iBuf1 = _ttoi(sBuf1);
+		iBuf2 = _ttoi(sBuf2);
+
+		if (iBuf1 > iBuf2)
+			return 1;
+		if (iBuf1 < iBuf2)
+			return -1;
+	}
+
+	if (!sBuf1.IsEmpty())
+		return 1;
+	if (!sBuf2.IsEmpty())
+		return -1;
+
+	return 0;
+}
+
 bool CMagicKDConfDlg::IsAppNeedUpdate()
 {
 	if (theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/UpdateList.txt"),
@@ -167,7 +201,7 @@ bool CMagicKDConfDlg::IsAppNeedUpdate()
 		int i, iCount = m_saNowVersion.GetCount();
 
 		for (i=0 ; i<iCount ; i++) {
-			if (!m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i]))
+			if (!m_saReturnUrl[i].IsEmpty() && (CmpFileVer(m_saNowVersion[i], m_saReturnVer[i]) < 0))
 				return true;
 		}
 	}
