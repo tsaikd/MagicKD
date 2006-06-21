@@ -55,3 +55,22 @@ void CMagicKDTabCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
 	}
 	m_mContextMenu.DestroyMenu();
 }
+
+LRESULT CMagicKDTabCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message) {
+	case WM_MBUTTONUP:
+		{
+		TCHITTESTINFO infoTest;
+		GetCursorPos(&infoTest.pt);
+		ScreenToClient(&infoTest.pt);
+		int iPos = HitTest(&infoTest);
+		if ((iPos != -1) && (infoTest.flags & TCHT_ONITEM))
+			SetCurSel(iPos);
+		::SendMessage(GetParent()->GetSafeHwnd(), WM_COMMAND, IDS_MENU_CLOSE, NULL);
+		}
+		break;
+	}
+
+	return CKDTabCtrl::DefWindowProc(message, wParam, lParam);
+}

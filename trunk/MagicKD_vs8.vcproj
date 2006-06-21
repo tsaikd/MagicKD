@@ -526,6 +526,10 @@
 					RelativePath=".\Others.h"
 					>
 				</File>
+				<File
+					RelativePath=".\pugxml.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="KDClass"

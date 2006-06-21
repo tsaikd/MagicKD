@@ -1,12 +1,11 @@
 Initial function
 整理資料夾
-中鍵關tab
+CStatic Tooltips
 
 PicCollector(rss):
-啟動有點慢
+retry時測試網路
 圖片黑名單
 更改本機feed名稱
-DoSize
 
 PicCollector(html):
 

@@ -12,6 +12,7 @@
 #include <afxmt.h>
 #include "sqlite/sqlite3.h"
 
+
 class CFeedItem
 {
 public:
@@ -74,10 +75,6 @@ public:
 	void	MarkItemRead(LPCTSTR strLink);
 	bool	IsItemRead(LPCTSTR strLink);
 
-	//void	RefreshAll();
-	//void	DeleteFeedSource( CString strLink );
-	//void	DeleteListArray( CStringArray& strLinkArray );
-
 	CFeedSource						m_source;		// Feed Source
 	CArray<CFeedItem,CFeedItem>		m_item;			// Feed Item
 	BOOL							m_bAdded;
@@ -88,25 +85,14 @@ protected:
 	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg = NULL, int *nFields = NULL, int *nRow = NULL);
 	CString EscapeQuote(CString strValue);
 
-//	CString GetFieldValue( FieldsPtr fields, long nIndex );
-//	CString GetComError( _com_error& e );
-//	BOOL ExecuteSQL( _ConnectionPtr& pCnn, CString& strSQL, CString& strMsg );
-
 	CMutex							m_muxDB;
 	CMutex							m_muxDLInet;
 	CString							m_sDBPath;
 
 private:
 	CString GetModuleFileDir();
-
-	void	GetVersion(MSXML2::IXMLDOMNode *pNode);
-	void	IterateChildNodes(MSXML2::IXMLDOMNode *pNode);
-	void	BuildImage(MSXML2::IXMLDOMNode *pNode);
-	void	BuildItem(MSXML2::IXMLDOMNode *pNode);
 	void	ClearLoadedItems();
 
-    MSXML2::IXMLDOMDocument2*		m_pDoc;			// XML DOM Document
-	int								m_nDepth;
 	bool							m_bDBPath;
 };
 

@@ -1,8 +1,7 @@
 #pragma once
 #include "KDTabCtrl.h"
 
-class CMagicKDTabCtrl :
-	public CKDTabCtrl
+class CMagicKDTabCtrl : public CKDTabCtrl
 {
 	DECLARE_MESSAGE_MAP()
 public:
@@ -16,4 +15,7 @@ protected:
 
 public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
+
+protected:
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

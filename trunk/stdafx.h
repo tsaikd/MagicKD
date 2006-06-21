@@ -39,14 +39,9 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdhtml.h>
 
-#import "msxml4.dll" named_guids
-#import "msado15.dll" no_namespace rename("EOF", "adoEOF")
-
 //#pragma warning (disable : 4199)
 
 #include "Others.h"
-
-//#define CoInitialize(x)		CoInitializeEx((x), COINIT_MULTITHREADED)
 
 #define APPNAME _T("MagicKD")
 #define APPUUID _T("43863dcf-f931-443e-bee0-eba5db4083a2")

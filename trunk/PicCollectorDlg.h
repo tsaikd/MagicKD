@@ -21,6 +21,7 @@ public:
 	afx_msg void OnDestroy();
 	virtual DWORD ThreadProc();
 	void Localize();
+	void DoSize();
 
 	void AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName);
 	void RefreshFeed(LPCTSTR lpURL);
@@ -30,6 +31,7 @@ public:
 	CPicCFeed				m_Feed;
 	CPicCDLManager			*m_pDownLoader;
 	CPicCFeedListCtrl		m_list_Feed;
+	CToolTipCtrl			m_ttc;
 
 private:
 	bool					m_bInit;
@@ -40,7 +42,9 @@ private:
 	UINT					m_uTimerRefresh;
 
 public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBnClickedPiccBtnChangedldir();
 	afx_msg void OnBnClickedPiccBtnViewDldir();
 	afx_msg void OnBnClickedPiccBtnAddnewfeed();

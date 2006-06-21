@@ -45,6 +45,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	sPath.Format(_T("%sPicCollector.db"), theApp.GetAppConfDir());
 	m_Feed.SetDBPath(sPath);
 	m_list_Feed.Init();
+	m_ttc.Create(this);
+	m_ttc.Activate(TRUE);
 
 	if (PathIsDirectory(g_pPicCConf->m_sDlDir)) {
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
@@ -54,6 +56,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 			SHCreateDirectoryEx(GetSafeHwnd(), g_pPicCConf->m_sDlDir, NULL);
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
 	}
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DLDIR), g_pPicCConf->m_sDlDir);
 
 	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
 	GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
@@ -127,6 +130,54 @@ void CPicCollectorDlg::Localize()
 	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->SetWindowText(CResString(IDS_PICC_BTN_REFRESH_FEED));
 	GetDlgItem(IDC_PICC_BTN_REMOVEFEED)->SetWindowText(CResString(IDS_PICC_BTN_DEL_FEED));
 	GetDlgItem(IDC_PICC_BTN_DELAYDL)->SetWindowText(CResString(IDS_PICC_BTN_DELAY_DL));
+}
+
+void CPicCollectorDlg::DoSize()
+{
+	if (!m_bInit)
+		return;
+
+	int iMarginRight = 15;
+	int iMarginBottom = 15;
+	int iWidth;
+	CRect rcItem;
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLDIR), GetDlgItem(IDC_PICC_STATIC_DLDIRHELP),
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_VIEW_DLDIR), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR), GetDlgItem(IDC_PICC_BTN_VIEW_DLDIR),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLDIR), GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_LIST_FEED), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
+	m_list_Feed.GetClientRect(rcItem);
+	iWidth = rcItem.Width();
+	iWidth -= m_list_Feed.GetColumnWidth(0);
+	iWidth -= m_list_Feed.GetColumnWidth(1);
+	if (iWidth < 100)
+		iWidth = 100;
+	m_list_Feed.SetColumnWidth(2, iWidth);
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELAYDL), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD), GetDlgItem(IDC_PICC_BTN_DELAYDL),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH), this,
+		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD), GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 7);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELAYDL), GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_LIST_FEED), GetDlgItem(IDC_PICC_BTN_DELAYDL),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
+
+	Invalidate();
 }
 
 void CPicCollectorDlg::AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName)
@@ -231,6 +282,7 @@ void CPicCollectorDlg::RefreshAllFeed()
 BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
+	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_PICC_BTN_CHANGEDLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnChangedldir)
 	ON_BN_CLICKED(IDC_PICC_BTN_ADDNEWFEED, &CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_REFRESHFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed)
@@ -243,6 +295,14 @@ void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PICC_LIST_FEED, m_list_Feed);
+}
+
+BOOL CPicCollectorDlg::PreTranslateMessage(MSG* pMsg)
+{
+	m_ttc.RelayEvent(pMsg);
+	// TODO: Add your specialized code here and/or call the base class
+
+	return __super::PreTranslateMessage(pMsg);
 }
 
 void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
@@ -265,7 +325,7 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_pDownLoader->GetNowDLLocalPath());
 			GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow();
-		} else {
+		} else if (m_pDownLoader->GetDownloadCount()) {
 			Sleep(2000);
 			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;
@@ -278,21 +338,20 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 			Sleep(2000);
 			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;
-			if (m_pDownLoader->GetDownloadCount()) {
-				KillTimer(nIDEvent);
-				m_uTimerShowDownload = 0;
+			KillTimer(nIDEvent);
+			m_uTimerShowDownload = 0;
 #ifdef DEBUG
-				AfxMessageBox(_T("WARNNING: Downloader exit by unknown reason!"));
+			AfxMessageBox(_T("WARNNING: Downloader exit by unknown reason!"));
 #endif //DEBUG
-				m_pDownLoader->SaveNowDLToList();
-				m_pDownLoader->Destroy();
-				delete m_pDownLoader;
-				m_Feed.ReloadDB();
-				m_pDownLoader = new CPicCDLManager;
-				m_pDownLoader->Init(&m_Feed);
-				m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
-				break;
-			}
+			m_pDownLoader->SaveNowDLToList();
+			m_pDownLoader->Destroy();
+			delete m_pDownLoader;
+			m_Feed.ReloadDB();
+			m_pDownLoader = new CPicCDLManager;
+			m_pDownLoader->Init(&m_Feed);
+			m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
+			break;
+		} else {
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(_T(""));
 			GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
@@ -307,6 +366,13 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	__super::OnTimer(nIDEvent);
+}
+
+void CPicCollectorDlg::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+
+	DoSize();
 }
 
 void CPicCollectorDlg::OnOK()

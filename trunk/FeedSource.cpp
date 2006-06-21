@@ -15,6 +15,65 @@
 #include "stdafx.h"
 #include "FeedSource.h"
 
+#define PUGAPI_VARIANT 0x58475550	//The Pug XML library variant we are using in this implementation.
+#define PUGAPI_VERSION_MAJOR 1		//The Pug XML library major version we are using in this implementation.
+#define PUGAPI_VERSION_MINOR 2		//The Pug XML library minor version we are using in this implementation.
+#include "pugxml.h"
+
+using namespace pug;
+
+class xml_outline : public xml_tree_walker
+{
+public:
+	LPCTSTR map_to_type_name(xml_node_type type) //Convert some entity types to text.
+	{
+		switch(type)
+		{
+		case node_pcdata: return _T("PCDATA");
+		case node_cdata: return _T("CDATA");
+		case node_comment: return _T("COMMENT");
+		case node_pi: return _T("PI");
+		case node_document: return _T("DOCUMENT");
+		default: return _T("UNKNOWN");
+		}
+	}
+public:
+	//Traversal begin callback.
+	virtual bool begin(xml_node& node)
+	{
+#ifdef DEBUG
+		CString sMsg;
+		sMsg.Format(_T("BEGIN(%s)"), map_to_type_name(node.type()));
+#endif //DEBUG
+		return true;
+	}
+	//Traversal node callback; cumulatively outputs a simple document outline.
+	virtual bool for_each(xml_node& node)
+	{
+#ifdef DEBUG
+		CString sMsg;
+		for(long i=0; i<depth(); ++i)
+			sMsg.Append(_T("| "));
+		if(node.has_child_nodes())
+			sMsg.AppendFormat(_T("+ %s\n"), node.name());
+		else if(node.type_element()||node.type_dtd_item())
+			sMsg.AppendFormat(_T("- %s\n"), node.name());
+		else
+			sMsg.AppendFormat(_T("- (%s)\n"), map_to_type_name(node.type()));
+#endif //DEBUG
+		return true; //Keep traversing.
+	}
+	//Traversal end callback.
+	virtual bool end(xml_node& node)
+	{
+#ifdef DEBUG
+		CString sMsg;
+		sMsg.Format(_T("END(%s)"), map_to_type_name(node.type()));
+#endif //DEBUG
+		return true;
+	}
+};
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -41,18 +100,18 @@ CFeedSource::~CFeedSource()
 }
 
 CFeed::CFeed()
-	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
+	: m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
 {
 }
 
 CFeed::CFeed(LPCTSTR sDBPath)
-	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
+	: m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
 {
 	SetDBPath(sDBPath);
 }
 
 CFeed::CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL)
-	: m_pDoc(NULL), m_nDepth(0), m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
+	: m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
 {
 	SetDBPath(sDBPath);
 	BuildFromFile(strXMLURL);
@@ -89,11 +148,13 @@ bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMs
 	int nCol;
 	sqlite3_stmt *stmt = NULL;
 	if (SQLITE_OK != sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0)) {
+#ifdef DEBUG
 		if (strErrMsg)
 			*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
 		//CString sErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
 		//sErrMsg.AppendFormat(_T("\n%s\nSQL ERROR: Prepare stmt Failed"), strSQL);
 		//AfxMessageBox(sErrMsg);
+#endif //DEBUG
 		if (!stmt) {
 			m_muxDB.Unlock();
 			return false;
@@ -165,7 +226,7 @@ void CFeed::CloseDB()
 // This function will build Feed Object from scratch by parsing XML Feed Information
 // Result is stored in m_source and m_item objects
 //
-#define RETURN { if (m_pDoc) { m_pDoc->Release(); m_pDoc = NULL; } CoUninitialize(); m_muxDLInet.Unlock(); return; }
+#define RETURN { CoUninitialize(); m_muxDLInet.Unlock(); return; }
 void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
 	if (!m_bDBPath)
@@ -187,60 +248,33 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	//	Sleep(2000);
 
 	// Step 1. Open XML Document, if open fails, then return
-	if ( m_pDoc != NULL )
-	{
-		m_pDoc->Release();
-		m_pDoc = NULL;
-	}
-	if ( !SUCCEEDED (CoCreateInstance(MSXML2::CLSID_DOMDocument,
-										NULL,
-										CLSCTX_INPROC_SERVER,
-										MSXML2::IID_IXMLDOMDocument,
-										reinterpret_cast<void**>(&m_pDoc))))
-	{
-		// Failed to load XML Document, report error message
-		AfxMessageBox( _T("Failed to CoCreateInstance") );
+	xml_parser xmlParser;
+	if (!xmlParser.parse_file(strTmpFile,
+		//parse_dtd_only		| //Parse only '<!DOCTYPE [*]>'
+		parse_doctype			| //Parse '<!DOCTYPE ...>' section, with '[...]' as data member.
+#ifndef PUGOPT_MEMFIL				  //I get all kinds of problems parsing the DTD in memory-mapped mode. KW.
+		parse_dtd				| //Parse whatever is in DOCTYPE data member ('[...]').
+#endif  //PUGOPT_MEMFIL
+		parse_pi				| //Parse '<?...?>'
+		parse_cdata				| //Parse '<![CDATA[...]]>', and '<![INCLUDE[...]]>'
+		parse_comments			| //Parse <!--...-->'
+#ifndef PUGOPT_MEMFIL				
+		parse_wnorm				| //Normalize all entities that are flagged to be trimmed.
+#endif  //PUGOPT_MEMFIL
+		parse_trim_entity		| //Trim DTD entities.
+		parse_trim_attribute	| //Trim 'foo="..."'.
+		parse_trim_pcdata		| //Trim '>...<'
+		parse_trim_cdata		| //Trim '<![CDATA[...]]>'
+		parse_trim_comment		  //Trim <!--...-->'
+		)) {
+#ifdef DEBUG
+		AfxMessageBox(_T("Parse XML File Failed!"));
+#endif //DEBUG
 		RETURN;
 	}
-
-	UINT uMaxRepairTimes = 50;
-	m_pDoc->put_validateOnParse(VARIANT_FALSE);
-	m_pDoc->put_async(VARIANT_FALSE);
-	while ( m_pDoc->load( _bstr_t(strTmpFile) ) == VARIANT_FALSE )
-	{
-		MSXML2::IXMLDOMParseErrorPtr errPtr = m_pDoc->GetparseError();
-		//_bstr_t bstrErr(errPtr->reason);
-		//CString sErrMsg;
-		//sErrMsg.Format(_T("Reason: %s\nError Code: 0x%x\nLine: %ld\nPos: %ld\nFile Pos:%ld\n"), CString((char*)errPtr->reason), errPtr->errorCode, errPtr->line, errPtr->linepos, errPtr->filepos);
-
-		CString sFile, sNewXML;
-		int i, iLine = errPtr->line;
-		CStdioFile fFile(strTmpFile, CFile::modeRead);
-		fFile.ReadString(sFile);
-		for (i=1 ; i<iLine ; i++) {
-			sNewXML.AppendFormat(_T("%s\n"), sFile);
-			fFile.ReadString(sFile);
-		}
-		TCHAR bch = sFile.GetAt(errPtr->linepos - 1);
-		sFile.Remove(bch);
-		sNewXML.Append(sFile);
-		while (fFile.ReadString(sFile))
-			sNewXML.AppendFormat(_T("%s\n"), sFile);
-		fFile.Close();
-		DeleteFile(strTmpFile);
-		fFile.Open(strTmpFile, CFile::modeCreate | CFile::modeWrite);
-		fFile.WriteString(sNewXML);
-		fFile.Close();
-
-		if (!uMaxRepairTimes--) {
-			AfxMessageBox(_T("Failed to load XML Document, and tried 50 times"));
-			RETURN;
-		}
-
-		// Failed to load XML Document, report error message
-//		AfxMessageBox(_T("Failed to load XML Document"));
-//		RETURN;
-	}
+	xml_outline outline;
+	xml_node doc = xmlParser.document();
+	doc.traverse(outline);
 
 	// Step 2. Get version property if it is available
 	// Step 3. Iterate to channel node, get the following child items
@@ -260,7 +294,6 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	//		width
 	//		height
 	//		description
-
 	// Step 4. go to item node, get the following items
 	//		title
 	//		description
@@ -269,24 +302,94 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	//		category
 	//		pubDate
 	//		subject
-	MSXML2::IXMLDOMNode		*pNode = NULL;
-	if ( SUCCEEDED(m_pDoc->QueryInterface(MSXML2::IID_IXMLDOMNode, 
-				reinterpret_cast<void**>(&pNode))))
-	{
-		IterateChildNodes(pNode);
-		pNode->Release();
-		pNode = NULL;
+	LPCTSTR lpName = NULL;
+	CString sItemName(_T("channel"));
+	xml_node itelem = doc.first_element_by_name(sItemName);
+	if (!itelem.empty()) {
+		xml_node::child_iterator i = itelem.children_begin(); //For each child.
+		xml_node::child_iterator m = itelem.children_end();
+		CString sBuf;
+		for(; i < m; ++i) {
+			lpName = i->name();
+			if (!lpName)
+				continue;
+
+			if (_tcscmp(_T("title"), lpName) == 0) {
+				i->child_value(m_source.m_strTitle);
+			} else if (_tcscmp(_T("link"), lpName) == 0) {
+				i->child_value(m_source.m_strLink);
+			} else if (_tcscmp(_T("description"), lpName) == 0) {
+				i->child_value(m_source.m_strDescription);
+			} else if (_tcscmp(_T("language"), lpName) == 0) {
+				i->child_value(m_source.m_strLanguage);
+			} else if (_tcscmp(_T("copyright"), lpName) == 0) {
+				i->child_value(m_source.m_strCopyright);
+			} else if (_tcscmp(_T("webMaster"), lpName) == 0) {
+				i->child_value(m_source.m_strWebMaster);
+			} else if (_tcscmp(_T("lastBuildDate"), lpName) == 0) {
+				i->child_value(m_source.m_strLastBuildDate);
+			} else if (_tcscmp(_T("ttl"), lpName) == 0) {
+				i->child_value(m_source.m_strTtl);
+			} else if (_tcscmp(_T("generator"), lpName) == 0) {
+				i->child_value(m_source.m_strGenerator);
+			} else if (_tcscmp(_T("image"), lpName) == 0) {
+				xml_node::child_iterator j = i->children_begin(); //For each child.
+				xml_node::child_iterator n = i->children_end();
+
+				for(; j < n; ++j) {
+					lpName = j->name();
+					if (!lpName)
+						continue;
+
+					if (_tcscmp(_T("title"), lpName) == 0) {
+						j->child_value(m_source.m_strImageTitle);
+					} else if (_tcscmp(_T("url"), lpName) == 0) {
+						j->child_value(m_source.m_strImageUrl);
+					} else if (_tcscmp(_T("link"), lpName) == 0) {
+						j->child_value(m_source.m_strImageLink);
+					} else if (_tcscmp(_T("width"), lpName) == 0) {
+						j->child_value(m_source.m_strImageWidth);
+					} else if (_tcscmp(_T("height"), lpName) == 0) {
+						j->child_value(m_source.m_strImageHeight);
+					} else if (_tcscmp(_T("description"), lpName) == 0) {
+						j->child_value(m_source.m_strImageDescription);
+					}
+				}
+			} else if (_tcscmp(_T("item"), lpName) == 0) {
+				CFeedItem item;
+				xml_node::child_iterator j = i->children_begin(); //For each child.
+				xml_node::child_iterator n = i->children_end();
+
+				for(; j < n; ++j) {
+					lpName = j->name();
+					if (!lpName)
+						continue;
+
+					if (_tcscmp(_T("title"), lpName) == 0) {
+						j->child_value(item.m_strTitle);
+					} else if (_tcscmp(_T("description"), lpName) == 0) {
+						j->child_value(item.m_strDescription);
+					} else if (_tcscmp(_T("link"), lpName) == 0) {
+						j->child_value(item.m_strLink);
+					} else if (_tcscmp(_T("author"), lpName) == 0) {
+						j->child_value(item.m_strAuthor);
+					} else if (_tcscmp(_T("category"), lpName) == 0) {
+						j->child_value(item.m_strCategory);
+					} else if (_tcscmp(_T("pubDate"), lpName) == 0) {
+						j->child_value(item.m_strPubDate);
+					} else if (_tcscmp(_T("subject"), lpName) == 0) {
+						j->child_value(item.m_strSubject);
+					}
+				}
+
+				m_item.Add( item );
+			}
+		}
 	}
 
 	DeleteFile(strTmpFile);
 	m_source.m_strLink = strXMLURL;
 
-	// We are not using smart pointer, so we have to release it outself
-	if ( m_pDoc )
-	{
-		m_pDoc->Release();
-		m_pDoc = NULL;
-	}
 	RETURN;
 }
 #undef RETURN
@@ -477,507 +580,7 @@ CString CFeed::GetModuleFileDir()
 	return strFileName.Left( nPos );
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// Get Feed Version Information
-//
-void CFeed::GetVersion(MSXML2::IXMLDOMNode *pNode)
-{
-	ASSERT(pNode);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Iterate Child Node
-//
-void CFeed::IterateChildNodes(MSXML2::IXMLDOMNode *pNode)
-{
-	BSTR		bstrNodeName;
-
-	if ( pNode )
-	{
-		m_nDepth++;
-		CString strOutput;
-		pNode->get_nodeName(&bstrNodeName);
-
-		//
-		// Find out the node type (as a string).
-		//
-		BSTR bstrNodeType;
-		pNode->get_nodeTypeString(&bstrNodeType);
-		CString strType;
-		strType = CString( bstrNodeType );
-		SysFreeString(bstrNodeType);
-
-		MSXML2::DOMNodeType eEnum;
-		pNode->get_nodeType(&eEnum);
-
-		CString strValue;
-		BSTR bstrValue;
-		switch( eEnum )
-		{
-			case MSXML2::NODE_TEXT:
-			{
-				// Text string in the XML document
-				BSTR bstrValue;
-				pNode->get_text(&bstrValue);
-				strOutput = CString( bstrValue );
-				SysFreeString(bstrValue);
-				break;
-			}
-			case MSXML2::NODE_COMMENT:
-			{
-				// Comment in the XML document
-				VARIANT vValue;
-				pNode->get_nodeValue(&vValue);
-				VariantClear(&vValue);
-				break;
-			}
-			case MSXML2::NODE_PROCESSING_INSTRUCTION:
-			{
-				// Processing instruction
-				strOutput = CString( bstrNodeName );
-				break;
-			}
-			case MSXML2::NODE_ELEMENT:
-			{
-				// Element
-				strOutput = CString( bstrNodeName );
-				if ( strOutput == _T("rss") )
-				{
-					GetVersion( pNode );
-				}
-				else if ( strOutput == _T("copyright") )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strCopyright = CString( bstrValue );
-				}
-				else if ( strOutput == _T("title") && m_nDepth == 4 )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strTitle = CString( bstrValue );
-				}
-				else if ( strOutput == _T("link") && m_nDepth == 4 )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strLink = CString( bstrValue );
-				}
-				else if ( strOutput == _T("description") && m_nDepth == 4 )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strDescription = CString( bstrValue );
-				}
-				else if ( strOutput == _T("language") )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strLanguage = CString( bstrValue );
-				}
-				else if ( strOutput == _T("webMaster") )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strWebMaster = CString( bstrValue );
-				}
-				else if ( strOutput == _T("lastBuildDate") )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strLastBuildDate = CString( bstrValue );
-				}
-				else if ( strOutput == _T("ttl") )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strTtl = CString( bstrValue );
-				}
-				else if ( strOutput == _T("generator") )
-				{
-					pNode->get_text(&bstrValue);
-					m_source.m_strGenerator = CString( bstrValue );
-				}
-				else if ( strOutput == _T("image") )
-				{
-					BuildImage( pNode );
-				}
-				else if ( strOutput == _T("item") )
-				{
-					BuildItem( pNode );
-				}
-				break;
-			}
-			case MSXML2::NODE_DOCUMENT:
-			{
-				// Document
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-				break;
-			}
-			case MSXML2::NODE_DOCUMENT_TYPE:
-			{
-				// Document Type
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-				break;
-			}
-			case MSXML2::NODE_DOCUMENT_FRAGMENT:
-			{
-				// Document Fragment
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-				break;
-			}
-			case MSXML2::NODE_NOTATION:
-			{
-				// Notation
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-				break;
-			}
-			case MSXML2::NODE_ENTITY:
-			{
-				// Entity
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-				break;
-			}
-			case MSXML2::NODE_ENTITY_REFERENCE:
-			{
-				// Entity Reference
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-			}
-			case MSXML2::NODE_CDATA_SECTION:
-			{
-				// CData section
-				strOutput = CString( bstrNodeName ) + _T(" - ") + CString( strType );
-			}
-		}
-		SysFreeString(bstrNodeName);
-	}
-
-	//
-	// Any child nodes of this node need displaying too.
-	//
-	MSXML2::IXMLDOMNode *pNext = NULL;
-	MSXML2::IXMLDOMNode *pChild;
-	pNode->get_firstChild(&pChild);
-	while( pChild )
-	{
-		IterateChildNodes(pChild);
-		pChild->get_nextSibling(&pNext);
-		pChild->Release();
-		pChild = pNext;
-	}
-	m_nDepth--;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Build Image Section
-//
-void CFeed::BuildImage(MSXML2::IXMLDOMNode *pNode)
-{
-	MSXML2::IXMLDOMNode *pNext = NULL;
-	MSXML2::IXMLDOMNode *pChild;
-	CString		strOutput;
-	BSTR		bstrNodeName;
-	BSTR		bstrValue;
-	pNode->get_firstChild(&pChild);
-	while( pChild )
-	{
-		pChild->get_nodeName(&bstrNodeName);
-		strOutput = CString( bstrNodeName );
-		if ( strOutput == _T("title") )
-		{
-			pChild->get_text(&bstrValue);
-			m_source.m_strImageTitle = CString( bstrValue );
-		}
-		else if ( strOutput == _T("url") )
-		{
-			pChild->get_text(&bstrValue);
-			m_source.m_strImageUrl = CString( bstrValue );
-		}
-		else if ( strOutput == _T("link") )
-		{
-			pChild->get_text(&bstrValue);
-			m_source.m_strImageLink = CString( bstrValue );
-		}
-		else if ( strOutput == _T("width") )
-		{
-			pChild->get_text(&bstrValue);
-			m_source.m_strImageWidth = CString( bstrValue );
-		}
-		else if ( strOutput == _T("height") )
-		{
-			pChild->get_text(&bstrValue);
-			m_source.m_strImageHeight = CString( bstrValue );
-		}
-		else if ( strOutput == _T("description") )
-		{
-			pChild->get_text(&bstrValue);
-			m_source.m_strImageDescription = CString( bstrValue );
-		}
-
-		pChild->get_nextSibling(&pNext);
-		pChild->Release();
-		pChild = pNext;
-	}
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Build Item Section
-//
-void CFeed::BuildItem(MSXML2::IXMLDOMNode *pNode)
-{
-	MSXML2::IXMLDOMNode *pNext = NULL;
-	MSXML2::IXMLDOMNode *pChild;
-	CString		strOutput;
-	BSTR		bstrNodeName;
-	CFeedItem	item;
-	BSTR		bstrValue;
-	pNode->get_firstChild(&pChild);
-	while( pChild )
-	{
-		pChild->get_nodeName(&bstrNodeName);
-		strOutput = CString( bstrNodeName );
-		if ( strOutput == _T("title") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strTitle = CString( bstrValue );
-		}
-		else if ( strOutput == _T("description") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strDescription = CString( bstrValue );
-		}
-		else if ( strOutput == _T("link") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strLink = CString( bstrValue );
-		}
-		else if ( strOutput == _T("author") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strAuthor = CString( bstrValue );
-		}
-		else if ( strOutput == _T("category") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strCategory = CString( bstrValue );
-		}
-		else if ( strOutput == _T("pubDate") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strPubDate = CString( bstrValue );
-		}
-		else if ( strOutput == _T("subject") )
-		{
-			pChild->get_text(&bstrValue);
-			item.m_strSubject = CString( bstrValue );
-		}
-
-		pChild->get_nextSibling(&pNext);
-		pChild->Release();
-		pChild = pNext;
-	}
-	m_item.Add( item );
-}
-
 void CFeed::ClearLoadedItems()
 {
 	m_item.RemoveAll();
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// Execute SQL Statement and return error message if any
-//
-//BOOL CFeed::ExecuteSQL(_ConnectionPtr &pCnn, CString &strSQL, CString& strMsg)
-//{
-//	try
-//	{
-//		pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
-//	}
-//	catch( _com_error& e )
-//	{
-//		strMsg = GetComError( e );
-//		return FALSE;
-//	}
-//	return TRUE;
-//}
-
-/////////////////////////////////////////////////////////////////////////////
-// Retrieve Com Error Information
-//
-//CString CFeed::GetComError( _com_error& e )
-//{
-//	CString		strMsg;
-//
-//    _bstr_t bstrSource(e.Source());
-//    _bstr_t bstrDescription(e.Description());
-//    
-//    strMsg.Format( _T("Code = %08lx\nCode meaning = %s\nSource = %s\nDescription = %s"),
-//		e.Error(),
-//		e.ErrorMessage(),
-//		(LPCSTR) bstrSource,
-//		(LPCSTR) bstrDescription );
-//	return strMsg;
-//}
-
-/////////////////////////////////////////////////////////////////////////////
-// Get Field Value
-//
-//CString CFeed::GetFieldValue(FieldsPtr fields, long nIndex)
-//{
-//	_variant_t vt = fields->GetItem( nIndex )->Value;
-//	if ( vt.vt == VT_NULL || vt.vt == VT_EMPTY )
-//	{
-//		return _T("");
-//	}
-//	return CString( (char*)_bstr_t( vt ) );
-//}
-
-/////////////////////////////////////////////////////////////////////////////
-// Delete list from Database
-//
-//void CFeed::DeleteListArray(CStringArray &strLinkArray)
-//{
-//	_ConnectionPtr		pCnn = NULL;
-//	CString				strSQL;
-//	CString				strMsg;
-//	int					nIndex;
-//
-//	if (!m_bDBPath)
-//		return;
-//
-//	// Step 1. Create object
-//	pCnn.CreateInstance( __uuidof( Connection ) );
-//	if ( pCnn == NULL )
-//	{
-//		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-//		return;
-//	}
-//
-//	// Step 2. Open connection
-//	try
-//	{
-//		CString		strCnn;
-//		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), _T("") );
-//		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-//	}
-//	catch( _com_error& e )
-//	{
-//		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-//		pCnn.Release();
-//		return;
-//	}
-//
-//	// Step 3. Delete Link from FeedList table
-//	for(nIndex = 0; nIndex < strLinkArray.GetSize(); nIndex++ )
-//	{
-//		strSQL.Format( _T("delete from FeedItem where link = '%s'"), EscapeQuote( strLinkArray[nIndex] ) );
-//		ExecuteSQL( pCnn, strSQL, strMsg );
-//	}
-//
-//	// Step 4. Done!
-//	pCnn.Release();
-//}
-
-/////////////////////////////////////////////////////////////////////////////
-// Delete Feed Source
-//
-//void CFeed::DeleteFeedSource(CString strLink)
-//{
-//	_ConnectionPtr		pCnn = NULL;
-//	CString				strSQL;
-//	CString				strMsg;
-//
-//	if (!m_bDBPath)
-//		return;
-//
-//	// Step 1. Create object
-//	pCnn.CreateInstance( __uuidof( Connection ) );
-//	if ( pCnn == NULL )
-//	{
-//		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-//		return;
-//	}
-//
-//	// Step 2. Open connection
-//	try
-//	{
-//		CString		strCnn;
-//		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), _T("") );
-//		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-//	}
-//	catch( _com_error& e )
-//	{
-//		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-//		pCnn.Release();
-//		return;
-//	}
-//
-//	// Step 3. Delete Link from FeedList table
-//	strSQL.Format( _T("delete from FeedSource where FeedLink = '%s'"), EscapeQuote( strLink ) );
-//	ExecuteSQL( pCnn, strSQL, strMsg );
-//
-//	// Step 4. Done!
-//	pCnn.Release();
-//}
-
-/////////////////////////////////////////////////////////////////////////////
-// Refresh All SubScriptions
-//
-//void CFeed::RefreshAll()
-//{
-//	_ConnectionPtr		pCnn = NULL;
-//	CString				strSQL;
-//	CString				strMsg;
-//	CStringArray		strLinkArray;
-//	_RecordsetPtr		rs = NULL;
-//
-//	if (!m_bDBPath)
-//		return;
-//
-//	// Step 1. Create object
-//	pCnn.CreateInstance( __uuidof( Connection ) );
-//	if ( pCnn == NULL )
-//	{
-//		AfxMessageBox( _T("Can not create connection object, please install MDAC!") );
-//		return;
-//	}
-//
-//	// Step 2. Open connection
-//	try
-//	{
-//		CString		strCnn;
-//		strCnn.Format( _T("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password=philips;"), _T("") );
-//		pCnn->Open( _bstr_t(strCnn), "", "", adConnectUnspecified );
-//	}
-//	catch( _com_error& e )
-//	{
-//		AfxMessageBox( _T("Can not open connection:\n") + GetComError( e ) );
-//		pCnn.Release();
-//		return;
-//	}
-//
-//	// Step 3. Get all the subscriptions
-//	strSQL = _T("select FeedLink from FeedSource");
-//	try
-//	{
-//		rs = pCnn->Execute( _bstr_t( strSQL ), NULL, adCmdText );
-//		while ( rs != NULL && rs->adoEOF != TRUE )
-//		{
-//			if ( rs->adoEOF )
-//			{
-//				break;
-//			}
-//			strLinkArray.Add( GetFieldValue( rs->Fields, 0 ) );
-//			rs->MoveNext();
-//		}
-//	}
-//	catch( _com_error& e )
-//	{
-//		AfxMessageBox( GetComError( e ) );
-//	}
-//	rs.Release();
-//	rs = NULL;
-//
-//	// Step 4. Refreah each link
-//	for( int nIndex = 0; nIndex < strLinkArray.GetSize(); nIndex++ )
-//	{
-//		CFeed	feed( strLinkArray.GetAt( nIndex ) );
-//		feed.m_source.m_strLink = strLinkArray.GetAt( nIndex );
-//		feed.Save();
-//	}
-//
-//	// Step 5. Done!
-//	pCnn.Release();
-//}

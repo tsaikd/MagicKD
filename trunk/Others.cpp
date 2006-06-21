@@ -39,7 +39,7 @@ bool KDMoveDlgItem(CWnd *pItemWnd, CWnd *pRefWnd, int iRefWay, int iRefDist, boo
 		if (bExtend)
 			rcItem.left = rcRef.left - iRefDist;
 		else
-			rcItem.MoveToX(rcRef.left - rcItem.Width() - iRefDist);
+			rcItem.MoveToX(rcRef.left + iRefDist);
 		break;
 	case KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE:	// OutSide Top
 		if (bExtend)
@@ -61,7 +61,7 @@ bool KDMoveDlgItem(CWnd *pItemWnd, CWnd *pRefWnd, int iRefWay, int iRefDist, boo
 		break;
 	case KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE:	// InSide Right
 		if (bExtend)
-				rcItem.right = rcRef.right - iRefDist;
+			rcItem.right = rcRef.right - iRefDist;
 		else
 			rcItem.MoveToX(rcRef.right - rcItem.Width() - iRefDist);
 		break;

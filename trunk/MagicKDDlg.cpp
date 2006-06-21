@@ -101,8 +101,10 @@ BOOL CMagicKDDlg::OnInitDialog()
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
 //	if (m_pFindDupFileDlg)
 //		m_cMainTab.SetCurSel(eFunc_FindDupFile);
-//	if (m_pPicCollectorDlg)
-//		m_cMainTab.SetCurSel(eFunc_PicCollector);
+#ifdef DEBUG
+	if (m_pPicCollectorDlg)
+		m_cMainTab.SetCurSel(eFunc_PicCollector);
+#endif //DEBUG
 //////////////////////////////////////////////////
 
 	m_bInit = true;
