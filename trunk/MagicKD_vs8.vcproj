@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="CxImage\CxImage\"
+				AdditionalIncludeDirectories=".\;CxImage\CxImage\;FuncBase\;KDClass\;WallChanger\;FindDupFile\;PicCollector\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;JAS_WIN_MSVC_BUILD;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -136,7 +136,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="CxImage\CxImage\"
+				AdditionalIncludeDirectories=".\;CxImage\CxImage\;FuncBase\;KDClass\;WallChanger\;FindDupFile\;PicCollector\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -249,31 +249,31 @@
 				Name="FuncBase"
 				>
 				<File
-					RelativePath=".\DelayedDirectoryChangeHandler.cpp"
+					RelativePath=".\FuncBase\DelayedDirectoryChangeHandler.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\DirectoryChanges.cpp"
+					RelativePath=".\FuncBase\DirectoryChanges.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FeedSource.cpp"
+					RelativePath=".\FuncBase\FeedSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Ini.cpp"
+					RelativePath=".\FuncBase\Ini.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\InputBox.cpp"
+					RelativePath=".\FuncBase\InputBox.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Language.cpp"
+					RelativePath=".\FuncBase\Language.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Others.cpp"
+					RelativePath=".\FuncBase\Others.cpp"
 					>
 				</File>
 			</Filter>
@@ -281,55 +281,55 @@
 				Name="KDClass"
 				>
 				<File
-					RelativePath=".\KDApp.cpp"
+					RelativePath=".\KDClass\KDApp.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDButton.cpp"
+					RelativePath=".\KDClass\KDButton.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDComboBox.cpp"
+					RelativePath=".\KDClass\KDComboBox.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDConf.cpp"
+					RelativePath=".\KDClass\KDConf.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDEdit.cpp"
+					RelativePath=".\KDClass\KDEdit.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDGetHttpFile.cpp"
+					RelativePath=".\KDClass\KDGetHttpFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDIni.cpp"
+					RelativePath=".\KDClass\KDIni.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDListCtrl.cpp"
+					RelativePath=".\KDClass\KDListCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDListItem.cpp"
+					RelativePath=".\KDClass\KDListItem.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDSingleApp.cpp"
+					RelativePath=".\KDClass\KDSingleApp.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDTabCtrl.cpp"
+					RelativePath=".\KDClass\KDTabCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDThread.cpp"
+					RelativePath=".\KDClass\KDThread.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\KDTray.cpp"
+					RelativePath=".\KDClass\KDTray.cpp"
 					>
 				</File>
 			</Filter>
@@ -337,79 +337,75 @@
 				Name="WallChanger"
 				>
 				<File
-					RelativePath=".\WallChangerDlg.cpp"
+					RelativePath=".\WallChanger\WallChangerDlg.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallClassListCtrl.cpp"
+					RelativePath=".\WallChanger\WallClassListCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallConf.cpp"
+					RelativePath=".\WallChanger\WallConf.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallDirListCtrl.cpp"
+					RelativePath=".\WallChanger\WallDirListCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallDirListItem.cpp"
+					RelativePath=".\WallChanger\WallDirListItem.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallEnablePicList.cpp"
+					RelativePath=".\WallChanger\WallEnablePicList.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallOthers.cpp"
+					RelativePath=".\WallChanger\WallListCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WallThreadFindPic.cpp"
+					RelativePath=".\WallChanger\WallOthers.cpp"
 					>
 				</File>
-				<Filter
-					Name="FuncBase"
+				<File
+					RelativePath=".\WallChanger\WallThread.cpp"
 					>
-					<File
-						RelativePath=".\WallListCtrl.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\WallThread.cpp"
-						>
-					</File>
-				</Filter>
+				</File>
+				<File
+					RelativePath=".\WallChanger\WallThreadFindPic.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="FindDupFile"
 				>
 				<File
-					RelativePath=".\FindDFConf.cpp"
+					RelativePath=".\FindDupFile\FindDFConf.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDFListCtrl.cpp"
+					RelativePath=".\FindDupFile\FindDFListCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDFOthers.cpp"
+					RelativePath=".\FindDupFile\FindDFOthers.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDFTreeCtrl.cpp"
+					RelativePath=".\FindDupFile\FindDFTreeCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDupFileDlg.cpp"
+					RelativePath=".\FindDupFile\FindDupFileDlg.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDupFileProc.cpp"
+					RelativePath=".\FindDupFile\FindDupFileProc.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\FindStaticShowPic.cpp"
+					RelativePath=".\FindDupFile\FindStaticShowPic.cpp"
 					>
 				</File>
 			</Filter>
@@ -417,27 +413,27 @@
 				Name="PicCollector"
 				>
 				<File
-					RelativePath=".\PicCConf.cpp"
+					RelativePath=".\PicCollector\PicCConf.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCDLManager.cpp"
+					RelativePath=".\PicCollector\PicCDLManager.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCFeed.cpp"
+					RelativePath=".\PicCollector\PicCFeed.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCFeedListCtrl.cpp"
+					RelativePath=".\PicCollector\PicCFeedListCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCHTMLEventHandler.cpp"
+					RelativePath=".\PicCollector\PicCHTMLEventHandler.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCollectorDlg.cpp"
+					RelativePath=".\PicCollector\PicCollectorDlg.cpp"
 					>
 				</File>
 				<Filter
@@ -499,35 +495,35 @@
 				Name="FuncBase"
 				>
 				<File
-					RelativePath=".\DelayedDirectoryChangeHandler.h"
+					RelativePath=".\FuncBase\DelayedDirectoryChangeHandler.h"
 					>
 				</File>
 				<File
-					RelativePath=".\DirectoryChanges.h"
+					RelativePath=".\FuncBase\DirectoryChanges.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FeedSource.h"
+					RelativePath=".\FuncBase\FeedSource.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Ini.h"
+					RelativePath=".\FuncBase\Ini.h"
 					>
 				</File>
 				<File
-					RelativePath=".\InputBox.h"
+					RelativePath=".\FuncBase\InputBox.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Language.h"
+					RelativePath=".\FuncBase\Language.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Others.h"
+					RelativePath=".\FuncBase\Others.h"
 					>
 				</File>
 				<File
-					RelativePath=".\pugxml.h"
+					RelativePath=".\FuncBase\pugxml.h"
 					>
 				</File>
 			</Filter>
@@ -535,55 +531,55 @@
 				Name="KDClass"
 				>
 				<File
-					RelativePath=".\KDApp.h"
+					RelativePath=".\KDClass\KDApp.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDButton.h"
+					RelativePath=".\KDClass\KDButton.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDComboBox.h"
+					RelativePath=".\KDClass\KDComboBox.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDConf.h"
+					RelativePath=".\KDClass\KDConf.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDEdit.h"
+					RelativePath=".\KDClass\KDEdit.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDGetHttpFile.h"
+					RelativePath=".\KDClass\KDGetHttpFile.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDIni.h"
+					RelativePath=".\KDClass\KDIni.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDListCtrl.h"
+					RelativePath=".\KDClass\KDListCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDListItem.h"
+					RelativePath=".\KDClass\KDListItem.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDSingleApp.h"
+					RelativePath=".\KDClass\KDSingleApp.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDTabCtrl.h"
+					RelativePath=".\KDClass\KDTabCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDThread.h"
+					RelativePath=".\KDClass\KDThread.h"
 					>
 				</File>
 				<File
-					RelativePath=".\KDTray.h"
+					RelativePath=".\KDClass\KDTray.h"
 					>
 				</File>
 			</Filter>
@@ -591,79 +587,75 @@
 				Name="WallChanger"
 				>
 				<File
-					RelativePath=".\WallChangerDlg.h"
+					RelativePath=".\WallChanger\WallChangerDlg.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallClassListCtrl.h"
+					RelativePath=".\WallChanger\WallClassListCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallConf.h"
+					RelativePath=".\WallChanger\WallConf.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallDirListCtrl.h"
+					RelativePath=".\WallChanger\WallDirListCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallDirListItem.h"
+					RelativePath=".\WallChanger\WallDirListItem.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallEnablePicList.h"
+					RelativePath=".\WallChanger\WallEnablePicList.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallOthers.h"
+					RelativePath=".\WallChanger\WallListCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WallThreadFindPic.h"
+					RelativePath=".\WallChanger\WallOthers.h"
 					>
 				</File>
-				<Filter
-					Name="FuncBase"
+				<File
+					RelativePath=".\WallChanger\WallThread.h"
 					>
-					<File
-						RelativePath=".\WallListCtrl.h"
-						>
-					</File>
-					<File
-						RelativePath=".\WallThread.h"
-						>
-					</File>
-				</Filter>
+				</File>
+				<File
+					RelativePath=".\WallChanger\WallThreadFindPic.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="FindDupFile"
 				>
 				<File
-					RelativePath=".\FindDFConf.h"
+					RelativePath=".\FindDupFile\FindDFConf.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDFListCtrl.h"
+					RelativePath=".\FindDupFile\FindDFListCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDFOthers.h"
+					RelativePath=".\FindDupFile\FindDFOthers.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDFTreeCtrl.h"
+					RelativePath=".\FindDupFile\FindDFTreeCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDupFileDlg.h"
+					RelativePath=".\FindDupFile\FindDupFileDlg.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FindDupFileProc.h"
+					RelativePath=".\FindDupFile\FindDupFileProc.h"
 					>
 				</File>
 				<File
-					RelativePath=".\FindStaticShowPic.h"
+					RelativePath=".\FindDupFile\FindStaticShowPic.h"
 					>
 				</File>
 			</Filter>
@@ -671,27 +663,27 @@
 				Name="PicCollector"
 				>
 				<File
-					RelativePath=".\PicCConf.h"
+					RelativePath=".\PicCollector\PicCConf.h"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCDLManager.h"
+					RelativePath=".\PicCollector\PicCDLManager.h"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCFeed.h"
+					RelativePath=".\PicCollector\PicCFeed.h"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCFeedListCtrl.h"
+					RelativePath=".\PicCollector\PicCFeedListCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCHTMLEventHandler.h"
+					RelativePath=".\PicCollector\PicCHTMLEventHandler.h"
 					>
 				</File>
 				<File
-					RelativePath=".\PicCollectorDlg.h"
+					RelativePath=".\PicCollector\PicCollectorDlg.h"
 					>
 				</File>
 				<Filter
