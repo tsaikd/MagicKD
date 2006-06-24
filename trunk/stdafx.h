@@ -2,6 +2,10 @@
 
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
+#ifndef _SECURE_ATL
+#define _SECURE_ATL 1
+#endif
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN		// 從 Windows 標頭排除不常使用的成員
 #endif
@@ -21,7 +25,7 @@
 #endif
 
 #ifndef _WIN32_IE			// 允許使用 IE 4.0 (含) 以後版本的特定功能。
-#define _WIN32_IE 0x0500	// 將它變更為針對 IE 5.0 (含) 以後版本適當的值。
+#define _WIN32_IE 0x0600	// 將它變更為針對 IE 5.0 (含) 以後版本適當的值。
 #endif
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// 明確定義部分的 CString 建構函式
@@ -38,6 +42,18 @@
 #include <afxcmn.h>			// MFC 支援的 Windows 通用控制項
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdhtml.h>
+
+#ifdef _UNICODE
+#if defined _M_IX86
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_IA64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_X64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#else
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+#endif
 
 //#pragma warning (disable : 4199)
 

@@ -99,9 +99,9 @@ BOOL CMagicKDDlg::OnInitDialog()
 //////////////////////////////////////////////////
 	if (m_pWallChangerDlg)
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
+#ifdef DEBUG
 //	if (m_pFindDupFileDlg)
 //		m_cMainTab.SetCurSel(eFunc_FindDupFile);
-#ifdef DEBUG
 	if (m_pPicCollectorDlg)
 		m_cMainTab.SetCurSel(eFunc_PicCollector);
 #endif //DEBUG
@@ -139,12 +139,16 @@ void CMagicKDDlg::DoSize()
 		return;
 
 	GetClientRect(m_rcMainTab);
+	m_rcMainTab.bottom += 2;
+	m_rcMainTab.right += 2;
 	CRect rcWin = m_rcMainTab;
-	rcWin.bottom = 25;
 	m_cMainTab.MoveWindow(rcWin, FALSE);
 
 	rcWin = m_rcMainTab;
-	rcWin.top += 22;
+	rcWin.top += 23;
+	rcWin.bottom -= 5;
+	rcWin.left += 2;
+	rcWin.right -= 5;
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg) {
 		pCurDlg->MoveWindow(rcWin, FALSE);
