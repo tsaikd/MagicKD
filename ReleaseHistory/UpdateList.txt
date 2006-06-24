@@ -1,4 +1,4 @@
-MagicKD.exe 1.0.2.3 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.2.3/MagicKD.exe
+MagicKD.exe 1.0.2.4 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.2.4/MagicKD.exe
 lib/cximage.dll 5.9.9.c http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.1.9/lib/cximage.dll
 lib/sqlite.dll 1.0.2.2 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.2.2/lib/sqlite.dll
 lang/zh-TW.dll 1.0.2.2 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/1.0.2.2/lang/zh-TW.dll
