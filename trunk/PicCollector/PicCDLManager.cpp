@@ -35,7 +35,6 @@ void CPicCDLManager::Destroy()
 		TerminateThread(0);
 	}
 
-//	m_pFeed->ExecSQL(_T("DELETE FROM PicUnDownload"));
 	m_pFeed->ExecSQL(_T("PRAGMA synchronous = OFF"));
 	CString strSQL;
 	while (!IsDownloadAllOver()) {

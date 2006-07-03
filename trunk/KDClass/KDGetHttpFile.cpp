@@ -30,12 +30,14 @@ DWORD CKDGetHttpFile::ThreadProc()
 	static const int iQuerySize = 8192;
 	const int iQueryMaxTimes = 50;
 	BYTE *pBuf = new BYTE[iQuerySize];
-	UINT uReadLen;
-	DWORD dwWriteLen;
+	UINT uReadLen = 0;
+	DWORD dwWriteLen = 0;
 	bool bDLOver = true;
 	m_uQueryRetryTimes = 0;
 
 	while (IsCanThread() && !m_slURL.IsEmpty()) {
+		WaitForSingleObject(m_semPause, INFINITE);
+		m_semPause.Unlock();
 		m_muxNowDLURL.Lock();
 		m_sNowDLURL = m_slURL.RemoveHead();
 		sLocalDir = m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
@@ -67,6 +69,9 @@ DWORD CKDGetHttpFile::ThreadProc()
 
 			uReadLen = 1;
 			while (uReadLen && IsCanThread() && !m_bDiscardNowDL) {
+				WaitForSingleObject(m_semPause, INFINITE);
+				m_semPause.Unlock();
+
 				TRY {
 					uReadLen = pFile->Read(pBuf, iQuerySize);
 				} CATCH_ALL (e) {
@@ -97,6 +102,8 @@ DWORD CKDGetHttpFile::ThreadProc()
 			} else if (m_uQueryRetryTimes++ >= iQueryMaxTimes) {
 				OnDownloadFileRetryFailed();
 			} else {
+				while ((0 != GetOnInternet()) && IsCanThread())
+					Sleep(5000);
 				SaveNowDLToList();
 			}
 		} else {
@@ -237,6 +244,18 @@ bool CKDGetHttpFile::SaveNowDLToList(bool bHead/* = true*/)
 void CKDGetHttpFile::SetDiscardNowDL(bool bDiscard/* = true*/)
 {
 	m_bDiscardNowDL = bDiscard;
+}
+
+void CKDGetHttpFile::Pause(bool bPause/* = true*/)
+{
+	if (!IsCanThread()) {
+		m_semPause.Unlock();
+		return;
+	}
+	if (bPause)
+		m_semPause.Lock(0);
+	else
+		m_semPause.Unlock();
 }
 
 bool CKDGetHttpFile::DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize/* = 8192*/)

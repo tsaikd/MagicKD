@@ -3,7 +3,6 @@ CStatic Tooltips
 
 PicCollector(rss):
 點本機檔快速檢視
-retry時測試網路
 圖片黑名單
 更改本機feed名稱
 

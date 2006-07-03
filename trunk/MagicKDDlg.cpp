@@ -142,6 +142,7 @@ void CMagicKDDlg::DoSize()
 	m_rcMainTab.bottom += 2;
 	m_rcMainTab.right += 2;
 	CRect rcWin = m_rcMainTab;
+	rcWin.bottom = rcWin.top + 22;
 	m_cMainTab.MoveWindow(rcWin, FALSE);
 
 	rcWin = m_rcMainTab;
@@ -149,6 +150,7 @@ void CMagicKDDlg::DoSize()
 	rcWin.bottom -= 5;
 	rcWin.left += 2;
 	rcWin.right -= 5;
+
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg) {
 		pCurDlg->MoveWindow(rcWin, FALSE);

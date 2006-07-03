@@ -24,6 +24,8 @@ public:
 	bool SaveNowDLToList(bool bHead = true);
 	void SetDiscardNowDL(bool bDiscard = true);
 
+	void Pause(bool bPause = true);
+
 protected:
 	virtual void OnDownloadFileOver() {}
 	virtual void OnDownloadFileDiscard() {}
@@ -31,6 +33,7 @@ protected:
 
 	UINT			m_uQueryRetryTimes;
 	CMutex			m_muxNowDLURL;
+	CSemaphore		m_semPause;
 	CString			m_sNowDLURL;
 	CString			m_sNowDLLocalPath;
 	CStringList		m_slURL;

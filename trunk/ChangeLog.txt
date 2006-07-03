@@ -1,3 +1,7 @@
+Version: 1.0.2.5	(2006-07-03)
+	Fix bug: Can't Drop files on CtrlList
+	Fix bug: Download Failed will detect the connection of internet
+
 Version: 1.0.2.4	(2006-06-25)
 	Change Theme to XP style (thanks for JackieKu)
 
