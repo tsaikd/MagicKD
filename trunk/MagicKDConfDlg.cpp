@@ -7,8 +7,8 @@
 
 #include "MagicKDConfDlg.h"
 
-enum {
-	KDT_UPDATE		= 1
+static enum {
+	KDT_UPDATE				= 1
 };
 
 IMPLEMENT_DYNAMIC(CMagicKDConfDlg, CDialog)
@@ -196,6 +196,9 @@ int CMagicKDConfDlg::CmpFileVer(LPCTSTR lpVer1, LPCTSTR lpVer2)
 
 bool CMagicKDConfDlg::IsAppNeedUpdate()
 {
+	if (0 != GetOnInternet())
+		return false;
+
 	if (theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/UpdateList.txt"),
 		m_saOldAppPath, m_aiQueryVerSize, m_saReturnVer, m_saReturnUrl)) {
 		int i, iCount = m_saNowVersion.GetCount();
@@ -258,8 +261,7 @@ UINT CMagicKDConfDlg::StartUpdateTimer()
 	if (m_uUpdateTimer)
 		return 0;
 
-	if (IsAppNeedUpdate())
-		OnBnClickedConfBtnCheckupdate();
+	CreateThread(NULL, 0, &CMagicKDConfDlg::_Init_CheckUpdate, (LPVOID) this, 0, NULL);
 	m_uUpdateTimer = SetTimer(KDT_UPDATE, 86400, NULL);
 	return m_uUpdateTimer;
 }
@@ -326,6 +328,7 @@ void CMagicKDConfDlg::OnBnClickedConfBtnRestart()
 
 void CMagicKDConfDlg::OnBnClickedConfBtnCheckupdate()
 {
+	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
 	if (GetOnInternet() != 0) {
 		MessageBox(CResString(IDS_CONF_MSG_UPDATECONNECTFAILED), NULL, MB_OK | MB_ICONERROR);
 	} else if (IsAppNeedUpdate()) {
@@ -334,6 +337,7 @@ void CMagicKDConfDlg::OnBnClickedConfBtnCheckupdate()
 	} else {
 		MessageBox(CResString(IDS_CONF_MSG_NOUPDATE), NULL, MB_OK | MB_ICONINFORMATION);
 	}
+	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
 }
 
 void CMagicKDConfDlg::OnBnClickedCheckConfStartmin()

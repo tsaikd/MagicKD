@@ -41,6 +41,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <shlwapi.h>
 
 #define DEF_PROFILE_NUM_LEN		64 // numeric string length, could be quite long for binary format
 #define DEF_PROFILE_THRESHOLD	512 // temporary string length

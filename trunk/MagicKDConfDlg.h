@@ -32,16 +32,27 @@ public:
 	CKDButton		m_check_CheckUpdate;
 	CSliderCtrl		m_sliderTransparency;
 	CProgressCtrl	m_progress_Update;
+
 private:
-	bool m_bInit;
-	UINT m_uUpdateTimer;
-	CKDGetHttpFile m_GetHttpFile;
-	CStringArray m_saNowVersion;
-	CArray<int, int> m_aiQueryVerSize;
-	CStringArray m_saReturnVer;
-	CStringArray m_saReturnUrl;
-	CStringArray m_saOldAppPath;
-	CStringArray m_saNewAppPath;
+	bool				m_bInit;
+	UINT				m_uUpdateTimer;
+	CKDGetHttpFile		m_GetHttpFile;
+	CStringArray		m_saNowVersion;
+	CArray<int, int>	m_aiQueryVerSize;
+	CStringArray		m_saReturnVer;
+	CStringArray		m_saReturnUrl;
+	CStringArray		m_saOldAppPath;
+	CStringArray		m_saNewAppPath;
+
+	static DWORD WINAPI _Init_CheckUpdate(LPVOID pParam)
+	{
+		CMagicKDConfDlg *pThis = (CMagicKDConfDlg *) pParam;
+		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
+		if (pThis->IsAppNeedUpdate())
+			pThis->OnBnClickedConfBtnCheckupdate();
+		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
+		return 0;
+	}
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ¤ä´©

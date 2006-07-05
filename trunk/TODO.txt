@@ -3,6 +3,7 @@ CStatic Tooltips
 
 PicCollector(rss):
 點本機檔快速檢視
+點下載網址開瀏覽器
 圖片黑名單
 更改本機feed名稱
 

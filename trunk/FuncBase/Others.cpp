@@ -398,16 +398,15 @@ bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize/* =
 //	3: Bind Socket Error
 //	4: Invalid Host Name
 //	5: Connect Host Error
+#define RETURN(x) { WSACleanup(); return (x); }
 int GetOnInternet(LPCSTR lpszTestHost/* = "www.google.com"*/, u_short uTestPort/* = 80*/)
 {
 	WORD wVersionRequested = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	if (WSAStartup(wVersionRequested, &wsaData) != 0)
 		return 1;
-	if ((LOBYTE(wsaData.wVersion) != 2) || (HIBYTE(wsaData.wVersion) != 2)) {
-		WSACleanup();
-		return 1;
-	}
+	if ((LOBYTE(wsaData.wVersion) != 2) || (HIBYTE(wsaData.wVersion) != 2))
+		RETURN(1);
 
 	SOCKET cli = INVALID_SOCKET;
 	struct sockaddr_in cliAddrInfo;
@@ -418,38 +417,30 @@ int GetOnInternet(LPCSTR lpszTestHost/* = "www.google.com"*/, u_short uTestPort/
 	cliAddrInfo.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 	cliAddrInfo.sin_port = htons(0); // auto assigned by client
 	cli = socket(AF_INET, SOCK_STREAM, 0);
-	if(cli == INVALID_SOCKET) {
-		WSACleanup();
-		return 2;
-	}
+	if(cli == INVALID_SOCKET)
+		RETURN(2);
 
-	if(bind(cli, (struct sockaddr *) &cliAddrInfo, sizeof(cliAddrInfo)) == SOCKET_ERROR) {
-		WSACleanup();
-		return 3;
-	}
+	if(bind(cli, (struct sockaddr *) &cliAddrInfo, sizeof(cliAddrInfo)) == SOCKET_ERROR)
+		RETURN(3);
 
 	srvAddrInfo.sin_addr.S_un.S_addr = inet_addr(lpszTestHost);
 	if (srvAddrInfo.sin_addr.S_un.S_addr == -1) {
 		host = gethostbyname(lpszTestHost);
-		if (host == NULL) {
-			WSACleanup();
-			return 4;
-		}
+		if (host == NULL)
+			RETURN(4);
 		memcpy(&(srvAddrInfo.sin_addr), host->h_addr_list[0], host->h_length);
 	}
 
 	srvAddrInfo.sin_family = AF_INET;
 	srvAddrInfo.sin_port = htons(uTestPort);
 
-	if (connect(cli, (struct sockaddr *) &srvAddrInfo, sizeof(srvAddrInfo))  == SOCKET_ERROR) {
-		WSACleanup();
-		return 5;
-	}
+	if (connect(cli, (struct sockaddr *) &srvAddrInfo, sizeof(srvAddrInfo))  == SOCKET_ERROR)
+		RETURN(5);
 
 	closesocket(cli);
-	WSACleanup();
-	return 0;
+	RETURN(0);
 }
+#undef RETURN
 
 //return:
 //	if On Offline, return 1
@@ -501,19 +492,18 @@ bool ExplorerFile(LPCTSTR lpFilePath)
 // Open explorer at the directory
 bool ExplorerDir(LPCTSTR lpDirPath)
 {
-	if (PathIsDirectory(lpDirPath)) {
-		CString sExplorer;
-		GetSystemWindowsDirectory(sExplorer.GetBuffer(MAX_PATH), MAX_PATH);
-		sExplorer.ReleaseBuffer();
-		sExplorer.AppendFormat(_T("\\explorer.exe"));
+	CString sPath = lpDirPath;
+	if (sPath.IsEmpty())
+		return false;
 
-		if (PathFileExists(sExplorer)) {
-			CString sParam;
-			sParam.Format(_T("\"%s\""), lpDirPath);
-			ShellExecute(NULL, _T("open"), sExplorer, sParam, NULL, SW_SHOW);
-			return true;
-		}
+	if (!PathIsDirectory(sPath)) {
+		PathRemoveFileSpec(sPath.GetBuffer());
+		sPath.ReleaseBuffer();
 	}
+	if (!PathIsDirectory(sPath))
+		return false;
 
-	return false;
+	ShellExecute(NULL, _T("open"), sPath, NULL, NULL, SW_SHOW);
+
+	return true;
 }

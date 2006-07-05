@@ -241,7 +241,8 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	if (( URLDownloadToFile( NULL, strXMLURL, strTmpFile,0, NULL ) != S_OK )
 		|| (!PathFileExists(strTmpFile)))
 	{
-		AfxMessageBox(_T("Failed to download ") + CString(strXMLURL));
+		if (0 == GetOnInternet())
+			AfxMessageBox(_T("Failed to download ") + CString(strXMLURL));
 		RETURN;
 	}
 	//while (!PathFileExists(strTmpFile))

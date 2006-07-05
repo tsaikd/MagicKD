@@ -504,11 +504,10 @@ LRESULT CFindDupFileDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 					if (hItem) {
 						CString sPath = m_tree_FindResult.GetItemText(hItem);
 						if (!sPath.IsEmpty()) {
-							if (!PathIsDirectory(sPath)) {
-								PathRemoveFileSpec(sPath.GetBuffer());
-								sPath.ReleaseBuffer();
-							}
-							ShellExecute(NULL, _T("open"), sPath, NULL, NULL, SW_SHOW);
+							if (PathIsDirectory(sPath))
+								ShellExecute(NULL, _T("open"), sPath, NULL, NULL, SW_SHOW);
+							else
+								ExplorerFile(sPath);
 						}
 					}
 				}
