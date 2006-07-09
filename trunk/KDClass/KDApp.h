@@ -8,6 +8,7 @@ If You Want to Support "Update App Online", in StdAfx.h
 	#define KDAPP_ENABLE_UPDATEAPPONLINE
 If You Want to Support "Get App Version", in StdAfx.h
 	#define KDAPP_ENABLE_GETAPPVERSION
+	import library "version.lib"
 If You Want to Support "Get Changed Dll Dir", in StdAfx.h
 	#define KDAPP_ENABLE_GETCHANGEDDLLDIR
 

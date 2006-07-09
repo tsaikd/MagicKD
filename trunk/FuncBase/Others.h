@@ -72,7 +72,7 @@ public:
 	}
 };
 
-#if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
+#if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_) && defined(__ATLBASE_H__) && defined(WPSTYLE_STRETCH)
 /*
 	Must Turn On Unicode
 	include <wininet.h> before include <afxdtctl.h>
@@ -83,6 +83,9 @@ bool RemoveDesktopPic(LPCTSTR lpPicPath);
 #endif //defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
 
 #if defined(_WINSOCK2API_) && defined(_WININET_)
+/*
+	include <wininet.h> in StdAfx.h
+*/
 bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
 
 int GetOnInternet(LPCSTR lpszTestHost = "www.google.com", u_short uTestPort = 80);

@@ -205,7 +205,7 @@ void GetTempFilePath(LPTSTR lpTempFilePath, LPCTSTR lpTempDir/* = NULL*/, LPCTST
 		delete [] lpTempDirBuf;
 }
 
-#if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_)
+#if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_) && defined(__ATLBASE_H__) && defined(WPSTYLE_STRETCH)
 
 //WallPaper Options
 //	WPSTYLE_CENTER
