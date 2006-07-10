@@ -26,20 +26,15 @@ BOOL CMagicKDApp::InitInstance()
 
 	m_cIni.SetPathName(CString(GetAppConfDir()) + _T("MagicKD.ini"));
 
-	CMagicKDDlg *pDlg = NULL;
 
-	if (!g_pTheAppEndDlg)
-		g_pTheAppEndDlg = new CMagicKDEndDlg;
+	g_pTheAppEndDlg = new CMagicKDEndDlg;
 	g_pTheAppEndDlg->Create(IDD_MAGICKD_END);
 
-	if (!pDlg)
-		pDlg = new CMagicKDDlg;
-	m_pMainWnd = pDlg;
-	pDlg->DoModal();
-	DEL(pDlg);
+	CMagicKDDlg dlg;
+	m_pMainWnd = &dlg;
+	dlg.DoModal();
 
-	delete g_pTheAppEndDlg;
-	g_pTheAppEndDlg = NULL;
+	DEL(g_pTheAppEndDlg);
 
 	// 因為已經關閉對話方塊，傳回 FALSE，所以我們會結束應用程式，
 	// 而非提示開始應用程式的訊息。

@@ -22,10 +22,7 @@ CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 CMagicKDDlg::~CMagicKDDlg()
 {
 	DestroyIcon(m_hIcon);
-	if (g_pTheTray) {
-		delete g_pTheTray;
-		g_pTheTray = NULL;
-	}
+	DEL(g_pTheTray);
 }
 
 BOOL CMagicKDDlg::OnInitDialog()
@@ -115,7 +112,7 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 void CMagicKDDlg::OnDestroy()
 {
-	if (g_pTheConf->m_General_bShowCloseWindow && !m_cMainConfigDlg.m_bUpdateLastest)
+	if (g_pTheConf->m_General_bShowCloseWindow)
 		g_pTheAppEndDlg->ShowWindow(SW_SHOW);
 
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tMagicKD\t\tDialog"));
@@ -125,7 +122,7 @@ void CMagicKDDlg::OnDestroy()
 
 	CDialog::OnDestroy();
 
-	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Deleting\tMagicKD\tTray Menu"));
+	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Deleting\tMagicKD\t\tTray Menu"));
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_CLOSEWINDOW);
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_OPENWINDOW);
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_RESTART);

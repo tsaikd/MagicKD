@@ -4,6 +4,7 @@
 #include "Resource.h"
 #include "KDButton.h"
 #include "KDGetHttpFile.h"
+#include "KDUpdaterAPI.h"
 
 class CMagicKDConfDlg : public CDialog
 {
@@ -18,14 +19,11 @@ public:
 	void	Localize();
 
 	void	UpdateFuncCheck();
-	int		CmpFileVer(LPCTSTR lpVer1, LPCTSTR lpVer2);
-	bool	IsAppNeedUpdate();
-	void	DoAppUpdate();
 
 	UINT	StartUpdateTimer();
 	UINT	StopUpdateTimer();
 
-	bool			m_bUpdateLastest;
+	CKDUpdaterAPI	m_KDUpdater;
 	CComboBox		m_combo_Language;
 	CKDButton		m_checkStartMin;
 	CKDButton		m_checkShowCloseWindow;
@@ -34,22 +32,18 @@ public:
 	CProgressCtrl	m_progress_Update;
 
 private:
-	bool				m_bInit;
-	UINT				m_uUpdateTimer;
-	CKDGetHttpFile		m_GetHttpFile;
-	CStringArray		m_saNowVersion;
-	CArray<int, int>	m_aiQueryVerSize;
-	CStringArray		m_saReturnVer;
-	CStringArray		m_saReturnUrl;
-	CStringArray		m_saOldAppPath;
-	CStringArray		m_saNewAppPath;
+	bool			m_bInit;
+	bool			m_bOnUpdate;
+	UINT			m_uUpdateTimer;
 
 	static DWORD WINAPI _Init_CheckUpdate(LPVOID pParam)
 	{
 		CMagicKDConfDlg *pThis = (CMagicKDConfDlg *) pParam;
 		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
-		if (pThis->IsAppNeedUpdate())
+		if (pThis->m_KDUpdater.IsNeedUpdate())
 			pThis->OnBnClickedConfBtnCheckupdate();
+		else
+			pThis->m_KDUpdater.CloseKDUpdater();
 		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
 		return 0;
 	}

@@ -284,6 +284,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDAppVer.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDButton.cpp"
 					>
 				</File>
@@ -329,6 +333,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDTray.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDUpdaterAPI.cpp"
 					>
 				</File>
 			</Filter>
@@ -534,6 +542,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDAppVer.h"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDButton.h"
 					>
 				</File>
@@ -579,6 +591,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDTray.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDUpdaterAPI.h"
 					>
 				</File>
 			</Filter>

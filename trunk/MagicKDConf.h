@@ -11,7 +11,6 @@ public:
 	CKDConfBool m_General_bStartMin;
 	CKDConfBool m_General_bShowCloseWindow;
 	CKDConfBool m_General_bCheckUpdate;
-	CKDConfBool m_General_bUpdateLastest;
 	CKDConfBool m_FuncList_bWallChanger;
 	CKDConfBool m_FuncList_bFindDupFile;
 	CKDConfBool m_FuncList_bPicCollector;

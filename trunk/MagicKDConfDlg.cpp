@@ -4,6 +4,7 @@
 #include "Others.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
+#include "KDAppVer.h"
 
 #include "MagicKDConfDlg.h"
 
@@ -13,7 +14,7 @@ static enum {
 
 IMPLEMENT_DYNAMIC(CMagicKDConfDlg, CDialog)
 CMagicKDConfDlg::CMagicKDConfDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CMagicKDConfDlg::IDD, pParent), m_bInit(false), m_uUpdateTimer(0), m_bUpdateLastest(false)
+	:	CDialog(CMagicKDConfDlg::IDD, pParent), m_bInit(false), m_uUpdateTimer(0), m_bOnUpdate(false)
 {
 }
 
@@ -25,49 +26,13 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// Set Update Infomation
-	int i;
-	CString sCheckFileName;
-	const int iArraySize = 4;
-	m_saNowVersion.SetSize(iArraySize);
-	m_aiQueryVerSize.SetSize(iArraySize);
-	m_saOldAppPath.SetSize(iArraySize);
-	m_saNewAppPath.SetSize(iArraySize);
-
-	m_saNowVersion[0] = theApp.GetAppProductVer();
-	m_aiQueryVerSize[0] = 7;
-	m_saOldAppPath[0].Format(_T("%s.exe"), theApp.GetAppName());
-	m_saNewAppPath[0].Format(_T("%s_Update.exe"), theApp.GetAppName());
-
-	sCheckFileName = _T("lib/cximage.dll");
-	i = 1;
-	m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
-	m_aiQueryVerSize[i] = 7;
-	m_saOldAppPath[i] = sCheckFileName;
-	m_saNewAppPath[i] = sCheckFileName + _T(".Update");
-
-	sCheckFileName = _T("lib/sqlite.dll");
-	i = 2;
-	m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
-	m_aiQueryVerSize[i] = 7;
-	m_saOldAppPath[i] = sCheckFileName;
-	m_saNewAppPath[i] = sCheckFileName + _T(".Update");
-
-	sCheckFileName = _T("lang/zh-TW.dll");
-	if (PathFileExists(sCheckFileName)) {
-		i = 3;
-		m_saNowVersion[i] = CGetFileVersion(sCheckFileName);
-		m_aiQueryVerSize[i] = 7;
-		m_saOldAppPath[i] = sCheckFileName;
-		m_saNewAppPath[i] = sCheckFileName + _T(".Update");
-	}
-
 	GetDlgItem(IDC_CONF_STATIC_VERSION)->SetWindowText(theApp.GetAppProductVer());
 
 	while (m_combo_Language.GetCount())
 		m_combo_Language.DeleteString(0);
 	m_combo_Language.InsertString(0, _T("English"));
 	m_combo_Language.SetCurSel(0);
+	int i;
 	for (i=0 ; i<g_iLanguageCount ; i++) {
 		if (!g_aLanguages[i].bSupported && g_aLanguages[i].lid != 0 && IsLangFileExists(g_aLanguages[i].lid)) {
 			int iCur = m_combo_Language.InsertString(-1, g_aLanguages[i].pszLocale);
@@ -86,22 +51,44 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	else
 		m_checkShowCloseWindow.SetCheck(BST_UNCHECKED);
 
-	if (!g_pTheConf->m_General_bUpdateLastest && IsAppNeedUpdate()) {
-		DoAppUpdate();
-		theApp.SetUpdateAppShowMsg(false);
-		g_pTheConf->m_General_bUpdateLastest = m_bUpdateLastest = true;
-	} else {
-		if (g_pTheConf->m_General_bCheckUpdate) {
-			m_check_CheckUpdate.SetCheck(BST_CHECKED);
-			StartUpdateTimer();
-		} else {
-			m_check_CheckUpdate.SetCheck(BST_UNCHECKED);
-			StopUpdateTimer();
-		}
-	}
-
 	m_sliderTransparency.SetRange(50, 255);
 	m_sliderTransparency.SetPos(g_pTheConf->m_General_uTransparency);
+
+	CString sPath;
+	sPath.Format(_T("%s%s"), theApp.GetAppDir(), _T("KDUpdater.exe"));
+	CKDAppVer KDUpdaterVer((LPCTSTR)CGetFileVersion(sPath));
+	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.2")))) {
+		// Init Update Information
+		m_KDUpdater.SetKDUpdaterPath(sPath);
+		m_KDUpdater.SetAppMainWnd(theApp.m_pMainWnd->GetSafeHwnd());
+		m_KDUpdater.SetUpdateWorkDir(theApp.GetAppDir());
+		m_KDUpdater.SetUpdateListURL(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/UpdateList.ini"));
+		m_KDUpdater.SetUpdatePostCmd(theApp.GetAppPath());
+
+		m_KDUpdater.AddUpdateFile(_T("MagicKD.exe"), theApp.GetAppProductVer());
+		sPath = _T("lib/cximage.dll");
+		m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
+		sPath = _T("lib/sqlite.dll");
+		m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
+		sPath = _T("lang/zh-TW.dll");
+		if (PathFileExists(sPath))
+			m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
+
+		if (g_pTheConf->m_General_bCheckUpdate) {
+			((CButton *)GetDlgItem(IDC_CONF_CHECK_CHECKUPDATE))->SetCheck(BST_CHECKED);
+			StartUpdateTimer();
+		} else {
+			((CButton *)GetDlgItem(IDC_CONF_CHECK_CHECKUPDATE))->SetCheck(BST_UNCHECKED);
+		}
+	} else {
+		GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
+		GetDlgItem(IDC_CONF_CHECK_CHECKUPDATE)->EnableWindow(FALSE);
+
+		if (PathFileExists(sPath)) {
+			if (IDOK == MessageBox(CResString(IDS_CONF_MSG_KDUPDATERTOOOLD), NULL, MB_OKCANCEL | MB_ICONINFORMATION))
+				ShellExecute(NULL, _T("open"), _T("http://svn.tsaikd.org/tsaikd/KDUpdater/"), NULL, NULL, SW_SHOW);
+		}
+	}
 
 	m_bInit = true;
 	DoSize();
@@ -160,109 +147,13 @@ void CMagicKDConfDlg::UpdateFuncCheck()
 	}
 }
 
-int CMagicKDConfDlg::CmpFileVer(LPCTSTR lpVer1, LPCTSTR lpVer2)
-{
-	CString sVer1(lpVer1);
-	CString sVer2(lpVer2);
-	CString sBuf1, sBuf2;
-	int iBuf1 = 0, iBuf2 = 0;
-	int iPos1 = 0, iPos2 = 0;
-
-	sVer1.Replace(_T(','), _T('.'));
-	sVer2.Replace(_T(','), _T('.'));
-
-	while (1) {
-		sBuf1 = sVer1.Tokenize(_T("."), iPos1);
-		sBuf2 = sVer2.Tokenize(_T("."), iPos2);
-		if (sBuf1.IsEmpty() || sBuf2.IsEmpty())
-			break;
-
-		iBuf1 = _ttoi(sBuf1);
-		iBuf2 = _ttoi(sBuf2);
-
-		if (iBuf1 > iBuf2)
-			return 1;
-		if (iBuf1 < iBuf2)
-			return -1;
-	}
-
-	if (!sBuf1.IsEmpty())
-		return 1;
-	if (!sBuf2.IsEmpty())
-		return -1;
-
-	return 0;
-}
-
-bool CMagicKDConfDlg::IsAppNeedUpdate()
-{
-	if (0 != GetOnInternet())
-		return false;
-
-	if (theApp.GetUpdateAppOnLineVer(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/UpdateList.txt"),
-		m_saOldAppPath, m_aiQueryVerSize, m_saReturnVer, m_saReturnUrl)) {
-		int i, iCount = m_saNowVersion.GetCount();
-
-		for (i=0 ; i<iCount ; i++) {
-			if (!m_saReturnUrl[i].IsEmpty() && (CmpFileVer(m_saNowVersion[i], m_saReturnVer[i]) < 0))
-				return true;
-		}
-	}
-
-	return false;
-}
-
-void CMagicKDConfDlg::DoAppUpdate()
-{
-	bool bUpdate = true;
-	double dPercent = 0;
-	m_progress_Update.SetPos(0);
-	m_progress_Update.SetRange32(0, 10000);
-
-	CStringArray saOldAppPath;
-	CStringArray saNewAppPath;
-
-	int i, iCount = m_saReturnUrl.GetCount();
-	for (i=0 ; i<iCount ; i++) {
-		if (!m_saReturnUrl[i].IsEmpty() && (m_saNowVersion[i] != m_saReturnVer[i])) {
-			if (!m_GetHttpFile.AddFileList(m_saReturnUrl[i], m_saNewAppPath[i])) {
-				MessageBox(CResString(IDS_CONF_MSG_UPDATEFAILED), NULL, MB_OK | MB_ICONERROR);
-				bUpdate = false;
-				break;
-			}
-			saOldAppPath.Add(m_saOldAppPath[i]);
-			saNewAppPath.Add(m_saNewAppPath[i]);
-		}
-	}
-
-	if (bUpdate) {
-		while (!m_GetHttpFile.IsDownloadAllOver()) {
-			dPercent = m_GetHttpFile.GetPercentOfTotalDL();
-			m_progress_Update.SetPos((int)(dPercent * 10000));
-			Sleep(350);
-		}
-		m_progress_Update.SetPos(10000);
-		g_pTheConf->m_General_bUpdateLastest = false;
-		theApp.SetUpdateApp(saOldAppPath, saNewAppPath);
-		theApp.Quit();
-	} else {
-		while (!m_GetHttpFile.IsDownloadAllOver())
-			Sleep(350);
-
-		for (i=0 ; i<iCount ; i++) {
-			if (PathFileExists(saNewAppPath[i]))
-				DeleteFile(saNewAppPath[i]);
-		}
-	}
-}
-
 UINT CMagicKDConfDlg::StartUpdateTimer()
 {
 	if (m_uUpdateTimer)
 		return 0;
 
-	CreateThread(NULL, 0, &CMagicKDConfDlg::_Init_CheckUpdate, (LPVOID) this, 0, NULL);
 	m_uUpdateTimer = SetTimer(KDT_UPDATE, 86400, NULL);
+	CreateThread(NULL, 0, &CMagicKDConfDlg::_Init_CheckUpdate, (LPVOID) this, 0, NULL);
 	return m_uUpdateTimer;
 }
 
@@ -313,7 +204,7 @@ void CMagicKDConfDlg::OnTimer(UINT nIDEvent)
 {
 	switch (nIDEvent) {
 	case KDT_UPDATE:
-		if (IsAppNeedUpdate())
+		if (!m_bOnUpdate && m_KDUpdater.IsNeedUpdate())
 			OnBnClickedConfBtnCheckupdate();
 		break;
 	}
@@ -328,16 +219,30 @@ void CMagicKDConfDlg::OnBnClickedConfBtnRestart()
 
 void CMagicKDConfDlg::OnBnClickedConfBtnCheckupdate()
 {
+	if (m_bOnUpdate)
+		return;
+
 	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
+	m_bOnUpdate = true;
+
 	if (GetOnInternet() != 0) {
+		m_KDUpdater.CloseKDUpdater();
 		MessageBox(CResString(IDS_CONF_MSG_UPDATECONNECTFAILED), NULL, MB_OK | MB_ICONERROR);
-	} else if (IsAppNeedUpdate()) {
-		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), NULL, MB_YESNO | MB_ICONQUESTION))
-			DoAppUpdate();
+	} else if (m_KDUpdater.IsNeedUpdate()) {
+		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), NULL, MB_YESNO | MB_ICONQUESTION)) {
+			m_KDUpdater.DoAppUpdate(1000, theApp.GetMainWnd()->GetSafeHwnd());
+			theApp.Quit();
+		} else {
+			m_KDUpdater.CloseKDUpdater();
+		}
 	} else {
+		m_KDUpdater.CloseKDUpdater();
 		MessageBox(CResString(IDS_CONF_MSG_NOUPDATE), NULL, MB_OK | MB_ICONINFORMATION);
 	}
-	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
+
+	m_bOnUpdate = false;
+	if (!theApp.IsOnQuit())
+		GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
 }
 
 void CMagicKDConfDlg::OnBnClickedCheckConfStartmin()
