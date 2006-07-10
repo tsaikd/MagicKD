@@ -152,7 +152,7 @@ UINT CMagicKDConfDlg::StartUpdateTimer()
 	if (m_uUpdateTimer)
 		return 0;
 
-	m_uUpdateTimer = SetTimer(KDT_UPDATE, 86400, NULL);
+	m_uUpdateTimer = SetTimer(KDT_UPDATE, 86400*1000, NULL);
 	CreateThread(NULL, 0, &CMagicKDConfDlg::_Init_CheckUpdate, (LPVOID) this, 0, NULL);
 	return m_uUpdateTimer;
 }

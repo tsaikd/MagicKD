@@ -179,8 +179,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,2,6
- PRODUCTVERSION 1,0,2,6
+ FILEVERSION 1,0,2,7
+ PRODUCTVERSION 1,0,2,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -196,11 +196,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 2, 6"
+            VALUE "FileVersion", "1, 0, 2, 7"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 2, 6"
+            VALUE "ProductVersion", "1, 0, 2, 7"
         END
     END
     BLOCK "VarFileInfo"
