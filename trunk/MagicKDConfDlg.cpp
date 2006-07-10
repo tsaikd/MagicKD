@@ -57,7 +57,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	CString sPath;
 	sPath.Format(_T("%s%s"), theApp.GetAppDir(), _T("KDUpdater.exe"));
 	CKDAppVer KDUpdaterVer((LPCTSTR)CGetFileVersion(sPath));
-	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.2")))) {
+	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.3")))) {
 		// Init Update Information
 		m_KDUpdater.SetKDUpdaterPath(sPath);
 		m_KDUpdater.SetAppMainWnd(theApp.m_pMainWnd->GetSafeHwnd());
@@ -204,8 +204,7 @@ void CMagicKDConfDlg::OnTimer(UINT nIDEvent)
 {
 	switch (nIDEvent) {
 	case KDT_UPDATE:
-		if (!m_bOnUpdate && m_KDUpdater.IsNeedUpdate())
-			OnBnClickedConfBtnCheckupdate();
+		CreateThread(NULL, 0, &CMagicKDConfDlg::_Init_CheckUpdate, (LPVOID) this, 0, NULL);
 		break;
 	}
 

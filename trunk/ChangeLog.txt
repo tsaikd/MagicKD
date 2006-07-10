@@ -1,4 +1,6 @@
+Version: 1.0.2.7	(2006-07-11)
 	Fix bug: Change Update timer from 86400 to 86400*1000 (ms)
+	Fix bug: Update timer won't close KDUpdater automatically
 
 Version: 1.0.2.6	(2006-07-10)
 	Fix bug: Start slowly when OffLine
