@@ -40,7 +40,7 @@ private:
 	{
 		CMagicKDConfDlg *pThis = (CMagicKDConfDlg *) pParam;
 		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
-		if (!m_bOnUpdate && pThis->m_KDUpdater.IsNeedUpdate())
+		if (!pThis->m_bOnUpdate && pThis->m_KDUpdater.IsNeedUpdate())
 			pThis->OnBnClickedConfBtnCheckupdate();
 		else
 			pThis->m_KDUpdater.CloseKDUpdater();

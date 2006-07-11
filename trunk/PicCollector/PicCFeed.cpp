@@ -13,11 +13,17 @@ void CPicCFeed::SetDBPath(LPCTSTR sDBPath)
 {
 	CFeed::SetDBPath(sDBPath);
 
-	CString strSQL;
-	strSQL.Format(_T("CREATE TABLE PicFeed (FeedLink VARCHAR PRIMARY KEY, name VARCHAR);"));
-	ExecSQL(strSQL);
-	strSQL.Format(_T("CREATE TABLE PicUnDownload (Url VARCHAR PRIMARY KEY, Localpath VARCHAR);"));
-	ExecSQL(strSQL);
+	CKDSQLiteTable table;
+	table.m_sTableName = _T("PicFeed");
+	table.AddField(_T("FeedLink"), _T("VARCHAR PRIMARY KEY"));
+	table.AddField(_T("name"));
+	m_DB.CheckTableField(table);
+
+	table.Empty();
+	table.m_sTableName = _T("PicUnDownload");
+	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
+	table.AddField(_T("Localpath"));
+	m_DB.CheckTableField(table);
 }
 
 CString CPicCFeed::GetFeedName(LPCTSTR lpURL)

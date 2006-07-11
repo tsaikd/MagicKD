@@ -2,6 +2,7 @@ Initial function
 CStatic Tooltips
 
 PicCollector(rss):
+紀錄下載失敗檔案(URL LocalPath Max%)
 點本機檔快速檢視
 點下載網址開瀏覽器
 圖片黑名單

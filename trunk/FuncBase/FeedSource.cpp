@@ -100,18 +100,18 @@ CFeedSource::~CFeedSource()
 }
 
 CFeed::CFeed()
-	: m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
+	: m_bAdded(FALSE)
 {
 }
 
 CFeed::CFeed(LPCTSTR sDBPath)
-	: m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
+	: m_bAdded(FALSE)
 {
 	SetDBPath(sDBPath);
 }
 
 CFeed::CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL)
-	: m_bAdded(FALSE), m_bDBPath(false), m_pDB(NULL)
+	: m_bAdded(FALSE)
 {
 	SetDBPath(sDBPath);
 	BuildFromFile(strXMLURL);
@@ -124,99 +124,61 @@ CFeed::~CFeed()
 
 bool CFeed::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
 {
-	if (!m_bDBPath)
-		return false;
-
-	m_muxDB.Lock();
-	sqlite3_stmt *stmt = NULL;
-	sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0);
-	if (strErrMsg)
-		*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
-	sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
-	m_muxDB.Unlock();
-
-	return true;
+	return m_DB.ExecSQL(strSQL, strErrMsg);
 }
 
 bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg/* = NULL*/, int *nFields/* = NULL*/, int *nRow/* = NULL*/)
 {
-	if (!m_bDBPath)
-		return false;
-
-	m_muxDB.Lock();
-	int nCol;
-	sqlite3_stmt *stmt = NULL;
-	if (SQLITE_OK != sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0)) {
-#ifdef DEBUG
-		if (strErrMsg)
-			*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
-		//CString sErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
-		//sErrMsg.AppendFormat(_T("\n%s\nSQL ERROR: Prepare stmt Failed"), strSQL);
-		//AfxMessageBox(sErrMsg);
-#endif //DEBUG
-		if (!stmt) {
-			m_muxDB.Unlock();
-			return false;
-		}
-	}
-	int iFields = sqlite3_column_count(stmt);
-	int iRow = 0;
-	saTable.RemoveAll();
-
-	for(nCol=0; nCol < iFields; nCol++)
-		saTable.Add(LPCTSTR(sqlite3_column_name16(stmt, nCol)));
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-         for(nCol=0; nCol < iFields; nCol++)
-            saTable.Add(LPCTSTR(sqlite3_column_text16(stmt, nCol)));
-
-         iRow++;
-	}
-
-	sqlite3_finalize(stmt);
-	m_muxDB.Unlock();
-
-	if (nFields)
-		*nFields = iFields;
-	if (nRow)
-		*nRow = iRow;
-	return true;
+	return m_DB.GetTableSQL(strSQL, saTable, strErrMsg, nFields, nRow);
 }
 
 void CFeed::SetDBPath(LPCTSTR sDBPath)
 {
 	CloseDB();
-	sqlite3_open16(sDBPath, &m_pDB);
-	m_sDBPath = sDBPath;
+	m_DB.OpenDB(sDBPath);
 
-	m_bDBPath = true;
+	CKDSQLiteTable table;
+	table.m_sTableName = _T("FeedItem");
+	table.AddField(_T("FeedLink"));
+	table.AddField(_T("title"));
+	table.AddField(_T("link"), _T("VARCHAR UNIQUE"));
+	table.AddField(_T("description"));
+	table.AddField(_T("pubdate"));
+	table.AddField(_T("author"));
+	table.AddField(_T("category"));
+	table.AddField(_T("subject"));
+	table.AddField(_T("readstatus"));
+	m_DB.CheckTableField(table);
 
-	CString strSQL;
-	strSQL.Format(_T("CREATE TABLE FeedItem (FeedLink VARCHAR, title VARCHAR, link VARCHAR UNIQUE, description VARCHAR, pubdate VARCHAR, author VARCHAR, category VARCHAR, subject VARCHAR, readstatus VARCHAR);"));
-	ExecSQL(strSQL);
-
-	strSQL.Format(_T("CREATE TABLE FeedSource (FeedLink VARCHAR PRIMARY KEY, description VARCHAR, title VARCHAR, version VARCHAR, copyright VARCHAR, generator VARCHAR, feedlanguage VARCHAR, lastbuilddate VARCHAR, ttl VARCHAR, webmaster VARCHAR, imagedescription VARCHAR, imageheight VARCHAR, imagewidth VARCHAR, imagelink VARCHAR, imagetitle VARCHAR, imageurl VARCHAR);"));
-	ExecSQL(strSQL);
+	table.Empty();
+	table.m_sTableName = _T("FeedSource");
+	table.AddField(_T("FeedLink"), _T("VARCHAR PRIMARY KEY"));
+	table.AddField(_T("description"));
+	table.AddField(_T("title"));
+	table.AddField(_T("version"));
+	table.AddField(_T("copyright"));
+	table.AddField(_T("generator"));
+	table.AddField(_T("feedlanguage"));
+	table.AddField(_T("lastbuilddate"));
+	table.AddField(_T("ttl"));
+	table.AddField(_T("webmaster"));
+	table.AddField(_T("imagedescription"));
+	table.AddField(_T("imageheight"));
+	table.AddField(_T("imagewidth"));
+	table.AddField(_T("imagelink"));
+	table.AddField(_T("imagetitle"));
+	table.AddField(_T("imageurl"));
+	m_DB.CheckTableField(table);
 }
 
 void CFeed::ReloadDB()
 {
-	if (!m_bDBPath || !PathFileExists(m_sDBPath))
-		return;
-
-	CloseDB();
-	SetDBPath(m_sDBPath);
+	m_DB.Reload();
 }
 
 void CFeed::CloseDB()
 {
-	if (m_pDB) {
-		sqlite3_close(m_pDB);
-		m_pDB = NULL;
-	}
-
-	m_bDBPath = false;
+	m_DB.Close();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -229,7 +191,7 @@ void CFeed::CloseDB()
 #define RETURN { CoUninitialize(); m_muxDLInet.Unlock(); return; }
 void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
-	if (!m_bDBPath)
+	if (!m_DB.IsDBLoaded())
 		return;
 
 	m_muxDLInet.Lock();
@@ -245,8 +207,10 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 			AfxMessageBox(_T("Failed to download ") + CString(strXMLURL));
 		RETURN;
 	}
+#ifdef DEBUG
 	//while (!PathFileExists(strTmpFile))
 	//	Sleep(2000);
+#endif //DEBUG
 
 	// Step 1. Open XML Document, if open fails, then return
 	xml_parser xmlParser;
@@ -403,7 +367,7 @@ void CFeed::Save(bool bSaveSource /*= true*/)
 	CString	strSQL;
 	int		nIndex;
 
-	if (!m_bDBPath)
+	if (!m_DB.IsDBLoaded())
 		return;
 	if (m_source.m_strLink.IsEmpty())
 		return;
@@ -458,7 +422,7 @@ void CFeed::LoadLocal(LPCTSTR strLink)
 	CString			strSQL;
 	CStringArray	saTable;
 
-	if (!m_bDBPath)
+	if (!m_DB.IsDBLoaded())
 		return;
 
 	ClearLoadedItems();
@@ -510,7 +474,7 @@ void CFeed::GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLink
 	CString			strSQL;
 	CStringArray	saTable;
 
-	if (!m_bDBPath)
+	if (!m_DB.IsDBLoaded())
 		return;
 
 	// Step 3. Read FeedSource and populate it into m_source object
@@ -529,7 +493,7 @@ void CFeed::GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLink
 //
 void CFeed::MarkItemRead(LPCTSTR strLink)
 {
-	if (!m_bDBPath)
+	if (!m_DB.IsDBLoaded())
 		return;
 
 	CString strSQL;

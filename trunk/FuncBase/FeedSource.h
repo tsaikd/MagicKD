@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <afxmt.h>
 #include "sqlite/sqlite3.h"
+#include "KDSQLiteAPI.h"
 
 
 class CFeedItem
@@ -78,22 +78,18 @@ public:
 	CFeedSource						m_source;		// Feed Source
 	CArray<CFeedItem,CFeedItem>		m_item;			// Feed Item
 	BOOL							m_bAdded;
-	sqlite3							*m_pDB;
+	CKDSQLiteAPI					m_DB;
 
 protected:
 	bool	ExecSQL(LPCTSTR strSQL, CString *strErrMsg = NULL);
 	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg = NULL, int *nFields = NULL, int *nRow = NULL);
 	CString EscapeQuote(CString strValue);
 
-	CMutex							m_muxDB;
 	CMutex							m_muxDLInet;
-	CString							m_sDBPath;
 
 private:
 	CString GetModuleFileDir();
 	void	ClearLoadedItems();
-
-	bool							m_bDBPath;
 };
 
 #endif // !defined(AFX_FEEDSOURCE_H__C37CC283_CFD2_455A_AB00_B7CA0197CA2D__INCLUDED_)
