@@ -473,6 +473,9 @@ int GetOnOffline()
 bool ExplorerFile(LPCTSTR lpFilePath)
 {
 	if (PathFileExists(lpFilePath)) {
+		if (PathIsDirectory(lpFilePath))
+			return ExplorerDir(lpFilePath);
+
 		CString sExplorer;
 		GetSystemWindowsDirectory(sExplorer.GetBuffer(MAX_PATH), MAX_PATH);
 		sExplorer.ReleaseBuffer();

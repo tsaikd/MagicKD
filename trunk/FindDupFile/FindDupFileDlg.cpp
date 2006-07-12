@@ -503,12 +503,8 @@ LRESULT CFindDupFileDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 					HTREEITEM hItem = m_tree_FindResult.m_hContextItem;
 					if (hItem) {
 						CString sPath = m_tree_FindResult.GetItemText(hItem);
-						if (!sPath.IsEmpty()) {
-							if (PathIsDirectory(sPath))
-								ShellExecute(NULL, _T("open"), sPath, NULL, NULL, SW_SHOW);
-							else
-								ExplorerFile(sPath);
-						}
+						if (!sPath.IsEmpty())
+							ExplorerFile(sPath);
 					}
 				}
 				break;
