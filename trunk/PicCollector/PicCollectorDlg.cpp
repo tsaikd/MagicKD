@@ -45,8 +45,15 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	sPath.Format(_T("%sPicCollector.db"), theApp.GetAppConfDir());
 	m_Feed.SetDBPath(sPath);
 	m_list_Feed.Init();
-	m_ttc.Create(this);
-	m_ttc.Activate(TRUE);
+	m_ttc.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
+
+	// Setup ToolTipCtrl for CKDStaticPath
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DLDIR));
+	m_static_DLDir.SignToolTipCtrl(&m_ttc);
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH));
+	m_static_DLLocalPath.SignToolTipCtrl(&m_ttc);
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD));
+	m_static_Download.SignToolTipCtrl(&m_ttc);
 
 	if (PathIsDirectory(g_pPicCConf->m_sDlDir)) {
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
@@ -56,7 +63,6 @@ BOOL CPicCollectorDlg::OnInitDialog()
 			SHCreateDirectoryEx(GetSafeHwnd(), g_pPicCConf->m_sDlDir, NULL);
 		GetDlgItem(IDC_PICC_STATIC_DLDIR)->SetWindowText(g_pPicCConf->m_sDlDir);
 	}
-	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DLDIR), g_pPicCConf->m_sDlDir);
 
 	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
 	GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
@@ -295,12 +301,14 @@ void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PICC_LIST_FEED, m_list_Feed);
+	DDX_Control(pDX, IDC_PICC_STATIC_DLDIR, m_static_DLDir);
+	DDX_Control(pDX, IDC_PICC_STATIC_DLLOCALPATH, m_static_DLLocalPath);
+	DDX_Control(pDX, IDC_PICC_STATIC_DOWNLOAD, m_static_Download);
 }
 
 BOOL CPicCollectorDlg::PreTranslateMessage(MSG* pMsg)
 {
 	m_ttc.RelayEvent(pMsg);
-	// TODO: Add your specialized code here and/or call the base class
 
 	return __super::PreTranslateMessage(pMsg);
 }

@@ -1,4 +1,6 @@
 	Use CKDSQLiteAPI in FeedSource
+	Support ToolTip for PicCollector Download and LocalPath
+	Optimize CheckUpdate method
 
 Version: 1.0.2.7	(2006-07-11)
 	Fix bug: Change Update timer from 86400 to 86400*1000 (ms)

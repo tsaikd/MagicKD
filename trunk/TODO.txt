@@ -1,5 +1,4 @@
 Initial function
-CStatic Tooltips
 
 PicCollector(rss):
 ¬ö¿ý¤U¸ü¥¢±ÑÀÉ®×(URL LocalPath Max%)

@@ -4,6 +4,7 @@
 #include "PicCFeed.h"
 #include "PicCFeedListCtrl.h"
 #include "KDThread.h"
+#include "KDStaticPath.h"
 #include "PicCHTMLEventHandler.h"
 #include "PicCDLManager.h"
 
@@ -32,6 +33,9 @@ public:
 	CPicCDLManager			*m_pDownLoader;
 	CPicCFeedListCtrl		m_list_Feed;
 	CToolTipCtrl			m_ttc;
+	CKDStaticPath			m_static_DLDir;
+	CKDStaticPath			m_static_DLLocalPath;
+	CKDStaticPath			m_static_Download;
 
 private:
 	bool					m_bInit;

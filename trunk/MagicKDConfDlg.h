@@ -32,19 +32,17 @@ public:
 	CProgressCtrl	m_progress_Update;
 
 private:
+	void			_DoCheckUpdate();
+
 	bool			m_bInit;
 	bool			m_bOnUpdate;
+	bool			m_bOnBTNUpdate;
 	UINT			m_uUpdateTimer;
 
 	static DWORD WINAPI _Init_CheckUpdate(LPVOID pParam)
 	{
 		CMagicKDConfDlg *pThis = (CMagicKDConfDlg *) pParam;
-		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
-		if (!pThis->m_bOnUpdate && pThis->m_KDUpdater.IsNeedUpdate())
-			pThis->OnBnClickedConfBtnCheckupdate();
-		else
-			pThis->m_KDUpdater.CloseKDUpdater();
-		pThis->GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
+		pThis->_DoCheckUpdate();
 		return 0;
 	}
 

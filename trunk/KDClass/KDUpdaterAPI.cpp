@@ -13,12 +13,20 @@ UINT WMU_KDUPDATER_REQ_START_UPDATE		= RegisterWindowMessage(_T("Req") _T("KDUpd
 UINT WMU_KDUPDATER_REQ_CLOSE_APP		= RegisterWindowMessage(_T("Req") _T("KDUpdater Close App"));
 
 CKDUpdaterAPI::CKDUpdaterAPI()
-	:	m_hUpdaterWnd(NULL), m_hAppMainWnd(NULL), m_bOnQuit(false)
+	:	m_hUpdaterWnd(NULL), m_hParentWnd(NULL), m_hAppMainWnd(NULL), m_bOnQuit(false)
 {
 }
 
 CKDUpdaterAPI::~CKDUpdaterAPI()
 {
+}
+
+void CKDUpdaterAPI::SetParentWnd(HWND hParent)
+{
+	if (IsWindow(hParent))
+		m_hParentWnd = hParent;
+	else
+		m_hParentWnd = NULL;
 }
 
 void CKDUpdaterAPI::SetKDUpdaterPath(LPCTSTR lpPath)
@@ -84,7 +92,8 @@ bool CKDUpdaterAPI::FindKDUpdater()
 		if (PathFileExists(m_sKDUpdaterPath)) {
 			CIni ini;
 			int i, iCount;
-			int iMaxWaitTimes = 30;
+			clock_t clockStart = clock();
+			clock_t clockMaxWaitClock = clockStart + (15 * CLOCKS_PER_SEC);
 			CString sBuf;
 			CString sIniPath = m_sKDUpdaterPath + _T(".ini.tmp");
 
@@ -102,10 +111,10 @@ bool CKDUpdaterAPI::FindKDUpdater()
 			}
 
 			sBuf.Format(_T("\"%s\""), sIniPath);
-			ShellExecute(NULL, _T("open"), m_sKDUpdaterPath, sBuf, NULL, SW_SHOWMINIMIZED);
-			while (!IsWindow(m_hUpdaterWnd) && iMaxWaitTimes-- && !m_bOnQuit) {
+			ShellExecute(NULL, _T("open"), m_sKDUpdaterPath, sBuf, NULL, SW_SHOWMINNOACTIVE);
+			while (!IsWindow(m_hUpdaterWnd) && (clock() < clockMaxWaitClock) && !m_bOnQuit) {
+				Sleep(100);
 				EnumWindows(QueryAppKDUpdaterNeedUpdate, (LPARAM)this);
-				Sleep(500);
 			}
 		}
 	}

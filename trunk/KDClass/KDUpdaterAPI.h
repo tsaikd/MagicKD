@@ -16,21 +16,23 @@ public:
 	CKDUpdaterAPI();
 	virtual ~CKDUpdaterAPI();
 
-	void	SetKDUpdaterPath(LPCTSTR lpPath);
-	void	SetAppMainWnd(HWND hWnd);
-	void	SetUpdateWorkDir(LPCTSTR lpWorkDir);
-	void	SetUpdateListURL(LPCTSTR lpListURL);
-	void	SetUpdatePostCmd(LPCTSTR lpPostCmd);
-	void	AddUpdateFile(LPCTSTR lpPath, LPCTSTR lpVersion);
+	void SetParentWnd(HWND hParent);
+	void SetKDUpdaterPath(LPCTSTR lpPath);
+	void SetAppMainWnd(HWND hWnd);
+	void SetUpdateWorkDir(LPCTSTR lpWorkDir);
+	void SetUpdateListURL(LPCTSTR lpListURL);
+	void SetUpdatePostCmd(LPCTSTR lpPostCmd);
+	void AddUpdateFile(LPCTSTR lpPath, LPCTSTR lpVersion);
 
-	void	SetOnQuit(bool bOnQuit = true);
-	bool	FindKDUpdater();
-	bool	IsNeedUpdate(bool bRecheck = false);
-	void	DoAppUpdate(DWORD dwDelayTime = 5000, HWND hWaitWnd = NULL);
-	void	CloseKDUpdater();
+	void SetOnQuit(bool bOnQuit = true);
+	bool FindKDUpdater();
+	bool IsNeedUpdate(bool bRecheck = false);
+	void DoAppUpdate(DWORD dwDelayTime = 5000, HWND hWaitWnd = NULL);
+	void CloseKDUpdater();
 
 protected:
-	HWND	m_hUpdaterWnd;
+	HWND m_hUpdaterWnd;
+	HWND m_hParentWnd;
 
 private:
 	static BOOL CALLBACK QueryAppKDUpdaterNeedUpdate(HWND hWnd, LPARAM lParam) {
@@ -38,6 +40,9 @@ private:
 		CKDUpdaterAPI *pThis = (CKDUpdaterAPI *)lParam;
 		if (!pThis)
 			return TRUE;
+
+		if (IsWindowVisible(pThis->m_hParentWnd))
+			SetFocus(pThis->m_hParentWnd);
 
 		LRESULT res = ::SendMessageTimeout(hWnd, WMU_KDUPDATER_REQ, (WPARAM)pThis->m_hAppMainWnd, 0,
 			SMTO_BLOCK | SMTO_ABORTIFHUNG, 10000, &dwMsgResult);

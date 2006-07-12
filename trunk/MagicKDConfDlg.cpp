@@ -14,7 +14,7 @@ static enum {
 
 IMPLEMENT_DYNAMIC(CMagicKDConfDlg, CDialog)
 CMagicKDConfDlg::CMagicKDConfDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CMagicKDConfDlg::IDD, pParent), m_bInit(false), m_uUpdateTimer(0), m_bOnUpdate(false)
+	:	CDialog(CMagicKDConfDlg::IDD, pParent), m_bInit(false), m_uUpdateTimer(0), m_bOnUpdate(false), m_bOnBTNUpdate(false)
 {
 }
 
@@ -59,6 +59,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	CKDAppVer KDUpdaterVer((LPCTSTR)CGetFileVersion(sPath));
 	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.4")))) {
 		// Init Update Information
+		m_KDUpdater.SetParentWnd(GetSafeHwnd());
 		m_KDUpdater.SetKDUpdaterPath(sPath);
 		m_KDUpdater.SetAppMainWnd(theApp.m_pMainWnd->GetSafeHwnd());
 		m_KDUpdater.SetUpdateWorkDir(theApp.GetAppDir());
@@ -149,8 +150,9 @@ void CMagicKDConfDlg::UpdateFuncCheck()
 
 UINT CMagicKDConfDlg::StartUpdateTimer()
 {
+	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
 	if (m_uUpdateTimer)
-		return 0;
+		StopUpdateTimer();
 
 	m_uUpdateTimer = SetTimer(KDT_UPDATE, 86400*1000, NULL);
 	CreateThread(NULL, 0, &CMagicKDConfDlg::_Init_CheckUpdate, (LPVOID) this, 0, NULL);
@@ -166,6 +168,37 @@ UINT CMagicKDConfDlg::StopUpdateTimer()
 	m_uUpdateTimer = 0;
 
 	return uRes;
+}
+
+void CMagicKDConfDlg::_DoCheckUpdate()
+{
+	if (m_bOnUpdate)
+		return;
+
+	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
+	m_bOnUpdate = true;
+
+	if (GetOnInternet() != 0) {
+		m_KDUpdater.CloseKDUpdater();
+		MessageBox(CResString(IDS_CONF_MSG_UPDATECONNECTFAILED), NULL, MB_OK | MB_ICONERROR);
+	} else if (m_KDUpdater.IsNeedUpdate()) {
+		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), NULL, MB_YESNO | MB_ICONQUESTION)) {
+			m_KDUpdater.DoAppUpdate(1000, theApp.GetMainWnd()->GetSafeHwnd());
+			theApp.Quit();
+		} else {
+			m_KDUpdater.CloseKDUpdater();
+		}
+	} else {
+		m_KDUpdater.CloseKDUpdater();
+		if (m_bOnBTNUpdate) {
+			MessageBox(CResString(IDS_CONF_MSG_NOUPDATE), NULL, MB_OK | MB_ICONINFORMATION);
+			m_bOnBTNUpdate = false;
+		}
+	}
+
+	m_bOnUpdate = false;
+	if (!theApp.IsOnQuit())
+		GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
 }
 
 BEGIN_MESSAGE_MAP(CMagicKDConfDlg, CDialog)
@@ -218,30 +251,9 @@ void CMagicKDConfDlg::OnBnClickedConfBtnRestart()
 
 void CMagicKDConfDlg::OnBnClickedConfBtnCheckupdate()
 {
-	if (m_bOnUpdate)
-		return;
-
 	GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow(FALSE);
-	m_bOnUpdate = true;
-
-	if (GetOnInternet() != 0) {
-		m_KDUpdater.CloseKDUpdater();
-		MessageBox(CResString(IDS_CONF_MSG_UPDATECONNECTFAILED), NULL, MB_OK | MB_ICONERROR);
-	} else if (m_KDUpdater.IsNeedUpdate()) {
-		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), NULL, MB_YESNO | MB_ICONQUESTION)) {
-			m_KDUpdater.DoAppUpdate(1000, theApp.GetMainWnd()->GetSafeHwnd());
-			theApp.Quit();
-		} else {
-			m_KDUpdater.CloseKDUpdater();
-		}
-	} else {
-		m_KDUpdater.CloseKDUpdater();
-		MessageBox(CResString(IDS_CONF_MSG_NOUPDATE), NULL, MB_OK | MB_ICONINFORMATION);
-	}
-
-	m_bOnUpdate = false;
-	if (!theApp.IsOnQuit())
-		GetDlgItem(IDC_CONF_BTN_CHECKUPDATE)->EnableWindow();
+	m_bOnBTNUpdate = true;
+	StartUpdateTimer();
 }
 
 void CMagicKDConfDlg::OnBnClickedCheckConfStartmin()

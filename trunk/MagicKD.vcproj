@@ -327,6 +327,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDStaticPath.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDTabCtrl.cpp"
 					>
 				</File>
@@ -586,6 +590,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDSQLiteAPI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDStaticPath.h"
 					>
 				</File>
 				<File

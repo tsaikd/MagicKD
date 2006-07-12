@@ -94,6 +94,9 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetTransparency((BYTE)(UINT)g_pTheConf->m_General_uTransparency);
 
 //////////////////////////////////////////////////
+#ifdef DEBUG
+	m_cMainTab.SetCurSel(1);
+#endif //DEBUG
 	if (m_pWallChangerDlg)
 		m_cMainTab.SetCurSel(eFunc_WallChanger);
 #ifdef DEBUG
@@ -101,6 +104,7 @@ BOOL CMagicKDDlg::OnInitDialog()
 //		m_cMainTab.SetCurSel(eFunc_FindDupFile);
 	if (m_pPicCollectorDlg)
 		m_cMainTab.SetCurSel(eFunc_PicCollector);
+	m_cMainTab.SetCurSel(0);
 #endif //DEBUG
 //////////////////////////////////////////////////
 
