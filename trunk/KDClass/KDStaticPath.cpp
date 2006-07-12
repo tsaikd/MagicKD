@@ -17,8 +17,24 @@ bool CKDStaticPath::SignToolTipCtrl(CToolTipCtrl *ttc)
 	if (!IsWindow(ttc->GetSafeHwnd()))
 		return false;
 
+	CString sBuf;
+	GetWindowText(sBuf);
+	ModifyStyle(0, SS_NOTIFY);
 	m_pttc = ttc;
+	if (sBuf.IsEmpty())
+		m_pttc->AddTool(this);
+	else
+		m_pttc->AddTool(this, sBuf);
 	return true;
+}
+
+void CKDStaticPath::UnSignToolTipCtrl()
+{
+	if (!m_pttc || !IsWindow(m_pttc->GetSafeHwnd()))
+		return;
+
+	m_pttc->DelTool(this);
+	m_pttc = NULL;
 }
 
 BEGIN_MESSAGE_MAP(CKDStaticPath, CStatic)

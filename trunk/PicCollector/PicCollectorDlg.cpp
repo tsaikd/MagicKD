@@ -48,11 +48,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	m_ttc.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
 
 	// Setup ToolTipCtrl for CKDStaticPath
-	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DLDIR));
 	m_static_DLDir.SignToolTipCtrl(&m_ttc);
-	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH));
 	m_static_DLLocalPath.SignToolTipCtrl(&m_ttc);
-	m_ttc.AddTool(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD));
 	m_static_Download.SignToolTipCtrl(&m_ttc);
 
 	if (PathIsDirectory(g_pPicCConf->m_sDlDir)) {

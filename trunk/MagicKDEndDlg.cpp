@@ -1,17 +1,14 @@
-// MagicKDEndDlg.cpp : 實作檔
-//
-
 #include "stdafx.h"
 #include "MagicKD.h"
 #include "MagicKDEndDlg.h"
 
 
-// CMagicKDEndDlg 對話方塊
-
 IMPLEMENT_DYNAMIC(CMagicKDEndDlg, CDialog)
 CMagicKDEndDlg::CMagicKDEndDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMagicKDEndDlg::IDD, pParent), m_uTotalStep(0), m_posLastFindWnd(0)
 {
+	CHumanSize a(10000, CHumanSize::FLAG_PostDotNum2);
+	CString sBuf = a;
 }
 
 CMagicKDEndDlg::~CMagicKDEndDlg()

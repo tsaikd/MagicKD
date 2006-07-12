@@ -61,17 +61,6 @@ public:
 	}
 };
 
-class CScreenSize : public CSize
-{
-public:
-	CScreenSize(int iOffsetX = 0, int iOffsetY = 0)
-	{
-		CRect rcWin;
-		GetWindowRect(GetDesktopWindow(), rcWin);
-		SetSize(rcWin.Width() + iOffsetX, rcWin.Height() + iOffsetY);
-	}
-};
-
 #if defined(_UNICODE) && defined(_SHLOBJ_H_) && defined(_WININET_) && defined(__ATLBASE_H__) && defined(WPSTYLE_STRETCH)
 /*
 	Must Turn On Unicode
@@ -160,4 +149,136 @@ public:
 private:
 	LPCTSTR m_lpAppFileVer;
 	LPCTSTR m_lpAppProductVer;
+};
+
+class CScreenSize : public CSize
+{
+public:
+	CScreenSize(int iOffsetX = 0, int iOffsetY = 0)
+	{
+		CRect rcWin;
+		GetWindowRect(GetDesktopWindow(), rcWin);
+		SetSize(rcWin.Width() + iOffsetX, rcWin.Height() + iOffsetY);
+	}
+};
+
+class CFileSize
+{
+public:
+	CFileSize() : m_ulFileSize(0) {}
+	CFileSize(LPCTSTR lpFilePath) : m_ulFileSize(0) { SetFilePath(lpFilePath); }
+
+	bool SetFilePath(LPCTSTR lpFilePath)
+	{
+		if (PathFileExists(lpFilePath)) {
+			CFile file;
+			if (file.Open(lpFilePath, CFile::modeRead | CFile::shareDenyNone)) {
+				m_ulFileSize = file.GetLength();
+				file.Close();
+				m_sFilePath = lpFilePath;
+				return true;
+			}
+		}
+
+		Clear();
+		return false;
+	}
+
+	inline void Clear() { m_ulFileSize = 0; m_sFilePath.Empty(); }
+	inline operator ULONGLONG () { return m_ulFileSize; }
+
+private:
+	ULONGLONG m_ulFileSize;
+	CString m_sFilePath;
+};
+
+class CHumanSize
+{
+public:
+	enum {
+		FLAG_UpperCase		= 0x00,		// default flag
+		FLAG_LowerCase		= 0x01,
+		FLAG_PostDotNum0	= 0x00,		// default flag
+		FLAG_PostDotNum1	= 0x02,
+		FLAG_PostDotNum2	= 0x04,
+		FLAG_PostDotNum3	= 0x08
+	};
+	CHumanSize(UINT uFlag = 0) : m_uFlag(0), m_ulSize(0) { SetFlag(uFlag); }
+	CHumanSize(ULONGLONG ulSize, UINT uFlag = 0) : m_uFlag(0), m_ulSize(0) { m_ulSize = ulSize; SetFlag(uFlag); }
+
+	inline void SetFlag(UINT uFlag) { m_uFlag = uFlag; SetSize(m_ulSize); }
+
+	void SetSize(ULONGLONG ulSize)
+	{
+		TCHAR cUnit;
+		int iPostDotNum;
+		double fSize;
+
+		m_ulSize = ulSize;
+		fSize = (double)ulSize;
+
+		if (m_uFlag & FLAG_PostDotNum1)
+			iPostDotNum = 1;
+		else if (m_uFlag & FLAG_PostDotNum2)
+			iPostDotNum = 2;
+		else if (m_uFlag & FLAG_PostDotNum3)
+			iPostDotNum = 3;
+		else
+			iPostDotNum = 0;
+
+		if (ulSize < 1024) {
+			if (m_uFlag & FLAG_LowerCase)
+				cUnit = _T('b');
+			else
+				cUnit = _T('B');
+			m_sHumanSize.Format(_T("%d%c"), ulSize, cUnit);
+			return;
+		}
+
+		fSize /= 1024;
+		if (fSize < 1024) {
+			if (m_uFlag & FLAG_LowerCase)
+				cUnit = _T('k');
+			else
+				cUnit = _T('K');
+			m_sHumanSize.Format(_T("%.*f%c"), iPostDotNum, fSize, cUnit);
+			return;
+		}
+
+		fSize /= 1024;
+		if (fSize < 1024) {
+			if (m_uFlag & FLAG_LowerCase)
+				cUnit = _T('m');
+			else
+				cUnit = _T('M');
+			m_sHumanSize.Format(_T("%.*f%c"), iPostDotNum, fSize, cUnit);
+			return;
+		}
+
+		fSize /= 1024;
+		if (fSize < 1024) {
+			if (m_uFlag & FLAG_LowerCase)
+				cUnit = _T('g');
+			else
+				cUnit = _T('G');
+			m_sHumanSize.Format(_T("%.*f%c"), iPostDotNum, fSize, cUnit);
+			return;
+		}
+
+		fSize /= 1024;
+		if (m_uFlag & FLAG_LowerCase)
+			cUnit = _T('t');
+		else
+			cUnit = _T('T');
+		m_sHumanSize.Format(_T("%.*f%c"), iPostDotNum, fSize, cUnit);
+	}
+
+	inline void Clear() { m_uFlag = 0; m_ulSize = 0; SetSize(0); }
+	inline operator ULONGLONG () { return m_ulSize; }
+	inline operator LPCTSTR () { return m_sHumanSize; }
+
+private:
+	UINT		m_uFlag;
+	ULONGLONG	m_ulSize;
+	CString		m_sHumanSize;
 };

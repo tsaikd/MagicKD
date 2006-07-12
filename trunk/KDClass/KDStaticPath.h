@@ -9,6 +9,7 @@ public:
 	virtual ~CKDStaticPath();
 
 	bool SignToolTipCtrl(CToolTipCtrl *ttc);
+	void UnSignToolTipCtrl();
 
 private:
 	CToolTipCtrl *m_pttc;

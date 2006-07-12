@@ -60,6 +60,11 @@ BOOL CWallChangerDlg::OnInitDialog()
 	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_RANDPIC			, CResString(IDS_TRAY_RANDPIC), true);
 	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 6);
 
+	m_staticNowPicPath.SetWindowText(_T(""));
+	GetDlgItem(IDC_WALL_STATIC_IMAGEINFO)->SetWindowText(_T(""));
+	m_ttc.Create(this);
+	m_staticNowPicPath.SignToolTipCtrl(&m_ttc);
+
 	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("WallChanger.ini"));
 	if (!::g_pWallConf)
 		::g_pWallConf = new CWallConf;
@@ -150,8 +155,11 @@ void CWallChangerDlg::DoSize()
 		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
 	KDMoveDlgItem(GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR), GetDlgItem(IDC_WALL_CHECK_SHOWDIRLOADERROR),
 		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
-	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_NOWPICPATH), this,
-		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
+
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_IMAGEINFO), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
+	KDMoveDlgItem(GetDlgItem(IDC_WALL_STATIC_NOWPICPATH), GetDlgItem(IDC_WALL_STATIC_IMAGEINFO),
+		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
 
 	KDMoveDlgItem(GetDlgItem(IDC_WALL_EDIT_ADDCLASS), this,
 		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom);
@@ -252,13 +260,17 @@ bool CWallChangerDlg::SetRandWallPager()
 	if (!m_muxSetRandWallPager.Lock(0))
 		return false;
 
+	CString sImageInfo;
+
 #define RETURN(x) {																	\
 	if (x) {																		\
 		m_staticNowPicPath.SetWindowText(m_sNowPicPath);							\
-		g_pTheTray->SetTrayTip(m_sNowPicPath);										\
+		GetDlgItem(IDC_WALL_STATIC_IMAGEINFO)->SetWindowText(sImageInfo);			\
+		g_pTheTray->SetTrayTip(m_sNowPicPath + _T("  ") + sImageInfo);				\
 	} else {																		\
 		m_staticNowPicPath.SetWindowText(m_sNowPicPath + _T(" -- ") +				\
 			CResString(IDS_WALL_SETWALLPAGERFAIL));									\
+		GetDlgItem(IDC_WALL_STATIC_IMAGEINFO)->SetWindowText(_T(""));				\
 		m_sNowPicPath = _T("");														\
 		g_pTheTray->SetTrayTip(_T(""));												\
 	}																				\
@@ -274,6 +286,8 @@ bool CWallChangerDlg::SetRandWallPager()
 
 	m_imgNowPic.Destroy();
 	if (m_imgNowPic.Load(m_sNowPicPath)) {
+		sImageInfo.Format(_T("(%d*%d %s)"), m_imgNowPic.GetWidth(), m_imgNowPic.GetHeight(),
+			(LPCTSTR)CHumanSize(CFileSize(m_sNowPicPath), CHumanSize::FLAG_PostDotNum1));
 		if (AutoPicSize(m_imgNowPic)) {
 			m_imgNowPic.Save(m_sTempFilePath, CXIMAGE_FORMAT_JPG);
 			SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);
@@ -515,6 +529,13 @@ void CWallChangerDlg::OnCancel()
 	theApp.Quit();
 
 //	CDialog::OnCancel();
+}
+
+BOOL CWallChangerDlg::PreTranslateMessage(MSG* pMsg)
+{
+	m_ttc.RelayEvent(pMsg);
+
+	return CDialog::PreTranslateMessage(pMsg);
 }
 
 void CWallChangerDlg::OnBnClickedButtonAddclasslist()
