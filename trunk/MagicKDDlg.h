@@ -33,11 +33,11 @@ public:
 
 	void SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw = true);
 	FuncList GetFuncFromCWnd(CWnd *pWnd);
+	bool SetCurTabSel(FuncList eFunc);
 
 	bool SetTransparency(BYTE uAlpha);
 	BOOL ShowWindow(int nCmdShow);
 
-	CMagicKDTabCtrl		m_cMainTab;
 	CMagicKDConfDlg		m_cMainConfigDlg;
 	CWallChangerDlg		*m_pWallChangerDlg;
 	CFindDupFileDlg		*m_pFindDupFileDlg;
@@ -46,10 +46,11 @@ public:
 	HICON				m_hIcon2;
 
 private:
-	bool	m_bInit;
-	bool	m_bIniModify;
-	bool	m_bVisiable;
-	CRect	m_rcMainTab;
+	bool				m_bInit;
+	bool				m_bIniModify;
+	bool				m_bVisiable;
+	CRect				m_rcMainTab;
+	CMagicKDTabCtrl		m_cMainTab;
 
 protected:
 

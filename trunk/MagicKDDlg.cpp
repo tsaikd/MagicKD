@@ -98,16 +98,13 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetTransparency((BYTE)(UINT)g_pTheConf->m_General_uTransparency);
 
 //////////////////////////////////////////////////
-#ifdef DEBUG
-	m_cMainTab.SetCurSel(1);
-#endif //DEBUG
 	if (m_pWallChangerDlg)
-		m_cMainTab.SetCurSel(eFunc_WallChanger);
+		SetCurTabSel(eFunc_WallChanger);
 #ifdef DEBUG
 //	if (m_pFindDupFileDlg)
-//		m_cMainTab.SetCurSel(eFunc_FindDupFile);
+//		SetCurTabSel(eFunc_FindDupFile);
 //	if (m_pPicCollectorDlg)
-//		m_cMainTab.SetCurSel(eFunc_PicCollector);
+//		SetCurTabSel(eFunc_PicCollector);
 #endif //DEBUG
 //////////////////////////////////////////////////
 
@@ -257,7 +254,7 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 
 	m_cMainConfigDlg.UpdateFuncCheck();
 	if (-1 == m_cMainTab.GetCurSel())
-		m_cMainTab.SetCurSel(0);
+		SetCurTabSel(eFunc_NULL);
 
 	if (bRedraw)
 		Invalidate();
@@ -265,7 +262,8 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 
 CMagicKDDlg::FuncList CMagicKDDlg::GetFuncFromCWnd(CWnd *pWnd)
 {
-	VERIFY(::IsWindow(pWnd->GetSafeHwnd()));
+	if(!IsWindow(pWnd->GetSafeHwnd()))
+		return eFunc_NULL;
 
 	if (pWnd == m_pWallChangerDlg)
 		return eFunc_WallChanger;
@@ -275,6 +273,34 @@ CMagicKDDlg::FuncList CMagicKDDlg::GetFuncFromCWnd(CWnd *pWnd)
 		return eFunc_PicCollector;
 	else
 		return eFunc_NULL;
+}
+
+bool CMagicKDDlg::SetCurTabSel(FuncList eFunc)
+{
+	if (eFunc == eFunc_NULL) {
+		m_cMainTab.SetCurSel(0);
+		return true;
+	}
+
+	TCITEM tabCtrlItem;
+	CDialog *pDlg;
+	int i, iCount = m_cMainTab.GetItemCount();
+	for (i=0 ; i<iCount ; i++) {
+		if (!m_cMainTab.GetItem(i, &tabCtrlItem))
+			continue;
+
+		pDlg = (CDialog *)tabCtrlItem.lParam;
+		if (!pDlg || !IsWindow(pDlg->GetSafeHwnd()))
+			continue;
+
+		if (eFunc == GetFuncFromCWnd(pDlg)) {
+			m_cMainTab.SetCurSel(i);
+			return true;
+		}
+	}
+
+	m_cMainTab.SetCurSel(0);
+	return false;
 }
 
 bool CMagicKDDlg::SetTransparency(BYTE uAlpha)
@@ -359,16 +385,14 @@ void CMagicKDDlg::OnOK()
 
 void CMagicKDDlg::OnCancel()
 {
-	CDialog::OnCancel();
+	if (GetKeyState(VK_ESCAPE) < 0)
+		CDialog::OnCancel();
+	else
+		ShowWindow(SW_HIDE);
 }
 
 void CMagicKDDlg::OnSize(UINT nType, int cx, int cy)
 {
-	if (nType == SIZE_MINIMIZED) {
-		ShowWindow(SW_RESTORE);
-		ShowWindow(SW_HIDE);
-	}
-
 	__super::OnSize(nType, cx, cy);
 
 	DoSize();
@@ -384,7 +408,7 @@ void CMagicKDDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 
 void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	ASSERT(::IsWindow(pNMHDR->hwndFrom));
+	ASSERT(IsWindow(pNMHDR->hwndFrom));
 	CDialog *pCurDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
 	if (pCurDlg)
 		pCurDlg->ShowWindow(SW_HIDE);
