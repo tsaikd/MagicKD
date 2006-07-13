@@ -37,19 +37,21 @@ public:
 	bool SetTransparency(BYTE uAlpha);
 	BOOL ShowWindow(int nCmdShow);
 
-	CMagicKDTabCtrl m_cMainTab;
-	CMagicKDConfDlg m_cMainConfigDlg;
-	CWallChangerDlg *m_pWallChangerDlg;
-	CFindDupFileDlg *m_pFindDupFileDlg;
-	CPicCollectorDlg *m_pPicCollectorDlg;
+	CMagicKDTabCtrl		m_cMainTab;
+	CMagicKDConfDlg		m_cMainConfigDlg;
+	CWallChangerDlg		*m_pWallChangerDlg;
+	CFindDupFileDlg		*m_pFindDupFileDlg;
+	CPicCollectorDlg	*m_pPicCollectorDlg;
+	HICON				m_hIcon;
+	HICON				m_hIcon2;
+
 private:
-	bool m_bInit;
-	bool m_bIniModify;
-	bool m_bVisiable;
-	CRect m_rcMainTab;
+	bool	m_bInit;
+	bool	m_bIniModify;
+	bool	m_bVisiable;
+	CRect	m_rcMainTab;
 
 protected:
-	HICON m_hIcon;
 
 	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);

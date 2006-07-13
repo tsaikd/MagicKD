@@ -57,6 +57,19 @@ bool CKDTray::SetTrayTip(LPCTSTR sTip)
 	return Shell_NotifyIcon(NIM_MODIFY, &m_trayData) != FALSE;
 }
 
+bool CKDTray::SetTray(HICON hIcon/* = NULL*/, LPCTSTR sTip/* = NULL*/)
+{
+	if (!m_trayData.hWnd)
+		return false;
+
+	if (hIcon)
+		m_trayData.hIcon = hIcon;
+	if (sTip)
+		_tcscpy(m_trayData.szTip, sTip);
+
+	return Shell_NotifyIcon(NIM_MODIFY, &m_trayData) != FALSE;
+}
+
 CMenu *CKDTray::GetTrayMenu() {
 	return &m_mTrayMenu;
 }

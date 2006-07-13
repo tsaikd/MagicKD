@@ -8,7 +8,8 @@
 #define IDD_MAGICKD_WALLCHANGER         104
 #define IDD_MAGICKD_FINDDUPFILE         105
 #define IDD_MAGICKD_PICCOLLECTOR        106
-#define IDR_MAINFRAME                   121
+#define IDR_MAINFRAME                   111
+#define IDI_ICON_CHANGINGWALL           112
 #define IDS_MENU_CLOSE                  121
 #define IDS_MSG_TRAYREGERROR            122
 #define IDS_MSG_NONECESSARYDLL          123
@@ -168,9 +169,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        272
+#define _APS_NEXT_RESOURCE_VALUE        273
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1093
+#define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           107
 #endif
 #endif

@@ -26,7 +26,6 @@ BOOL CMagicKDApp::InitInstance()
 
 	m_cIni.SetPathName(CString(GetAppConfDir()) + _T("MagicKD.ini"));
 
-
 	g_pTheAppEndDlg = new CMagicKDEndDlg;
 	g_pTheAppEndDlg->Create(IDD_MAGICKD_END);
 

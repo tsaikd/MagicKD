@@ -111,10 +111,10 @@ void CWallChangerDlg::OnDestroy()
 	KillTimer(KDT_OFFLINECOUNT);
 
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tFind Picture Thread"));
-	DEL(::g_pWallThreadFindPic);
+	DEL(g_pWallThreadFindPic);
 
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tEnable Picture List Thread"));
-	DEL(::g_pWallEnablePicList);
+	DEL(g_pWallEnablePicList);
 
 	CDialog::OnDestroy();
 
@@ -274,9 +274,12 @@ bool CWallChangerDlg::SetRandWallPager()
 		m_sNowPicPath = _T("");														\
 		g_pTheTray->SetTrayTip(_T(""));												\
 	}																				\
-	m_muxSetRandWallPager.Unlock(); return (x);										\
+	g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon);						\
+	m_muxSetRandWallPager.Unlock();													\
+	return (x);																		\
 }
 
+	g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon2);
 	m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETTINGWALLPAGER));
 	m_sNowPicPath = GetRandPicPath();
 

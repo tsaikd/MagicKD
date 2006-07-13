@@ -65,6 +65,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\MagicKD.ico"
+IDI_ICON_CHANGINGWALL   ICON                    "res\\icon_changingwall.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

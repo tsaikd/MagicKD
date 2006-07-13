@@ -7,12 +7,21 @@ IMPLEMENT_DYNAMIC(CMagicKDEndDlg, CDialog)
 CMagicKDEndDlg::CMagicKDEndDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMagicKDEndDlg::IDD, pParent), m_uTotalStep(0), m_posLastFindWnd(0)
 {
-	CHumanSize a(10000, CHumanSize::FLAG_PostDotNum2);
-	CString sBuf = a;
 }
 
 CMagicKDEndDlg::~CMagicKDEndDlg()
 {
+}
+
+BOOL CMagicKDEndDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	m_cProgressEnd.SetRange32(0, 65535);
+	m_cProgressEnd.SetStep(65535);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX 屬性頁應傳回 FALSE
 }
 
 bool CMagicKDEndDlg::SignWnd(HWND hWnd, UINT uEndStep)
@@ -138,19 +147,4 @@ void CMagicKDEndDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PROGRESS_END, m_cProgressEnd);
 	DDX_Control(pDX, IDC_MAGICKDEND_EDIT_TEXT, m_editText);
-}
-
-// CMagicKDEndDlg 訊息處理常式
-
-BOOL CMagicKDEndDlg::OnInitDialog()
-{
-	CDialog::OnInitDialog();
-
-	m_cProgressEnd.SetRange32(0, 65535);
-	m_cProgressEnd.SetStep(65535);
-
-	// TODO:  在此加入額外的初始化
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX 屬性頁應傳回 FALSE
 }

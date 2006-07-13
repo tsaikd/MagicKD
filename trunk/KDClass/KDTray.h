@@ -22,6 +22,7 @@ public:
 
 	LPCTSTR GetTrayTip();
 	bool SetTrayTip(LPCTSTR sTip);
+	bool SetTray(HICON hIcon = NULL, LPCTSTR sTip = NULL);
 
 	CMenu *GetTrayMenu();
 	bool AppendMenu(UINT nFlags, UINT_PTR nIDNewItem = 0, LPCTSTR lpszNewItem = NULL, bool bDefault = false);

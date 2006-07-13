@@ -4,6 +4,8 @@
 #include "Language.h"
 #include "MagicKD.h"
 #include "WallConf.h"
+#include "FindDFConf.h"
+#include "PicCConf.h"
 
 #include "MagicKDDlg.h"
 
@@ -17,11 +19,13 @@ CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 		m_pWallChangerDlg(NULL), m_pFindDupFileDlg(NULL), m_pPicCollectorDlg(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIcon2 = AfxGetApp()->LoadIcon(IDI_ICON_CHANGINGWALL);
 }
 
 CMagicKDDlg::~CMagicKDDlg()
 {
 	DestroyIcon(m_hIcon);
+	DestroyIcon(m_hIcon2);
 	DEL(g_pTheTray);
 }
 
@@ -423,52 +427,50 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			Invalidate();
 			break;
 		}
-	} else {
-		switch (message) {
-		case WM_COMMAND:
+		return 0;
+	}
+
+	switch (message) {
+	case WM_COMMAND:
+		{
+		UINT nID = LOWORD(wParam);
+		switch (nID) {
+		// TabCtrl
+		case IDS_MENU_CLOSE:
 			{
-			UINT nID = LOWORD(wParam);
-			switch (nID) {
-			// TabCtrl
-			case IDS_MENU_CLOSE:
-				{
-				CDialog *pDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
-				if (pDlg)
-					SetFuncEnable(GetFuncFromCWnd(pDlg), false);
-				DoSize();
-				}
-				break;
-			// Tray Icon
-			case IDS_TRAY_RESTART:
-				theApp.SetRestart();
-				theApp.Quit();
-				break;
-			case IDS_TRAY_OPENWINDOW:
-				ShowWindow(SW_SHOW);
-				break;
-			case IDS_TRAY_CLOSEWINDOW:
-				theApp.Quit();
-				break;
-			default:
-				if (m_pWallChangerDlg)
-					::PostMessage(m_pWallChangerDlg->GetSafeHwnd(), message, wParam, lParam);
-				if (m_pFindDupFileDlg)
-					::PostMessage(m_pFindDupFileDlg->GetSafeHwnd(), message, wParam, lParam);
-				break;
-			}
+			CDialog *pDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
+			if (pDlg)
+				SetFuncEnable(GetFuncFromCWnd(pDlg), false);
+			DoSize();
 			}
 			break;
-		case WM_QUERYENDSESSION:
-			if (g_pTheConf) {
-				delete g_pTheConf;
-				g_pTheConf = NULL;
-			}
-			if (::g_pWallConf) {
-				delete ::g_pWallConf;
-				::g_pWallConf = NULL;
-			}
+		// Tray Icon
+		case IDS_TRAY_RESTART:
+			theApp.SetRestart();
+			theApp.Quit();
+			break;
+		case IDS_TRAY_OPENWINDOW:
+			ShowWindow(SW_SHOW);
+			break;
+		case IDS_TRAY_CLOSEWINDOW:
+			theApp.Quit();
+			break;
+		default:
+			if (m_pWallChangerDlg)
+				::PostMessage(m_pWallChangerDlg->GetSafeHwnd(), message, wParam, lParam);
+			if (m_pFindDupFileDlg)
+				::PostMessage(m_pFindDupFileDlg->GetSafeHwnd(), message, wParam, lParam);
 			break;
 		}
+		}
+		break;
+	case WM_QUERYENDSESSION:
+		DEL(g_pTheConf);
+		DEL(g_pWallConf);
+		DEL(g_pFindConf);
+		DEL(g_pPicCConf);
+		DEL(g_pTheTray);
+		break;
 	}
 
 	return __super::DefWindowProc(message, wParam, lParam);
