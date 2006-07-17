@@ -1,0 +1,19 @@
+Initial function
+
+PicCollector(rss):
+紀錄下載失敗檔案(URL LocalPath Max%)
+點本機檔快速檢視
+點下載網址開瀏覽器
+圖片黑名單
+更改本機feed名稱
+
+PicCollector(html):
+
+FindDupFile:
+
+WallChanger:
+先搜尋enable list
+老闆鍵
+ListCtrl可按CTRL+CVX
+
+整合BindWinKey
