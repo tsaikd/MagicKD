@@ -74,6 +74,7 @@ private:
 
 	bool	m_bInit;
 	bool	m_bShowDirLoadError;
+	bool	m_bPause;
 	int		m_iTestOfflineCount;
 	UINT	m_uTimer;
 	CxImage m_imgNowPic;

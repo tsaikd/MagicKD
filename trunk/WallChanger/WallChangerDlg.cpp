@@ -30,7 +30,7 @@ CWallThreadFindPic *g_pWallThreadFindPic = NULL;
 IMPLEMENT_DYNAMIC(CWallChangerDlg, CDialog)
 CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CWallChangerDlg::IDD, pParent), m_bInit(false), m_pCurListDirPath(NULL),
-		m_iTestOfflineCount(TESTOFFLINECOUNT), m_uTimer(0), m_bShowDirLoadError(true)
+		m_iTestOfflineCount(TESTOFFLINECOUNT), m_uTimer(0), m_bShowDirLoadError(true), m_bPause(false)
 {
 }
 
@@ -274,7 +274,8 @@ bool CWallChangerDlg::SetRandWallPager()
 		m_sNowPicPath = _T("");														\
 		g_pTheTray->SetTrayTip(_T(""));												\
 	}																				\
-	g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon);						\
+	if (!m_bPause)																	\
+		g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon);					\
 	m_muxSetRandWallPager.Unlock();													\
 	return (x);																		\
 }
@@ -756,9 +757,13 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 		case IDS_TRAY_PAUSEWALLCHANGER:
 			if (m_uTimer && (g_pWallConf->m_General_uWaitTime > 0)) {
 				g_pTheTray->CheckMenuItem(IDS_TRAY_PAUSEWALLCHANGER, MF_BYCOMMAND|MF_CHECKED);
+				g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon2);
+				m_bPause = true;
 				StopTimer();
 			} else {
 				g_pTheTray->CheckMenuItem(IDS_TRAY_PAUSEWALLCHANGER, MF_BYCOMMAND|MF_UNCHECKED);
+				g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon);
+				m_bPause = false;
 				StartTimer();
 			}
 			break;
