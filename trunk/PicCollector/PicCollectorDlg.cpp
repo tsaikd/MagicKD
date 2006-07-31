@@ -102,8 +102,7 @@ void CPicCollectorDlg::OnDestroy()
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tDownload Thread"));
 	if (m_pDownLoader) {
 		m_pDownLoader->Destroy();
-		delete m_pDownLoader;
-		m_pDownLoader = NULL;
+		DEL(m_pDownLoader);
 	}
 
 	CDialog::OnDestroy();
@@ -292,6 +291,9 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_REMOVEFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_DELAYDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelaydl)
 	ON_BN_CLICKED(IDC_PICC_BTN_VIEW_DLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnViewDldir)
+	ON_STN_CLICKED(IDC_PICC_STATIC_DLDIR, &CPicCollectorDlg::OnStnClickedPiccStaticDldir)
+	ON_STN_CLICKED(IDC_PICC_STATIC_DLLOCALPATH, &CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath)
+	ON_STN_CLICKED(IDC_PICC_STATIC_DOWNLOAD, &CPicCollectorDlg::OnStnClickedPiccStaticDownload)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -409,6 +411,11 @@ void CPicCollectorDlg::OnBnClickedPiccBtnViewDldir()
 	ExplorerDir(g_pPicCConf->m_sDlDir);
 }
 
+void CPicCollectorDlg::OnStnClickedPiccStaticDldir()
+{
+	ExplorerDir(g_pPicCConf->m_sDlDir);
+}
+
 void CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed()
 {
 	CString strURL;
@@ -459,4 +466,27 @@ void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()
 {
 	m_pDownLoader->SaveNowDLToList(false);
 	m_pDownLoader->SetDiscardNowDL();
+}
+
+void CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath()
+{
+	CString sPath = m_pDownLoader->GetNowDLLocalPath();
+	if (sPath.IsEmpty())
+		return;
+
+	CString sDir = sPath;
+	PathRemoveFileSpec(sDir.GetBuffer());
+	sDir.ReleaseBuffer();
+	if (PathIsDirectory(sDir))
+		ExplorerFile(sPath);
+}
+
+void CPicCollectorDlg::OnStnClickedPiccStaticDownload()
+{
+	CString sUrl = m_pDownLoader->GetNowDLURL();
+	if (sUrl.IsEmpty())
+		return;
+
+	if (0 == _tcsncmp(sUrl, _T("http://"), 7))
+		ShellExecute(NULL, _T("open"), sUrl, NULL, NULL, SW_SHOW);
 }

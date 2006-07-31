@@ -1,3 +1,8 @@
+Version: 1.0.3.0	(2006-07-31)
+	Record the message of download failed file
+	Click PicCollector Download URL to explore
+	Click PicCollector Download Local Path to explore
+
 Version: 1.0.2.9	(2006-07-17)
 	When changing wallpaper, tray icon will change, too
 	Change program icon

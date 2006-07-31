@@ -36,6 +36,7 @@ protected:
 	CSemaphore		m_semPause;
 	CString			m_sNowDLURL;
 	CString			m_sNowDLLocalPath;
+	double			m_fNowDLMaxPercent;
 	CStringList		m_slURL;
 	CStringList		m_slLocalPath;
 	ULONGLONG		m_ulNowDLMaxSize;

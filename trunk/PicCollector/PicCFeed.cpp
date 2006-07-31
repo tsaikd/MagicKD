@@ -24,6 +24,13 @@ void CPicCFeed::SetDBPath(LPCTSTR sDBPath)
 	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
 	table.AddField(_T("Localpath"));
 	m_DB.CheckTableField(table);
+
+	table.Empty();
+	table.m_sTableName = _T("PicDownloadFailed");
+	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
+	table.AddField(_T("Localpath"));
+	table.AddField(_T("MaxDLPercent"));
+	m_DB.CheckTableField(table);
 }
 
 CString CPicCFeed::GetFeedName(LPCTSTR lpURL)

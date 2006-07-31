@@ -51,6 +51,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBnClickedPiccBtnChangedldir();
 	afx_msg void OnBnClickedPiccBtnViewDldir();
+	afx_msg void OnStnClickedPiccStaticDldir();
 	afx_msg void OnBnClickedPiccBtnAddnewfeed();
 	afx_msg void OnBnClickedPiccBtnRefreshfeed();
 	afx_msg void OnBnClickedPiccBtnRemovefeed();
@@ -59,6 +60,10 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnOK();
 	virtual void OnCancel();
+public:
+	afx_msg void OnStnClickedPiccStaticDllocalpath();
+public:
+	afx_msg void OnStnClickedPiccStaticDownload();
 };
 
 extern CPicCollectorDlg *g_pPicCollectorDlg;

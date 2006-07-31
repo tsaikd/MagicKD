@@ -50,8 +50,8 @@ void CPicCDLManager::OnDownloadFileOver()
 	CString strSQL;
 	m_muxNowDLURL.Lock();
 	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
-	m_muxNowDLURL.Unlock();
 	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+	m_muxNowDLURL.Unlock();
 }
 
 void CPicCDLManager::OnDownloadFileDiscard()
@@ -61,5 +61,15 @@ void CPicCDLManager::OnDownloadFileDiscard()
 
 void CPicCDLManager::OnDownloadFileRetryFailed()
 {
-	OnDownloadFileOver();
+	CString strSQL;
+	m_muxNowDLURL.Lock();
+	strSQL.Format(_T("INSERT INTO PicDownloadFailed (Url, Localpath, MaxDLPercent) VALUES ('%s', '%s', '%f')"),
+		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),
+		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLLocalPath),
+		m_fNowDLMaxPercent);
+	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+
+	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
+	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+	m_muxNowDLURL.Unlock();
 }

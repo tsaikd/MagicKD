@@ -3,7 +3,7 @@
 
 CKDGetHttpFile::CKDGetHttpFile()
 	:	m_ulNowDLMaxSize(0), m_ulNowDLSize(0), m_ulTotalDLMaxSize(0), m_ulTotalDLSize(0), m_uQueryRetryTimes(0),
-		m_bDiscardNowDL(false)
+		m_bDiscardNowDL(false), m_fNowDLMaxPercent(0)
 {
 }
 
@@ -51,6 +51,7 @@ DWORD CKDGetHttpFile::ThreadProc()
 			SHCreateDirectoryEx(NULL, sLocalDir, NULL);
 
 		m_bDiscardNowDL = false;
+		m_fNowDLMaxPercent = 0;
 		bDLOver = true;
 		TRY {
 			pFile = (CHttpFile *)session.OpenURL(m_sNowDLURL);
@@ -84,6 +85,9 @@ DWORD CKDGetHttpFile::ThreadProc()
 				WriteFile(hLocalFile, pBuf, uReadLen, &dwWriteLen, NULL);
 				m_ulNowDLSize += dwWriteLen;
 				m_ulTotalDLSize += dwWriteLen;
+
+				double fDLPercent = GetPercentOfNowDL();
+				m_fNowDLMaxPercent = (fDLPercent > m_fNowDLMaxPercent) ? fDLPercent : m_fNowDLMaxPercent;
 			}
 		}
 		if (hLocalFile != INVALID_HANDLE_VALUE) {
