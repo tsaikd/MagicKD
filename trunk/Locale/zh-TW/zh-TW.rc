@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,1
- PRODUCTVERSION 1,0,3,1
+ FILEVERSION 1,0,3,2
+ PRODUCTVERSION 1,0,3,2
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "zh-TW"
-            VALUE "FileVersion", "1, 0, 3, 1"
+            VALUE "FileVersion", "1, 0, 3, 2"
             VALUE "InternalName", "zh-TW"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "zh-TW"
             VALUE "ProductName", " zh-TW"
-            VALUE "ProductVersion", "1, 0, 3, 1"
+            VALUE "ProductVersion", "1, 0, 3, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -125,6 +125,7 @@ BEGIN
     IDS_CONF_MSG_UPDATECONNECTFAILED "網路連線失敗"
     IDS_CONF_MSG_KDUPDATERTOOOLD 
                             "您的 KDUpdater 版本太舊\n請到 http://svn.tsaikd.org/tsaikd/KDUpdater/KDUpdater.exe 下載新的版本\n按""確定""幫您開啟瀏覽器"
+    IDS_CONF_MSG_WANTREVERTORNOT "部份程式毀損\n您想要回復到最新版本嗎？\n(需要重新啟動)"
 END
 
 STRINGTABLE 

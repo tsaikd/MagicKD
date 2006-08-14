@@ -7,13 +7,13 @@ UINT WMU_KDUPDATER_RES					= RegisterWindowMessage(_T("Res") _T("KDUpdater"));
 
 UINT WMU_KDUPDATER_REQ_NEED_UPDATE		= RegisterWindowMessage(_T("Req") _T("KDUpdater Need Update"));
 UINT WMU_KDUPDATER_RES_NEED_UPDATE		= RegisterWindowMessage(_T("Res") _T("KDUpdater Need Update"));
-UINT WMU_KDUPDATER_RES_NONEED_UPDATE	= RegisterWindowMessage(_T("Res") _T("KDUpdater No Need Update"));
+UINT WMU_KDUPDATER_RES_NEED_REVERT		= RegisterWindowMessage(_T("Res") _T("KDUpdater Need Revert"));
 
 UINT WMU_KDUPDATER_REQ_START_UPDATE		= RegisterWindowMessage(_T("Req") _T("KDUpdater Start Update"));
 UINT WMU_KDUPDATER_REQ_CLOSE_APP		= RegisterWindowMessage(_T("Req") _T("KDUpdater Close App"));
 
 CKDUpdaterAPI::CKDUpdaterAPI()
-	:	m_hUpdaterWnd(NULL), m_hParentWnd(NULL), m_hAppMainWnd(NULL), m_bOnQuit(false)
+	:	m_hUpdaterWnd(NULL), m_hParentWnd(NULL), m_hAppMainWnd(NULL), m_bOnQuit(false), m_bNeedRevert(false)
 {
 }
 
@@ -138,6 +138,7 @@ bool CKDUpdaterAPI::IsNeedUpdate(bool bRecheck/* = false*/)
 		return false;
 
 	uRes = ::SendMessage(m_hUpdaterWnd, WMU_KDUPDATER_REQ_NEED_UPDATE, 0, 0);
+	m_bNeedRevert = (uRes == WMU_KDUPDATER_RES_NEED_REVERT) ? true : false;
 	return (uRes == WMU_KDUPDATER_RES_NEED_UPDATE) ? true : false;
 }
 

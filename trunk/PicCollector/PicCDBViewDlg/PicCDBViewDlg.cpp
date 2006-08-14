@@ -152,7 +152,7 @@ void CPicCDBViewDlg::OnEnSetfocusPiccDbvEditUrl()
 
 void CPicCDBViewDlg::OnEnSetfocusPiccDbvEditLocalpath()
 {
-	CEdit *pEdit = (CEdit *)GetDlgItem(IDC_PICC_DBV_EDIT_URL);
+	CEdit *pEdit = (CEdit *)GetDlgItem(IDC_PICC_DBV_EDIT_LOCALPATH);
 	if (pEdit && pEdit->GetWindowTextLength()) {
 		pEdit->SetRedraw(FALSE);
 		pEdit->SetSel(0, -1);

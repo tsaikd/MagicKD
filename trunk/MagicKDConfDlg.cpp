@@ -57,7 +57,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	CString sPath;
 	sPath.Format(_T("%s%s"), theApp.GetAppDir(), _T("KDUpdater.exe"));
 	CKDAppVer KDUpdaterVer((LPCTSTR)CGetFileVersion(sPath));
-	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.5")))) {
+	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.6")))) {
 		// Init Update Information
 		m_KDUpdater.SetParentWnd(GetSafeHwnd());
 		m_KDUpdater.SetKDUpdaterPath(sPath);
@@ -183,6 +183,13 @@ void CMagicKDConfDlg::_DoCheckUpdate()
 		MessageBox(CResString(IDS_CONF_MSG_UPDATECONNECTFAILED), NULL, MB_OK | MB_ICONERROR);
 	} else if (m_KDUpdater.IsNeedUpdate()) {
 		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTUPDATEORNOT), NULL, MB_YESNO | MB_ICONQUESTION)) {
+			m_KDUpdater.DoAppUpdate(1000, theApp.GetMainWnd()->GetSafeHwnd());
+			theApp.Quit();
+		} else {
+			m_KDUpdater.CloseKDUpdater();
+		}
+	} else if (m_KDUpdater.m_bNeedRevert) {
+		if (IDYES == MessageBox(CResString(IDS_CONF_MSG_WANTREVERTORNOT), NULL, MB_YESNO | MB_ICONQUESTION)) {
 			m_KDUpdater.DoAppUpdate(1000, theApp.GetMainWnd()->GetSafeHwnd());
 			theApp.Quit();
 		} else {

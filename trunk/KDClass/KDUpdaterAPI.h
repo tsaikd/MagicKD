@@ -5,7 +5,7 @@ extern UINT WMU_KDUPDATER_RES;
 
 extern UINT WMU_KDUPDATER_REQ_NEED_UPDATE;
 extern UINT WMU_KDUPDATER_RES_NEED_UPDATE;
-extern UINT WMU_KDUPDATER_RES_NONEED_UPDATE;
+extern UINT WMU_KDUPDATER_RES_NEED_REVERT;
 
 extern UINT WMU_KDUPDATER_REQ_START_UPDATE;
 extern UINT WMU_KDUPDATER_REQ_CLOSE_APP;
@@ -29,6 +29,8 @@ public:
 	bool IsNeedUpdate(bool bRecheck = false);
 	void DoAppUpdate(DWORD dwDelayTime = 5000, HWND hWaitWnd = NULL);
 	void CloseKDUpdater();
+
+	bool m_bNeedRevert;
 
 protected:
 	HWND m_hUpdaterWnd;
