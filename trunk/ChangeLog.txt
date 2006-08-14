@@ -1,3 +1,6 @@
+Version: 1.0.3.2	(2006-08-15)
+	Support for program broken checking
+
 Version: 1.0.3.1	(2006-08-14)
 	Recode the message of download over file
 	Add Database Viewer of PicCollector
