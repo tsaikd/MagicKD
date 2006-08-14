@@ -98,6 +98,15 @@
 #define IDS_PICC_BTN_DEL_FEED           270
 #define IDS_PICC_BTN_DELAY_DL           271
 #define IDS_PICC_BTN_VIEW_DLDIR         272
+#define IDS_PICC_BTN_VIEWDB             273
+#define IDS_PICC_DBV_BTN_RELOAD         281
+#define IDS_PICC_DBV_BTN_EXIT           282
+#define IDS_PICC_DBV_BTN_DELETE         283
+#define IDS_PICC_DBV_LIST_URL           284
+#define IDS_PICC_DBV_LIST_LOCALPATH     285
+#define IDS_PICC_DBV_COMBO_DLFAILED     286
+#define IDS_PICC_DBV_COMBO_DLOVER       287
+#define IDS_PICC_DBV_COMBO_UNDL         288
 
 // Next default values for new objects
 // 

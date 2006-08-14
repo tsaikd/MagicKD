@@ -1,3 +1,7 @@
+Version: 1.0.3.1	(2006-08-14)
+	Recode the message of download over file
+	Add Database Viewer of PicCollector
+
 Version: 1.0.3.0	(2006-07-31)
 	Record the message of download failed file
 	Click PicCollector Download URL to explore

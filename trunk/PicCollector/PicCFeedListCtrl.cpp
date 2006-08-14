@@ -23,7 +23,7 @@ void CPicCFeedListCtrl::Init()
 	GetClientRect(rcWin);
 	InsertColumn(0, _T("Name"), LVCFMT_LEFT, 100);
 	InsertColumn(1, _T("Feed Title"), LVCFMT_LEFT, 100);
-	InsertColumn(2, _T("Feed URL"), LVCFMT_LEFT, rcWin.right-200);
+	InsertColumn(2, _T("Feed URL"), LVCFMT_LEFT, rcWin.Width()-200);
 
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 

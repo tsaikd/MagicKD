@@ -103,6 +103,16 @@
 #define IDS_PICC_BTN_DEL_FEED           270
 #define IDS_PICC_BTN_DELAY_DL           271
 #define IDS_PICC_BTN_VIEW_DLDIR         272
+#define IDD_MAGICKD_PICCDBVIEW          273
+#define IDS_PICC_BTN_VIEWDB             273
+#define IDS_PICC_DBV_BTN_RELOAD         281
+#define IDS_PICC_DBV_BTN_EXIT           282
+#define IDS_PICC_DBV_BTN_DELETE         283
+#define IDS_PICC_DBV_LIST_URL           284
+#define IDS_PICC_DBV_LIST_LOCALPATH     285
+#define IDS_PICC_DBV_COMBO_DLFAILED     286
+#define IDS_PICC_DBV_COMBO_DLOVER       287
+#define IDS_PICC_DBV_COMBO_UNDL         288
 #define IDC_TAB_MAIN                    1000
 #define IDC_PROGRESS_END                1001
 #define IDC_MAGICKDEND_EDIT_TEXT        1002
@@ -164,14 +174,21 @@
 #define IDC_PICC_BTN_REMOVEFEED         1089
 #define IDC_PICC_BTN_DELAYDL            1090
 #define IDC_PICC_BTN_VIEW_DLDIR         1091
+#define IDC_PICC_DBV_LIST_ITEM          1092
+#define IDC_PICC_DBV_EDIT_URL           1093
+#define IDC_PICC_DBV_EDIT_LOCALPATH     1094
+#define IDC_PICC_DBV_BTN_RELOAD         1095
+#define IDC_PICC_DBV_COMBO_TBNAME       1096
+#define IDC_PICC_DBV_BTN_DELRECODE      1097
+#define IDC_PICC_BTN_DBVIEW             1098
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        273
+#define _APS_NEXT_RESOURCE_VALUE        274
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1092
+#define _APS_NEXT_CONTROL_VALUE         1099
 #define _APS_NEXT_SYMED_VALUE           107
 #endif
 #endif

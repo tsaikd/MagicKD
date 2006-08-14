@@ -26,6 +26,12 @@ void CPicCFeed::SetDBPath(LPCTSTR sDBPath)
 	m_DB.CheckTableField(table);
 
 	table.Empty();
+	table.m_sTableName = _T("PicDownloadOver");
+	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
+	table.AddField(_T("Localpath"));
+	m_DB.CheckTableField(table);
+
+	table.Empty();
 	table.m_sTableName = _T("PicDownloadFailed");
 	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
 	table.AddField(_T("Localpath"));

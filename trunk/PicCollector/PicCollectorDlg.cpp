@@ -5,6 +5,7 @@
 #include "PicCollector/HTMLReader/LiteHTMLReader.h"
 #include "PicCHTMLEventHandler.h"
 #include "InputBox.h"
+#include "PicCDBViewDlg.h"
 
 #include "PicCollectorDlg.h"
 
@@ -73,6 +74,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 	OnBnClickedPiccBtnRefreshfeed();
 
+	m_dlg_DBView.Create(m_dlg_DBView.IDD, this);
+
 	m_bInit = true;
 	Localize();
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -81,6 +84,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 void CPicCollectorDlg::OnDestroy()
 {
+	m_dlg_DBView.DestroyWindow();
+
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tThread"));
 	SetCanThread(false);
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {
@@ -125,12 +130,15 @@ void CPicCollectorDlg::Localize()
 		return;
 
 	m_list_Feed.Localize();
+	m_dlg_DBView.Localize();
+
 	GetDlgItem(IDC_PICC_STATIC_DLDIRHELP)->SetWindowText(CResString(IDS_PICC_STATIC_DLDIR));
 	GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR)->SetWindowText(CResString(IDS_PICC_BTN_CHANGE_DLDIR));
 	GetDlgItem(IDC_PICC_BTN_VIEW_DLDIR)->SetWindowText(CResString(IDS_PICC_BTN_VIEW_DLDIR));
 	GetDlgItem(IDC_PICC_BTN_ADDNEWFEED)->SetWindowText(CResString(IDS_PICC_BTN_ADD_NEW_FEED));
 	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->SetWindowText(CResString(IDS_PICC_BTN_REFRESH_FEED));
 	GetDlgItem(IDC_PICC_BTN_REMOVEFEED)->SetWindowText(CResString(IDS_PICC_BTN_DEL_FEED));
+	GetDlgItem(IDC_PICC_BTN_DBVIEW)->SetWindowText(CResString(IDS_PICC_BTN_VIEWDB));
 	GetDlgItem(IDC_PICC_BTN_DELAYDL)->SetWindowText(CResString(IDS_PICC_BTN_DELAY_DL));
 }
 
@@ -152,6 +160,9 @@ void CPicCollectorDlg::DoSize()
 		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLDIR), GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR),
 		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DBVIEW), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
 
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_LIST_FEED), this,
 		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
@@ -291,6 +302,7 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_REMOVEFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_DELAYDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelaydl)
 	ON_BN_CLICKED(IDC_PICC_BTN_VIEW_DLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnViewDldir)
+	ON_BN_CLICKED(IDC_PICC_BTN_DBVIEW, &CPicCollectorDlg::OnBnClickedPiccBtnDbview)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DLDIR, &CPicCollectorDlg::OnStnClickedPiccStaticDldir)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DLLOCALPATH, &CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DOWNLOAD, &CPicCollectorDlg::OnStnClickedPiccStaticDownload)
@@ -460,6 +472,13 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()
 			m_list_Feed.ReloadItems();
 		}
 	}
+}
+
+void CPicCollectorDlg::OnBnClickedPiccBtnDbview()
+{
+	m_dlg_DBView.OnBnClickedPiccDbvBtnReload();
+	m_dlg_DBView.ShowWindow(SW_SHOW);
+	m_dlg_DBView.GetDlgItem(IDC_PICC_DBV_LIST_ITEM)->SetFocus();
 }
 
 void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()

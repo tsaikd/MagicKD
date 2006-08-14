@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;CxImage\CxImage\;FuncBase\;KDClass\;WallChanger\;FindDupFile\;PicCollector\"
+				AdditionalIncludeDirectories=".\;CxImage\CxImage\;FuncBase\;KDClass\;WallChanger\;FindDupFile\;PicCollector\;PicCollector\PicCDBViewDlg"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;JAS_WIN_MSVC_BUILD;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -134,7 +134,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories=".\;CxImage\CxImage\;FuncBase\;KDClass\;WallChanger\;FindDupFile\;PicCollector\"
+				AdditionalIncludeDirectories=".\;CxImage\CxImage\;FuncBase\;KDClass\;WallChanger\;FindDupFile\;PicCollector\;PicCollector\PicCDBViewDlg"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -466,6 +466,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="PicCDBView"
+					>
+					<File
+						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBViewDlg.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBVListCtrl.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -737,6 +749,18 @@
 					</File>
 					<File
 						RelativePath=".\PicCollector\HTMLReader\LiteHTMLTag.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="PicCDBView"
+					>
+					<File
+						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBViewDlg.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBVListCtrl.h"
 						>
 					</File>
 				</Filter>

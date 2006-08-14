@@ -7,6 +7,7 @@
 #include "KDStaticPath.h"
 #include "PicCHTMLEventHandler.h"
 #include "PicCDLManager.h"
+#include "PicCDBViewDlg.h"
 
 
 class CPicCollectorDlg : public CDialog, public CKDThread
@@ -36,6 +37,7 @@ public:
 	CKDStaticPath			m_static_DLDir;
 	CKDStaticPath			m_static_DLLocalPath;
 	CKDStaticPath			m_static_Download;
+	CPicCDBViewDlg			m_dlg_DBView;
 
 private:
 	bool					m_bInit;
@@ -56,14 +58,13 @@ public:
 	afx_msg void OnBnClickedPiccBtnRefreshfeed();
 	afx_msg void OnBnClickedPiccBtnRemovefeed();
 	afx_msg void OnBnClickedPiccBtnDelaydl();
+	afx_msg void OnBnClickedPiccBtnDbview();
+	afx_msg void OnStnClickedPiccStaticDllocalpath();
+	afx_msg void OnStnClickedPiccStaticDownload();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnOK();
 	virtual void OnCancel();
-public:
-	afx_msg void OnStnClickedPiccStaticDllocalpath();
-public:
-	afx_msg void OnStnClickedPiccStaticDownload();
 };
 
 extern CPicCollectorDlg *g_pPicCollectorDlg;

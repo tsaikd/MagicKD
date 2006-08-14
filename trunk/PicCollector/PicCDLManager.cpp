@@ -49,6 +49,11 @@ void CPicCDLManager::OnDownloadFileOver()
 {
 	CString strSQL;
 	m_muxNowDLURL.Lock();
+	strSQL.Format(_T("INSERT INTO PicDownloadOver (Url, Localpath) VALUES ('%s', '%s')"),
+		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),
+		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLLocalPath));
+	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+
 	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
 	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
 	m_muxNowDLURL.Unlock();

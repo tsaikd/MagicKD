@@ -6,6 +6,9 @@ PicCollector(rss):
 
 PicCollector(html):
 
+PicCollector:DBView:
+Export¸ê®Æ
+
 FindDupFile:
 
 WallChanger:
