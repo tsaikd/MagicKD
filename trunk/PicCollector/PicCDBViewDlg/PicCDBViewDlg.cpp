@@ -135,6 +135,7 @@ void CPicCDBViewDlg::OnBnClickedPiccDbvBtnDelrecode()
 	}
 	SetRedraw(TRUE);
 	Invalidate();
+	OnBnClickedPiccDbvBtnReload();
 }
 
 void CPicCDBViewDlg::OnEnSetfocusPiccDbvEditUrl()
