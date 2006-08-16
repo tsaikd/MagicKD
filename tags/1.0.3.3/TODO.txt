@@ -1,0 +1,19 @@
+Initial function
+
+PicCollector(rss):
+圖片黑名單
+更改本機feed名稱
+
+PicCollector(html):
+
+PicCollector:DBView:
+Export資料
+
+FindDupFile:
+
+WallChanger:
+先搜尋enable list
+老闆鍵
+ListCtrl可按CTRL+CVX
+
+整合BindWinKey
