@@ -44,7 +44,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	g_pPicCConf = new CPicCConf;
 	g_pPicCConf->Init(&m_Ini);
 	sPath.Format(_T("%sPicCollector.db"), theApp.GetAppConfDir());
-	m_Feed.SetDBPath(sPath);
+	m_Feed.OpenDB(sPath);
 	m_list_Feed.Init();
 	m_ttc.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
 
@@ -74,8 +74,6 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 	OnBnClickedPiccBtnRefreshfeed();
 
-	m_dlg_DBView.Create(m_dlg_DBView.IDD, this);
-
 	m_bInit = true;
 	Localize();
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -84,8 +82,6 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 void CPicCollectorDlg::OnDestroy()
 {
-	m_dlg_DBView.DestroyWindow();
-
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tThread"));
 	SetCanThread(false);
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {
@@ -130,7 +126,6 @@ void CPicCollectorDlg::Localize()
 		return;
 
 	m_list_Feed.Localize();
-	m_dlg_DBView.Localize();
 
 	GetDlgItem(IDC_PICC_STATIC_DLDIRHELP)->SetWindowText(CResString(IDS_PICC_STATIC_DLDIR));
 	GetDlgItem(IDC_PICC_BTN_CHANGEDLDIR)->SetWindowText(CResString(IDS_PICC_BTN_CHANGE_DLDIR));
@@ -476,9 +471,11 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()
 
 void CPicCollectorDlg::OnBnClickedPiccBtnDbview()
 {
-	m_dlg_DBView.OnBnClickedPiccDbvBtnReload();
-	m_dlg_DBView.ShowWindow(SW_SHOW);
-	m_dlg_DBView.GetDlgItem(IDC_PICC_DBV_LIST_ITEM)->SetFocus();
+	CPicCDBViewDlg dlg;
+	dlg.DoModal();
+	//m_dlg_DBView.OnBnClickedPiccDbvBtnReload();
+	//m_dlg_DBView.ShowWindow(SW_SHOW);
+	//m_dlg_DBView.GetDlgItem(IDC_PICC_DBV_LIST_ITEM)->SetFocus();
 }
 
 void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()

@@ -33,9 +33,9 @@ public:
 	CKDSQLiteAPI();
 	virtual ~CKDSQLiteAPI();
 
-	bool OpenDB(LPCTSTR lpDBPath);
-	void Close();
-	bool Reload();
+	virtual bool OpenDB(LPCTSTR lpDBPath);
+	virtual void CloseDB();
+	virtual bool ReloadDB();
 
 	bool CreateTable(CKDSQLiteTable &table, CString *strErrMsg = NULL);
 	bool CheckTableField(CKDSQLiteTable &table, CString *strErrMsg = NULL);
@@ -43,6 +43,8 @@ public:
 	bool IsDBLoaded();
 	bool IsTableExists(LPCTSTR lpTableName);
 	bool IsFieldExists(LPCTSTR lpTableName, LPCTSTR lpFieldName);
+
+	int GetDataCount(LPCTSTR strSQL, CString *strErrMsg = NULL);
 
 	bool ExecSQL(LPCTSTR strSQL, CString *strErrMsg = NULL);
 	bool GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg = NULL, int *nFields = NULL, int *nRow = NULL);

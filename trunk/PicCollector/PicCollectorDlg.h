@@ -7,7 +7,6 @@
 #include "KDStaticPath.h"
 #include "PicCHTMLEventHandler.h"
 #include "PicCDLManager.h"
-#include "PicCDBViewDlg.h"
 
 
 class CPicCollectorDlg : public CDialog, public CKDThread
@@ -37,7 +36,6 @@ public:
 	CKDStaticPath			m_static_DLDir;
 	CKDStaticPath			m_static_DLLocalPath;
 	CKDStaticPath			m_static_Download;
-	CPicCDBViewDlg			m_dlg_DBView;
 
 private:
 	bool					m_bInit;

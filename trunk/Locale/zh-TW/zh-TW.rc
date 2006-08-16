@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,2
- PRODUCTVERSION 1,0,3,2
+ FILEVERSION 1,0,3,3
+ PRODUCTVERSION 1,0,3,3
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "zh-TW"
-            VALUE "FileVersion", "1, 0, 3, 2"
+            VALUE "FileVersion", "1, 0, 3, 3"
             VALUE "InternalName", "zh-TW"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "zh-TW"
             VALUE "ProductName", " zh-TW"
-            VALUE "ProductVersion", "1, 0, 3, 2"
+            VALUE "ProductVersion", "1, 0, 3, 3"
         END
     END
     BLOCK "VarFileInfo"
@@ -239,6 +239,8 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PICC_DBV_COMBO_UNDL "尚未下載"
+    IDS_PICC_DBV_BTN_EXPORT "匯出"
+    IDS_PICC_DBV_MSG_EXPORT "匯出到\n%s"
 END
 
 #endif    // Chinese (Taiwan) resources

@@ -56,7 +56,7 @@ public:
 };
 
 
-class CFeed
+class CFeed : protected CKDSQLiteAPI
 {
 public:
 	CFeed();
@@ -64,9 +64,8 @@ public:
 	CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL);
 	virtual ~CFeed();
 
-	void	SetDBPath(LPCTSTR sDBPath);
-	void	ReloadDB();
-	void	CloseDB();
+	virtual bool OpenDB(LPCTSTR sDBPath);
+	using	CKDSQLiteAPI::CloseDB;
 	void	BuildFromFile(LPCTSTR strXMLURL);
 	void	Save(bool bSaveSource = true);
 	void	LoadLocal(LPCTSTR strLink);
@@ -78,11 +77,8 @@ public:
 	CFeedSource						m_source;		// Feed Source
 	CArray<CFeedItem,CFeedItem>		m_item;			// Feed Item
 	BOOL							m_bAdded;
-	CKDSQLiteAPI					m_DB;
 
 protected:
-	bool	ExecSQL(LPCTSTR strSQL, CString *strErrMsg = NULL);
-	bool	GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg = NULL, int *nFields = NULL, int *nRow = NULL);
 	CString EscapeQuote(CString strValue);
 
 	CMutex							m_muxDLInet;

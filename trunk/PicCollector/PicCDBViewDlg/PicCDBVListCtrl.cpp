@@ -7,6 +7,7 @@
 #include "PicCDBVListCtrl.h"
 
 CPicCDBVListCtrl::CPicCDBVListCtrl()
+	: m_iPage(1)
 {
 }
 
@@ -46,7 +47,7 @@ void CPicCDBVListCtrl::Localize()
 	}
 }
 
-void CPicCDBVListCtrl::ReloadItem(int nID)
+void CPicCDBVListCtrl::ReloadItem(int nID, int iPage/* = 1*/)
 {
 	SetRedraw(FALSE);
 	DeleteAllItems();
@@ -54,11 +55,23 @@ void CPicCDBVListCtrl::ReloadItem(int nID)
 	GetParent()->GetDlgItem(IDC_PICC_DBV_EDIT_LOCALPATH)->SetWindowText(_T(""));
 	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_DELRECODE)->EnableWindow(FALSE);
 
+	const int PAGESIZE = 2000;
+	int iDataCount = 0;
 	CString sTableName = ((CPicCDBViewDlg *)GetParent())->GetTableNameFromID(nID);
 	if (!sTableName.IsEmpty()) {
 		CStringArray saTable;
 		CString strSQL;
 		strSQL.Format(_T("SELECT Url,Localpath FROM %s"), sTableName);
+		iDataCount = g_pPicCollectorDlg->m_Feed.GetDataCount(strSQL);
+		if (iDataCount > PAGESIZE) {
+			iPage--;
+			if ((iPage < 0) || (iPage*PAGESIZE > iDataCount))
+				iPage = 0;
+			m_iPage = iPage + 1;
+			strSQL.AppendFormat(_T(" LIMIT %d,%d"), iPage * PAGESIZE, PAGESIZE);
+		} else {
+			m_iPage = 1;
+		}
 		g_pPicCollectorDlg->m_Feed.GetTableSQL(strSQL, saTable);
 
 		CPicCDBVListItem *pItem;
@@ -75,6 +88,26 @@ void CPicCDBVListCtrl::ReloadItem(int nID)
 
 	SetRedraw(TRUE);
 	Invalidate();
+
+	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LPAGE)->EnableWindow(FALSE);
+	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RPAGE)->EnableWindow(FALSE);
+	if (iDataCount > PAGESIZE) {
+		if (m_iPage > 1)
+			GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LPAGE)->EnableWindow(TRUE);
+		if (m_iPage*PAGESIZE < iDataCount)
+			GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RPAGE)->EnableWindow(TRUE);
+	}
+
+	CString sBuf;
+	if (iDataCount) {
+		sBuf.Format(_T("%d ~ %d (%d)"),
+			(m_iPage-1)*PAGESIZE+1,
+			min(m_iPage*PAGESIZE, iDataCount),
+			iDataCount);
+	} else {
+		sBuf.Format(_T("0 ~ 0 (0)"));
+	}
+	GetParent()->GetDlgItem(IDC_PICC_DBV_STATIC_PAGENUM)->SetWindowText(sBuf);
 }
 
 void CPicCDBVListCtrl::AddItem(CPicCDBVListItem *pItem)

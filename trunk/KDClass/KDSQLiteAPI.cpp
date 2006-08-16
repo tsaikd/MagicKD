@@ -8,12 +8,12 @@ CKDSQLiteAPI::CKDSQLiteAPI()
 
 CKDSQLiteAPI::~CKDSQLiteAPI()
 {
-	Close();
+	CloseDB();
 }
 
 bool CKDSQLiteAPI::OpenDB(LPCTSTR lpDBPath)
 {
-	Close();
+	CloseDB();
 
 	if (!PathFileExists(lpDBPath) || PathIsDirectory(lpDBPath))
 		return false;
@@ -25,7 +25,7 @@ bool CKDSQLiteAPI::OpenDB(LPCTSTR lpDBPath)
 	return true;
 }
 
-void CKDSQLiteAPI::Close()
+void CKDSQLiteAPI::CloseDB()
 {
 	if (m_pDB) {
 		sqlite3_close(m_pDB);
@@ -34,18 +34,17 @@ void CKDSQLiteAPI::Close()
 	m_sDBPath.Empty();
 }
 
-bool CKDSQLiteAPI::Reload()
+bool CKDSQLiteAPI::ReloadDB()
 {
-	if (!m_pDB || m_sDBPath.IsEmpty())
+	if (!IsDBLoaded())
 		return false;
 
-	CString sDBPath = m_sDBPath;
-	return OpenDB(sDBPath);
+	return OpenDB(m_sDBPath);
 }
 
 bool CKDSQLiteAPI::CreateTable(CKDSQLiteTable &table, CString *strErrMsg/* = NULL*/)
 {
-	if (!m_pDB || m_sDBPath.IsEmpty())
+	if (!IsDBLoaded())
 		return false;
 	if (table.IsEmpty())
 		return false;
@@ -71,7 +70,7 @@ bool CKDSQLiteAPI::CreateTable(CKDSQLiteTable &table, CString *strErrMsg/* = NUL
 
 bool CKDSQLiteAPI::CheckTableField(CKDSQLiteTable &table, CString *strErrMsg/* = NULL*/)
 {
-	if (!m_pDB || m_sDBPath.IsEmpty())
+	if (!IsDBLoaded())
 		return false;
 	if (table.IsEmpty())
 		return false;
@@ -99,11 +98,17 @@ bool CKDSQLiteAPI::CheckTableField(CKDSQLiteTable &table, CString *strErrMsg/* =
 
 bool CKDSQLiteAPI::IsDBLoaded()
 {
-	return (!m_sDBPath.IsEmpty());
+	if (!m_pDB || m_sDBPath.IsEmpty())
+		return false;
+
+	return true;
 }
 
 bool CKDSQLiteAPI::IsTableExists(LPCTSTR lpTableName)
 {
+	if (!IsDBLoaded())
+		return false;
+
 	CString strSQL;
 
 	strSQL.Format(_T("SELECT * FROM %s LIMIT 0"), lpTableName);
@@ -112,15 +117,41 @@ bool CKDSQLiteAPI::IsTableExists(LPCTSTR lpTableName)
 
 bool CKDSQLiteAPI::IsFieldExists(LPCTSTR lpTableName, LPCTSTR lpFieldName)
 {
+	if (!IsDBLoaded())
+		return false;
+
 	CString strSQL;
 
 	strSQL.Format(_T("SELECT %s FROM %s LIMIT 0"), lpFieldName, lpTableName);
 	return ExecSQL(strSQL);
 }
 
+int CKDSQLiteAPI::GetDataCount(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
+{
+	if (!IsDBLoaded())
+		return -1;
+
+	int iRes = 0;
+
+	m_muxDB.Lock();
+	sqlite3_stmt *stmt = NULL;
+	if (SQLITE_OK == sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0)) {
+		while (sqlite3_step(stmt) == SQLITE_ROW)
+			iRes++;
+	} else {
+		iRes = -1;
+	}
+	if (strErrMsg)
+		*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
+	sqlite3_finalize(stmt);
+	m_muxDB.Unlock();
+
+	return iRes;
+}
+
 bool CKDSQLiteAPI::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
 {
-	if (!m_pDB || m_sDBPath.IsEmpty())
+	if (!IsDBLoaded())
 		return false;
 
 	bool bRes = true;
@@ -139,7 +170,7 @@ bool CKDSQLiteAPI::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
 
 bool CKDSQLiteAPI::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg/* = NULL*/, int *nFields/* = NULL*/, int *nRow/* = NULL*/)
 {
-	if (!m_pDB || m_sDBPath.IsEmpty())
+	if (!IsDBLoaded())
 		return false;
 
 	m_muxDB.Lock();

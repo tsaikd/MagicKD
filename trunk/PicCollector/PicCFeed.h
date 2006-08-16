@@ -7,9 +7,12 @@ public:
 	CPicCFeed();
 	virtual ~CPicCFeed();
 
-	void SetDBPath(LPCTSTR sDBPath);
+	bool OpenDB(LPCTSTR sDBPath);
+	using CFeed::ReloadDB;
 
 	CString GetFeedName(LPCTSTR lpURL);
+
+	using CFeed::GetDataCount;
 
 	using CFeed::GetTableSQL;
 	using CFeed::ExecSQL;

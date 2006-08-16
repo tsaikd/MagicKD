@@ -9,34 +9,38 @@ CPicCFeed::~CPicCFeed()
 {
 }
 
-void CPicCFeed::SetDBPath(LPCTSTR sDBPath)
+bool CPicCFeed::OpenDB(LPCTSTR sDBPath)
 {
-	CFeed::SetDBPath(sDBPath);
+	bool bRes = CFeed::OpenDB(sDBPath);
+	if (!bRes)
+		return bRes;
 
 	CKDSQLiteTable table;
 	table.m_sTableName = _T("PicFeed");
 	table.AddField(_T("FeedLink"), _T("VARCHAR PRIMARY KEY"));
 	table.AddField(_T("name"));
-	m_DB.CheckTableField(table);
+	CheckTableField(table);
 
 	table.Empty();
 	table.m_sTableName = _T("PicUnDownload");
 	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
 	table.AddField(_T("Localpath"));
-	m_DB.CheckTableField(table);
+	CheckTableField(table);
 
 	table.Empty();
 	table.m_sTableName = _T("PicDownloadOver");
 	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
 	table.AddField(_T("Localpath"));
-	m_DB.CheckTableField(table);
+	CheckTableField(table);
 
 	table.Empty();
 	table.m_sTableName = _T("PicDownloadFailed");
 	table.AddField(_T("Url"), _T("VARCHAR PRIMARY KEY"));
 	table.AddField(_T("Localpath"));
 	table.AddField(_T("MaxDLPercent"));
-	m_DB.CheckTableField(table);
+	CheckTableField(table);
+
+	return bRes;
 }
 
 CString CPicCFeed::GetFeedName(LPCTSTR lpURL)

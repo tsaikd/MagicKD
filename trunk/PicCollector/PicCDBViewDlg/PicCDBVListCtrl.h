@@ -24,8 +24,13 @@ public:
 
 	void Init();
 	void Localize();
-	void ReloadItem(int nID);
+	void ReloadItem(int nID, int iPage = 1);
 	void AddItem(CPicCDBVListItem *pItem);
+
+	inline int GetCurPage() { return m_iPage; }
+
+private:
+	int m_iPage;
 
 public:
 	afx_msg void OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);

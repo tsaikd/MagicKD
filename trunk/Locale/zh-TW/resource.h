@@ -103,11 +103,13 @@
 #define IDS_PICC_DBV_BTN_RELOAD         281
 #define IDS_PICC_DBV_BTN_EXIT           282
 #define IDS_PICC_DBV_BTN_DELETE         283
-#define IDS_PICC_DBV_LIST_URL           284
-#define IDS_PICC_DBV_LIST_LOCALPATH     285
-#define IDS_PICC_DBV_COMBO_DLFAILED     286
-#define IDS_PICC_DBV_COMBO_DLOVER       287
-#define IDS_PICC_DBV_COMBO_UNDL         288
+#define IDS_PICC_DBV_BTN_EXPORT         284
+#define IDS_PICC_DBV_LIST_URL           285
+#define IDS_PICC_DBV_LIST_LOCALPATH     286
+#define IDS_PICC_DBV_COMBO_DLFAILED     287
+#define IDS_PICC_DBV_COMBO_DLOVER       288
+#define IDS_PICC_DBV_COMBO_UNDL         289
+#define IDS_PICC_DBV_MSG_EXPORT         290
 
 // Next default values for new objects
 // 

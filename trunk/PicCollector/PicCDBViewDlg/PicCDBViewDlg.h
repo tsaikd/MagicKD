@@ -9,9 +9,9 @@ public:
 	enum { IDD = IDD_MAGICKD_PICCDBVIEW };
 	enum {
 		ID_TABLE_NULL,
+		ID_TABLE_UNDL,
 		ID_TABLE_DLFAILED,
-		ID_TABLE_DLOVER,
-		ID_TABLE_UNDL
+		ID_TABLE_DLOVER
 	};
 	CPicCDBViewDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CPicCDBViewDlg();
@@ -30,4 +30,8 @@ public:
 	afx_msg void OnEnSetfocusPiccDbvEditLocalpath();
 	afx_msg void OnBnClickedPiccDbvBtnReload();
 	afx_msg void OnBnClickedPiccDbvBtnDelrecode();
+	afx_msg void OnBnClickedPiccDbvBtnLpage();
+	afx_msg void OnBnClickedPiccDbvBtnRpage();
+public:
+	afx_msg void OnBnClickedPiccDbvBtnExport();
 };

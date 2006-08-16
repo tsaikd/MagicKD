@@ -107,13 +107,13 @@ CFeed::CFeed()
 CFeed::CFeed(LPCTSTR sDBPath)
 	: m_bAdded(FALSE)
 {
-	SetDBPath(sDBPath);
+	OpenDB(sDBPath);
 }
 
 CFeed::CFeed(LPCTSTR sDBPath, LPCTSTR strXMLURL)
 	: m_bAdded(FALSE)
 {
-	SetDBPath(sDBPath);
+	OpenDB(sDBPath);
 	BuildFromFile(strXMLURL);
 }
 
@@ -122,20 +122,12 @@ CFeed::~CFeed()
 	CloseDB();
 }
 
-bool CFeed::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
+bool CFeed::OpenDB(LPCTSTR sDBPath)
 {
-	return m_DB.ExecSQL(strSQL, strErrMsg);
-}
 
-bool CFeed::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *strErrMsg/* = NULL*/, int *nFields/* = NULL*/, int *nRow/* = NULL*/)
-{
-	return m_DB.GetTableSQL(strSQL, saTable, strErrMsg, nFields, nRow);
-}
-
-void CFeed::SetDBPath(LPCTSTR sDBPath)
-{
-	CloseDB();
-	m_DB.OpenDB(sDBPath);
+	bool bRes = CKDSQLiteAPI::OpenDB(sDBPath);
+	if (!bRes)
+		return bRes;
 
 	CKDSQLiteTable table;
 	table.m_sTableName = _T("FeedItem");
@@ -148,7 +140,7 @@ void CFeed::SetDBPath(LPCTSTR sDBPath)
 	table.AddField(_T("category"));
 	table.AddField(_T("subject"));
 	table.AddField(_T("readstatus"));
-	m_DB.CheckTableField(table);
+	CheckTableField(table);
 
 	table.Empty();
 	table.m_sTableName = _T("FeedSource");
@@ -168,17 +160,9 @@ void CFeed::SetDBPath(LPCTSTR sDBPath)
 	table.AddField(_T("imagelink"));
 	table.AddField(_T("imagetitle"));
 	table.AddField(_T("imageurl"));
-	m_DB.CheckTableField(table);
-}
+	CheckTableField(table);
 
-void CFeed::ReloadDB()
-{
-	m_DB.Reload();
-}
-
-void CFeed::CloseDB()
-{
-	m_DB.Close();
+	return bRes;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -191,7 +175,7 @@ void CFeed::CloseDB()
 #define RETURN { CoUninitialize(); m_muxDLInet.Unlock(); return; }
 void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
-	if (!m_DB.IsDBLoaded())
+	if (!IsDBLoaded())
 		return;
 
 	m_muxDLInet.Lock();
@@ -367,7 +351,7 @@ void CFeed::Save(bool bSaveSource /*= true*/)
 	CString	strSQL;
 	int		nIndex;
 
-	if (!m_DB.IsDBLoaded())
+	if (!IsDBLoaded())
 		return;
 	if (m_source.m_strLink.IsEmpty())
 		return;
@@ -422,7 +406,7 @@ void CFeed::LoadLocal(LPCTSTR strLink)
 	CString			strSQL;
 	CStringArray	saTable;
 
-	if (!m_DB.IsDBLoaded())
+	if (!IsDBLoaded())
 		return;
 
 	ClearLoadedItems();
@@ -474,7 +458,7 @@ void CFeed::GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLink
 	CString			strSQL;
 	CStringArray	saTable;
 
-	if (!m_DB.IsDBLoaded())
+	if (!IsDBLoaded())
 		return;
 
 	// Step 3. Read FeedSource and populate it into m_source object
@@ -493,7 +477,7 @@ void CFeed::GetFeedSourceList(CStringArray& strTitleArray, CStringArray& strLink
 //
 void CFeed::MarkItemRead(LPCTSTR strLink)
 {
-	if (!m_DB.IsDBLoaded())
+	if (!IsDBLoaded())
 		return;
 
 	CString strSQL;
