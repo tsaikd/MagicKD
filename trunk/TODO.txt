@@ -11,6 +11,7 @@ PicCollector:DBView:
 Export資料
 
 FindDupFile:
+bad取消尋找
 
 WallChanger:
 先搜尋enable list

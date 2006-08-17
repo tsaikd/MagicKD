@@ -44,13 +44,13 @@ BOOL CWallChangerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	if (!::g_pWallChangerDlg)
+	if (!g_pWallChangerDlg)
 		g_pWallChangerDlg = this;
-	if (!::g_pWallEnablePicList)
-		::g_pWallEnablePicList = new CWallEnablePicList;
-	if (!::g_pWallThreadFindPic)
-		::g_pWallThreadFindPic = new CWallThreadFindPic;
-	::g_pWallThreadFindPic->SetMsgWnd(m_hWnd);
+	if (!g_pWallEnablePicList)
+		g_pWallEnablePicList = new CWallEnablePicList;
+	if (!g_pWallThreadFindPic)
+		g_pWallThreadFindPic = new CWallThreadFindPic;
+	g_pWallThreadFindPic->SetMsgWnd(m_hWnd);
 
 	srand((UINT)time(NULL));
 	g_pTheTray->InsertMenu(0, MF_STRING | MF_BYPOSITION, IDS_TRAY_PAUSEWALLCHANGER	, CResString(IDS_TRAY_PAUSEWALLCHANGER));
@@ -66,9 +66,9 @@ BOOL CWallChangerDlg::OnInitDialog()
 	m_staticNowPicPath.SignToolTipCtrl(&m_ttc);
 
 	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("WallChanger.ini"));
-	if (!::g_pWallConf)
-		::g_pWallConf = new CWallConf;
-	::g_pWallConf->Init(&m_cIni);
+	if (!g_pWallConf)
+		g_pWallConf = new CWallConf;
+	g_pWallConf->Init(&m_cIni);
 
 	m_sTempFilePath = CTempFilePath(NULL, NULL, _T(".jpg"));
 	m_iTestOfflineCount = TESTOFFLINECOUNT;
