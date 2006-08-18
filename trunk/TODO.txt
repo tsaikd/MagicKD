@@ -3,15 +3,10 @@ Initial function
 PicCollector(rss):
 圖片黑名單
 更改本機feed名稱
-找到URL立即加入DB
 
 PicCollector(html):
 
-PicCollector:DBView:
-Export資料
-
 FindDupFile:
-bad取消尋找
 
 WallChanger:
 先搜尋enable list

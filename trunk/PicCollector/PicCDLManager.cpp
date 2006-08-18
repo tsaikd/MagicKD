@@ -26,6 +26,9 @@ void CPicCDLManager::Init(CPicCFeed *pFeed)
 
 void CPicCDLManager::Destroy()
 {
+	if (!m_pFeed)
+		return;
+
 	SetCanThread(false);
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {
 #ifdef DEBUG
@@ -35,7 +38,7 @@ void CPicCDLManager::Destroy()
 		TerminateThread(0);
 	}
 
-	m_pFeed->ExecSQL(_T("PRAGMA synchronous = OFF"));
+	SetDBSync(false);
 	CString strSQL;
 	while (!IsDownloadAllOver()) {
 		strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
@@ -43,6 +46,28 @@ void CPicCDLManager::Destroy()
 			m_pFeed->EscapeQuote(RemoveHeadLocalPath()));
 		m_pFeed->ExecSQL(strSQL);
 	}
+	SetDBSync(true);
+}
+
+bool CPicCDLManager::AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath)
+{
+	if (!m_pFeed)
+		return false;
+
+	CString strSQL;
+	strSQL.Format(_T("INSERT INTO PicUnDownload (Url, Localpath) VALUES ('%s', '%s')"),
+		m_pFeed->EscapeQuote(lpURL),
+		m_pFeed->EscapeQuote(lpLocalPath));
+	m_pFeed->ExecSQL(strSQL);
+	return CKDGetHttpFile::AddFileListQuick(lpURL, lpLocalPath);
+}
+
+void CPicCDLManager::SetDBSync(bool bSync/* = true*/)
+{
+	if (!m_pFeed)
+		return;
+
+	m_pFeed->SetDBSync(bSync);
 }
 
 void CPicCDLManager::OnDownloadFileOver()
@@ -61,7 +86,11 @@ void CPicCDLManager::OnDownloadFileOver()
 
 void CPicCDLManager::OnDownloadFileDiscard()
 {
-	OnDownloadFileOver();
+	CString strSQL;
+	m_muxNowDLURL.Lock();
+	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
+	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+	m_muxNowDLURL.Unlock();
 }
 
 void CPicCDLManager::OnDownloadFileRetryFailed()

@@ -12,6 +12,7 @@ public:
 
 	CString GetFeedName(LPCTSTR lpURL);
 
+	using CFeed::SetDBSync;
 	using CFeed::GetDataCount;
 
 	using CFeed::GetTableSQL;

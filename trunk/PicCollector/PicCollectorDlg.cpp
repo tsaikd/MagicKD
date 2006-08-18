@@ -236,6 +236,7 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 			m_HTMLReader.Read(m_Feed.m_item[i].m_strDescription);
 
 			// check download list for black list
+
 			// Create serial number for this link
 			m_uLastDLDay = m_Ini.GetUInt(_T("General"), _T("uLastDLDay"), _ttoi(curTime.Format(_T("%d"))));
 			if (m_uLastDLDay == (UINT)_ttoi(curTime.Format(_T("%d")))) {
@@ -259,6 +260,7 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 				SHCreateDirectoryEx(GetSafeHwnd(), strLocalDir, NULL);
 
 			// Download to local own dir and clear old list
+			m_pDownLoader->SetDBSync(false);
 			while (!m_HTMLEventHandler.m_slParsedPic.IsEmpty()) {
 				strLocalPath.Format(_T("%s\\%05d.jpg"), strLocalDir, uPicNum++);
 				m_pDownLoader->AddFileListQuick(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath);
@@ -266,6 +268,7 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 				if (!IsCanThread())
 					return;
 			}
+			m_pDownLoader->SetDBSync(true);
 
 			if (!IsCanThread())
 				return;

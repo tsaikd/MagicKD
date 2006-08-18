@@ -36,6 +36,7 @@ private:
 	void _FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath);
 
 	bool m_bInit;
+	bool m_bStop;
 	int m_iSortNumber;
 
 protected:

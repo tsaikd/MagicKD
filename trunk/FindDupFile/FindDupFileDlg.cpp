@@ -6,7 +6,7 @@
 #include "MagicKD.h"
 #include "FindDFConf.h"
 #include "FindDFOthers.h"
-#include "FindDupFileProc.h"
+#include "FindDFArray.h"
 
 #include "FindDupFileDlg.h"
 
@@ -18,7 +18,7 @@ CFindDFConf *g_pFindConf = NULL;
 
 IMPLEMENT_DYNAMIC(CFindDupFileDlg, CDialog)
 CFindDupFileDlg::CFindDupFileDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CFindDupFileDlg::IDD, pParent), m_bInit(false), m_iSortNumber(0)
+	:	CDialog(CFindDupFileDlg::IDD, pParent), m_bInit(false), m_bStop(false), m_iSortNumber(0)
 {
 }
 
@@ -28,9 +28,10 @@ CFindDupFileDlg::~CFindDupFileDlg()
 
 DWORD CFindDupFileDlg::ThreadProc()
 {
+	m_bStop = false;
 	bool bFindSameFile = false;
 	CFindDupFileProc *pImg;
-	CArray<CFindDupFileProc *, CFindDupFileProc *> aDupFile;
+	CFindDFArray aDupFile;
 	CString sPath;
 	CFileFind finder;
 
@@ -40,7 +41,9 @@ DWORD CFindDupFileDlg::ThreadProc()
 	m_progress_FindDF.SetPos(0);
 	SetNowPicPath(NULL);
 	m_tree_FindResult.SelectItem(NULL);
+	m_tree_FindResult.SetRedraw(FALSE);
 	m_tree_FindResult.DeleteAllItems();
+	m_tree_FindResult.SetRedraw(TRUE);
 	m_progress_FindDF.SetPos(500);
 
 	int i, iCount = m_list_FindDupFileList.GetItemCount();
@@ -57,7 +60,9 @@ DWORD CFindDupFileDlg::ThreadProc()
 		goto Lable_ExitFindDupFileThread;
 	m_iSortNumber = aDupFile.GetCount();
 	SetTimer(KDT_SORTTING, 1000, NULL);
-	qsort(aDupFile.GetData(), m_iSortNumber, sizeof(CFindDupFileProc *), FileCmpCB);
+//	qsort(aDupFile.GetData(), m_iSortNumber, sizeof(CFindDupFileProc *), FileCmpCB);
+	// Use another Quick Sort algorithm
+	aDupFile.QuickSort(true, &m_bStop);
 	KillTimer(KDT_SORTTING);
 	m_progress_FindDF.SetPos(8000);
 
@@ -133,15 +138,13 @@ BOOL CFindDupFileDlg::OnInitDialog()
 
 void CFindDupFileDlg::OnDestroy()
 {
+	OnBnClickedFindBtnStopfind();
 	SetCanThread(false);
 	WaitForThread(3000);
 
 	CDialog::OnDestroy();
 
-	if (::g_pFindConf) {
-		delete ::g_pFindConf;
-		::g_pFindConf = NULL;
-	}
+	DEL(g_pFindConf);
 }
 
 void CFindDupFileDlg::DoSize()
@@ -383,11 +386,12 @@ void CFindDupFileDlg::OnBnClickedFindBtnStartfind()
 
 void CFindDupFileDlg::OnBnClickedFindBtnStopfind()
 {
-	SetCanThread(false);
-	WaitForThread(INFINITE);
-	GetDlgItem(IDC_FIND_BTN_STARTFIND)->EnableWindow(TRUE);
-	GetDlgItem(IDC_FIND_BTN_STOPFIND)->EnableWindow(FALSE);
-	GetDlgItem(IDC_FIND_LIST_FINDLIST)->EnableWindow(TRUE);
+//	SetCanThread(false);
+	m_bStop = true;
+	//WaitForThread(INFINITE);
+	//GetDlgItem(IDC_FIND_BTN_STARTFIND)->EnableWindow(TRUE);
+	//GetDlgItem(IDC_FIND_BTN_STOPFIND)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_FIND_LIST_FINDLIST)->EnableWindow(TRUE);
 }
 
 void CFindDupFileDlg::OnBnClickedFindBtnExpandall()

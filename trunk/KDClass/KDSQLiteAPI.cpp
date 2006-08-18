@@ -2,7 +2,7 @@
 #include "KDSQLiteAPI.h"
 
 CKDSQLiteAPI::CKDSQLiteAPI()
-	:	m_pDB(NULL)
+	: m_pDB(NULL)
 {
 }
 
@@ -18,8 +18,12 @@ bool CKDSQLiteAPI::OpenDB(LPCTSTR lpDBPath)
 	if (!PathFileExists(lpDBPath) || PathIsDirectory(lpDBPath))
 		return false;
 
-	if (SQLITE_OK != sqlite3_open16(lpDBPath, &m_pDB))
+	m_muxDB.Lock();
+	if (SQLITE_OK != sqlite3_open16(lpDBPath, &m_pDB)) {
+		m_muxDB.Unlock();
 		return false;
+	}
+	m_muxDB.Unlock();
 
 	m_sDBPath = lpDBPath;
 	return true;
@@ -27,11 +31,13 @@ bool CKDSQLiteAPI::OpenDB(LPCTSTR lpDBPath)
 
 void CKDSQLiteAPI::CloseDB()
 {
+	m_muxDB.Lock();
 	if (m_pDB) {
 		sqlite3_close(m_pDB);
 		m_pDB = NULL;
 	}
 	m_sDBPath.Empty();
+	m_muxDB.Unlock();
 }
 
 bool CKDSQLiteAPI::ReloadDB()
@@ -124,6 +130,17 @@ bool CKDSQLiteAPI::IsFieldExists(LPCTSTR lpTableName, LPCTSTR lpFieldName)
 
 	strSQL.Format(_T("SELECT %s FROM %s LIMIT 0"), lpFieldName, lpTableName);
 	return ExecSQL(strSQL);
+}
+
+void CKDSQLiteAPI::SetDBSync(bool bSync/* = true*/)
+{
+	if (!IsDBLoaded())
+		return;
+
+	if (bSync)
+		ExecSQL(_T("PRAGMA synchronous = FULL"));
+	else
+		ExecSQL(_T("PRAGMA synchronous = OFF"));
 }
 
 int CKDSQLiteAPI::GetDataCount(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)

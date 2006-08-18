@@ -2,7 +2,7 @@
 #include "FindDupFileProc.h"
 
 CFindDupFileProc::CFindDupFileProc()
-	:	m_u64FileSize(0), m_pListSameFile(NULL), m_bAddToSameList(false)
+	: m_u64FileSize(0), m_pListSameFile(NULL), m_bAddToSameList(false)
 {
 }
 

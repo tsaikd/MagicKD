@@ -12,7 +12,7 @@ public:
 	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 	bool AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 
-	__inline bool IsDownloadAllOver() { return (m_slURL.IsEmpty() && m_slLocalPath.IsEmpty()); }
+	inline bool IsDownloadAllOver() { return (m_slURL.IsEmpty() && m_slLocalPath.IsEmpty()); }
 	CString GetNowDLURL() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLURL; m_muxNowDLURL.Unlock(); return sRes; }
 	CString GetNowDLLocalPath() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLLocalPath; m_muxNowDLURL.Unlock(); return sRes; }
 	double GetPercentOfNowDL();

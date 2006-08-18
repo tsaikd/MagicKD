@@ -1,3 +1,7 @@
+Version: 1.0.3.4	(2006-08-18)
+	Stop FindDupFile quickly
+	When getting new URLs from PicCollector, Add to DB immediately
+
 Version: 1.0.3.3	(2006-08-17)
 	Support for exporting PicCollector Database
 

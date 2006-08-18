@@ -11,6 +11,9 @@ public:
 	void Init(CPicCFeed *pFeed);
 	void Destroy();
 
+	bool AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath);
+	void SetDBSync(bool bSync = true);
+
 protected:
 	virtual void OnDownloadFileOver();
 	virtual void OnDownloadFileDiscard();

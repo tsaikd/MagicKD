@@ -6,7 +6,6 @@ public:
 	CFindDupFileProc();
 	~CFindDupFileProc();
 
-//	bool m_bFileValid;
 	bool m_bAddToSameList;
 	ULONGLONG m_u64FileSize;
 	CString m_sFilePath;

@@ -44,6 +44,7 @@ public:
 	bool IsTableExists(LPCTSTR lpTableName);
 	bool IsFieldExists(LPCTSTR lpTableName, LPCTSTR lpFieldName);
 
+	void SetDBSync(bool bSync = true);
 	int GetDataCount(LPCTSTR strSQL, CString *strErrMsg = NULL);
 
 	bool ExecSQL(LPCTSTR strSQL, CString *strErrMsg = NULL);

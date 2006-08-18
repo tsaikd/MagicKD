@@ -395,6 +395,10 @@
 				Name="FindDupFile"
 				>
 				<File
+					RelativePath=".\FindDupFile\FindDFArray.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\FindDupFile\FindDFConf.cpp"
 					>
 				</File>
@@ -597,6 +601,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDQArray.h"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDSingleApp.h"
 					>
 				</File>
@@ -672,6 +680,10 @@
 			<Filter
 				Name="FindDupFile"
 				>
+				<File
+					RelativePath=".\FindDupFile\FindDFArray.h"
+					>
+				</File>
 				<File
 					RelativePath=".\FindDupFile\FindDFConf.h"
 					>

@@ -201,8 +201,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,3
- PRODUCTVERSION 1,0,3,3
+ FILEVERSION 1,0,3,4
+ PRODUCTVERSION 1,0,3,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -218,11 +218,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 3, 3"
+            VALUE "FileVersion", "1, 0, 3, 4"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 3, 3"
+            VALUE "ProductVersion", "1, 0, 3, 4"
         END
     END
     BLOCK "VarFileInfo"
@@ -456,16 +456,16 @@ BEGIN
     IDS_PICC_DBV_BTN_RELOAD "Reload"
     IDS_PICC_DBV_BTN_EXIT   "Exit"
     IDS_PICC_DBV_BTN_DELETE "Delete"
+    IDS_PICC_DBV_BTN_EXPORT "Export"
     IDS_PICC_DBV_LIST_URL   "URL"
     IDS_PICC_DBV_LIST_LOCALPATH "Local Path"
     IDS_PICC_DBV_COMBO_DLFAILED "Download Failed"
-    IDS_PICC_DBV_COMBO_DLOVER "Download Over"
 END
 
 STRINGTABLE 
 BEGIN
+    IDS_PICC_DBV_COMBO_DLOVER "Download Over"
     IDS_PICC_DBV_COMBO_UNDL "UnDownload"
-    IDS_PICC_DBV_BTN_EXPORT "Export"
     IDS_PICC_DBV_MSG_EXPORT "Export to\n%s"
 END
 
