@@ -2,10 +2,12 @@
 #include "Resource.h"
 #include "Language.h"
 #include "MagicKD.h"
+#include "MagicKDDlg.h"
 #include "PicCollector/HTMLReader/LiteHTMLReader.h"
 #include "PicCHTMLEventHandler.h"
 #include "InputBox.h"
 #include "PicCDBViewDlg.h"
+#include "FindDupFileDlg.h"
 
 #include "PicCollectorDlg.h"
 
@@ -298,6 +300,7 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_ADDNEWFEED, &CPicCollectorDlg::OnBnClickedPiccBtnAddnewfeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_REFRESHFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed)
 	ON_BN_CLICKED(IDC_PICC_BTN_REMOVEFEED, &CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed)
+	ON_BN_CLICKED(IDC_PICC_BTN_FINDDF, &CPicCollectorDlg::OnBnClickedPiccBtnFindDF)
 	ON_BN_CLICKED(IDC_PICC_BTN_DELAYDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelaydl)
 	ON_BN_CLICKED(IDC_PICC_BTN_VIEW_DLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnViewDldir)
 	ON_BN_CLICKED(IDC_PICC_BTN_DBVIEW, &CPicCollectorDlg::OnBnClickedPiccBtnDbview)
@@ -472,13 +475,18 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()
 	}
 }
 
+void CPicCollectorDlg::OnBnClickedPiccBtnFindDF()
+{
+	g_pMagicKDDlg->SetFuncEnable(CMagicKDDlg::eFunc_FindDupFile, true);
+	g_pMagicKDDlg->SetCurTabSel(CMagicKDDlg::eFunc_FindDupFile);
+	g_pFindDupFileDlg->AddFindPath(g_pPicCConf->m_sDlDir);
+	g_pFindDupFileDlg->OnBnClickedFindBtnStartfind();
+}
+
 void CPicCollectorDlg::OnBnClickedPiccBtnDbview()
 {
 	CPicCDBViewDlg dlg;
 	dlg.DoModal();
-	//m_dlg_DBView.OnBnClickedPiccDbvBtnReload();
-	//m_dlg_DBView.ShowWindow(SW_SHOW);
-	//m_dlg_DBView.GetDlgItem(IDC_PICC_DBV_LIST_ITEM)->SetFocus();
 }
 
 void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()

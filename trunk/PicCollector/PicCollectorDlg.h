@@ -55,6 +55,7 @@ public:
 	afx_msg void OnBnClickedPiccBtnAddnewfeed();
 	afx_msg void OnBnClickedPiccBtnRefreshfeed();
 	afx_msg void OnBnClickedPiccBtnRemovefeed();
+	afx_msg void OnBnClickedPiccBtnFindDF();
 	afx_msg void OnBnClickedPiccBtnDelaydl();
 	afx_msg void OnBnClickedPiccBtnDbview();
 	afx_msg void OnStnClickedPiccStaticDllocalpath();

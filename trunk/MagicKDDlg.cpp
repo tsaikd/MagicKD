@@ -13,6 +13,8 @@
 #define new DEBUG_NEW
 #endif
 
+CMagicKDDlg *g_pMagicKDDlg = NULL;
+
 IMPLEMENT_DYNAMIC(CMagicKDDlg, CDialog)
 CMagicKDDlg::CMagicKDDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CMagicKDDlg::IDD, pParent), m_bVisiable(true), m_bInit(false),
@@ -38,6 +40,8 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
+	if (!g_pMagicKDDlg)
+		g_pMagicKDDlg = this;
 	if (!g_pTheConf)
 		g_pTheConf = new CMagicKDConf;
 	g_pTheConf->Init(&theApp.m_cIni);
@@ -97,16 +101,16 @@ BOOL CMagicKDDlg::OnInitDialog()
 	ModifyStyleEx(0, WS_EX_LAYERED);
 	SetTransparency((BYTE)(UINT)g_pTheConf->m_General_uTransparency);
 
-//////////////////////////////////////////////////
-	if (m_pWallChangerDlg)
-		SetCurTabSel(eFunc_WallChanger);
 #ifdef DEBUG
+//////////////////////////////////////////////////
+//	if (m_pWallChangerDlg)
+//		SetCurTabSel(eFunc_WallChanger);
 //	if (m_pFindDupFileDlg)
 //		SetCurTabSel(eFunc_FindDupFile);
 //	if (m_pPicCollectorDlg)
 //		SetCurTabSel(eFunc_PicCollector);
-#endif //DEBUG
 //////////////////////////////////////////////////
+#endif //DEBUG
 
 	m_bInit = true;
 	DoSize();
@@ -132,6 +136,7 @@ void CMagicKDDlg::OnDestroy()
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_RESTART);
 
 	DEL(g_pTheConf);
+	g_pMagicKDDlg = NULL;
 }
 
 void CMagicKDDlg::DoSize()
@@ -197,6 +202,8 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 			if (m_pWallChangerDlg)
 				SetFuncEnable(eFunc, false, false);
 			pDlg = m_pWallChangerDlg = new CWallChangerDlg;
+
+			iItemPos = 1;
 		} else {
 			pDlg = m_pWallChangerDlg;
 			m_pWallChangerDlg = NULL;
@@ -209,6 +216,10 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 			if (m_pFindDupFileDlg)
 				SetFuncEnable(eFunc, false, false);
 			pDlg = m_pFindDupFileDlg = new CFindDupFileDlg;
+
+			iItemPos = 1;
+			if (m_pWallChangerDlg)
+				iItemPos++;
 		} else {
 			pDlg = m_pFindDupFileDlg;
 			m_pFindDupFileDlg = NULL;
@@ -221,6 +232,12 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 			if (m_pPicCollectorDlg)
 				SetFuncEnable(eFunc, false, false);
 			pDlg = m_pPicCollectorDlg = new CPicCollectorDlg;
+
+			iItemPos = 1;
+			if (m_pWallChangerDlg)
+				iItemPos++;
+			if (m_pFindDupFileDlg)
+				iItemPos++;
 		} else {
 			pDlg = m_pPicCollectorDlg;
 			m_pPicCollectorDlg = NULL;
@@ -232,7 +249,7 @@ void CMagicKDDlg::SetFuncEnable(FuncList eFunc, bool bEnable, bool bRedraw/* = t
 		if (pDlg) {
 			pDlg->Create(nID, this);
 			pDlg->ShowWindow(SW_HIDE);
-			m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, eFunc, sTabName, 0, (LPARAM)pDlg);
+			m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, iItemPos, sTabName, 0, (LPARAM)pDlg);
 
 			int nItem = g_pTheTray->FindTrayMenuItem(sTabName);
 			if (nItem >= 0)
@@ -417,7 +434,7 @@ void CMagicKDDlg::OnTcnSelchangingMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	ASSERT(::IsWindow(pNMHDR->hwndFrom));
+	ASSERT(IsWindow(pNMHDR->hwndFrom));
 	DoSize();
 
 	*pResult = 0;
@@ -463,8 +480,26 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case IDS_MENU_CLOSE:
 			{
 			CDialog *pDlg = (CDialog *)m_cMainTab.GetCurItemLParam();
-			if (pDlg)
-				SetFuncEnable(GetFuncFromCWnd(pDlg), false);
+			if (pDlg) {
+				FuncList eFunc = GetFuncFromCWnd(pDlg);
+				SetFuncEnable(eFunc, false);
+
+				switch (eFunc) {
+				case eFunc_NULL:
+					break;
+				case eFunc_WallChanger:
+					g_pTheConf->m_FuncList_bWallChanger = false;
+					break;
+				case eFunc_FindDupFile:
+					g_pTheConf->m_FuncList_bFindDupFile = false;
+					break;
+				case eFunc_PicCollector:
+					g_pTheConf->m_FuncList_bPicCollector = false;
+					break;
+				default:
+					break;
+				}
+			}
 			DoSize();
 			}
 			break;

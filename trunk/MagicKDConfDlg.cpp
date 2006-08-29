@@ -57,7 +57,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	CString sPath;
 	sPath.Format(_T("%s%s"), theApp.GetAppDir(), _T("KDUpdater.exe"));
 	CKDAppVer KDUpdaterVer((LPCTSTR)CGetFileVersion(sPath));
-	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.6")))) {
+	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.7")))) {
 		// Init Update Information
 		m_KDUpdater.SetParentWnd(GetSafeHwnd());
 		m_KDUpdater.SetKDUpdaterPath(sPath);
@@ -133,18 +133,17 @@ void CMagicKDConfDlg::Localize()
 
 void CMagicKDConfDlg::UpdateFuncCheck()
 {
-	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-	if (pParentDlg) {
+	if (g_pMagicKDDlg) {
 		CButton *pBtn;
 
 		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_WALLCHANGER);
-		pBtn->SetCheck(pParentDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
+		pBtn->SetCheck(g_pMagicKDDlg->m_pWallChangerDlg ? BST_CHECKED : BST_UNCHECKED);
 
 		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_FINDDF);
-		pBtn->SetCheck(pParentDlg->m_pFindDupFileDlg ? BST_CHECKED : BST_UNCHECKED);
+		pBtn->SetCheck(g_pMagicKDDlg->m_pFindDupFileDlg ? BST_CHECKED : BST_UNCHECKED);
 
 		pBtn = (CButton *)GetDlgItem(IDC_CONF_CHECK_PICCOLLECTOR);
-		pBtn->SetCheck(pParentDlg->m_pPicCollectorDlg ? BST_CHECKED : BST_UNCHECKED);
+		pBtn->SetCheck(g_pMagicKDDlg->m_pPicCollectorDlg ? BST_CHECKED : BST_UNCHECKED);
 	}
 }
 
@@ -285,30 +284,21 @@ void CMagicKDConfDlg::OnBnClickedConfCheckCheckupdate()
 void CMagicKDConfDlg::OnBnClickedWallchangercheck()
 {
 	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_WALLCHANGER))->GetCheck()==BST_CHECKED;
-	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-	if (pParentDlg)
-		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_WallChanger, bEnable);
-
+	g_pMagicKDDlg->SetFuncEnable(CMagicKDDlg::eFunc_WallChanger, bEnable);
 	g_pTheConf->m_FuncList_bWallChanger = bEnable;
 }
 
 void CMagicKDConfDlg::OnBnClickedConfCheckFinddf()
 {
 	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_FINDDF))->GetCheck()==BST_CHECKED;
-	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-	if (pParentDlg)
-		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_FindDupFile, bEnable);
-
+	g_pMagicKDDlg->SetFuncEnable(CMagicKDDlg::eFunc_FindDupFile, bEnable);
 	g_pTheConf->m_FuncList_bFindDupFile = bEnable;
 }
 
 void CMagicKDConfDlg::OnBnClickedConfPiccollector()
 {
 	bool bEnable = ((CButton*)GetDlgItem(IDC_CONF_CHECK_PICCOLLECTOR))->GetCheck()==BST_CHECKED;
-	CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-	if (pParentDlg)
-		pParentDlg->SetFuncEnable(CMagicKDDlg::eFunc_PicCollector, bEnable);
-
+	g_pMagicKDDlg->SetFuncEnable(CMagicKDDlg::eFunc_PicCollector, bEnable);
 	g_pTheConf->m_FuncList_bPicCollector = bEnable;
 }
 
@@ -321,9 +311,7 @@ void CMagicKDConfDlg::OnCbnSelchangeConfComboLanguage()
 	for (i=0 ; i<g_iLanguageCount ; i++) {
 		if (CString(g_aLanguages[i].pszLocale) == sLang) {
 			g_pTheConf->m_General_uLangID = (UINT)g_aLanguages[i].lid;
-			CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-			if (pParentDlg)
-				pParentDlg->Localize();
+			g_pMagicKDDlg->Localize();
 		}
 	}
 }
@@ -333,11 +321,8 @@ LRESULT CMagicKDConfDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	switch (message) {
 	case WM_HSCROLL:
 		{
-		CMagicKDDlg *pParentDlg = (CMagicKDDlg *)GetParent();
-		if (pParentDlg) {
-			g_pTheConf->m_General_uTransparency = m_sliderTransparency.GetPos();
-			pParentDlg->SetTransparency((BYTE)g_pTheConf->m_General_uTransparency);
-		}
+		g_pTheConf->m_General_uTransparency = m_sliderTransparency.GetPos();
+		g_pMagicKDDlg->SetTransparency((BYTE)g_pTheConf->m_General_uTransparency);
 		}
 		break;
 	}

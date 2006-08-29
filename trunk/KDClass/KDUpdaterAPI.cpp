@@ -95,7 +95,7 @@ bool CKDUpdaterAPI::FindKDUpdater()
 			clock_t clockStart = clock();
 			clock_t clockMaxWaitClock = clockStart + (15 * CLOCKS_PER_SEC);
 			CString sBuf;
-			CString sIniPath = m_sKDUpdaterPath + _T(".ini.tmp");
+			CString sIniPath = m_sKDUpdaterPath + _T(".local.ini.tmp");
 
 			DeleteFile(sIniPath);
 			ini.SetPathName(sIniPath);

@@ -11,8 +11,6 @@
 #include "WallChangerDlg.h"
 #include "PicCollectorDlg.h"
 
-extern CKDTray *g_pTheTray;
-
 class CMagicKDDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CMagicKDDlg)
@@ -68,3 +66,6 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };
+
+extern CKDTray *g_pTheTray;
+extern CMagicKDDlg *g_pMagicKDDlg;

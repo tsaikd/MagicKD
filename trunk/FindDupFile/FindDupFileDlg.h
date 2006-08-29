@@ -17,14 +17,19 @@ public:
 	virtual ~CFindDupFileDlg();
 	virtual DWORD ThreadProc();
 
+	virtual BOOL OnInitDialog();
+	afx_msg void OnDestroy();
 	void DoSize();
 	void Localize();
+
+	void AddFindPath(LPCTSTR lpPath);
 
 	void EnableToolTips(bool bEnable = true);
 	void SetFindResultTreeCheck(bool bCheck = true);
 	void SetFindResultTreeExpand(bool bExpand = true);
 	void SetNowPicPath(LPCTSTR lpPath = NULL);
 
+protected:
 	CIni m_cIni;
 
 	CProgressCtrl m_progress_FindDF;
@@ -33,6 +38,8 @@ public:
 	CFindDFTreeCtrl m_tree_FindResult;
 
 private:
+	void _EW_Finding(bool bEnable);
+	void _EW_FindOver(bool bEnable);
 	void _FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath);
 
 	bool m_bInit;
@@ -45,17 +52,17 @@ protected:
 	virtual void OnCancel();
 	virtual void OnOK();
 public:
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDestroy();
-	afx_msg void OnBnClickedFindBtnEnabletooltip();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnBnClickedFindBtnStartfind();
+	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnTvnSelchangedFindTreeFindresult(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedFindBtnEnabletooltip();
+	afx_msg void OnBnClickedFindBtnStartfind();
 	afx_msg void OnBnClickedFindBtnSelectdup();
 	afx_msg void OnBnClickedFindBtnSelectnone();
 	afx_msg void OnBnClickedFindBtnDeletedup();
 	afx_msg void OnBnClickedFindBtnStopfind();
 	afx_msg void OnBnClickedFindBtnExpandall();
 	afx_msg void OnBnClickedFindBtnCollapseall();
-	afx_msg void OnTimer(UINT nIDEvent);
 };
+
+extern CFindDupFileDlg *g_pFindDupFileDlg;

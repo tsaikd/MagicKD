@@ -14,6 +14,7 @@ enum {
 	KDT_SORTTING		= 1
 };
 
+CFindDupFileDlg *g_pFindDupFileDlg = NULL;
 CFindDFConf *g_pFindConf = NULL;
 
 IMPLEMENT_DYNAMIC(CFindDupFileDlg, CDialog)
@@ -60,9 +61,11 @@ DWORD CFindDupFileDlg::ThreadProc()
 		goto Lable_ExitFindDupFileThread;
 	m_iSortNumber = aDupFile.GetCount();
 	SetTimer(KDT_SORTTING, 1000, NULL);
-//	qsort(aDupFile.GetData(), m_iSortNumber, sizeof(CFindDupFileProc *), FileCmpCB);
+
 	// Use another Quick Sort algorithm
 	aDupFile.QuickSort(true, &m_bStop);
+//	qsort(aDupFile.GetData(), m_iSortNumber, sizeof(CFindDupFileProc *), FileCmpCB);
+
 	KillTimer(KDT_SORTTING);
 	m_progress_FindDF.SetPos(8000);
 
@@ -110,15 +113,21 @@ Lable_ExitFindDupFileThread:
 		MessageBox(sMsg, NULL, MB_OK | MB_ICONINFORMATION);
 
 		m_tree_FindResult.Invalidate();
-		GetDlgItem(IDC_FIND_BTN_STARTFIND)->EnableWindow(TRUE);
-		GetDlgItem(IDC_FIND_BTN_STOPFIND)->EnableWindow(FALSE);
-		GetDlgItem(IDC_FIND_LIST_FINDLIST)->EnableWindow(TRUE);
+		_EW_Finding(false);
+
+		if (m_tree_FindResult.GetCount())
+			_EW_FindOver(true);
+		else
+			_EW_FindOver(false);
 	}
 	return 0;
 }
 
 BOOL CFindDupFileDlg::OnInitDialog()
 {
+	if (!g_pFindDupFileDlg)
+		g_pFindDupFileDlg = this;
+
 	CDialog::OnInitDialog();
 
 	m_cIni.SetPathName(CString(theApp.GetAppConfDir()) + _T("FindDupFile.ini"));
@@ -129,6 +138,8 @@ BOOL CFindDupFileDlg::OnInitDialog()
 
 	m_list_FindDupFileList.Init();
 	m_tree_FindResult.ModifyStyle(0, TVS_CHECKBOXES);	// 直接在 VC 的資源選單選取會有 bug
+	_EW_Finding(false);
+	_EW_FindOver(false);
 
 	m_bInit = true;
 	Localize();
@@ -145,6 +156,7 @@ void CFindDupFileDlg::OnDestroy()
 	CDialog::OnDestroy();
 
 	DEL(g_pFindConf);
+	g_pFindDupFileDlg = NULL;
 }
 
 void CFindDupFileDlg::DoSize()
@@ -210,6 +222,12 @@ void CFindDupFileDlg::Localize()
 	EnableToolTips(g_pFindConf->m_bEnableToolTip);
 }
 
+void CFindDupFileDlg::AddFindPath(LPCTSTR lpPath)
+{
+	if (PathFileExists(lpPath))
+		m_list_FindDupFileList.InsertItem(m_list_FindDupFileList.GetItemCount(), lpPath);
+}
+
 void CFindDupFileDlg::EnableToolTips(bool bEnable/* = true*/)
 {
 	GetDlgItem(IDC_FIND_BTN_ENABLETOOLTIP)->SetWindowText(
@@ -252,6 +270,23 @@ void CFindDupFileDlg::SetNowPicPath(LPCTSTR lpPath/* = NULL*/)
 	GetDlgItem(IDC_FIND_STATIC_NOWPICPATH)->SetWindowText(lpPath);
 	m_static_ShowPic.SetPicPath(lpPath);
 	m_static_ShowPic.Invalidate();
+}
+
+void CFindDupFileDlg::_EW_Finding(bool bEnable)
+{
+	GetDlgItem(IDC_FIND_BTN_STARTFIND)->EnableWindow(!bEnable);
+	GetDlgItem(IDC_FIND_BTN_STOPFIND)->EnableWindow(bEnable);
+	GetDlgItem(IDC_FIND_LIST_FINDLIST)->EnableWindow(!bEnable);
+}
+
+void CFindDupFileDlg::_EW_FindOver(bool bEnable)
+{
+	GetDlgItem(IDC_FIND_BTN_EXPANDALL)->EnableWindow(bEnable);
+	GetDlgItem(IDC_FIND_BTN_COLLAPSEALL)->EnableWindow(bEnable);
+	GetDlgItem(IDC_FIND_BTN_SELECTDUP)->EnableWindow(bEnable);
+	GetDlgItem(IDC_FIND_BTN_SELECTNONE)->EnableWindow(bEnable);
+	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow(bEnable);
+	GetDlgItem(IDC_FIND_TREE_FINDRESULT)->EnableWindow(bEnable);
 }
 
 void CFindDupFileDlg::_FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath)
@@ -369,29 +404,21 @@ void CFindDupFileDlg::OnTimer(UINT nIDEvent)
 
 void CFindDupFileDlg::OnBnClickedFindBtnEnabletooltip()
 {
-	::g_pFindConf->m_bEnableToolTip = !::g_pFindConf->m_bEnableToolTip;
+	g_pFindConf->m_bEnableToolTip = !g_pFindConf->m_bEnableToolTip;
 
-	EnableToolTips(::g_pFindConf->m_bEnableToolTip);
+	EnableToolTips(g_pFindConf->m_bEnableToolTip);
 }
 
 void CFindDupFileDlg::OnBnClickedFindBtnStartfind()
 {
-	GetDlgItem(IDC_FIND_BTN_STARTFIND)->EnableWindow(FALSE);
-	GetDlgItem(IDC_FIND_BTN_STOPFIND)->EnableWindow(TRUE);
-	GetDlgItem(IDC_FIND_LIST_FINDLIST)->EnableWindow(FALSE);
-	SetCanThread();
+	_EW_Finding(true);
 	CreateThread(THREAD_PRIORITY_LOWEST);
 	SetFocus();
 }
 
 void CFindDupFileDlg::OnBnClickedFindBtnStopfind()
 {
-//	SetCanThread(false);
 	m_bStop = true;
-	//WaitForThread(INFINITE);
-	//GetDlgItem(IDC_FIND_BTN_STARTFIND)->EnableWindow(TRUE);
-	//GetDlgItem(IDC_FIND_BTN_STOPFIND)->EnableWindow(FALSE);
-	//GetDlgItem(IDC_FIND_LIST_FINDLIST)->EnableWindow(TRUE);
 }
 
 void CFindDupFileDlg::OnBnClickedFindBtnExpandall()
@@ -435,6 +462,9 @@ void CFindDupFileDlg::OnBnClickedFindBtnDeletedup()
 		return;
 
 	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow(FALSE);
+	m_tree_FindResult.EnableWindow(FALSE);
+	m_tree_FindResult.SetRedraw(FALSE);
+	m_static_ShowPic.SetRedraw(FALSE);
 
 	while (hTreeItem) {
 		if (m_tree_FindResult.GetCheck(hTreeItem)) {
@@ -460,6 +490,11 @@ void CFindDupFileDlg::OnBnClickedFindBtnDeletedup()
 
 	m_tree_FindResult.DeleteAllItems();
 	m_static_ShowPic.SetPicPath(NULL);
+	m_tree_FindResult.SetRedraw(TRUE);
+	m_static_ShowPic.SetRedraw(TRUE);
+	m_tree_FindResult.Invalidate();
+	m_static_ShowPic.Invalidate();
+	m_tree_FindResult.EnableWindow();
 	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow();
 }
 
@@ -485,7 +520,7 @@ LRESULT CFindDupFileDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 				{
 					CString sPath;
 					if (ChooseFolder(sPath, GetSafeHwnd()))
-						m_list_FindDupFileList.InsertItem(m_list_FindDupFileList.GetItemCount(), sPath);
+						AddFindPath(sPath);
 				}
 				break;
 			case IDS_FIND_MENU_REMOVEFINDPATH:
