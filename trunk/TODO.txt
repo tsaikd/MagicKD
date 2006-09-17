@@ -1,4 +1,5 @@
 Initial function
+Debug messages
 
 PicCollector(rss):
 圖片黑名單
@@ -7,6 +8,7 @@ PicCollector(rss):
 PicCollector(html):
 
 FindDupFile:
+QuickSort進度顯示
 
 WallChanger:
 先搜尋enable list

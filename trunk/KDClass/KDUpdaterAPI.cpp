@@ -116,6 +116,7 @@ bool CKDUpdaterAPI::FindKDUpdater()
 				Sleep(100);
 				EnumWindows(QueryAppKDUpdaterNeedUpdate, (LPARAM)this);
 			}
+			DeleteFile(sIniPath);
 		}
 	}
 
@@ -158,7 +159,6 @@ void CKDUpdaterAPI::CloseKDUpdater()
 	::SendMessage(m_hUpdaterWnd, WMU_KDUPDATER_REQ_CLOSE_APP, 0, 0);
 	while (IsWindow(m_hUpdaterWnd) && !m_bOnQuit)
 		Sleep(500);
-	DeleteFile(m_sKDUpdaterPath + _T(".ini.tmp"));
 
 	m_hUpdaterWnd = NULL;
 }

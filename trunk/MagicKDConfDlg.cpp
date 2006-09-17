@@ -66,7 +66,8 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 		m_KDUpdater.SetUpdateListURL(_T("http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/UpdateList.ini"));
 		m_KDUpdater.SetUpdatePostCmd(theApp.GetAppPath());
 
-		m_KDUpdater.AddUpdateFile(_T("MagicKD.exe"), theApp.GetAppProductVer());
+		sPath = _T("MagicKD.exe");
+		m_KDUpdater.AddUpdateFile(sPath, theApp.GetAppProductVer());
 		sPath = _T("lib/cximage.dll");
 		m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
 		sPath = _T("lib/sqlite.dll");
