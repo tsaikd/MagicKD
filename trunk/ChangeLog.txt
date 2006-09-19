@@ -1,4 +1,6 @@
+Version: 1.0.3.6	(2006-09-19)
 	Fix bug: KDUpdate will not delete temp file
+	FindDupFile: Calculate time more accurately
 
 Version: 1.0.3.5	(2006-08-29)
 	PicCollector support for FindDupFile

@@ -3,6 +3,7 @@
 #include "afxwin.h"
 #include "CxImage/CxImage/xImage.h"
 #include "KDThread.h"
+#include "FindDFArray.h"
 #include "FindDFListCtrl.h"
 #include "FindDFTreeCtrl.h"
 #include "FindStaticShowPic.h"
@@ -42,9 +43,9 @@ private:
 	void _EW_FindOver(bool bEnable);
 	void _FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath);
 
+	CFindDFArray m_aDupFile;
 	bool m_bInit;
 	bool m_bStop;
-	int m_iSortNumber;
 
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);

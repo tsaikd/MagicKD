@@ -6,7 +6,6 @@
 #include "MagicKD.h"
 #include "FindDFConf.h"
 #include "FindDFOthers.h"
-#include "FindDFArray.h"
 
 #include "FindDupFileDlg.h"
 
@@ -19,7 +18,7 @@ CFindDFConf *g_pFindConf = NULL;
 
 IMPLEMENT_DYNAMIC(CFindDupFileDlg, CDialog)
 CFindDupFileDlg::CFindDupFileDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CFindDupFileDlg::IDD, pParent), m_bInit(false), m_bStop(false), m_iSortNumber(0)
+	:	CDialog(CFindDupFileDlg::IDD, pParent), m_bInit(false), m_bStop(false)
 {
 }
 
@@ -32,7 +31,6 @@ DWORD CFindDupFileDlg::ThreadProc()
 	m_bStop = false;
 	bool bFindSameFile = false;
 	CFindDupFileProc *pImg;
-	CFindDFArray aDupFile;
 	CString sPath;
 	CFileFind finder;
 
@@ -41,6 +39,7 @@ DWORD CFindDupFileDlg::ThreadProc()
 	m_progress_FindDF.SetRange32(0, 10000);
 	m_progress_FindDF.SetPos(0);
 	SetNowPicPath(NULL);
+	m_aDupFile.RemoveAll();
 	m_tree_FindResult.SelectItem(NULL);
 	m_tree_FindResult.SetRedraw(FALSE);
 	m_tree_FindResult.DeleteAllItems();
@@ -49,22 +48,21 @@ DWORD CFindDupFileDlg::ThreadProc()
 
 	int i, iCount = m_list_FindDupFileList.GetItemCount();
 	for (i=0 ; i<iCount ; i++) {
-		if (!IsCanThread())
+		if (!IsCanThread() || m_bStop)
 			goto Lable_ExitFindDupFileThread;
 
 		sPath = m_list_FindDupFileList.GetItemText(i, 0);
-		_FindAllFileAndAddToArray(&aDupFile, sPath);
+		_FindAllFileAndAddToArray(&m_aDupFile, sPath);
 	}
-	m_progress_FindDF.SetPos(1500);
+	m_progress_FindDF.SetPos(2000);
 
-	if (!IsCanThread())
+	if (!IsCanThread() || m_bStop)
 		goto Lable_ExitFindDupFileThread;
-	m_iSortNumber = aDupFile.GetCount();
 	SetTimer(KDT_SORTTING, 1000, NULL);
 
 	// Use another Quick Sort algorithm
-	aDupFile.QuickSort(true, &m_bStop);
-//	qsort(aDupFile.GetData(), m_iSortNumber, sizeof(CFindDupFileProc *), FileCmpCB);
+	m_aDupFile.QuickSort(true, &m_bStop);
+//	qsort(m_aDupFile.GetData(), m_aDupFile.GetCount(), sizeof(CFindDupFileProc *), FileCmpCB);
 
 	KillTimer(KDT_SORTTING);
 	m_progress_FindDF.SetPos(8000);
@@ -73,13 +71,13 @@ DWORD CFindDupFileDlg::ThreadProc()
 	HTREEITEM hTreeItem;
 	HTREEITEM hTreeChildItem;
 	CListFindDupFileProc *pListSameFile;
-	iCount = aDupFile.GetCount();
+	iCount = m_aDupFile.GetCount();
 	for (i=0 ; i<iCount ; i++) {
 		if (!IsCanThread())
 			goto Lable_ExitFindDupFileThread;
 
 		m_progress_FindDF.OffsetPos(1000 / iCount);
-		pImg = aDupFile[i];
+		pImg = m_aDupFile[i];
 		pListSameFile = pImg->m_pListSameFile;
 		if (pListSameFile) {
 			bFindSameFile = true;
@@ -98,10 +96,10 @@ DWORD CFindDupFileDlg::ThreadProc()
 	m_progress_FindDF.SetPos(9000);
 
 Lable_ExitFindDupFileThread:
-	iCount = aDupFile.GetCount();
+	iCount = m_aDupFile.GetCount();
 	for (i=0 ; i<iCount ; i++)
-		delete aDupFile[i];
-	aDupFile.RemoveAll();
+		delete m_aDupFile[i];
+	m_aDupFile.RemoveAll();
 	m_progress_FindDF.SetPos(10000);
 
 	if (IsCanThread()) {
@@ -303,7 +301,7 @@ void CFindDupFileDlg::_FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath)
 		strWildcard += _T("\\*.*");
 
 		BOOL bWorking = finder.FindFile(strWildcard);
-		while (bWorking && IsCanThread()) {
+		while (bWorking && IsCanThread() && !m_bStop) {
 			bWorking = finder.FindNextFile();
 
 			if (finder.IsDots())
@@ -374,30 +372,22 @@ void CFindDupFileDlg::OnSize(UINT nType, int cx, int cy)
 
 void CFindDupFileDlg::OnTimer(UINT nIDEvent)
 {
-	int iPos = m_progress_FindDF.GetPos();
-	if (iPos <= 6000) {
-		if (m_iSortNumber < 500)
-			m_progress_FindDF.OffsetPos(2000);
-		else if (m_iSortNumber < 1000)
-			m_progress_FindDF.OffsetPos(1500);
-		else if (m_iSortNumber < 5000)
-			m_progress_FindDF.OffsetPos(1000);
-		else if (m_iSortNumber < 10000)
-			m_progress_FindDF.OffsetPos(500);
-		else if (m_iSortNumber < 50000)
-			m_progress_FindDF.OffsetPos(50);
-		else
-			m_progress_FindDF.OffsetPos(10);
-	} else if (iPos <= 7000) {
-		m_progress_FindDF.OffsetPos(50);
-	} else if (iPos <= 7500) {
-		m_progress_FindDF.OffsetPos(10);
-	} else {
-		m_progress_FindDF.OffsetPos(1);
+	switch (nIDEvent) {
+	case KDT_SORTTING:
+		{
+		// Progress range 2000 to 8000
+		int iPos = (int)(m_aDupFile.GetQSortProgress() * 6000 + 2000);
+		if (iPos < 2000)
+			iPos = 2000;
+		if (iPos > 8000)
+			iPos = 8000;
+		m_progress_FindDF.SetPos(iPos);
+		}
+		break;
+	default:
+		KillTimer(nIDEvent);
+		break;
 	}
-
-	if (m_progress_FindDF.GetPos() >= 8000)
-		m_progress_FindDF.SetPos(8000);
 
 	__super::OnTimer(nIDEvent);
 }

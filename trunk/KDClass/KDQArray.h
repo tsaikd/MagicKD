@@ -5,7 +5,7 @@ template <class T, class PT>
 class CKDQArray : public CArray <T, PT>
 {
 public:
-	CKDQArray() {}
+	CKDQArray() : m_uQSortStep(0), m_fQSortGuessStep(0) {}
 	virtual ~CKDQArray() {}
 
 	bool QuickSort(bool bAscending = true, bool *pbStop = NULL)
@@ -16,7 +16,38 @@ public:
 		INT_PTR low = 0;
 		INT_PTR high = GetCount() - 1;
 
-		return _QuickSortRecursive(GetData(), low, high, bAscending, pbStop);
+		m_uQSortStep = 0;
+		if (high > 1000)
+			m_fQSortGuessStep = -0.0000006*high*high + 0.9*high + 50;
+		else
+			m_fQSortGuessStep = high;
+
+		bool bRes = _QuickSortRecursive(GetData(), low, high, bAscending, pbStop);
+
+		m_uQSortStep = UINT_MAX;
+
+		return bRes;
+	}
+
+	// Return value: 0 to 1
+	double GetQSortProgress()
+	{
+		if (m_fQSortGuessStep < 1)
+			m_fQSortGuessStep = 1;
+		double fRes = (double)m_uQSortStep / m_fQSortGuessStep;
+
+		if (fRes < 0)
+			return 0;
+		if (fRes > 1)
+			return 1;
+		return fRes;
+	}
+
+	void RemoveAll()
+	{
+		m_uQSortStep = 0;
+		m_fQSortGuessStep = 0;
+		return CArray::RemoveAll();
 	}
 
 protected:
@@ -75,6 +106,11 @@ private:
 		if (j < h)
 			bRes = bRes && _QuickSortRecursive(pArr, j, h, bAscending, pbStop);
 
+		m_uQSortStep++;
+
 		return bRes;
 	}
+
+	UINT m_uQSortStep;
+	double m_fQSortGuessStep;
 };
