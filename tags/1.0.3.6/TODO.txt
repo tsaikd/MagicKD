@@ -1,0 +1,18 @@
+Initial function
+Debug messages
+
+PicCollector(rss):
+pause downloader
+圖片黑名單
+更改本機feed名稱
+
+PicCollector(html):
+
+FindDupFile:
+
+WallChanger:
+先搜尋enable list
+老闆鍵
+ListCtrl可按CTRL+CVX
+
+整合BindWinKey
