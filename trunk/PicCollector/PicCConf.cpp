@@ -3,6 +3,8 @@
 
 #define DEFAULT_DLDIR _T("")
 
+CPicCConf *g_pPicCConf = NULL;
+
 CPicCConf::CPicCConf()
 {
 }

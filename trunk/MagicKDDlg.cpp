@@ -110,12 +110,12 @@ BOOL CMagicKDDlg::OnInitDialog()
 
 #ifdef DEBUG
 //////////////////////////////////////////////////
-//	if (m_pWallChangerDlg)
-//		SetCurTabSel(eFunc_WallChanger);
-//	if (m_pFindDupFileDlg)
-//		SetCurTabSel(eFunc_FindDupFile);
-//	if (m_pPicCollectorDlg)
-//		SetCurTabSel(eFunc_PicCollector);
+	if (m_pPicCollectorDlg)
+		SetCurTabSel(eFunc_PicCollector);
+	if (m_pFindDupFileDlg)
+		SetCurTabSel(eFunc_FindDupFile);
+	if (m_pWallChangerDlg)
+		SetCurTabSel(eFunc_WallChanger);
 //////////////////////////////////////////////////
 #endif //DEBUG
 

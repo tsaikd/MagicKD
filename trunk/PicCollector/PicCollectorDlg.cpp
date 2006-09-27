@@ -8,13 +8,12 @@
 #include "InputBox.h"
 #include "PicCDBViewDlg.h"
 #include "FindDupFileDlg.h"
+#include "PicCConf.h"
 
 #include "PicCollectorDlg.h"
 
 // GLobal variable
 CPicCollectorDlg *g_pPicCollectorDlg = NULL;
-#include "PicCConf.h"
-CPicCConf *g_pPicCConf = NULL;
 
 enum {
 	KDT_SHOWDOWNLOAD	= 1,
@@ -185,7 +184,7 @@ void CPicCollectorDlg::DoSize()
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELAYDL), GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH),
 		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_LIST_FEED), GetDlgItem(IDC_PICC_BTN_DELAYDL),
-		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 25, true);/////////////
 
 	Invalidate();
 }
