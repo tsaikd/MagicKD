@@ -7,6 +7,7 @@
 #include "Ini.h"
 #include "KDApp.h"
 #include "KDSingleApp.h"
+#include "MagicKDIcons.h"
 #include "MagicKDConf.h"
 #include "MagicKDEndDlg.h"
 

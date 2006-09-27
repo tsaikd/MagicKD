@@ -8,9 +8,7 @@
 #endif
 
 CMagicKDApp theApp;
-CMagicKDConf *g_pTheConf = NULL;
 CKDTray *g_pTheTray = NULL;
-CMagicKDEndDlg *g_pTheAppEndDlg = NULL;
 
 CMagicKDApp::CMagicKDApp()
 	:	m_bOnQuit(false)

@@ -40,15 +40,22 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
+	// Construct global variable pointer
 	if (!g_pMagicKDDlg)
 		g_pMagicKDDlg = this;
+
 	if (!g_pTheConf)
 		g_pTheConf = new CMagicKDConf;
 	g_pTheConf->Init(&theApp.m_cIni);
 	LoadStringLib((LANGID)(UINT)g_pTheConf->m_General_uLangID);
 	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
+
 	if (!g_pTheTray)
 		g_pTheTray = new CKDTray;
+
+	if (!g_pTheIcons)
+		g_pTheIcons = new CMagicKDIcons;
+	g_pTheIcons->Init(CString(theApp.GetAppDllDir()) + _T("icons.dll"));
 
 	m_cMainConfigDlg.Create(IDD_MAGICKD_CONFIG, this);
 	m_cMainTab.InsertItem(TCIF_TEXT|TCIF_PARAM, 0, _T("MagicKD"), 0, (LPARAM)&m_cMainConfigDlg);
@@ -135,6 +142,7 @@ void CMagicKDDlg::OnDestroy()
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_OPENWINDOW);
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_RESTART);
 
+	DEL(g_pTheIcons);
 	DEL(g_pTheConf);
 	g_pMagicKDDlg = NULL;
 }

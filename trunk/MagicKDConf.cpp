@@ -11,6 +11,8 @@
 #define DEFAULT_TRANSPARENCY		255
 #define DEFAULT_LANGID				FindDefaultLang()
 
+CMagicKDConf *g_pTheConf = NULL;
+
 CMagicKDConf::CMagicKDConf()
 {
 }

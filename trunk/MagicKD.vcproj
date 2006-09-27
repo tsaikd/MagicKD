@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKDIcons.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MagicKDTabCtrl.cpp"
 				>
 			</File>
@@ -304,6 +308,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDGetHttpFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDIcons.cpp"
 					>
 				</File>
 				<File
@@ -510,6 +518,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKDIcons.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MagicKDTabCtrl.h"
 				>
 			</File>
@@ -586,6 +598,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDGetHttpFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDIcons.h"
 					>
 				</File>
 				<File

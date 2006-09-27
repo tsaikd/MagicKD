@@ -2,6 +2,7 @@
 #include "MagicKD.h"
 #include "MagicKDEndDlg.h"
 
+CMagicKDEndDlg *g_pTheAppEndDlg = NULL;
 
 IMPLEMENT_DYNAMIC(CMagicKDEndDlg, CDialog)
 CMagicKDEndDlg::CMagicKDEndDlg(CWnd* pParent /*=NULL*/)

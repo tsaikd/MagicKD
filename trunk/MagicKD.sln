@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zh-TW", "Locale\zh-TW\zh-TW
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite", "sqlite\sqlite.vcproj", "{AAFC832A-9A9F-40EA-AA0A-D3003E75EA90}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Icons", "Icons\Icons.vcproj", "{8C61A1A4-9146-4427-B1BC-69DA0127E9EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -27,6 +29,10 @@ Global
 		{AAFC832A-9A9F-40EA-AA0A-D3003E75EA90}.Debug|Win32.Build.0 = Debug|Win32
 		{AAFC832A-9A9F-40EA-AA0A-D3003E75EA90}.Release|Win32.ActiveCfg = Release|Win32
 		{AAFC832A-9A9F-40EA-AA0A-D3003E75EA90}.Release|Win32.Build.0 = Release|Win32
+		{8C61A1A4-9146-4427-B1BC-69DA0127E9EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8C61A1A4-9146-4427-B1BC-69DA0127E9EF}.Debug|Win32.Build.0 = Debug|Win32
+		{8C61A1A4-9146-4427-B1BC-69DA0127E9EF}.Release|Win32.ActiveCfg = Release|Win32
+		{8C61A1A4-9146-4427-B1BC-69DA0127E9EF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
