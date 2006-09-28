@@ -1,0 +1,264 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Taiwan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
+#pragma code_page(950)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,3,7
+ PRODUCTVERSION 1,0,3,7
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040404b0"
+        BEGIN
+            VALUE "FileDescription", "zh-TW"
+            VALUE "FileVersion", "1, 0, 3, 7"
+            VALUE "InternalName", "zh-TW"
+            VALUE "LegalCopyright", "Copyright (C) 2006"
+            VALUE "OriginalFilename", "zh-TW"
+            VALUE "ProductName", " zh-TW"
+            VALUE "ProductVersion", "1, 0, 3, 7"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x404, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_TRAY_OPENWINDOW     "開啟 MagicKD\t(&O)"
+    IDS_TRAY_CLOSEWINDOW    "關閉 MagicKD\t(&C)"
+    IDS_TRAY_RANDPIC        "立即更換隨機桌布\t(Space)& "
+    IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
+    IDS_TRAY_MOVEPIC        "移動目前桌布 ...\t(&M)"
+    IDS_TRAY_RESTART        "重新啟動 MagicKD\t(&R)"
+    IDS_TRAY_EXPLOREPIC     "瀏覽目前桌布檔案\t(&E)"
+    IDS_TRAY_PAUSEWALLCHANGER "暫停 WallChanger\t(&P)"
+    IDS_CONF_STATIC_TRANSPARENCY "透明度"
+    IDS_CONF_BTN_RESTART    "重新啟動"
+    IDS_CONF_BTN_CHECKUPDATE "檢查更新"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_CLOSE          "關閉"
+    IDS_MSG_TRAYREGERROR    "狀態圖示啟用失敗\n是否要重新啟動程式？"
+    IDS_MSG_NONECESSARYDLL  "無法找到 %s\n請到 http://svn.tsaikd.org/tsaikd/MagicKD/ReleaseHistory/ 下載\n放到 lib 資料夾中"
+    IDS_ALL_BTN_ENABLETIP   "開啟提示"
+    IDS_ALL_BTN_DISABLETIP  "關閉提示"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CONF_CHECK_STARTMIN "開始時最小化"
+    IDS_CONF_CHECK_SHOWCLOSEWINDOW "顯示關閉進度"
+    IDS_CONF_CHECK_CHECKUPDATE "定期檢查更新"
+    IDS_CONF_MSG_WANTUPDATEORNOT "目前網路上有更新的版本\n您想要更新到最新版本嗎？\n(需要重新啟動)"
+    IDS_CONF_MSG_UPDATEFAILED "更新版本失敗"
+    IDS_CONF_MSG_NOUPDATE   "此版本已經是最新版\n無需更新"
+    IDS_CONF_MSG_UPDATECONNECTFAILED "網路連線失敗"
+    IDS_CONF_MSG_KDUPDATERTOOOLD 
+                            "您的 KDUpdater 版本太舊\n請到 http://svn.tsaikd.org/tsaikd/KDUpdater/KDUpdater.exe 下載新的版本\n按""確定""幫您開啟瀏覽器"
+    IDS_CONF_MSG_WANTREVERTORNOT "部份程式毀損\n您想要回復到最新版本嗎？\n(需要重新啟動)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WALL_COLUMN_CLASSLIST "分類列表"
+    IDS_WALL_COLUMN_DIRPATH "資料夾路徑"
+    IDS_WALL_COLUMN_PICFINDNUM "數量"
+    IDS_WALL_BTN_RANDPIC    "換圖"
+    IDS_WALL_BTN_DELPIC     "刪除"
+    IDS_WALL_BTN_MOVEPIC    "移動"
+    IDS_WALL_BTN_ADDCLASS   "新增"
+    IDS_WALL_BTN_EXPLORE    "瀏覽"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WALL_CHECK_SHOWDIRLOADERROR "顯示資料夾讀取錯誤"
+    IDS_WALL_STATIC_WAITTIME "換圖間隔(秒)"
+    IDS_WALL_STATIC_PICTOTALNUM "啟用列表圖檔總數"
+    IDS_WALL_MENU_ADDENABLECLASSLIST "加入啟用分類列表"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WALL_MENU_DELCLASSLIST "刪除分類列表"
+    IDS_WALL_MENU_ADDDIRPATH "新增資料夾 ..."
+    IDS_WALL_MENU_UPDATEDIRFILEFIND "重新搜尋圖檔"
+    IDS_WALL_MENU_DELDIRPATH "取消資料夾"
+    IDS_WALL_MENU_UPDATEALLDIRFILEFIND "重新搜尋所有資料夾圖檔"
+    IDS_WALL_TOOLTIP_RANDPIC "立即更換隨機桌布"
+    IDS_WALL_TOOLTIP_DELNOWPIC "刪除目前桌布檔案"
+    IDS_WALL_TOOLTIP_SETWAITTIME "設定更換圖片的間隔時間(秒) (預設:30)"
+    IDS_WALL_TOOLTIP_SETHISTORYNUM "設定在幾張圖片之內不重覆 (預設:10)"
+    IDS_WALL_TOOLTIP_ADDCLASS "輸入新分類的名稱"
+    IDS_WALL_TOOLTIP_CLASSLIST "分類列表，打勾為啟動，右鍵選單中可以刪除"
+    IDS_WALL_TOOLTIP_DIRLIST "某個分類中的資料夾列表，右鍵選單中可以新增或刪除，也可以將資料夾拖曳進來"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WALL_TOOLTIP_IMAGELOADERROR "當圖片讀取錯誤時的措施"
+    IDS_WALL_TOOLTIP_MOVEPIC "將目前的桌布檔案移動到目的資料夾"
+    IDS_WALL_CANONLYCHOICEONECLASS "您只能選擇一個分類進行此動作"
+    IDS_WALL_DIRNOTEXIST    "資料夾不存在"
+    IDS_WALL_DIRNOTEXIST_ONNOTFIXEDDRIVE "資料夾不存在\n請連上網路或是插入可攜式裝置"
+    IDS_WALL_DIRNOTEXIST_UPDATEPATHLATER "資料夾不存在\n請稍後再手動更新列表\n或是等待程式自動更新"
+    IDS_WALL_SETWALLPAGERFAIL "設定桌布失敗"
+    IDS_WALL_SETTINGWALLPAGER "設定桌布中 ..."
+    IDS_WALL_MSG_IMAGELOADERROR "圖檔讀取失敗\n請選擇要進行的動作\n直接刪除請按是\n前往查詢請按否"
+    IDS_WALL_COMBOX_ASKUSER "詢問使用者"
+    IDS_WALL_COMBOX_DELETE  "直接刪除"
+    IDS_WALL_COMBOX_EXPLORE "前往查看"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WALL_COMBOX_NULL    "不做事"
+    IDS_WALL_COMBOX_ASKDELETE "詢問刪除"
+    IDS_FIND_MENU_ADDFINDPATH "加入尋找路徑"
+    IDS_FIND_MENU_REMOVEFINDPATH "取消尋找路徑"
+    IDS_FIND_MENU_OPENFILE  "開啟檔案"
+    IDS_FIND_MENU_OPENDIR   "開啟資料夾\t(&O)"
+    IDS_FIND_BTN_STARTFIND  "開始尋找"
+    IDS_FIND_BTN_SELECTDUP  "選取重複"
+    IDS_FIND_BTN_SELECTNONE "取消選取"
+    IDS_FIND_BTN_DELETEDUP  "刪除重複"
+    IDS_FIND_BTN_STOPFIND   "取消尋找"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FIND_BTN_EXPANDALL  "全部展開"
+    IDS_FIND_BTN_COLLAPSEALL "全部收合"
+    IDS_FIND_MSG_DELETEDUP  "此動作將會刪除所選取的檔案\n確定要繼續嗎？"
+    IDS_FIND_MSG_DOFINDFIRST "請先搜尋重複檔案"
+    IDS_FIND_MSG_FINDTIME   "本次執行所耗費時間(秒)："
+    IDS_FIND_MSG_NOSAMEFILE "沒有找到任何相同的檔案"
+    IDS_FIND_COLUMN_FINDLIST "尋找相同檔案列表"
+    IDS_FIND_TOOLTIP_FINDLIST "將需要尋找的檔案或資料夾拖曳到此\n或是按右鍵加入"
+    IDS_FIND_STATIC_DUPFILELIST "重複檔案列表"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_LIST_COLUMN_NAME "本機名稱"
+    IDS_PICC_LIST_COLUMN_TITLE "Feed 標題"
+    IDS_PICC_LIST_COLUMN_URL "Feed 網址"
+    IDS_PICC_MSG_ENTER_FEED_URL "請輸入 rss feed 的網址"
+    IDS_PICC_MSG_ENTER_FEED_NAME "請輸入 rdd feed 的本機名稱"
+    IDS_PICC_STATIC_DLDIR   "下載資料夾:"
+    IDS_PICC_BTN_CHANGE_DLDIR "變更資料夾"
+    IDS_PICC_BTN_ADD_NEW_FEED "新增訂閱"
+    IDS_PICC_BTN_REFRESH_FEED "更新訂閱"
+    IDS_PICC_BTN_DEL_FEED   "刪除訂閱"
+    IDS_PICC_BTN_VIEW_DLDIR "檢視"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_BTN_VIEWDB     "檢視資料庫"
+    IDS_PICC_DBV_BTN_RELOAD "重新載入"
+    IDS_PICC_DBV_BTN_EXIT   "離開"
+    IDS_PICC_DBV_BTN_DELETE "刪除"
+    IDS_PICC_DBV_BTN_EXPORT "匯出"
+    IDS_PICC_DBV_LIST_URL   "網址"
+    IDS_PICC_DBV_LIST_LOCALPATH "本機檔案路徑"
+    IDS_PICC_DBV_COMBO_DLFAILED "下載失敗"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_DBV_COMBO_DLOVER "下載完成"
+    IDS_PICC_DBV_COMBO_UNDL "尚未下載"
+    IDS_PICC_DBV_MSG_EXPORT "匯出到\n%s"
+    IDS_PICC_TT_STATIC_PLAY "開始下載檔案列表中的檔案"
+    IDS_PICC_TT_STATIC_PAUSE "暫停下載"
+    IDS_PICC_TT_STATIC_STOP "停止下載程式\r\n(使用者不能進行此操作)"
+    IDS_PICC_TT_BTN_DELNOWDL "刪除下載中的檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
+    IDS_PICC_TT_BTN_DELAY_DL "稍後下載目前檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
+END
+
+#endif    // Chinese (Taiwan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
