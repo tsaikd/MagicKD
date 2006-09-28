@@ -278,6 +278,10 @@
 					RelativePath=".\FuncBase\Others.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\FuncBase\xShadeButton.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="KDClass"
@@ -566,6 +570,10 @@
 				</File>
 				<File
 					RelativePath=".\FuncBase\pugxml.h"
+					>
+				</File>
+				<File
+					RelativePath=".\FuncBase\xShadeButton.h"
 					>
 				</File>
 			</Filter>
