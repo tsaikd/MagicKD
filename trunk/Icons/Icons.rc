@@ -54,9 +54,49 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_PICC_STOP           ICON                    "stop.ico"
 IDI_PICC_PLAY           ICON                    "play.ico"
+IDI_PICC_STOP           ICON                    "stop.ico"
 IDI_PICC_PAUSE          ICON                    "pause.ico"
+IDI_PICC_DEL            ICON                    "del.ico"
+IDI_PICC_FORWARD        ICON                    "forward.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,3,7
+ PRODUCTVERSION 1,0,3,7
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040404b0"
+        BEGIN
+            VALUE "FileDescription", "Icons"
+            VALUE "FileVersion", "1, 0, 3, 7"
+            VALUE "InternalName", "Icons"
+            VALUE "LegalCopyright", "Copyright (C) 2006"
+            VALUE "OriginalFilename", "Icons"
+            VALUE "ProductName", " Icons"
+            VALUE "ProductVersion", "1, 0, 3, 7"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x404, 1200
+    END
+END
+
 #endif    // Chinese (Taiwan) resources
 /////////////////////////////////////////////////////////////////////////////
 

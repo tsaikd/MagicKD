@@ -4,7 +4,7 @@
 #include "PicCDLManager.h"
 
 CPicCDLManager::CPicCDLManager()
-	:	m_pFeed(NULL)
+	:	m_pFeed(NULL), m_bDelay(false)
 {
 }
 
@@ -29,14 +29,7 @@ void CPicCDLManager::Destroy()
 	if (!m_pFeed)
 		return;
 
-	SetCanThread(false);
-	if (WAIT_TIMEOUT == WaitForThread(10000)) {
-#ifdef DEBUG
-		AfxMessageBox(_T("CPicCDLManager Thread is running!!"), MB_OK | MB_ICONERROR);
-#endif //DEBUG
-		SaveNowDLToList();
-		TerminateThread(0);
-	}
+	CKDGetHttpFile::Destroy();
 
 	SetDBSync(false);
 	CString strSQL;
@@ -70,9 +63,35 @@ void CPicCDLManager::SetDBSync(bool bSync/* = true*/)
 	m_pFeed->SetDBSync(bSync);
 }
 
+void CPicCDLManager::DelayDownload()
+{
+	if (!m_pFeed)
+		return;
+
+	m_bDelay = true;
+	SetDiscardNowDL();
+}
+
+void CPicCDLManager::OnStartDownloadThread()
+{
+	g_pPicCollectorDlg->DLIconSwitch(0);
+	g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow();
+	g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow();
+}
+
+void CPicCDLManager::OnExitDownloadThread()
+{
+	if (IsCanThread()) {
+		g_pPicCollectorDlg->DLIconSwitch(2);
+		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow(FALSE);
+		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
+	}
+}
+
 void CPicCDLManager::OnDownloadFileOver()
 {
 	CString strSQL;
+
 	m_muxNowDLURL.Lock();
 	strSQL.Format(_T("INSERT INTO PicDownloadOver (Url, Localpath) VALUES ('%s', '%s')"),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),
@@ -87,15 +106,22 @@ void CPicCDLManager::OnDownloadFileOver()
 void CPicCDLManager::OnDownloadFileDiscard()
 {
 	CString strSQL;
-	m_muxNowDLURL.Lock();
-	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
-	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
-	m_muxNowDLURL.Unlock();
+
+	if (m_bDelay) {
+		SaveNowDLToList(false);
+		m_bDelay = false;
+	} else {
+		m_muxNowDLURL.Lock();
+		strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
+		g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+		m_muxNowDLURL.Unlock();
+	}
 }
 
 void CPicCDLManager::OnDownloadFileRetryFailed()
 {
 	CString strSQL;
+
 	m_muxNowDLURL.Lock();
 	strSQL.Format(_T("INSERT INTO PicDownloadFailed (Url, Localpath, MaxDLPercent) VALUES ('%s', '%s', '%f')"),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),

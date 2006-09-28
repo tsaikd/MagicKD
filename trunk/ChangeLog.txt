@@ -1,3 +1,7 @@
+Version: 1.0.3.7	(2006-09-28)
+	PicCollector support for pausing downloader
+	Add some Icons in PicCollector
+
 Version: 1.0.3.6	(2006-09-19)
 	Fix bug: KDUpdate will not delete temp file
 	FindDupFile: Calculate time more accurately

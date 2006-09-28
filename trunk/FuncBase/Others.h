@@ -84,6 +84,8 @@ int GetOnOffline();
 bool ExplorerFile(LPCTSTR lpFilePath);
 bool ExplorerDir(LPCTSTR lpDirPath);
 
+CSize GetStrPixelSize(CWnd *pWnd, LPCTSTR lpStr);
+
 class CGetFileVersion : public CString
 {
 public:

@@ -23,7 +23,7 @@ enum {
 IMPLEMENT_DYNAMIC(CPicCollectorDlg, CDialog)
 CPicCollectorDlg::CPicCollectorDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CPicCollectorDlg::IDD, pParent), m_uTimerShowDownload(0), m_uTimerRefresh(0), m_uLastDLDay(0),
-		m_pDownLoader(NULL), m_bInit(false)
+		m_pDownLoader(NULL), m_bInit(false), m_iDLIconStatus(0)
 {
 	g_pPicCollectorDlg = this;
 }
@@ -47,7 +47,8 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	sPath.Format(_T("%sPicCollector.db"), theApp.GetAppConfDir());
 	m_Feed.OpenDB(sPath);
 	m_list_Feed.Init();
-	m_ttc.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
+	m_ttc.Create(this, TTS_ALWAYSTIP);
+	m_ttc.SetMaxTipWidth(600);
 
 	// Setup ToolTipCtrl for CKDStaticPath
 	m_static_DLDir.SignToolTipCtrl(&m_ttc);
@@ -64,7 +65,11 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	}
 
 	m_HTMLReader.setEventHandler(&m_HTMLEventHandler);
+	DLIconSwitch(2);
+	GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow(FALSE);
 	GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
+	GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(_T(""));
 
 	if (!m_pDownLoader) {
 		m_pDownLoader = new CPicCDLManager;
@@ -74,6 +79,33 @@ BOOL CPicCollectorDlg::OnInitDialog()
 		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
 
 	OnBnClickedPiccBtnRefreshfeed();
+
+	CStatic *pStatic;
+	pStatic = (CStatic *)GetDlgItem(IDC_PICC_STATIC_PLAY);
+	pStatic->ModifyStyle(0, SS_ICON);
+	pStatic->SetIcon(g_pTheIcons->GetIcon(IDI_PICC_PLAY, 14, 14));
+	m_ttc.AddTool(pStatic);
+
+	pStatic = (CStatic *)GetDlgItem(IDC_PICC_STATIC_PAUSE);
+	pStatic->ModifyStyle(0, SS_ICON);
+	pStatic->SetIcon(g_pTheIcons->GetIcon(IDI_PICC_PAUSE, 14, 14));
+	m_ttc.AddTool(pStatic);
+
+	pStatic = (CStatic *)GetDlgItem(IDC_PICC_STATIC_STOP);
+	pStatic->ModifyStyle(0, SS_ICON);
+	pStatic->SetIcon(g_pTheIcons->GetIcon(IDI_PICC_STOP, 14, 14));
+	m_ttc.AddTool(pStatic);
+
+	CButton *pBtn;
+	pBtn = (CButton *)GetDlgItem(IDC_PICC_BTN_DELNOWDL);
+	pBtn->ModifyStyle(0, BS_ICON);
+	pBtn->SetIcon(g_pTheIcons->GetIcon(IDI_PICC_DEL, 18, 18));
+	m_ttc.AddTool(pBtn);
+
+	pBtn = (CButton *)GetDlgItem(IDC_PICC_BTN_DELAYDL);
+	pBtn->ModifyStyle(0, BS_ICON);
+	pBtn->SetIcon(g_pTheIcons->GetIcon(IDI_PICC_FORWARD, 14, 14));
+	m_ttc.AddTool(pBtn);
 
 	m_bInit = true;
 	Localize();
@@ -135,7 +167,12 @@ void CPicCollectorDlg::Localize()
 	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->SetWindowText(CResString(IDS_PICC_BTN_REFRESH_FEED));
 	GetDlgItem(IDC_PICC_BTN_REMOVEFEED)->SetWindowText(CResString(IDS_PICC_BTN_DEL_FEED));
 	GetDlgItem(IDC_PICC_BTN_DBVIEW)->SetWindowText(CResString(IDS_PICC_BTN_VIEWDB));
-	GetDlgItem(IDC_PICC_BTN_DELAYDL)->SetWindowText(CResString(IDS_PICC_BTN_DELAY_DL));
+
+	m_ttc.UpdateTipText(CResString(IDS_PICC_TT_STATIC_PLAY), GetDlgItem(IDC_PICC_STATIC_PLAY));
+	m_ttc.UpdateTipText(CResString(IDS_PICC_TT_STATIC_PAUSE), GetDlgItem(IDC_PICC_STATIC_PAUSE));
+	m_ttc.UpdateTipText(CResString(IDS_PICC_TT_STATIC_STOP), GetDlgItem(IDC_PICC_STATIC_STOP));
+	m_ttc.UpdateTipText(CResString(IDS_PICC_TT_BTN_DELNOWDL), GetDlgItem(IDC_PICC_BTN_DELNOWDL));
+	m_ttc.UpdateTipText(CResString(IDS_PICC_TT_BTN_DELAY_DL), GetDlgItem(IDC_PICC_BTN_DELAYDL));
 }
 
 void CPicCollectorDlg::DoSize()
@@ -170,21 +207,29 @@ void CPicCollectorDlg::DoSize()
 		iWidth = 100;
 	m_list_Feed.SetColumnWidth(2, iWidth);
 
-	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELAYDL), this,
-		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight);
-	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD), GetDlgItem(IDC_PICC_BTN_DELAYDL),
-		KDMOVEDLGITEM_WAY_LEFT | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD), this,
+		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH), this,
 		KDMOVEDLGITEM_WAY_RIGHT | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginRight, true);
 
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH), this,
 		KDMOVEDLGITEM_WAY_BOTTOM | KDMOVEDLGITEM_WAY_F_INSIDE, iMarginBottom);
 	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_DOWNLOAD), GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH),
-		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 7);
-	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELAYDL), GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH),
 		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
-	KDMoveDlgItem(GetDlgItem(IDC_PICC_LIST_FEED), GetDlgItem(IDC_PICC_BTN_DELAYDL),
-		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 25, true);/////////////
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_PLAY), GetDlgItem(IDC_PICC_STATIC_DOWNLOAD),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_PAUSE), GetDlgItem(IDC_PICC_STATIC_DOWNLOAD),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_STATIC_STOP), GetDlgItem(IDC_PICC_STATIC_DOWNLOAD),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELNOWDL), GetDlgItem(IDC_PICC_STATIC_DOWNLOAD),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_BTN_DELAYDL), GetDlgItem(IDC_PICC_STATIC_DOWNLOAD),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5);
+
+	KDMoveDlgItem(GetDlgItem(IDC_PICC_LIST_FEED), GetDlgItem(IDC_PICC_STATIC_PLAY),
+		KDMOVEDLGITEM_WAY_TOP | KDMOVEDLGITEM_WAY_F_OUTSIDE, 5, true);
 
 	Invalidate();
 }
@@ -291,6 +336,42 @@ void CPicCollectorDlg::RefreshAllFeed()
 		RefreshFeed(strLinkArray[i]);
 }
 
+void CPicCollectorDlg::DLIconSwitch(int iPos)
+{
+	if (!IsCanThread())
+		return;
+
+	switch (m_iDLIconStatus) {
+	case 1:
+		GetDlgItem(IDC_PICC_STATIC_PAUSE)->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+		break;
+	case 2:
+		GetDlgItem(IDC_PICC_STATIC_STOP)->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+		break;
+	default:
+		GetDlgItem(IDC_PICC_STATIC_PLAY)->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+		break;
+	}
+
+	switch (iPos) {
+	case 1:
+		m_iDLIconStatus = iPos;
+		GetDlgItem(IDC_PICC_STATIC_PAUSE)->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+		break;
+	case 2:
+		m_iDLIconStatus = iPos;
+		GetDlgItem(IDC_PICC_STATIC_STOP)->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+		break;
+	default:
+		m_iDLIconStatus = 0;
+		GetDlgItem(IDC_PICC_STATIC_PLAY)->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+		break;
+	}
+
+	if (m_bInit)
+		Invalidate();
+}
+
 BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
@@ -304,8 +385,12 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_VIEW_DLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnViewDldir)
 	ON_BN_CLICKED(IDC_PICC_BTN_DBVIEW, &CPicCollectorDlg::OnBnClickedPiccBtnDbview)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DLDIR, &CPicCollectorDlg::OnStnClickedPiccStaticDldir)
+	ON_STN_CLICKED(IDC_PICC_STATIC_PLAY, &CPicCollectorDlg::OnStnClickedPiccStaticPlay)
+	ON_STN_CLICKED(IDC_PICC_STATIC_PAUSE, &CPicCollectorDlg::OnStnClickedPiccStaticPause)
+	ON_STN_CLICKED(IDC_PICC_STATIC_STOP, &CPicCollectorDlg::OnStnClickedPiccStaticStop)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DLLOCALPATH, &CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DOWNLOAD, &CPicCollectorDlg::OnStnClickedPiccStaticDownload)
+	ON_BN_CLICKED(IDC_PICC_BTN_DELNOWDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelnowdl)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -333,7 +418,6 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 
 	switch (nIDEvent) {
 	case KDT_SHOWDOWNLOAD:
-		{
 		if (m_pDownLoader->IsThreadRunning()) {
 			CString sBuf;
 			if (m_pDownLoader->GetNowDLRetryTimes()) {
@@ -343,7 +427,6 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_pDownLoader->GetNowDLLocalPath());
-			GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow();
 		} else if (m_pDownLoader->GetDownloadCount()) {
 			Sleep(2000);
 			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
@@ -373,10 +456,8 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(_T(""));
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(_T(""));
-			GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
 			KillTimer(nIDEvent);
 			m_uTimerShowDownload = 0;
-		}
 		}
 		break;
 	case KDT_REFRESH:
@@ -488,10 +569,39 @@ void CPicCollectorDlg::OnBnClickedPiccBtnDbview()
 	dlg.DoModal();
 }
 
+void CPicCollectorDlg::OnBnClickedPiccBtnDelnowdl()
+{
+	m_pDownLoader->SetDiscardNowDL();
+	GetParent()->SetFocus();
+}
+
 void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()
 {
-	m_pDownLoader->SaveNowDLToList(false);
-	m_pDownLoader->SetDiscardNowDL();
+	m_pDownLoader->DelayDownload();
+	GetParent()->SetFocus();
+}
+
+void CPicCollectorDlg::OnStnClickedPiccStaticPlay()
+{
+	if (m_iDLIconStatus == 1) {		// Only Affect At Pause Status
+		m_pDownLoader->Pause(false);
+		DLIconSwitch(0);
+	}
+}
+
+void CPicCollectorDlg::OnStnClickedPiccStaticPause()
+{
+	if (m_iDLIconStatus == 0) {		// Affect At Play or Pause Status
+		m_pDownLoader->Pause(true);
+		DLIconSwitch(1);
+	} else if (m_iDLIconStatus == 1) {
+		OnStnClickedPiccStaticPlay();
+	}
+}
+
+void CPicCollectorDlg::OnStnClickedPiccStaticStop()
+{
+	// User can't do this operation
 }
 
 void CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath()

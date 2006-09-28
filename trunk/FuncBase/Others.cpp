@@ -510,3 +510,24 @@ bool ExplorerDir(LPCTSTR lpDirPath)
 
 	return true;
 }
+
+CSize GetStrPixelSize(CWnd *pWnd, LPCTSTR lpStr)
+{
+	CSize sizeRes;
+
+	if (!IsWindow(pWnd->GetSafeHwnd()))
+		return sizeRes;
+
+	CDC *pDc = pWnd->GetDC();
+	if (pDc == NULL)
+		return sizeRes;
+
+	CFont *pFont = pWnd->GetFont();
+	CFont *pOldFont = pDc->SelectObject(pFont);
+	sizeRes = pDc->GetTextExtent(lpStr, _tcslen(lpStr));
+
+	pDc->SelectObject(pOldFont);
+	pWnd->ReleaseDC(pDc);
+
+	return sizeRes;
+}

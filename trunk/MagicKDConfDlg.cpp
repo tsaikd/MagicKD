@@ -72,6 +72,8 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 		m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
 		sPath = _T("lib/sqlite.dll");
 		m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
+		sPath = _T("lib/Icons.dll");
+		m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));
 		sPath = _T("lang/zh-TW.dll");
 		if (PathFileExists(sPath))
 			m_KDUpdater.AddUpdateFile(sPath, CGetFileVersion(sPath));

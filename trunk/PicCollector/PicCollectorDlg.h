@@ -27,6 +27,7 @@ public:
 	void AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName);
 	void RefreshFeed(LPCTSTR lpURL);
 	void RefreshAllFeed();
+	void DLIconSwitch(int iPos);
 
 	CIni					m_Ini;
 	CPicCFeed				m_Feed;
@@ -44,6 +45,7 @@ private:
 	UINT					m_uLastDLDay;
 	UINT					m_uTimerShowDownload;
 	UINT					m_uTimerRefresh;
+	int						m_iDLIconStatus;
 
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -56,8 +58,12 @@ public:
 	afx_msg void OnBnClickedPiccBtnRefreshfeed();
 	afx_msg void OnBnClickedPiccBtnRemovefeed();
 	afx_msg void OnBnClickedPiccBtnFindDF();
-	afx_msg void OnBnClickedPiccBtnDelaydl();
 	afx_msg void OnBnClickedPiccBtnDbview();
+	afx_msg void OnBnClickedPiccBtnDelnowdl();
+	afx_msg void OnBnClickedPiccBtnDelaydl();
+	afx_msg void OnStnClickedPiccStaticPlay();
+	afx_msg void OnStnClickedPiccStaticPause();
+	afx_msg void OnStnClickedPiccStaticStop();
 	afx_msg void OnStnClickedPiccStaticDllocalpath();
 	afx_msg void OnStnClickedPiccStaticDownload();
 protected:

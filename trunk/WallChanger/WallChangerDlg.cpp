@@ -266,7 +266,7 @@ bool CWallChangerDlg::SetRandWallPager()
 	if (x) {																		\
 		m_staticNowPicPath.SetWindowText(m_sNowPicPath);							\
 		GetDlgItem(IDC_WALL_STATIC_IMAGEINFO)->SetWindowText(sImageInfo);			\
-		g_pTheTray->SetTrayTip(m_sNowPicPath + _T("  ") + sImageInfo);				\
+		g_pTheTray->SetTrayTip(m_sNowPicPath + _T("\r\n") + sImageInfo);			\
 	} else {																		\
 		m_staticNowPicPath.SetWindowText(m_sNowPicPath + _T(" -- ") +				\
 			CResString(IDS_WALL_SETWALLPAGERFAIL));									\

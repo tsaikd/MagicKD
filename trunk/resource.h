@@ -83,13 +83,13 @@
 #define IDS_FIND_BTN_SELECTDUP          236
 #define IDS_FIND_BTN_SELECTNONE         237
 #define IDS_FIND_BTN_DELETEDUP          238
-#define IDS_FIND_MSG_DELETEDUP          239
-#define IDS_FIND_MSG_DOFINDFIRST        240
-#define IDS_FIND_MSG_FINDTIME           241
-#define IDS_FIND_MSG_NOSAMEFILE         242
-#define IDS_FIND_BTN_STOPFIND           243
-#define IDS_FIND_BTN_EXPANDALL          244
-#define IDS_FIND_BTN_COLLAPSEALL        245
+#define IDS_FIND_BTN_STOPFIND           239
+#define IDS_FIND_BTN_EXPANDALL          240
+#define IDS_FIND_BTN_COLLAPSEALL        241
+#define IDS_FIND_MSG_DELETEDUP          242
+#define IDS_FIND_MSG_DOFINDFIRST        243
+#define IDS_FIND_MSG_FINDTIME           244
+#define IDS_FIND_MSG_NOSAMEFILE         245
 #define IDS_FIND_COLUMN_FINDLIST        246
 #define IDS_FIND_TOOLTIP_FINDLIST       247
 #define IDS_FIND_STATIC_DUPFILELIST     248
@@ -103,9 +103,8 @@
 #define IDS_PICC_BTN_ADD_NEW_FEED       268
 #define IDS_PICC_BTN_REFRESH_FEED       269
 #define IDS_PICC_BTN_DEL_FEED           270
-#define IDS_PICC_BTN_DELAY_DL           271
-#define IDS_PICC_BTN_VIEW_DLDIR         272
-#define IDS_PICC_BTN_VIEWDB             273
+#define IDS_PICC_BTN_VIEW_DLDIR         271
+#define IDS_PICC_BTN_VIEWDB             272
 #define IDS_PICC_DBV_BTN_RELOAD         281
 #define IDS_PICC_DBV_BTN_EXIT           282
 #define IDS_PICC_DBV_BTN_DELETE         283
@@ -116,6 +115,11 @@
 #define IDS_PICC_DBV_COMBO_DLOVER       288
 #define IDS_PICC_DBV_COMBO_UNDL         289
 #define IDS_PICC_DBV_MSG_EXPORT         290
+#define IDS_PICC_TT_STATIC_PLAY         291
+#define IDS_PICC_TT_STATIC_PAUSE        292
+#define IDS_PICC_TT_STATIC_STOP         293
+#define IDS_PICC_TT_BTN_DELNOWDL        294
+#define IDS_PICC_TT_BTN_DELAY_DL        295
 #define IDC_TAB_MAIN                    1000
 #define IDC_PROGRESS_END                1001
 #define IDC_MAGICKDEND_EDIT_TEXT        1002
@@ -189,14 +193,18 @@
 #define IDC_PICC_DBV_BTN_RPAGE          1101
 #define IDC_PICC_DBV_BTN_EXPORT         1102
 #define IDC_PICC_BTN_FINDDF             1103
+#define IDC_PICC_STATIC_PLAY            1104
+#define IDC_PICC_STATIC_PAUSE           1105
+#define IDC_PICC_STATIC_STOP            1106
+#define IDC_PICC_BTN_DELNOWDL           1107
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        291
+#define _APS_NEXT_RESOURCE_VALUE        296
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1104
+#define _APS_NEXT_CONTROL_VALUE         1108
 #define _APS_NEXT_SYMED_VALUE           108
 #endif
 #endif

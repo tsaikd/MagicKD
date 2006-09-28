@@ -9,8 +9,14 @@ CKDGetHttpFile::CKDGetHttpFile()
 
 CKDGetHttpFile::~CKDGetHttpFile()
 {
+	Destroy();
+}
+
+void CKDGetHttpFile::Destroy()
+{
 	SetCanThread(false);
-	if (WAIT_TIMEOUT == WaitForThread(10000)) {
+	Pause(false);
+	if (WAIT_TIMEOUT == WaitForThread(20000)) {
 #ifdef DEBUG
 		AfxMessageBox(_T("CKDGetHttpFile Thread is running!!"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
@@ -34,10 +40,14 @@ DWORD CKDGetHttpFile::ThreadProc()
 	DWORD dwWriteLen = 0;
 	bool bDLOver = true;
 	m_uQueryRetryTimes = 0;
+	OnStartDownloadThread();
 
 	while (IsCanThread() && !m_slURL.IsEmpty()) {
 		WaitForSingleObject(m_semPause, INFINITE);
 		m_semPause.Unlock();
+		if (!IsCanThread())
+			break;
+
 		m_muxNowDLURL.Lock();
 		m_sNowDLURL = m_slURL.RemoveHead();
 		sLocalDir = m_sNowDLLocalPath = m_slLocalPath.RemoveHead();
@@ -122,6 +132,7 @@ DWORD CKDGetHttpFile::ThreadProc()
 	m_muxNowDLURL.Unlock();
 	session.Close();
 	delete [] pBuf;
+	OnExitDownloadThread();
 	return 0;
 }
 

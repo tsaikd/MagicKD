@@ -7,6 +7,7 @@ class CKDGetHttpFile : public CKDThread
 public:
 	CKDGetHttpFile();
 	virtual ~CKDGetHttpFile();
+	virtual void Destroy();
 	virtual DWORD ThreadProc();
 
 	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
@@ -27,6 +28,8 @@ public:
 	void Pause(bool bPause = true);
 
 protected:
+	virtual void OnStartDownloadThread() {}
+	virtual void OnExitDownloadThread() {}
 	virtual void OnDownloadFileOver() {}
 	virtual void OnDownloadFileDiscard() {}
 	virtual void OnDownloadFileRetryFailed() {}

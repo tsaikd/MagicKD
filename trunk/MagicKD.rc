@@ -165,15 +165,19 @@ BEGIN
     RTEXT           "下載資料夾:",IDC_PICC_STATIC_DLDIRHELP,10,12,55,8
     LTEXT           "",IDC_PICC_STATIC_DLDIR,70,12,185,8,SS_PATHELLIPSIS
     PUSHBUTTON      "變更資料夾",IDC_PICC_BTN_CHANGEDLDIR,265,10,50,12
-    LTEXT           "",IDC_PICC_STATIC_DOWNLOAD,10,217,285,8,SS_WORDELLIPSIS
+    LTEXT           "Download URL",IDC_PICC_STATIC_DOWNLOAD,10,217,350,8,SS_WORDELLIPSIS
     PUSHBUTTON      "新增訂閱",IDC_PICC_BTN_ADDNEWFEED,20,25,50,12
     PUSHBUTTON      "更新訂閱",IDC_PICC_BTN_REFRESHFEED,85,25,50,12
     PUSHBUTTON      "刪除訂閱",IDC_PICC_BTN_REMOVEFEED,150,25,50,12
-    LTEXT           "",IDC_PICC_STATIC_DLLOCALPATH,10,232,350,8,SS_PATHELLIPSIS
-    PUSHBUTTON      "延後下載",IDC_PICC_BTN_DELAYDL,300,215,60,12
+    LTEXT           "Download local path",IDC_PICC_STATIC_DLLOCALPATH,10,232,350,8,SS_PATHELLIPSIS
+    PUSHBUTTON      ">|",IDC_PICC_BTN_DELAYDL,115,200,12,12,BS_CENTER | BS_VCENTER | NOT WS_TABSTOP
     PUSHBUTTON      "檢視",IDC_PICC_BTN_VIEW_DLDIR,320,10,40,12
     PUSHBUTTON      "檢視資料庫",IDC_PICC_BTN_DBVIEW,310,25,50,12
     PUSHBUTTON      "FindDupFile",IDC_PICC_BTN_FINDDF,230,25,50,12
+    CTEXT           ">",IDC_PICC_STATIC_PLAY,30,200,12,12,SS_NOTIFY | SS_CENTERIMAGE
+    CTEXT           "| |",IDC_PICC_STATIC_PAUSE,45,200,12,12,SS_NOTIFY | SS_CENTERIMAGE
+    CTEXT           "X",IDC_PICC_STATIC_STOP,60,200,12,12,SS_NOTIFY | SS_CENTERIMAGE
+    PUSHBUTTON      "Del",IDC_PICC_BTN_DELNOWDL,100,200,12,12,BS_CENTER | BS_VCENTER | NOT WS_TABSTOP
 END
 
 IDD_MAGICKD_PICCDBVIEW DIALOGEX 0, 0, 405, 201
@@ -202,8 +206,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,6
- PRODUCTVERSION 1,0,3,6
+ FILEVERSION 1,0,3,7
+ PRODUCTVERSION 1,0,3,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -219,11 +223,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 3, 6"
+            VALUE "FileVersion", "1, 0, 3, 7"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 3, 6"
+            VALUE "ProductVersion", "1, 0, 3, 7"
         END
     END
     BLOCK "VarFileInfo"
@@ -418,17 +422,17 @@ BEGIN
     IDS_FIND_BTN_SELECTDUP  "Select dups"
     IDS_FIND_BTN_SELECTNONE "Cancel select"
     IDS_FIND_BTN_DELETEDUP  "Delete dups"
-    IDS_FIND_MSG_DELETEDUP  "Do you want to delete selected files?"
+    IDS_FIND_BTN_STOPFIND   "Stop"
 END
 
 STRINGTABLE 
 BEGIN
+    IDS_FIND_BTN_EXPANDALL  "Expand all"
+    IDS_FIND_BTN_COLLAPSEALL "Collapse all"
+    IDS_FIND_MSG_DELETEDUP  "Do you want to delete selected files?"
     IDS_FIND_MSG_DOFINDFIRST "Please find duplications first"
     IDS_FIND_MSG_FINDTIME   "Execution time(second):"
     IDS_FIND_MSG_NOSAMEFILE "There is no duplications"
-    IDS_FIND_BTN_STOPFIND   "Stop"
-    IDS_FIND_BTN_EXPANDALL  "Expand all"
-    IDS_FIND_BTN_COLLAPSEALL "Collapse all"
     IDS_FIND_COLUMN_FINDLIST "Directory list of finding duplications"
     IDS_FIND_TOOLTIP_FINDLIST 
                             "Right click menu to add directory\nor draging from outside is permited"
@@ -447,12 +451,11 @@ BEGIN
     IDS_PICC_BTN_ADD_NEW_FEED "Add rss feed"
     IDS_PICC_BTN_REFRESH_FEED "Refresh feed"
     IDS_PICC_BTN_DEL_FEED   "Delete feed"
-    IDS_PICC_BTN_DELAY_DL   "Delay Download"
+    IDS_PICC_BTN_VIEW_DLDIR "View"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_PICC_BTN_VIEW_DLDIR "View"
     IDS_PICC_BTN_VIEWDB     "View DB"
     IDS_PICC_DBV_BTN_RELOAD "Reload"
     IDS_PICC_DBV_BTN_EXIT   "Exit"
@@ -468,6 +471,13 @@ BEGIN
     IDS_PICC_DBV_COMBO_DLOVER "Download Over"
     IDS_PICC_DBV_COMBO_UNDL "UnDownload"
     IDS_PICC_DBV_MSG_EXPORT "Export to\n%s"
+    IDS_PICC_TT_STATIC_PLAY "Start to download the files in found list"
+    IDS_PICC_TT_STATIC_PAUSE "Pause the downloader"
+    IDS_PICC_TT_STATIC_STOP "Stop the downloader\r\n(forbid operation by user)"
+    IDS_PICC_TT_BTN_DELNOWDL 
+                            "Delete downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
+    IDS_PICC_TT_BTN_DELAY_DL 
+                            "Delay current downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
 END
 
 #endif    // Chinese (Taiwan) resources
