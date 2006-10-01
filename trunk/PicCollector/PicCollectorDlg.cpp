@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Others.h"
 #include "Resource.h"
 #include "Language.h"
 #include "MagicKD.h"

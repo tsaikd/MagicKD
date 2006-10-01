@@ -57,12 +57,10 @@
 
 //#pragma warning (disable : 4199)
 
-#include "Others.h"
-
 #define APPNAME _T("MagicKD")
 #define APPUUID _T("43863dcf-f931-443e-bee0-eba5db4083a2")
 
 #define KDAPP_ENABLE_GETAPPOTHERDIR
 #define KDAPP_ENABLE_GETAPPVERSION
-//#define KDAPP_ENABLE_UPDATEAPPONLINE
 #define KDAPP_ENABLE_GETCHANGEDDLLDIR
+//#define KDAPP_ENABLE_UPDATEAPPONLINE

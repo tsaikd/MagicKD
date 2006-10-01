@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Others.h"
 #include "Language.h"
 #include "Resource.h"
 #include "PicCollectorDlg.h"

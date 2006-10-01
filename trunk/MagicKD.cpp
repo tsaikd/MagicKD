@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Others.h"
 #include "MagicKDDlg.h"
 
 #include "MagicKD.h"
@@ -25,12 +26,13 @@ BOOL CMagicKDApp::InitInstance()
 	CString sBuf;
 	sBuf.Format(_T("%sMagicKD_%s.log"), GetAppLogDir(), CTime(time(NULL)).Format(_T("%Y_%m_%d")));
 	g_pTheLog = new CMagicKDLog;
-	g_pTheLog->Init(sBuf, CKDLog::LOGLV_DEBUG);
 #ifdef DEBUG
-	g_pTheLog->Log(_T("Init MagicKDApp"), CKDLog::LOGLV_DEBUG);
+	g_pTheLog->Init(sBuf, CKDLog::LOGLV_DEBUG);
 #else
-	g_pTheLog->Log(_T("Init MagicKDApp"), CKDLog::LOGLV_INFO);
+	g_pTheLog->Init(sBuf, CKDLog::LOGLV_INFO);
 #endif
+	g_pTheLog->SetMaxLogSize(1*1024*1024, false);
+	g_pTheLog->Log(_T("Init MagicKDApp"), CKDLog::LOGLV_INFO);
 
 	sBuf.Format(_T("%sMagicKD.ini"), GetAppConfDir());
 	m_cIni.SetPathName(sBuf);

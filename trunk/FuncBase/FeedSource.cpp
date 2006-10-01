@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Others.h"
 #include "FeedSource.h"
 
 #define PUGAPI_VARIANT 0x58475550	//The Pug XML library variant we are using in this implementation.

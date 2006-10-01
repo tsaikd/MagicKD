@@ -49,6 +49,8 @@ bool MoveFileDlg(LPCTSTR lpFileFrom, LPCTSTR lpFIleTo, HWND hWnd = NULL, bool bU
 
 bool CalcPicSize(CSize &sizeSrc, const CSize &sizeMax);
 
+bool RotateFile(LPCTSTR lpFilePath);
+
 void GetTempFilePath(LPTSTR lpTempFilePath, LPCTSTR lpTempDir = NULL, LPCTSTR lpPreFix = NULL, LPCTSTR lpPostFix = NULL);
 class CTempFilePath : public CString
 {

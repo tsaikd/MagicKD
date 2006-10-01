@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Others.h"
 #include "KDGetHttpFile.h"
 
 CKDGetHttpFile::CKDGetHttpFile()

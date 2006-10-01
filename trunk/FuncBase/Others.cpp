@@ -179,6 +179,44 @@ bool CalcPicSize(CSize &sizeSrc, const CSize &sizeMax)
 	return true;
 }
 
+// Rename target file to .1 .2 ...etc
+bool RotateFile(LPCTSTR lpFilePath)
+{
+	if (_tcslen(lpFilePath) <= 0)
+		return false;
+
+	CString sTmpPath;
+	CString sOldPath;
+	int i = 1;
+	sTmpPath.Format(_T("%s.%d"), lpFilePath, i);
+
+	while (PathFileExists(sTmpPath)) {
+		i++;
+		sTmpPath.Format(_T("%s.%d"), lpFilePath, i);
+	}
+
+	i--;
+	if (i)
+		sOldPath.Format(_T("%s.%d"), lpFilePath, i);
+	else
+		sOldPath = lpFilePath;
+	if (!MoveFile(sOldPath, sTmpPath))
+		return false;
+
+	while (i) {
+		i--;
+		sTmpPath = sOldPath;
+		if (i)
+			sOldPath.Format(_T("%s.%d"), lpFilePath, i);
+		else
+			sOldPath = lpFilePath;
+		if (!MoveFile(sOldPath, sTmpPath))
+			return false;
+	}
+
+	return true;
+}
+
 // ouput lpTempFilePath and return sTempFilePath, input lpTempDir and lpPreFix
 void GetTempFilePath(LPTSTR lpTempFilePath, LPCTSTR lpTempDir/* = NULL*/, LPCTSTR lpPreFix/* = NULL*/, LPCTSTR lpPostFix/* = NULL*/)
 {
