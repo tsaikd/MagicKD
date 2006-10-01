@@ -348,8 +348,10 @@ BOOL CMagicKDDlg::ShowWindow(int nCmdShow)
 
 	BOOL bRes = CWnd::ShowWindow(nCmdShow);
 
-	if (nCmdShow == SW_SHOW)
+	if (nCmdShow == SW_SHOW) {
 		SetForegroundWindow();
+		Invalidate();
+	}
 	return bRes;
 }
 

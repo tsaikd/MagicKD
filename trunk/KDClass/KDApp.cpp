@@ -11,7 +11,7 @@
 CKDApp::CKDApp()
 	:	m_bRestart(false),m_lpAppName(NULL), m_lpAppPath(NULL), m_lpAppDir(NULL)
 #ifdef KDAPP_ENABLE_GETAPPOTHERDIR
-		,m_lpAppConfDir(NULL), m_lpAppLangDir(NULL)
+		,m_lpAppConfDir(NULL), m_lpAppLangDir(NULL), m_lpAppLogDir(NULL)
 #endif //KDAPP_ENABLE_GETAPPOTHERDIR
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 		,m_lpAppFileVer(NULL), m_lpAppProductVer(NULL)
@@ -56,6 +56,11 @@ CKDApp::CKDApp()
 		_stprintf((LPTSTR)m_lpAppLangDir, _T("%slang\\"), m_lpAppDir);
 		if (!PathFileExists(m_lpAppLangDir))
 			::CreateDirectory(m_lpAppLangDir, NULL);
+
+		m_lpAppLogDir = new TCHAR[u64Len + _tcslen(_T("log\\"))];
+		_stprintf((LPTSTR)m_lpAppLogDir, _T("%slog\\"), m_lpAppDir);
+		if (!PathFileExists(m_lpAppLogDir))
+			::CreateDirectory(m_lpAppLogDir, NULL);
 #endif //KDAPP_ENABLE_GETAPPOTHERDIR
 
 #ifdef KDAPP_ENABLE_UPDATEAPPONLINE
@@ -253,6 +258,8 @@ CKDApp::~CKDApp()
 		delete [] m_lpAppConfDir;
 	if (m_lpAppLangDir)
 		delete [] m_lpAppLangDir;
+	if (m_lpAppLogDir)
+		delete [] m_lpAppLogDir;
 #endif //KDAPP_ENABLE_GETAPPOTHERDIR
 #ifdef KDAPP_ENABLE_GETAPPVERSION
 	if (m_lpAppFileVer)

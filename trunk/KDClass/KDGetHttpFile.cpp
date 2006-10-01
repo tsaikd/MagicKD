@@ -7,6 +7,13 @@ CKDGetHttpFile::CKDGetHttpFile()
 {
 }
 
+CKDGetHttpFile::CKDGetHttpFile(LPCTSTR lpURL, LPCTSTR lpLocalPath)
+	:	m_ulNowDLMaxSize(0), m_ulNowDLSize(0), m_ulTotalDLMaxSize(0), m_ulTotalDLSize(0), m_uQueryRetryTimes(0),
+		m_bDiscardNowDL(false), m_fNowDLMaxPercent(0)
+{
+	DownloadFileFromHttp(lpURL, lpLocalPath);
+}
+
 CKDGetHttpFile::~CKDGetHttpFile()
 {
 	Destroy();

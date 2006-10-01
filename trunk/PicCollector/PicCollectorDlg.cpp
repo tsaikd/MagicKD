@@ -35,6 +35,7 @@ CPicCollectorDlg::~CPicCollectorDlg()
 
 BOOL CPicCollectorDlg::OnInitDialog()
 {
+	g_pTheLog->Log(_T("Init PicCollectorDlg"), CKDLog::LOGLV_INFO);
 	CDialog::OnInitDialog();
 
 	g_pTheAppEndDlg->SignWnd(GetSafeHwnd(), 2);
@@ -115,6 +116,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 
 void CPicCollectorDlg::OnDestroy()
 {
+	g_pTheLog->Log(_T("Exit PicCollectorDlg"), CKDLog::LOGLV_INFO);
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tThread"));
 	SetCanThread(false);
 	if (WAIT_TIMEOUT == WaitForThread(10000)) {

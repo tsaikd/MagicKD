@@ -22,7 +22,18 @@ BOOL CMagicKDApp::InitInstance()
 	if (IsWndRunning())
 		return FALSE;
 
-	m_cIni.SetPathName(CString(GetAppConfDir()) + _T("MagicKD.ini"));
+	CString sBuf;
+	sBuf.Format(_T("%sMagicKD_%s.log"), GetAppLogDir(), CTime(time(NULL)).Format(_T("%Y_%m_%d")));
+	g_pTheLog = new CMagicKDLog;
+	g_pTheLog->Init(sBuf, CKDLog::LOGLV_DEBUG);
+#ifdef DEBUG
+	g_pTheLog->Log(_T("Init MagicKDApp"), CKDLog::LOGLV_DEBUG);
+#else
+	g_pTheLog->Log(_T("Init MagicKDApp"), CKDLog::LOGLV_INFO);
+#endif
+
+	sBuf.Format(_T("%sMagicKD.ini"), GetAppConfDir());
+	m_cIni.SetPathName(sBuf);
 
 	g_pTheAppEndDlg = new CMagicKDEndDlg;
 	g_pTheAppEndDlg->Create(IDD_MAGICKD_END);
@@ -31,7 +42,9 @@ BOOL CMagicKDApp::InitInstance()
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
+	g_pTheLog->Log(_T("Exit MagicKDApp"), CKDLog::LOGLV_INFO);
 	DEL(g_pTheAppEndDlg);
+	DEL(g_pTheLog);
 
 	// 因為已經關閉對話方塊，傳回 FALSE，所以我們會結束應用程式，
 	// 而非提示開始應用程式的訊息。

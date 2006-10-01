@@ -9,6 +9,7 @@
 #include "KDSingleApp.h"
 #include "MagicKDIcons.h"
 #include "MagicKDConf.h"
+#include "MagicKDLog.h"
 #include "MagicKDEndDlg.h"
 
 class CMagicKDApp : public CWinApp, public CKDSingleApp, public CKDApp

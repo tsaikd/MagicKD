@@ -24,6 +24,7 @@ CMagicKDConfDlg::~CMagicKDConfDlg()
 
 BOOL CMagicKDConfDlg::OnInitDialog()
 {
+	g_pTheLog->Log(_T("Init MagicKDConfDlg"), CKDLog::LOGLV_INFO);
 	CDialog::OnInitDialog();
 
 	GetDlgItem(IDC_CONF_STATIC_VERSION)->SetWindowText(theApp.GetAppProductVer());
@@ -58,6 +59,7 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 	sPath.Format(_T("%s%s"), theApp.GetAppDir(), _T("KDUpdater.exe"));
 	CKDAppVer KDUpdaterVer((LPCTSTR)CGetFileVersion(sPath));
 	if (PathFileExists(sPath) && (KDUpdaterVer >= CKDAppVer(_T("1.0.0.8")))) {
+		g_pTheLog->Log(_T("CMagicKDConfDlg::OnInitDialog() Check Update"), CKDLog::LOGLV_DEBUG);
 		// Init Update Information
 		m_KDUpdater.SetParentWnd(GetSafeHwnd());
 		m_KDUpdater.SetKDUpdaterPath(sPath);
@@ -89,8 +91,10 @@ BOOL CMagicKDConfDlg::OnInitDialog()
 		GetDlgItem(IDC_CONF_CHECK_CHECKUPDATE)->EnableWindow(FALSE);
 
 		if (PathFileExists(sPath)) {
-			if (IDOK == MessageBox(CResString(IDS_CONF_MSG_KDUPDATERTOOOLD), NULL, MB_OKCANCEL | MB_ICONINFORMATION))
-				ShellExecute(NULL, _T("open"), _T("http://svn.tsaikd.org/tsaikd/KDUpdater/"), NULL, NULL, SW_SHOW);
+			if (IDOK == MessageBox(CResString(IDS_CONF_MSG_KDUPDATERTOOOLD), NULL, MB_OKCANCEL | MB_ICONINFORMATION)) {
+				CKDGetHttpFile fileDL(_T("http://svn.tsaikd.org/tsaikd/KDUpdater/KDUpdater.exe"), sPath);
+				::PostMessage(GetParent()->GetSafeHwnd(), WM_COMMAND, IDS_TRAY_RESTART, 0);
+			}
 		}
 	}
 

@@ -36,9 +36,11 @@ private:
 public:
 	_inline LPCTSTR GetAppConfDir() { return m_lpAppConfDir; }
 	_inline LPCTSTR GetAppLangDir() { return m_lpAppLangDir; }
+	_inline LPCTSTR GetAppLogDir() { return m_lpAppLogDir; }
 private:
 	LPCTSTR m_lpAppConfDir;
 	LPCTSTR m_lpAppLangDir;
+	LPCTSTR m_lpAppLogDir;
 #endif //KDAPP_ENABLE_GETAPPOTHERDIR
 
 #ifdef KDAPP_ENABLE_GETAPPVERSION

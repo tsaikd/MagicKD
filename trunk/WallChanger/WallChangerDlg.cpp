@@ -42,6 +42,7 @@ CWallChangerDlg::~CWallChangerDlg()
 
 BOOL CWallChangerDlg::OnInitDialog()
 {
+	g_pTheLog->Log(_T("Init WallChangerDlg"), CKDLog::LOGLV_INFO);
 	CDialog::OnInitDialog();
 
 	if (!g_pWallChangerDlg)
@@ -103,6 +104,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 
 void CWallChangerDlg::OnDestroy()
 {
+	g_pTheLog->Log(_T("Exit WallChangerDlg"), CKDLog::LOGLV_INFO);
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tWallChanger\tDialog"));
 	m_oDirChangeWatcher.UnwatchAllDirectories();
 
@@ -253,21 +255,22 @@ void CWallChangerDlg::SetWaitTime(UINT uWaitTime)
 	}
 }
 
-//bWay:
-//	true: From File List
 bool CWallChangerDlg::SetRandWallPager()
 {
 	if (!m_muxSetRandWallPager.Lock(0))
 		return false;
 
+	g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() Start"), CKDLog::LOGLV_DEBUG);
 	CString sImageInfo;
 
 #define RETURN(x) {																	\
 	if (x) {																		\
+		g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() Return true"), CKDLog::LOGLV_DEBUG);		\
 		m_staticNowPicPath.SetWindowText(m_sNowPicPath);							\
 		GetDlgItem(IDC_WALL_STATIC_IMAGEINFO)->SetWindowText(sImageInfo);			\
 		g_pTheTray->SetTrayTip(m_sNowPicPath + _T("\r\n") + sImageInfo);			\
 	} else {																		\
+		g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() Return false"), CKDLog::LOGLV_DEBUG);	\
 		m_staticNowPicPath.SetWindowText(m_sNowPicPath + _T(" -- ") +				\
 			CResString(IDS_WALL_SETWALLPAGERFAIL));									\
 		GetDlgItem(IDC_WALL_STATIC_IMAGEINFO)->SetWindowText(_T(""));				\
@@ -288,10 +291,12 @@ bool CWallChangerDlg::SetRandWallPager()
 		RETURN(false);
 	m_staticNowPicPath.SetWindowText(m_sNowPicPath + _T(" -- ") + CResString(IDS_WALL_SETTINGWALLPAGER));
 
+	g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() Check New Picture"), CKDLog::LOGLV_DEBUG);
 	m_imgNowPic.Destroy();
 	if (m_imgNowPic.Load(m_sNowPicPath)) {
 		sImageInfo.Format(_T("(%d*%d %s)"), m_imgNowPic.GetWidth(), m_imgNowPic.GetHeight(),
 			(LPCTSTR)CHumanSize(CFileSize(m_sNowPicPath), CHumanSize::FLAG_PostDotNum1));
+		g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() Set New Picture"), CKDLog::LOGLV_DEBUG);
 		if (AutoPicSize(m_imgNowPic)) {
 			m_imgNowPic.Save(m_sTempFilePath, CXIMAGE_FORMAT_JPG);
 			SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);

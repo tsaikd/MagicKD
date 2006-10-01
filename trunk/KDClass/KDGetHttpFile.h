@@ -6,6 +6,7 @@ class CKDGetHttpFile : public CKDThread
 {
 public:
 	CKDGetHttpFile();
+	CKDGetHttpFile(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 	virtual ~CKDGetHttpFile();
 	virtual void Destroy();
 	virtual DWORD ThreadProc();

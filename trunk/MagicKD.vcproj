@@ -224,6 +224,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKDLog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MagicKDTabCtrl.cpp"
 				>
 			</File>
@@ -328,6 +332,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDListItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDLog.cpp"
 					>
 				</File>
 				<File
@@ -526,6 +534,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKDLog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MagicKDTabCtrl.h"
 				>
 			</File>
@@ -622,6 +634,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDListItem.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDLog.h"
 					>
 				</File>
 				<File

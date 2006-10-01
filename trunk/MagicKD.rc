@@ -206,8 +206,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,7
- PRODUCTVERSION 1,0,3,7
+ FILEVERSION 1,0,3,8
+ PRODUCTVERSION 1,0,3,8
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -223,11 +223,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 3, 7"
+            VALUE "FileVersion", "1, 0, 3, 8"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 3, 7"
+            VALUE "ProductVersion", "1, 0, 3, 8"
         END
     END
     BLOCK "VarFileInfo"
@@ -344,7 +344,7 @@ BEGIN
     IDS_CONF_MSG_NOUPDATE   "This is the lastest version now\nNo need to update"
     IDS_CONF_MSG_UPDATECONNECTFAILED "Failed to net connection"
     IDS_CONF_MSG_KDUPDATERTOOOLD 
-                            "Version of KDUpdater is too old\nPlease go to http://svn.tsaikd.org/tsaikd/KDUpdater/KDUpdater.exe for a new one\nClick ""OK"" to open a browser"
+                            "Version of KDUpdater is too old\nPlease go to http://svn.tsaikd.org/tsaikd/KDUpdater/KDUpdater.exe for a new one\nClick ""OK"" to download automatically"
     IDS_CONF_MSG_WANTREVERTORNOT 
                             "Some programs are broken\nDo you want to revert?\n(Need to restart)"
 END

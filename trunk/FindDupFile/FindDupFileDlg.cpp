@@ -123,6 +123,7 @@ Lable_ExitFindDupFileThread:
 
 BOOL CFindDupFileDlg::OnInitDialog()
 {
+	g_pTheLog->Log(_T("Init FindDupFileDlg"), CKDLog::LOGLV_INFO);
 	if (!g_pFindDupFileDlg)
 		g_pFindDupFileDlg = this;
 
@@ -147,6 +148,7 @@ BOOL CFindDupFileDlg::OnInitDialog()
 
 void CFindDupFileDlg::OnDestroy()
 {
+	g_pTheLog->Log(_T("Exit FindDupFileDlg"), CKDLog::LOGLV_INFO);
 	OnBnClickedFindBtnStopfind();
 	SetCanThread(false);
 	WaitForThread(3000);
