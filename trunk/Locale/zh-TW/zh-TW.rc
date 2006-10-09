@@ -245,6 +245,8 @@ BEGIN
     IDS_PICC_TT_STATIC_STOP "停止下載程式\r\n(使用者不能進行此操作)"
     IDS_PICC_TT_BTN_DELNOWDL "刪除下載中的檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
     IDS_PICC_TT_BTN_DELAY_DL "稍後下載目前檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
+    IDS_PICC_DBV_MSG_DATAREADING "資 料 讀 取 中 ...\n請 稍 後!"
+    IDS_PICC_DBV_MSG_DATADELING "資 料 刪 除 中 ...\n請 稍 後!"
 END
 
 #endif    // Chinese (Taiwan) resources

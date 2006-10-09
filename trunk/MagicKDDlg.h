@@ -51,7 +51,6 @@ private:
 	CMagicKDTabCtrl		m_cMainTab;
 
 protected:
-
 	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnInitDialog();

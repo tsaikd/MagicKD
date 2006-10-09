@@ -95,9 +95,9 @@ BOOL CMagicKDDlg::OnInitDialog()
 			}
 		}
 
-		SetFuncEnable(eFunc_WallChanger, g_pTheConf->m_FuncList_bWallChanger, false);
-		SetFuncEnable(eFunc_FindDupFile, g_pTheConf->m_FuncList_bFindDupFile, false);
-		SetFuncEnable(eFunc_PicCollector, g_pTheConf->m_FuncList_bPicCollector, false);
+		SetFuncEnable(eFunc_WallChanger, g_pTheConf->m_FuncList_bWallChanger, true);
+		SetFuncEnable(eFunc_FindDupFile, g_pTheConf->m_FuncList_bFindDupFile, true);
+		SetFuncEnable(eFunc_PicCollector, g_pTheConf->m_FuncList_bPicCollector, true);
 	}
 
 	m_cMainConfigDlg.UpdateFuncCheck();
@@ -109,14 +109,12 @@ BOOL CMagicKDDlg::OnInitDialog()
 	SetTransparency((BYTE)(UINT)g_pTheConf->m_General_uTransparency);
 
 #ifdef DEBUG
-//////////////////////////////////////////////////
 	if (m_pPicCollectorDlg)
 		SetCurTabSel(eFunc_PicCollector);
 	if (m_pFindDupFileDlg)
 		SetCurTabSel(eFunc_FindDupFile);
 	if (m_pWallChangerDlg)
 		SetCurTabSel(eFunc_WallChanger);
-//////////////////////////////////////////////////
 #endif //DEBUG
 
 	m_bInit = true;
@@ -452,11 +450,12 @@ void CMagicKDDlg::OnTcnSelchangeMaintab(NMHDR *pNMHDR, LRESULT *pResult)
 
 LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	//FILE *fp = fopen("C:\\abc", "a");
-	//fprintf(fp, "%08X, %08X, %08X\n", message, wParam, lParam);
-	//fflush(fp);
+	//CString sBuf;
+	//sBuf.Format(_T("CMagicKDDlg::DefWindowProc() %08X, %08X, %08X"), message, wParam, lParam);
+	//g_pTheLog->Log(sBuf);
 	if (message == WMU_ARE_YOU_APP) {
 		ShowWindow(SW_SHOW);
+		Invalidate();
 		return WMU_I_AM_APP;
 	} else if (message == WMU_TRAY_CALLBACK) {
 		switch (lParam) {
@@ -534,11 +533,28 @@ LRESULT CMagicKDDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_QUERYENDSESSION:
-		DEL(g_pTheConf);
-		DEL(g_pWallConf);
-		DEL(g_pFindConf);
-		DEL(g_pPicCConf);
-		DEL(g_pTheTray);
+		theApp.Quit();
+		//DEL(g_pTheConf);
+		//DEL(g_pWallConf);
+		//DEL(g_pFindConf);
+		//DEL(g_pPicCConf);
+		//DEL(g_pTheTray);
+		break;
+	case WM_POWERBROADCAST:
+		switch (wParam) {
+			case PBT_APMSUSPEND:
+				if (m_pWallChangerDlg)
+					m_pWallChangerDlg->OnAPMSuspend();
+				if (m_pPicCollectorDlg)
+					m_pPicCollectorDlg->OnAPMSuspend();
+				break;
+			case PBT_APMRESUMESUSPEND:
+				if (m_pWallChangerDlg)
+					m_pWallChangerDlg->OnAPMResumeSuspend();
+				if (m_pPicCollectorDlg)
+					m_pPicCollectorDlg->OnAPMResumeSuspend();
+				break;
+		}
 		break;
 	}
 

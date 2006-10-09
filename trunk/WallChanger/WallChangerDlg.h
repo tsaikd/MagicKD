@@ -28,6 +28,11 @@ public:
 	CWallChangerDlg(CWnd* pParent = NULL);
 	virtual ~CWallChangerDlg();
 
+	virtual BOOL OnInitDialog();
+	afx_msg void OnDestroy();
+	virtual void OnAPMSuspend();
+	virtual void OnAPMResumeSuspend();
+
 	void DoSize();
 	void Localize();
 
@@ -75,7 +80,6 @@ private:
 	bool	m_bInit;
 	bool	m_bShowDirLoadError;
 	bool	m_bPause;
-	int		m_iTestOfflineCount;
 	UINT	m_uTimer;
 	CxImage m_imgNowPic;
 	CString m_sNowPicPath;
@@ -88,9 +92,7 @@ protected:
 	virtual void OnCancel();
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 public:
-	virtual BOOL OnInitDialog();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBnClickedButtonAddclasslist();
 	afx_msg void OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult);

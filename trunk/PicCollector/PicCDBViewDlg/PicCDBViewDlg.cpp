@@ -8,7 +8,7 @@
 
 IMPLEMENT_DYNAMIC(CPicCDBViewDlg, CDialog)
 CPicCDBViewDlg::CPicCDBViewDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CPicCDBViewDlg::IDD, pParent)
+	: CDialog(CPicCDBViewDlg::IDD, pParent), m_bStopWait(true), m_iThreadFunc(THREAD_FUNC_NULL), m_dlgWait(this)
 {
 }
 
@@ -33,8 +33,11 @@ BOOL CPicCDBViewDlg::OnInitDialog()
 	}
 	m_list_Item.Init();
 
-	OnBnClickedPiccDbvBtnReload();
+	m_dlgWait.Create(this);
+	m_dlgWait.ShowWindow(SW_HIDE);
+
 	Localize();
+	Invalidate();
 
 	m_list_Item.SetFocus();
 	return FALSE;  // return TRUE unless you set the focus to a control
@@ -56,8 +59,10 @@ void CPicCDBViewDlg::Localize()
 		pBox->InsertString(2, CResString(IDS_PICC_DBV_COMBO_DLOVER));
 		pBox->SetItemData(2, ID_TABLE_DLOVER);
 
-		if (CB_ERR != iCurPos)
+		if (CB_ERR != iCurPos) {
 			pBox->SetCurSel(iCurPos);
+			OnBnClickedPiccDbvBtnReload();
+		}
 	}
 
 	m_list_Item.Localize();
@@ -87,6 +92,40 @@ CString CPicCDBViewDlg::GetTableNameFromID(int nID)
 	return sRes;
 }
 
+void CPicCDBViewDlg::_ComboChanged()
+{
+	OnBnClickedPiccDbvBtnReload();
+	m_bStopWait = true;
+	EnableWindow(TRUE);
+}
+
+void CPicCDBViewDlg::_DeleteRecode()
+{
+	int nCurSel = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetCurSel();
+	int nID = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetItemData(nCurSel);
+	CString sTableName = GetTableNameFromID(nID);
+
+	if (sTableName.IsEmpty())
+		return;
+
+	CPicCDBVListItem *pItem = (CPicCDBVListItem *)m_list_Item.GetFirstSelectedItemLParam();
+	while (pItem) {
+		CString strSQL;
+		strSQL.Format(_T("DELETE FROM %s WHERE Localpath = '%s'"),
+			sTableName,
+			g_pPicCollectorDlg->m_Feed.EscapeQuote(pItem->GetLocalpath()));
+		g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+
+		m_list_Item.DeleteItem(m_list_Item.GetFirstSelectedItemNum());
+		pItem = (CPicCDBVListItem *)m_list_Item.GetFirstSelectedItemLParam();
+	}
+
+	OnBnClickedPiccDbvBtnReload();
+	EnableWindow(TRUE);
+	m_bStopWait = true;
+	Invalidate();
+}
+
 BEGIN_MESSAGE_MAP(CPicCDBViewDlg, CDialog)
 	ON_CBN_SELCHANGE(IDC_PICC_DBV_COMBO_TBNAME, &CPicCDBViewDlg::OnCbnSelchangePiccDbvComboTbname)
 	ON_EN_SETFOCUS(IDC_PICC_DBV_EDIT_URL, &CPicCDBViewDlg::OnEnSetfocusPiccDbvEditUrl)
@@ -106,7 +145,11 @@ void CPicCDBViewDlg::DoDataExchange(CDataExchange* pDX)
 
 void CPicCDBViewDlg::OnCbnSelchangePiccDbvComboTbname()
 {
-	OnBnClickedPiccDbvBtnReload();
+	EnableWindow(FALSE);
+	m_iThreadFunc = THREAD_FUNC_DELRECODE;
+	CreateThread(THREAD_PRIORITY_LOWEST);
+	m_bStopWait = false;
+	m_dlgWait.Display(CResString(IDS_PICC_DBV_MSG_DATAREADING), &m_bStopWait);
 }
 
 void CPicCDBViewDlg::OnBnClickedPiccDbvBtnReload()
@@ -116,6 +159,7 @@ void CPicCDBViewDlg::OnBnClickedPiccDbvBtnReload()
 
 	m_list_Item.ReloadItem(nID);
 	m_list_Item.SetFocus();
+	m_list_Item.SetItemSelected(0);
 }
 
 void CPicCDBViewDlg::OnBnClickedPiccDbvBtnLpage()
@@ -138,28 +182,11 @@ void CPicCDBViewDlg::OnBnClickedPiccDbvBtnRpage()
 
 void CPicCDBViewDlg::OnBnClickedPiccDbvBtnDelrecode()
 {
-	int nCurSel = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetCurSel();
-	int nID = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetItemData(nCurSel);
-	CString sTableName = GetTableNameFromID(nID);
-
-	if (sTableName.IsEmpty())
-		return;
-
-	SetRedraw(FALSE);
-	CPicCDBVListItem *pItem = (CPicCDBVListItem *)m_list_Item.GetFirstSelectedItemLParam();
-	while (pItem) {
-		CString strSQL;
-		strSQL.Format(_T("DELETE FROM %s WHERE Localpath = '%s'"),
-			sTableName,
-			g_pPicCollectorDlg->m_Feed.EscapeQuote(pItem->GetLocalpath()));
-		g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
-
-		m_list_Item.DeleteItem(m_list_Item.GetFirstSelectedItemNum());
-		pItem = (CPicCDBVListItem *)m_list_Item.GetFirstSelectedItemLParam();
-	}
-	SetRedraw(TRUE);
-	Invalidate();
-	OnBnClickedPiccDbvBtnReload();
+	EnableWindow(FALSE);
+	m_iThreadFunc = THREAD_FUNC_DELRECODE;
+	CreateThread(THREAD_PRIORITY_LOWEST);
+	m_bStopWait = false;
+	m_dlgWait.Display(CResString(IDS_PICC_DBV_MSG_DATADELING), &m_bStopWait);
 }
 
 void CPicCDBViewDlg::OnEnSetfocusPiccDbvEditUrl()

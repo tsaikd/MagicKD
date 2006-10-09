@@ -20,6 +20,8 @@ public:
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
+	virtual void OnAPMSuspend();
+	virtual void OnAPMResumeSuspend();
 	virtual DWORD ThreadProc();
 	void Localize();
 	void DoSize();

@@ -4,6 +4,8 @@
 
 #include "WallEnablePicList.h"
 
+CWallEnablePicList *g_pWallEnablePicList = NULL;
+
 CWallEnablePicList::CWallEnablePicList()
 	:	m_uCount(0), m_posNowList(0), m_iNowArray(-1)
 {

@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "Language.h"
 #include "Others.h"
-#include "WallOthers.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
+#include "WallOthers.h"
+#include "WallConf.h"
+#include "WallEnablePicList.h"
+#include "WallThreadFindPic.h"
 
 #include "WallChangerDlg.h"
 
@@ -11,7 +14,7 @@
 #define DEFAULT_SHOWDIRLOADERROR	true
 #define DEFAULT_COMBOX_MSG			CResString(IDS_WALL_COMBOX_ASKUSER)
 
-#define TESTOFFLINECOUNT			30
+#define TESTOFFLINECOUNT			(30*1000) // (ms)
 
 enum {
 	KDT_CHANGEWALL		= 1,
@@ -20,17 +23,11 @@ enum {
 
 // GLobal variable
 CWallChangerDlg *g_pWallChangerDlg = NULL;
-#include "WallConf.h"
-CWallConf *g_pWallConf = NULL;
-#include "WallEnablePicList.h"
-CWallEnablePicList *g_pWallEnablePicList = NULL;
-#include "WallThreadFindPic.h"
-CWallThreadFindPic *g_pWallThreadFindPic = NULL;
 
 IMPLEMENT_DYNAMIC(CWallChangerDlg, CDialog)
 CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CWallChangerDlg::IDD, pParent), m_bInit(false), m_pCurListDirPath(NULL),
-		m_iTestOfflineCount(TESTOFFLINECOUNT), m_uTimer(0), m_bShowDirLoadError(true), m_bPause(false)
+		m_uTimer(0), m_bShowDirLoadError(true), m_bPause(false)
 {
 }
 
@@ -72,8 +69,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	g_pWallConf->Init(&m_cIni);
 
 	m_sTempFilePath = CTempFilePath(NULL, NULL, _T(".jpg"));
-	m_iTestOfflineCount = TESTOFFLINECOUNT;
-	SetTimer(KDT_OFFLINECOUNT, 1000, NULL);
+	SetTimer(KDT_OFFLINECOUNT, TESTOFFLINECOUNT, NULL);
 
 	m_bShowDirLoadError = g_pWallConf->m_General_bShowDirLoadError;
 	if (m_bShowDirLoadError)
@@ -132,6 +128,18 @@ void CWallChangerDlg::OnDestroy()
 	g_pTheTray->RemoveTrayMenuItem(IDS_TRAY_PAUSEWALLCHANGER);
 
 	g_pTheAppEndDlg->UnsignWnd(GetSafeHwnd());
+}
+
+void CWallChangerDlg::OnAPMSuspend()
+{
+	StopTimer();
+	KillTimer(KDT_OFFLINECOUNT);
+}
+
+void CWallChangerDlg::OnAPMResumeSuspend()
+{
+	StartTimer();
+	SetTimer(KDT_OFFLINECOUNT, TESTOFFLINECOUNT, NULL);
 }
 
 void CWallChangerDlg::DoSize()
@@ -224,7 +232,7 @@ void CWallChangerDlg::SetHistoryNum(UINT uNum)
 	CString sNum;
 	if (uNum < 1)
 		uNum = 1;
-	::g_pWallConf->m_General_uPicPathHistory = uNum;
+	g_pWallConf->m_General_uPicPathHistory = uNum;
 	sNum.Format(_T("%d"), uNum);
 	m_editHistoryNum.SetWindowText(sNum);
 }
@@ -240,14 +248,14 @@ void CWallChangerDlg::SetWaitTime(UINT uWaitTime)
 			iRestTime = 0;
 		sRestTime.Format(_T("%d"), iRestTime);
 		m_staticTime.SetWindowText(sRestTime);
-		::g_pWallConf->m_General_uWaitTime = uWaitTime;
+		g_pWallConf->m_General_uWaitTime = uWaitTime;
 		sNewTime.Format(_T("%d"), uWaitTime);
 		m_editWaitTime.SetWindowText(sNewTime);
 
-		if (::g_pWallConf->m_General_uWaitTime)
+		if (g_pWallConf->m_General_uWaitTime)
 			StartTimer();
 	} else {
-		::g_pWallConf->m_General_uWaitTime = 0;
+		g_pWallConf->m_General_uWaitTime = 0;
 		m_staticTime.SetWindowText(_T("0"));
 		m_editWaitTime.SetWindowText(_T("0"));
 
@@ -285,7 +293,9 @@ bool CWallChangerDlg::SetRandWallPager()
 
 	g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon2);
 	m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETTINGWALLPAGER));
+	g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() GetRandPicPath"), CKDLog::LOGLV_DEBUG);
 	m_sNowPicPath = GetRandPicPath();
+	g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() GetRandPicPath Over"), CKDLog::LOGLV_DEBUG);
 
 	if (m_sNowPicPath.IsEmpty())
 		RETURN(false);
@@ -296,7 +306,6 @@ bool CWallChangerDlg::SetRandWallPager()
 	if (m_imgNowPic.Load(m_sNowPicPath)) {
 		sImageInfo.Format(_T("(%d*%d %s)"), m_imgNowPic.GetWidth(), m_imgNowPic.GetHeight(),
 			(LPCTSTR)CHumanSize(CFileSize(m_sNowPicPath), CHumanSize::FLAG_PostDotNum1));
-		g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() Set New Picture"), CKDLog::LOGLV_DEBUG);
 		if (AutoPicSize(m_imgNowPic)) {
 			m_imgNowPic.Save(m_sTempFilePath, CXIMAGE_FORMAT_JPG);
 			SetWallpaper(m_sTempFilePath, WPSTYLE_CENTER);
@@ -344,26 +353,33 @@ bool CWallChangerDlg::SetRandWallPager()
 
 LPCTSTR CWallChangerDlg::GetRandPicPath()
 {
-	int iCountEnablePicPath = ::g_pWallEnablePicList->GetCount();
+	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() Start"), CKDLog::LOGLV_DEBUG);
+	int iCountEnablePicPath = g_pWallEnablePicList->GetCount();
+	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetCount"), CKDLog::LOGLV_DEBUG);
 	if (iCountEnablePicPath < 1)
 		return _T("");
 	else if (iCountEnablePicPath == 1)
-		return ::g_pWallEnablePicList->GetRandPic();
+		return g_pWallEnablePicList->GetRandPic();
 
 	CString sTailHistory;
 	if (m_slPicPathHistory.GetCount())
 		sTailHistory = m_slPicPathHistory.GetTail();
-	CString sRandPicPath = ::g_pWallEnablePicList->GetRandPic();
+	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic"), CKDLog::LOGLV_DEBUG);
+	CString sRandPicPath = g_pWallEnablePicList->GetRandPic();
 
 	while (sRandPicPath == sTailHistory) {
-		sRandPicPath = ::g_pWallEnablePicList->GetRandPic();
+		g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic 2"), CKDLog::LOGLV_DEBUG);
+		sRandPicPath = g_pWallEnablePicList->GetRandPic();
 		if ((m_slPicPathHistory.Find(sRandPicPath)) && (m_slPicPathHistory.GetCount()>iCountEnablePicPath))
 			continue;
 	}
 
+	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic 3"), CKDLog::LOGLV_DEBUG);
 	if ((UINT)m_slPicPathHistory.GetCount() > (UINT)::g_pWallConf->m_General_uPicPathHistory)
 		m_slPicPathHistory.RemoveHead();
+	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic 4"), CKDLog::LOGLV_DEBUG);
 	m_slPicPathHistory.AddTail(sRandPicPath);
+	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic 5"), CKDLog::LOGLV_DEBUG);
 
 	return sRandPicPath;
 }
@@ -564,12 +580,12 @@ void CWallChangerDlg::OnBnClickedButtonRandpic()
 		return;
 
 	while (!SetRandWallPager()) {
-		if (::g_pWallEnablePicList->IsEmpty())
+		if (g_pWallEnablePicList->IsEmpty())
 			break;
 	}
 
 	CString sTime;
-	sTime.Format(_T("%u"), (UINT)::g_pWallConf->m_General_uWaitTime);
+	sTime.Format(_T("%u"), (UINT)g_pWallConf->m_General_uWaitTime);
 	m_staticTime.SetWindowText(sTime);
 
 	m_muxRandPic.Unlock();
@@ -615,15 +631,15 @@ void CWallChangerDlg::OnBnClickedWallBtnExplore()
 
 void CWallChangerDlg::OnBnClickedButtonEnabletooltip()
 {
-	if (::g_pWallConf->m_General_bEnableTip) {
-		::g_pWallConf->m_General_bEnableTip = false;
+	if (g_pWallConf->m_General_bEnableTip) {
+		g_pWallConf->m_General_bEnableTip = false;
 		m_btn_EnableToolTip.SetWindowText(CResString(IDS_ALL_BTN_ENABLETIP));
 	} else {
-		::g_pWallConf->m_General_bEnableTip = true;
+		g_pWallConf->m_General_bEnableTip = true;
 		m_btn_EnableToolTip.SetWindowText(CResString(IDS_ALL_BTN_DISABLETIP));
 	}
 
-	EnableToolTips(::g_pWallConf->m_General_bEnableTip);
+	EnableToolTips(g_pWallConf->m_General_bEnableTip);
 }
 
 void CWallChangerDlg::OnCbnSelchangeComboImageloaderror()
@@ -716,11 +732,7 @@ void CWallChangerDlg::OnTimer(UINT nIDEvent)
 		}
 		break;
 	case KDT_OFFLINECOUNT:
-		m_iTestOfflineCount--;
-		if (m_iTestOfflineCount < 0) {
-			m_iTestOfflineCount = TESTOFFLINECOUNT;
-			::g_pWallThreadFindPic->TestOfflineDirItem();
-		}
+		g_pWallThreadFindPic->TestOfflineDirItem();
 		break;
 	}
 
@@ -733,13 +745,13 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	case WMU_UPDATE_TOTALNUM:
 		{
 			CString sNum;
-			sNum.Format(_T("%d"), ::g_pWallEnablePicList->GetCount());
+			sNum.Format(_T("%d"), g_pWallEnablePicList->GetCount());
 			m_staticPicTotalNum.SetWindowText(sNum);
 		}
 		break;
 	case WMU_FIRST_FIND_PIC:
 		SetRandWallPager();
-		if (::g_pWallConf->m_General_uWaitTime)
+		if (g_pWallConf->m_General_uWaitTime)
 			StartTimer();
 		break;
 	case WM_COMMAND:

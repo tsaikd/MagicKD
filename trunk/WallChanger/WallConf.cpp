@@ -8,6 +8,8 @@
 #define DEFAULT_ENABLETIP			true
 #define DEFAULT_SHOWDIRLOADERROR	true
 
+CWallConf *g_pWallConf = NULL;
+
 CWallConf::CWallConf()
 {
 }

@@ -1,3 +1,5 @@
+	Support for logging
+
 Version: 1.0.3.7	(2006-09-28)
 	PicCollector support for pausing downloader
 	Add some Icons in PicCollector

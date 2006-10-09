@@ -26,7 +26,7 @@ BOOL CMagicKDApp::InitInstance()
 	CString sBuf;
 	sBuf.Format(_T("%sMagicKD_%s.log"), GetAppLogDir(), CTime(time(NULL)).Format(_T("%Y_%m_%d")));
 	g_pTheLog = new CMagicKDLog;
-#ifdef DEBUG
+#ifndef DEBUG /////////////////////////////////////////////////
 	g_pTheLog->Init(sBuf, CKDLog::LOGLV_DEBUG);
 #else
 	g_pTheLog->Init(sBuf, CKDLog::LOGLV_INFO);

@@ -56,7 +56,7 @@ void CPicCDBVListCtrl::ReloadItem(int nID, int iPage/* = 1*/)
 	GetParent()->GetDlgItem(IDC_PICC_DBV_EDIT_LOCALPATH)->SetWindowText(_T(""));
 	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_DELRECODE)->EnableWindow(FALSE);
 
-	const int PAGESIZE = 2000;
+	const int PAGESIZE = 1000;
 	int iDataCount = 0;
 	CString sTableName = ((CPicCDBViewDlg *)GetParent())->GetTableNameFromID(nID);
 	if (!sTableName.IsEmpty()) {

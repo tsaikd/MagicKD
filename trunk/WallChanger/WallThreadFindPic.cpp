@@ -4,6 +4,8 @@
 
 #include "WallThreadFindPic.h"
 
+CWallThreadFindPic *g_pWallThreadFindPic = NULL;
+
 CWallThreadFindPic::CWallThreadFindPic()
 	:	m_pNowItem(NULL)
 {

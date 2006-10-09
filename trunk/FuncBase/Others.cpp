@@ -551,7 +551,7 @@ bool ExplorerDir(LPCTSTR lpDirPath)
 
 CSize GetStrPixelSize(CWnd *pWnd, LPCTSTR lpStr)
 {
-	CSize sizeRes;
+	CSize sizeRes(0, 0);
 
 	if (!IsWindow(pWnd->GetSafeHwnd()))
 		return sizeRes;
@@ -562,10 +562,52 @@ CSize GetStrPixelSize(CWnd *pWnd, LPCTSTR lpStr)
 
 	CFont *pFont = pWnd->GetFont();
 	CFont *pOldFont = pDc->SelectObject(pFont);
-	sizeRes = pDc->GetTextExtent(lpStr, _tcslen(lpStr));
+
+	int iPos = 0;
+	CString sPat(lpStr);
+	CString sTok;
+	CSize sizeTmp;
+	sTok = sPat.Tokenize(_T("\n"), iPos);
+	while (!sTok.IsEmpty()) {
+		sizeTmp = pDc->GetTextExtent(sTok);
+		sizeRes.cx = max(sizeRes.cx, sizeTmp.cx);
+		sizeRes.cy += sizeTmp.cy;
+		sTok = sPat.Tokenize(_T("\n"), iPos);
+	}
 
 	pDc->SelectObject(pOldFont);
 	pWnd->ReleaseDC(pDc);
 
 	return sizeRes;
+}
+
+CRect &RectToScreenCenter(CRect &rcFrom, CRect *rcTo/* = NULL*/)
+{
+	CScreenSize sizeScreen;
+	if (rcTo) {
+		*rcTo = rcFrom;
+		rcTo->MoveToXY((sizeScreen.cx-rcFrom.Width())/2, (sizeScreen.cy-rcFrom.Height())/2);
+		return *rcTo;
+	} else {
+		rcFrom.MoveToXY((sizeScreen.cx-rcFrom.Width())/2, (sizeScreen.cy-rcFrom.Height())/2);
+		return rcFrom;
+	}
+}
+
+bool CenterWindowPos(HWND hWnd, int xOffset/* = 0*/, int yOffset/* = 0*/)
+{
+	if (!IsWindow(hWnd))
+		return false;
+
+	CScreenSize sizeScreen;
+	CRect rcWin;
+
+	GetWindowRect(hWnd, &rcWin);
+	if (rcWin.IsRectEmpty())
+		return false;
+	rcWin.MoveToXY((sizeScreen.cx-rcWin.Width())/2, (sizeScreen.cy-rcWin.Height())/2);
+
+	rcWin.OffsetRect(xOffset, yOffset);
+
+	return SetWindowPos(hWnd, NULL, rcWin.left, rcWin.top, rcWin.Width(), rcWin.Height(), NULL) != FALSE;
 }

@@ -116,6 +116,10 @@ void CPicCDLManager::OnDownloadFileDiscard()
 		g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
 		m_muxNowDLURL.Unlock();
 	}
+	if (IsCanThread()) {
+		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow(TRUE);
+		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(TRUE);
+	}
 }
 
 void CPicCDLManager::OnDownloadFileRetryFailed()

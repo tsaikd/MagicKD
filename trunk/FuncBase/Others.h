@@ -88,6 +88,9 @@ bool ExplorerDir(LPCTSTR lpDirPath);
 
 CSize GetStrPixelSize(CWnd *pWnd, LPCTSTR lpStr);
 
+CRect &RectToScreenCenter(CRect &rcFrom, CRect *rcTo = NULL);
+bool CenterWindowPos(HWND hWnd, int xOffset = 0, int yOffset = 0);
+
 class CGetFileVersion : public CString
 {
 public:

@@ -339,6 +339,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDSimpleDlg.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDSingleApp.cpp"
 					>
 				</File>
@@ -501,6 +505,10 @@
 						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBVListCtrl.cpp"
 						>
 					</File>
+					<File
+						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBVWaitDlg.cpp"
+						>
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>
@@ -642,6 +650,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDQArray.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDSimpleDlg.h"
 					>
 				</File>
 				<File
@@ -813,6 +825,10 @@
 					</File>
 					<File
 						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBVListCtrl.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PicCollector\PicCDBViewDlg\PicCDBVWaitDlg.h"
 						>
 					</File>
 				</Filter>

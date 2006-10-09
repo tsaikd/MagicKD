@@ -13,6 +13,8 @@
 
 #include "PicCollectorDlg.h"
 
+#define DEFAULT_REFRESH_TIME (10*60*1000) // (ms)
+
 // GLobal variable
 CPicCollectorDlg *g_pPicCollectorDlg = NULL;
 
@@ -145,6 +147,26 @@ void CPicCollectorDlg::OnDestroy()
 	CDialog::OnDestroy();
 
 	DEL(g_pPicCConf);
+}
+
+void CPicCollectorDlg::OnAPMSuspend()
+{
+	if (m_uTimerShowDownload) {
+		KillTimer(m_uTimerShowDownload);
+		m_uTimerShowDownload = 0;
+	}
+	if (m_uTimerRefresh) {
+		KillTimer(m_uTimerRefresh);
+		m_uTimerRefresh = 0;
+	}
+}
+
+void CPicCollectorDlg::OnAPMResumeSuspend()
+{
+	if (!m_uTimerShowDownload)
+		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
+	if (!m_uTimerRefresh)
+		m_uTimerRefresh = SetTimer(KDT_REFRESH, DEFAULT_REFRESH_TIME, NULL);
 }
 
 DWORD CPicCollectorDlg::ThreadProc()
@@ -532,7 +554,7 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRefreshfeed()
 {
 	if (m_uTimerRefresh)
 		KillTimer(m_uTimerRefresh);
-	m_uTimerRefresh = SetTimer(KDT_REFRESH, 10*60*1000, NULL);
+	m_uTimerRefresh = SetTimer(KDT_REFRESH, DEFAULT_REFRESH_TIME, NULL);
 
 	if (m_bInit)
 		CreateThread();
@@ -574,12 +596,14 @@ void CPicCollectorDlg::OnBnClickedPiccBtnDbview()
 
 void CPicCollectorDlg::OnBnClickedPiccBtnDelnowdl()
 {
+	GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow(FALSE);
 	m_pDownLoader->SetDiscardNowDL();
 	GetParent()->SetFocus();
 }
 
 void CPicCollectorDlg::OnBnClickedPiccBtnDelaydl()
 {
+	GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(FALSE);
 	m_pDownLoader->DelayDownload();
 	GetParent()->SetFocus();
 }

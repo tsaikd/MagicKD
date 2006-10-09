@@ -109,17 +109,19 @@
 #define IDS_PICC_DBV_COMBO_DLOVER       288
 #define IDS_PICC_DBV_COMBO_UNDL         289
 #define IDS_PICC_DBV_MSG_EXPORT         290
-#define IDS_PICC_TT_STATIC_PLAY         291
-#define IDS_PICC_TT_STATIC_PAUSE        292
-#define IDS_PICC_TT_STATIC_STOP         293
-#define IDS_PICC_TT_BTN_DELNOWDL        294
-#define IDS_PICC_TT_BTN_DELAY_DL        295
+#define IDS_PICC_DBV_MSG_DATAREADING    291
+#define IDS_PICC_DBV_MSG_DATADELING     292
+#define IDS_PICC_TT_STATIC_PLAY         293
+#define IDS_PICC_TT_STATIC_PAUSE        294
+#define IDS_PICC_TT_STATIC_STOP         295
+#define IDS_PICC_TT_BTN_DELNOWDL        296
+#define IDS_PICC_TT_BTN_DELAY_DL        297
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        296
+#define _APS_NEXT_RESOURCE_VALUE        298
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

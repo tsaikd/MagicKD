@@ -478,6 +478,8 @@ BEGIN
                             "Delete downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
     IDS_PICC_TT_BTN_DELAY_DL 
                             "Delay current downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
+    IDS_PICC_DBV_MSG_DATAREADING "Reading Data ...\nPlease wait for a while!"
+    IDS_PICC_DBV_MSG_DATADELING "Deleting Data ...\nPlease wait for a while!"
 END
 
 #endif    // Chinese (Taiwan) resources
