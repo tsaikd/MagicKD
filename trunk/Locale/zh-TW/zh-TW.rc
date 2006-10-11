@@ -226,6 +226,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PICC_BTN_VIEWDB     "檢視資料庫"
+    IDS_PICC_MSG_WRITE_FILE_ERROR "寫入檔案失敗\n暫停下載\n請重新檢查路徑"
     IDS_PICC_DBV_BTN_RELOAD "重新載入"
     IDS_PICC_DBV_BTN_EXIT   "離開"
     IDS_PICC_DBV_BTN_DELETE "刪除"
@@ -240,13 +241,13 @@ BEGIN
     IDS_PICC_DBV_COMBO_DLOVER "下載完成"
     IDS_PICC_DBV_COMBO_UNDL "尚未下載"
     IDS_PICC_DBV_MSG_EXPORT "匯出到\n%s"
+    IDS_PICC_DBV_MSG_DATAREADING "資 料 讀 取 中 ...\n請 稍 後!"
+    IDS_PICC_DBV_MSG_DATADELING "資 料 刪 除 中 ...\n請 稍 後!"
     IDS_PICC_TT_STATIC_PLAY "開始下載檔案列表中的檔案"
     IDS_PICC_TT_STATIC_PAUSE "暫停下載"
     IDS_PICC_TT_STATIC_STOP "停止下載程式\r\n(使用者不能進行此操作)"
     IDS_PICC_TT_BTN_DELNOWDL "刪除下載中的檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
     IDS_PICC_TT_BTN_DELAY_DL "稍後下載目前檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
-    IDS_PICC_DBV_MSG_DATAREADING "資 料 讀 取 中 ...\n請 稍 後!"
-    IDS_PICC_DBV_MSG_DATADELING "資 料 刪 除 中 ...\n請 稍 後!"
 END
 
 #endif    // Chinese (Taiwan) resources

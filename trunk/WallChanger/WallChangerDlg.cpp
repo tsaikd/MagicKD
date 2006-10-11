@@ -17,7 +17,8 @@
 #define TESTOFFLINECOUNT			(30*1000) // (ms)
 
 enum {
-	KDT_CHANGEWALL		= 1,
+	KDT_NULL,
+	KDT_CHANGEWALL,
 	KDT_OFFLINECOUNT
 };
 
@@ -78,7 +79,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 		m_checkShowLoadDirError.SetCheck(BST_UNCHECKED);
 
 	CString sBuf;
-	sBuf.Format(_T("%d"), (UINT)::g_pWallConf->m_General_uWaitTime);
+	sBuf.Format(_T("%d"), (UINT)g_pWallConf->m_General_uWaitTime);
 	m_editWaitTime.SetWindowText(sBuf);
 	m_staticTime.SetWindowText(sBuf);
 
@@ -90,6 +91,8 @@ BOOL CWallChangerDlg::OnInitDialog()
 
 	SetHistoryNum(g_pWallConf->m_General_uPicPathHistory);
 	EnableToolTips(g_pWallConf->m_General_bEnableTip);
+
+	g_pWallThreadFindPic->CreateThread(THREAD_PRIORITY_LOWEST);
 
 	m_bInit = true;
 	DoSize();
@@ -669,9 +672,9 @@ void CWallChangerDlg::OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult)
 
 	if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(1)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(2))) {
 		// Check this Item
-		bool bEmptyEnable = (::g_pWallEnablePicList->GetCount() == 0);
+		bool bEmptyEnable = (g_pWallEnablePicList->GetCount() == 0);
 		m_listClass.SetItemEnable(pNMLV->iItem, true);
-		if (bEmptyEnable && ::g_pWallEnablePicList->GetCount())
+		if (bEmptyEnable && g_pWallEnablePicList->GetCount())
 			StartTimer();
 		m_listClass.SetIniModify();
 	} else if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(2)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(1))) {
@@ -719,6 +722,9 @@ void CWallChangerDlg::OnTimer(UINT nIDEvent)
 		{
 		CString sTime;
 		int iTime;
+
+		if (!IsDesktopVisible())
+			break;
 
 		m_staticTime.GetWindowText(sTime);
 		iTime = _ttoi(sTime) - 1;

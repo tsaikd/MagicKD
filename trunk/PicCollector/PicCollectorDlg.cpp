@@ -19,7 +19,8 @@
 CPicCollectorDlg *g_pPicCollectorDlg = NULL;
 
 enum {
-	KDT_SHOWDOWNLOAD	= 1,
+	KDT_NULL,
+	KDT_SHOWDOWNLOAD,
 	KDT_REFRESH
 };
 
@@ -122,7 +123,7 @@ void CPicCollectorDlg::OnDestroy()
 	g_pTheLog->Log(_T("Exit PicCollectorDlg"), CKDLog::LOGLV_INFO);
 	g_pTheAppEndDlg->ProgressStepIt(GetSafeHwnd(), _T("Closing\tPicCollector\tThread"));
 	SetCanThread(false);
-	if (WAIT_TIMEOUT == WaitForThread(10000)) {
+	if (WAIT_TIMEOUT == WaitForThread(15000)) {
 #ifdef DEBUG
 		AfxMessageBox(_T("CPicCollectorDlg Thread is running!!"), MB_OK | MB_ICONERROR);
 #endif //DEBUG
@@ -327,17 +328,17 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 
 			// Check necessary dir (parent dir)
 			strLocalDir.Format(_T("%s\\%s\\%s"), CString(g_pPicCConf->m_sDlDir), strName, curTime.Format(_T("%Y_%m\\%d")));
-			if (!PathIsDirectory(strLocalDir))
-				SHCreateDirectoryEx(GetSafeHwnd(), strLocalDir, NULL);
+			//if (!PathIsDirectory(strLocalDir))
+			//	SHCreateDirectoryEx(GetSafeHwnd(), strLocalDir, NULL);
 
 			// Download to local own dir and clear old list
 			m_pDownLoader->SetDBSync(false);
 			while (!m_HTMLEventHandler.m_slParsedPic.IsEmpty()) {
 				strLocalPath.Format(_T("%s\\%05d.jpg"), strLocalDir, uPicNum++);
-				m_pDownLoader->AddFileListQuick(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath);
+				m_pDownLoader->AddFileList(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath);
 
 				if (!IsCanThread())
-					return;
+					break;
 			}
 			m_pDownLoader->SetDBSync(true);
 
@@ -637,11 +638,7 @@ void CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath()
 	if (sPath.IsEmpty())
 		return;
 
-	CString sDir = sPath;
-	PathRemoveFileSpec(sDir.GetBuffer());
-	sDir.ReleaseBuffer();
-	if (PathIsDirectory(sDir))
-		ExplorerFile(sPath);
+	ExplorerFile(sPath);
 }
 
 void CPicCollectorDlg::OnStnClickedPiccStaticDownload()

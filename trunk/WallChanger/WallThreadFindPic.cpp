@@ -10,7 +10,6 @@ CWallThreadFindPic::CWallThreadFindPic()
 	:	m_pNowItem(NULL)
 {
 	m_hHaveDirItem = CreateEvent(NULL, TRUE, FALSE, NULL);
-	CreateThread(THREAD_PRIORITY_IDLE);
 }
 
 CWallThreadFindPic::~CWallThreadFindPic()
@@ -32,7 +31,7 @@ DWORD CWallThreadFindPic::ThreadProc()
 	// State 1: When First Find Pic, Send Message to Main Dialog
 	while (IsCanThread()) {
 		_ThreadProcStage();
-		if (::g_pWallEnablePicList->GetCount()) {
+		if (g_pWallEnablePicList->GetCount()) {
 			PostMessage(WMU_FIRST_FIND_PIC, 0, 0);
 			break;
 		}
@@ -181,7 +180,7 @@ void CWallThreadFindPic::_ThreadProcStage()
 		m_pNowItem->SetItemPicPathArray(saPicPath);
 		m_pNowItem->SetOnFindPic(false);
 		if (m_pNowItem->IsItemEnable())
-			::g_pWallEnablePicList->AddEnableItem(m_pNowItem);
+			g_pWallEnablePicList->AddEnableItem(m_pNowItem);
 		m_pNowItem->Invalidate();
 	}
 	m_muxThread.Unlock();

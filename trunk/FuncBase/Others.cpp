@@ -525,6 +525,8 @@ bool ExplorerFile(LPCTSTR lpFilePath)
 			ShellExecute(NULL, _T("open"), sExplorer, sParam, NULL, SW_SHOW);
 			return true;
 		}
+	} else {
+		return ExplorerDir(lpFilePath);
 	}
 
 	return false;
@@ -610,4 +612,65 @@ bool CenterWindowPos(HWND hWnd, int xOffset/* = 0*/, int yOffset/* = 0*/)
 	rcWin.OffsetRect(xOffset, yOffset);
 
 	return SetWindowPos(hWnd, NULL, rcWin.left, rcWin.top, rcWin.Width(), rcWin.Height(), NULL) != FALSE;
+}
+
+bool IsUserVisiableAppWnd(HWND hWnd)
+{
+	if (!IsWindowVisible(hWnd))
+		return false;
+	if (hWnd == GetDesktopWindow())
+		return false;
+	if (IsShellTray(hWnd))
+		return false;
+	if (hWnd == FindWindow(_T("Progman"), NULL))
+		return false;
+
+	return true;
+}
+
+bool IsShellTray(HWND hWnd)
+{
+	if (hWnd == FindWindow(_T("Shell_TrayWnd"), NULL))
+		return true;
+
+	return false;
+}
+
+static BOOL CALLBACK AskMaxWindowSize(HWND hWnd, LPARAM lParam)
+{
+	while (IsWindow(hWnd) && IsWindow(GetParent(hWnd)))
+		hWnd = GetParent(hWnd);
+
+	if (!IsUserVisiableAppWnd(hWnd))
+		return TRUE;
+
+	CRect rcTmp;
+	CSize *psizeMax = (CSize *)lParam;
+
+	GetWindowRect(hWnd, rcTmp);
+
+	if (psizeMax->cx < rcTmp.Width() || psizeMax->cy < rcTmp.Height())
+		psizeMax->SetSize(max(psizeMax->cx, rcTmp.Width()), max(psizeMax->cy, rcTmp.Height()));
+
+	return TRUE;
+}
+
+bool IsDesktopVisible()
+{
+	CRect rcTmp;
+	CSize sizeWin(0, 0);
+	CSize sizeMax;
+	HWND hDesktop = GetDesktopWindow();
+	VERIFY(IsWindow(hDesktop));
+
+	EnumWindows(AskMaxWindowSize, (LPARAM) &sizeWin);
+
+	GetWindowRect(hDesktop, rcTmp);
+	sizeMax.SetSize(min(rcTmp.Width(), GetSystemMetrics(SM_CXMAXIMIZED)),
+		min(rcTmp.Height(), GetSystemMetrics(SM_CYMAXIMIZED)));
+
+	if ((sizeWin.cx >= sizeMax.cx) && (sizeWin.cy >= sizeMax.cy))
+		return false;
+
+	return true;
 }

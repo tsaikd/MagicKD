@@ -315,6 +315,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDEvent.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDGetHttpFile.cpp"
 					>
 				</File>
@@ -622,6 +626,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDEdit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDEvent.h"
 					>
 				</File>
 				<File

@@ -244,10 +244,10 @@ void CWallDirListItem::SetItemEnable(bool bEnable)
 		if (bEnable) {
 			// Change from false to true
 			if (!m_bOnFindPic)
-				::g_pWallEnablePicList->AddEnableItem(this);
+				g_pWallEnablePicList->AddEnableItem(this);
 		} else {
 			// Change from true to false
-			::g_pWallEnablePicList->RemoveEnableItem(this);
+			g_pWallEnablePicList->RemoveEnableItem(this);
 		}
 
 		m_mux.Unlock();

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Language.h"
 #include "PicCollectorDlg.h"
 
 #include "PicCDLManager.h"
@@ -20,7 +21,7 @@ void CPicCDLManager::Init(CPicCFeed *pFeed)
 
 	pFeed->GetTableSQL(_T("SELECT Url, Localpath FROM PicUnDownload"), saTable);
 	for (i=2 ; i<saTable.GetCount() ; i+=2)
-		AddFileListQuick(saTable[i], saTable[i+1]);
+		AddFileList(saTable[i], saTable[i+1]);
 	CreateThread();
 }
 
@@ -42,7 +43,7 @@ void CPicCDLManager::Destroy()
 	SetDBSync(true);
 }
 
-bool CPicCDLManager::AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath)
+bool CPicCDLManager::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 {
 	if (!m_pFeed)
 		return false;
@@ -52,7 +53,7 @@ bool CPicCDLManager::AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 		m_pFeed->EscapeQuote(lpURL),
 		m_pFeed->EscapeQuote(lpLocalPath));
 	m_pFeed->ExecSQL(strSQL);
-	return CKDGetHttpFile::AddFileListQuick(lpURL, lpLocalPath);
+	return CKDGetHttpFile::AddFileList(lpURL, lpLocalPath);
 }
 
 void CPicCDLManager::SetDBSync(bool bSync/* = true*/)
@@ -74,9 +75,11 @@ void CPicCDLManager::DelayDownload()
 
 void CPicCDLManager::OnStartDownloadThread()
 {
-	g_pPicCollectorDlg->DLIconSwitch(0);
-	g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow();
-	g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow();
+	if (IsCanThread()) {
+		g_pPicCollectorDlg->DLIconSwitch(0);
+		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow();
+		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow();
+	}
 }
 
 void CPicCDLManager::OnExitDownloadThread()
@@ -107,15 +110,17 @@ void CPicCDLManager::OnDownloadFileDiscard()
 {
 	CString strSQL;
 
+	m_muxNowDLURL.Lock();
+	DeleteFile(m_sNowDLLocalPath);
 	if (m_bDelay) {
 		SaveNowDLToList(false);
 		m_bDelay = false;
 	} else {
-		m_muxNowDLURL.Lock();
 		strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
 		g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
-		m_muxNowDLURL.Unlock();
 	}
+	m_muxNowDLURL.Unlock();
+
 	if (IsCanThread()) {
 		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELNOWDL)->EnableWindow(TRUE);
 		g_pPicCollectorDlg->GetDlgItem(IDC_PICC_BTN_DELAYDL)->EnableWindow(TRUE);
@@ -127,6 +132,7 @@ void CPicCDLManager::OnDownloadFileRetryFailed()
 	CString strSQL;
 
 	m_muxNowDLURL.Lock();
+	DeleteFile(m_sNowDLLocalPath);
 	strSQL.Format(_T("INSERT INTO PicDownloadFailed (Url, Localpath, MaxDLPercent) VALUES ('%s', '%s', '%f')"),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLLocalPath),
@@ -136,4 +142,16 @@ void CPicCDLManager::OnDownloadFileRetryFailed()
 	strSQL.Format(_T("DELETE FROM PicUnDownload WHERE Url = '%s'"), g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL));
 	g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
 	m_muxNowDLURL.Unlock();
+}
+
+void CPicCDLManager::OnWriteFileError()
+{
+	m_muxNowDLURL.Lock();
+	DeleteFile(m_sNowDLLocalPath);
+	m_muxNowDLURL.Unlock();
+	if (IsCanThread()) {
+		g_pPicCollectorDlg->DLIconSwitch(1);
+		Pause();
+		g_pPicCollectorDlg->MessageBox(CResString(IDS_PICC_MSG_WRITE_FILE_ERROR), NULL, MB_OK|MB_ICONERROR);
+	}
 }

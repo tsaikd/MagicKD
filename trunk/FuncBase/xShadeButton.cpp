@@ -271,7 +271,7 @@ BYTE CxDib::GetNearestIndex(RGBQUAD c)
 	if ((hDib==NULL)||(m_nColors==0)) return 0;
 	BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
 	long distance=200000;
-	BYTE i,j;
+	BYTE i,j=0;
 	long k,l;
 	for(i=0,l=0;i<m_nColors;i++,l+=sizeof(RGBQUAD)){
 		k = (iDst[l]-c.rgbBlue)*(iDst[l]-c.rgbBlue)+

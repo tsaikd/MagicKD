@@ -11,7 +11,7 @@ public:
 	void Init(CPicCFeed *pFeed);
 	void Destroy();
 
-	bool AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath);
+	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 	void SetDBSync(bool bSync = true);
 
 	void DelayDownload();
@@ -22,6 +22,7 @@ protected:
 	virtual void OnDownloadFileOver();
 	virtual void OnDownloadFileDiscard();
 	virtual void OnDownloadFileRetryFailed();
+	virtual void OnWriteFileError();
 
 private:
 	CPicCFeed *m_pFeed;

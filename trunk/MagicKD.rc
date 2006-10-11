@@ -457,6 +457,8 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PICC_BTN_VIEWDB     "View DB"
+    IDS_PICC_MSG_WRITE_FILE_ERROR 
+                            "Can't write file\nDownloader is paused\nPlease check your path!"
     IDS_PICC_DBV_BTN_RELOAD "Reload"
     IDS_PICC_DBV_BTN_EXIT   "Exit"
     IDS_PICC_DBV_BTN_DELETE "Delete"
@@ -471,6 +473,8 @@ BEGIN
     IDS_PICC_DBV_COMBO_DLOVER "Download Over"
     IDS_PICC_DBV_COMBO_UNDL "UnDownload"
     IDS_PICC_DBV_MSG_EXPORT "Export to\n%s"
+    IDS_PICC_DBV_MSG_DATAREADING "Reading Data ...\nPlease wait for a while!"
+    IDS_PICC_DBV_MSG_DATADELING "Deleting Data ...\nPlease wait for a while!"
     IDS_PICC_TT_STATIC_PLAY "Start to download the files in found list"
     IDS_PICC_TT_STATIC_PAUSE "Pause the downloader"
     IDS_PICC_TT_STATIC_STOP "Stop the downloader\r\n(forbid operation by user)"
@@ -478,8 +482,6 @@ BEGIN
                             "Delete downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
     IDS_PICC_TT_BTN_DELAY_DL 
                             "Delay current downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
-    IDS_PICC_DBV_MSG_DATAREADING "Reading Data ...\nPlease wait for a while!"
-    IDS_PICC_DBV_MSG_DATADELING "Deleting Data ...\nPlease wait for a while!"
 END
 
 #endif    // Chinese (Taiwan) resources

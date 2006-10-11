@@ -1,4 +1,7 @@
+Version: 1.0.3.8	(2006-10-11)
 	Support for logging
+	Automatically detect disk full
+	WallChanger: Automatically detect full screen
 
 Version: 1.0.3.7	(2006-09-28)
 	PicCollector support for pausing downloader

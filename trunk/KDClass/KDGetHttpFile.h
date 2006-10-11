@@ -1,6 +1,7 @@
 #pragma once
 #include "afxinet.h"
 #include "KDThread.h"
+#include "KDEvent.h"
 
 class CKDGetHttpFile : public CKDThread
 {
@@ -12,14 +13,12 @@ public:
 	virtual DWORD ThreadProc();
 
 	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
-	bool AddFileListQuick(LPCTSTR lpURL, LPCTSTR lpLocalPath);
 
 	inline bool IsDownloadAllOver() { return (m_slURL.IsEmpty() && m_slLocalPath.IsEmpty()); }
 	CString GetNowDLURL() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLURL; m_muxNowDLURL.Unlock(); return sRes; }
 	CString GetNowDLLocalPath() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLLocalPath; m_muxNowDLURL.Unlock(); return sRes; }
 	double GetPercentOfNowDL();
-	double GetPercentOfTotalDL();
-	int GetDownloadCount();
+	INT_PTR GetDownloadCount();
 	UINT GetNowDLRetryTimes();
 	CString RemoveHeadDLURL();
 	CString RemoveHeadLocalPath();
@@ -34,10 +33,12 @@ protected:
 	virtual void OnDownloadFileOver() {}
 	virtual void OnDownloadFileDiscard() {}
 	virtual void OnDownloadFileRetryFailed() {}
+	virtual void OnWriteFileError() {}
 
+	CInternetSession *m_pSession;
 	UINT			m_uQueryRetryTimes;
 	CMutex			m_muxNowDLURL;
-	CSemaphore		m_semPause;
+	CKDEvent		m_eventPause;	// Set: No Pause, Reset: Pause
 	CString			m_sNowDLURL;
 	CString			m_sNowDLLocalPath;
 	double			m_fNowDLMaxPercent;
@@ -45,10 +46,25 @@ protected:
 	CStringList		m_slLocalPath;
 	ULONGLONG		m_ulNowDLMaxSize;
 	ULONGLONG		m_ulNowDLSize;
-	ULONGLONG		m_ulTotalDLMaxSize;
-	ULONGLONG		m_ulTotalDLSize;
 
 private:
+	enum {
+		DLSTATUS_NULL,
+		DLSTATUS_INIT,
+		DLSTATUS_CHKDLDIR,
+		DLSTATUS_SETLOCAL,
+		DLSTATUS_CONNECTHTTP,
+		DLSTATUS_DOWNLOAD,
+		DLSTATUS_CHKNET,
+		DLSTATUS_CHKUSER,
+		DLSTATUS_RMLIST,
+		DLSTATUS_CLOSEVAR,
+		DLSTATUS_QUIT,
+		DLSTATUS_DLOVER,
+		DLSTATUS_LOCALFILEERROR,
+		DLSTATUS_OVERRETRY,
+		DLSTATUS_DISCARD
+	};
 	bool DownloadFileFromHttp(LPCTSTR lpURL, LPCTSTR lpLocalPath, int iQuerySize = 8192);
 
 	bool			m_bDiscardNowDL;
