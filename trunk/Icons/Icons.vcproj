@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MagicKD_FullScreen.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\pause.ico"
 				>
 			</File>

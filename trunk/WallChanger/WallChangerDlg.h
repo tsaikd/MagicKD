@@ -80,6 +80,7 @@ private:
 	bool	m_bInit;
 	bool	m_bShowDirLoadError;
 	bool	m_bPause;
+	bool	m_bFullScreen;
 	UINT	m_uTimer;
 	CxImage m_imgNowPic;
 	CString m_sNowPicPath;

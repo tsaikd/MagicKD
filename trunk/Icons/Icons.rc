@@ -59,6 +59,7 @@ IDI_PICC_STOP           ICON                    "stop.ico"
 IDI_PICC_PAUSE          ICON                    "pause.ico"
 IDI_PICC_DEL            ICON                    "del.ico"
 IDI_PICC_FORWARD        ICON                    "forward.ico"
+IDI_MAGICKD_FULLSCREEN  ICON                    "MagicKD_FullScreen.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -66,8 +67,8 @@ IDI_PICC_FORWARD        ICON                    "forward.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,7
- PRODUCTVERSION 1,0,3,7
+ FILEVERSION 1,0,3,9
+ PRODUCTVERSION 1,0,3,9
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -83,12 +84,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "Icons"
-            VALUE "FileVersion", "1, 0, 3, 7"
+            VALUE "FileVersion", "1, 0, 3, 9"
             VALUE "InternalName", "Icons"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "Icons"
             VALUE "ProductName", " Icons"
-            VALUE "ProductVersion", "1, 0, 3, 7"
+            VALUE "ProductVersion", "1, 0, 3, 9"
         END
     END
     BLOCK "VarFileInfo"

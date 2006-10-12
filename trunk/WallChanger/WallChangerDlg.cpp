@@ -28,7 +28,7 @@ CWallChangerDlg *g_pWallChangerDlg = NULL;
 IMPLEMENT_DYNAMIC(CWallChangerDlg, CDialog)
 CWallChangerDlg::CWallChangerDlg(CWnd* pParent /*=NULL*/)
 	:	CDialog(CWallChangerDlg::IDD, pParent), m_bInit(false), m_pCurListDirPath(NULL),
-		m_uTimer(0), m_bShowDirLoadError(true), m_bPause(false)
+		m_uTimer(0), m_bShowDirLoadError(true), m_bPause(false), m_bFullScreen(false)
 {
 }
 
@@ -722,12 +722,23 @@ void CWallChangerDlg::OnTimer(UINT nIDEvent)
 		{
 		CString sTime;
 		int iTime;
-
-		if (!IsDesktopVisible())
-			break;
-
 		m_staticTime.GetWindowText(sTime);
 		iTime = _ttoi(sTime) - 1;
+
+		if (!IsDesktopVisible()) {
+			if (!m_bFullScreen) {
+				g_pTheTray->SetTray(g_pTheIcons->GetIcon(IDI_MAGICKD_FULLSCREEN));
+				m_bFullScreen = true;
+			}
+			break;
+		}
+		if (m_bFullScreen) {
+			g_pTheTray->SetTray(g_pMagicKDDlg->m_hIcon);
+			m_bFullScreen = false;
+
+			if (iTime > 3)
+				iTime = 3;
+		}
 
 		if (iTime < 0) {
 			OnBnClickedButtonRandpic();

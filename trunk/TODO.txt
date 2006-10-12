@@ -8,7 +8,6 @@ PicCollector(html):
 FindDupFile:
 
 WallChanger:
-full screen icon
 ¥ı·j´Menable list
 ¦ÑÁóÁä
 ListCtrl¥i«öCTRL+CVX

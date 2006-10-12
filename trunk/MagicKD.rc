@@ -206,8 +206,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,8
- PRODUCTVERSION 1,0,3,8
+ FILEVERSION 1,0,3,9
+ PRODUCTVERSION 1,0,3,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -223,11 +223,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 3, 8"
+            VALUE "FileVersion", "1, 0, 3, 9"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 3, 8"
+            VALUE "ProductVersion", "1, 0, 3, 9"
         END
     END
     BLOCK "VarFileInfo"
@@ -446,19 +446,19 @@ BEGIN
     IDS_PICC_LIST_COLUMN_URL "Feed URL"
     IDS_PICC_MSG_ENTER_FEED_URL "Please enter the URL of rss feed"
     IDS_PICC_MSG_ENTER_FEED_NAME "Please enter the local name of rss feed"
+    IDS_PICC_MSG_WRITE_FILE_ERROR 
+                            "Can't write file\nDownloader is paused\nPlease check your path!"
     IDS_PICC_STATIC_DLDIR   "Download Dir:"
     IDS_PICC_BTN_CHANGE_DLDIR "Change ..."
     IDS_PICC_BTN_ADD_NEW_FEED "Add rss feed"
     IDS_PICC_BTN_REFRESH_FEED "Refresh feed"
     IDS_PICC_BTN_DEL_FEED   "Delete feed"
-    IDS_PICC_BTN_VIEW_DLDIR "View"
 END
 
 STRINGTABLE 
 BEGIN
+    IDS_PICC_BTN_VIEW_DLDIR "View"
     IDS_PICC_BTN_VIEWDB     "View DB"
-    IDS_PICC_MSG_WRITE_FILE_ERROR 
-                            "Can't write file\nDownloader is paused\nPlease check your path!"
     IDS_PICC_DBV_BTN_RELOAD "Reload"
     IDS_PICC_DBV_BTN_EXIT   "Exit"
     IDS_PICC_DBV_BTN_DELETE "Delete"
