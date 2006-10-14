@@ -93,7 +93,6 @@ bool CenterWindowPos(HWND hWnd, int xOffset = 0, int yOffset = 0);
 
 bool IsUserVisiableAppWnd(HWND hWnd);
 bool IsShellTray(HWND hWnd);
-bool IsDesktopVisible();
 
 class CGetFileVersion : public CString
 {

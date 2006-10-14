@@ -343,6 +343,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDMThread.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDSimpleDlg.cpp"
 					>
 				</File>
@@ -359,6 +363,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDSysInfo.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDTabCtrl.cpp"
 					>
 				</File>
@@ -372,6 +380,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDUpdaterAPI.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDWinMsgBox.cpp"
 					>
 				</File>
 			</Filter>
@@ -657,6 +669,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDMThread.h"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDQArray.h"
 					>
 				</File>
@@ -677,6 +693,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KDClass\KDSysInfo.h"
+					>
+				</File>
+				<File
 					RelativePath=".\KDClass\KDTabCtrl.h"
 					>
 				</File>
@@ -690,6 +710,10 @@
 				</File>
 				<File
 					RelativePath=".\KDClass\KDUpdaterAPI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KDClass\KDWinMsgBox.h"
 					>
 				</File>
 			</Filter>

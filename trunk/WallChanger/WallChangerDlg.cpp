@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Language.h"
 #include "Others.h"
+#include "KDSysInfo.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
 #include "WallOthers.h"
@@ -725,7 +726,7 @@ void CWallChangerDlg::OnTimer(UINT nIDEvent)
 		m_staticTime.GetWindowText(sTime);
 		iTime = _ttoi(sTime) - 1;
 
-		if (!IsDesktopVisible()) {
+		if (!g_pKDSysInfo->IsDesktopVisible()) {
 			if (!m_bFullScreen) {
 				g_pTheTray->SetTray(g_pTheIcons->GetIcon(IDI_MAGICKD_FULLSCREEN));
 				m_bFullScreen = true;

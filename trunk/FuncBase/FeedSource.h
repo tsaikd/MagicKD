@@ -66,7 +66,7 @@ public:
 
 	virtual bool OpenDB(LPCTSTR sDBPath);
 	using	CKDSQLiteAPI::CloseDB;
-	void	BuildFromFile(LPCTSTR strXMLURL);
+	bool	BuildFromFile(LPCTSTR strXMLURL);
 	void	Save(bool bSaveSource = true);
 	void	LoadLocal(LPCTSTR strLink);
 

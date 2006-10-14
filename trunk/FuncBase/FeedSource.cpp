@@ -173,13 +173,13 @@ bool CFeed::OpenDB(LPCTSTR sDBPath)
 // This function will build Feed Object from scratch by parsing XML Feed Information
 // Result is stored in m_source and m_item objects
 //
-#define RETURN { CoUninitialize(); m_muxDLInet.Unlock(); return; }
-void CFeed::BuildFromFile(LPCTSTR strXMLURL)
+#define RETURN(x) { CoUninitialize(); m_muxDLInet.Unlock(); return (x); }
+bool CFeed::BuildFromFile(LPCTSTR strXMLURL)
 {
 	if (!IsDBLoaded())
-		return;
+		return false;
 
-	m_muxDLInet.Lock();
+	VERIFY(m_muxDLInet.Lock());
 	ClearLoadedItems();
 	CString strTmpFile = GetModuleFileDir() + _T("\\FeedSource_tmp.xml");
 	CoInitialize(NULL);
@@ -188,14 +188,8 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	if (( URLDownloadToFile( NULL, strXMLURL, strTmpFile,0, NULL ) != S_OK )
 		|| (!PathFileExists(strTmpFile)))
 	{
-		if (0 == GetOnInternet())
-			AfxMessageBox(_T("Failed to download ") + CString(strXMLURL));
-		RETURN;
+		RETURN(false);
 	}
-#ifdef DEBUG
-	//while (!PathFileExists(strTmpFile))
-	//	Sleep(2000);
-#endif //DEBUG
 
 	// Step 1. Open XML Document, if open fails, then return
 	xml_parser xmlParser;
@@ -220,7 +214,7 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 #ifdef DEBUG
 		AfxMessageBox(_T("Parse XML File Failed!"));
 #endif //DEBUG
-		RETURN;
+		RETURN(false);
 	}
 	xml_outline outline;
 	xml_node doc = xmlParser.document();
@@ -340,7 +334,7 @@ void CFeed::BuildFromFile(LPCTSTR strXMLURL)
 	DeleteFile(strTmpFile);
 	m_source.m_strLink = strXMLURL;
 
-	RETURN;
+	RETURN(true);
 }
 #undef RETURN
 

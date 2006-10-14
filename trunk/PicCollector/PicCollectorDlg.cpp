@@ -4,6 +4,7 @@
 #include "Language.h"
 #include "MagicKD.h"
 #include "MagicKDDlg.h"
+#include "KDWinMsgBox.h"
 #include "PicCollector/HTMLReader/LiteHTMLReader.h"
 #include "PicCHTMLEventHandler.h"
 #include "InputBox.h"
@@ -282,7 +283,13 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 	if (!m_uTimerShowDownload)
 		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
 
-	m_Feed.BuildFromFile(lpURL);
+	if (!m_Feed.BuildFromFile(lpURL)) {
+		if (0 == GetOnInternet()) {
+			g_pKDWinMsgBox->Add(GetSafeHwnd(), _T("Failed to download ") + CString(lpURL),
+				NULL, MB_OK|MB_ICONERROR);
+		}
+		return;
+	}
 	m_Feed.Save();
 	if (!IsCanThread())
 		return;
@@ -454,15 +461,6 @@ void CPicCollectorDlg::OnTimer(UINT_PTR nIDEvent)
 			GetDlgItem(IDC_PICC_STATIC_DOWNLOAD)->SetWindowText(sBuf);
 			GetDlgItem(IDC_PICC_STATIC_DLLOCALPATH)->SetWindowText(m_pDownLoader->GetNowDLLocalPath());
 		} else if (m_pDownLoader->GetDownloadCount()) {
-			Sleep(2000);
-			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
-				break;
-			Sleep(2000);
-			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
-				break;
-			Sleep(2000);
-			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
-				break;
 			Sleep(2000);
 			if (m_pDownLoader->IsThreadRunning() || !IsCanThread())
 				break;

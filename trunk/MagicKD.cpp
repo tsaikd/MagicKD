@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Others.h"
+#include "KDSysInfo.h"
+#include "KDWinMsgBox.h"
 #include "MagicKDDlg.h"
 
 #include "MagicKD.h"
@@ -22,6 +24,9 @@ BOOL CMagicKDApp::InitInstance()
 
 	if (IsWndRunning())
 		return FALSE;
+
+	g_pKDSysInfo = new CKDSysInfo;
+	g_pKDWinMsgBox = new CKDWinMsgBox;
 
 	CString sBuf;
 	sBuf.Format(_T("%sMagicKD_%s.log"), GetAppLogDir(), CTime(time(NULL)).Format(_T("%Y_%m_%d")));
@@ -47,6 +52,8 @@ BOOL CMagicKDApp::InitInstance()
 	g_pTheLog->Log(_T("Exit MagicKDApp"), CKDLog::LOGLV_INFO);
 	DEL(g_pTheAppEndDlg);
 	DEL(g_pTheLog);
+	DEL(g_pKDWinMsgBox);
+	DEL(g_pKDSysInfo);
 
 	// 因為已經關閉對話方塊，傳回 FALSE，所以我們會結束應用程式，
 	// 而非提示開始應用程式的訊息。
@@ -55,8 +62,9 @@ BOOL CMagicKDApp::InitInstance()
 
 void CMagicKDApp::Quit()
 {
-	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd())) {
-		::PostMessage(m_pMainWnd->GetSafeHwnd(), WM_QUIT, 0, 0);
+	if (m_pMainWnd && IsWindow(m_pMainWnd->GetSafeHwnd())) {
+		g_pKDWinMsgBox->SetCanThread(false);
+		PostMessage(m_pMainWnd->GetSafeHwnd(), WM_QUIT, 0, 0);
 		m_bOnQuit = true;
 	}
 }

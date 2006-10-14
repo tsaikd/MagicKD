@@ -39,13 +39,20 @@ protected:
 	CFindDFTreeCtrl m_tree_FindResult;
 
 private:
+	enum {
+		KDSTATE_NULL,
+		KDSTATE_FINDDUP,
+		KDSTATE_DELDUP
+	};
 	void _EW_Finding(bool bEnable);
 	void _EW_FindOver(bool bEnable);
 	void _FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath);
+	void _DeleteDupFile();
 
 	CFindDFArray m_aDupFile;
 	bool m_bInit;
 	bool m_bStop;
+	int m_iThreadState;
 
 protected:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Language.h"
+#include "KDWinMsgBox.h"
 #include "PicCollectorDlg.h"
 
 #include "PicCDLManager.h"
@@ -152,6 +153,7 @@ void CPicCDLManager::OnWriteFileError()
 	if (IsCanThread()) {
 		g_pPicCollectorDlg->DLIconSwitch(1);
 		Pause();
-		g_pPicCollectorDlg->MessageBox(CResString(IDS_PICC_MSG_WRITE_FILE_ERROR), NULL, MB_OK|MB_ICONERROR);
+		g_pKDWinMsgBox->Add(g_pPicCollectorDlg->GetSafeHwnd(), CResString(IDS_PICC_MSG_WRITE_FILE_ERROR),
+			NULL, MB_OK|MB_ICONERROR);
 	}
 }

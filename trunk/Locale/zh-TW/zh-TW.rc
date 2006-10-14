@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,8
- PRODUCTVERSION 1,0,3,8
+ FILEVERSION 1,0,3,9
+ PRODUCTVERSION 1,0,3,9
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,12 @@ BEGIN
         BLOCK "040404b0"
         BEGIN
             VALUE "FileDescription", "zh-TW"
-            VALUE "FileVersion", "1, 0, 3, 8"
+            VALUE "FileVersion", "1, 0, 3, 9"
             VALUE "InternalName", "zh-TW"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "zh-TW"
             VALUE "ProductName", " zh-TW"
-            VALUE "ProductVersion", "1, 0, 3, 8"
+            VALUE "ProductVersion", "1, 0, 3, 9"
         END
     END
     BLOCK "VarFileInfo"
@@ -201,7 +201,7 @@ BEGIN
     IDS_FIND_BTN_COLLAPSEALL "全部收合"
     IDS_FIND_MSG_DELETEDUP  "此動作將會刪除所選取的檔案\n確定要繼續嗎？"
     IDS_FIND_MSG_DOFINDFIRST "請先搜尋重複檔案"
-    IDS_FIND_MSG_FINDTIME   "本次執行所耗費時間(秒)："
+    IDS_FIND_MSG_FINDTIME   "本次執行所耗費時間："
     IDS_FIND_MSG_NOSAMEFILE "沒有找到任何相同的檔案"
     IDS_FIND_COLUMN_FINDLIST "尋找相同檔案列表"
     IDS_FIND_TOOLTIP_FINDLIST "將需要尋找的檔案或資料夾拖曳到此\n或是按右鍵加入"
@@ -215,18 +215,18 @@ BEGIN
     IDS_PICC_LIST_COLUMN_URL "Feed 網址"
     IDS_PICC_MSG_ENTER_FEED_URL "請輸入 rss feed 的網址"
     IDS_PICC_MSG_ENTER_FEED_NAME "請輸入 rdd feed 的本機名稱"
+    IDS_PICC_MSG_WRITE_FILE_ERROR "寫入檔案失敗\n暫停下載\n請重新檢查路徑"
     IDS_PICC_STATIC_DLDIR   "下載資料夾:"
     IDS_PICC_BTN_CHANGE_DLDIR "變更資料夾"
     IDS_PICC_BTN_ADD_NEW_FEED "新增訂閱"
     IDS_PICC_BTN_REFRESH_FEED "更新訂閱"
     IDS_PICC_BTN_DEL_FEED   "刪除訂閱"
-    IDS_PICC_BTN_VIEW_DLDIR "檢視"
 END
 
 STRINGTABLE 
 BEGIN
+    IDS_PICC_BTN_VIEW_DLDIR "檢視"
     IDS_PICC_BTN_VIEWDB     "檢視資料庫"
-    IDS_PICC_MSG_WRITE_FILE_ERROR "寫入檔案失敗\n暫停下載\n請重新檢查路徑"
     IDS_PICC_DBV_BTN_RELOAD "重新載入"
     IDS_PICC_DBV_BTN_EXIT   "離開"
     IDS_PICC_DBV_BTN_DELETE "刪除"

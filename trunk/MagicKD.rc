@@ -431,7 +431,7 @@ BEGIN
     IDS_FIND_BTN_COLLAPSEALL "Collapse all"
     IDS_FIND_MSG_DELETEDUP  "Do you want to delete selected files?"
     IDS_FIND_MSG_DOFINDFIRST "Please find duplications first"
-    IDS_FIND_MSG_FINDTIME   "Execution time(second):"
+    IDS_FIND_MSG_FINDTIME   "Execution time:"
     IDS_FIND_MSG_NOSAMEFILE "There is no duplications"
     IDS_FIND_COLUMN_FINDLIST "Directory list of finding duplications"
     IDS_FIND_TOOLTIP_FINDLIST 

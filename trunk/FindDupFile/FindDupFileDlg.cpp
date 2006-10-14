@@ -4,13 +4,15 @@
 #include "Others.h"
 #include "WallOthers.h"
 #include "MagicKD.h"
+#include "KDWinMsgBox.h"
 #include "FindDFConf.h"
 #include "FindDFOthers.h"
 
 #include "FindDupFileDlg.h"
 
 enum {
-	KDT_SORTTING		= 1
+	KDT_NULL,
+	KDT_SORTTING
 };
 
 CFindDupFileDlg *g_pFindDupFileDlg = NULL;
@@ -18,7 +20,7 @@ CFindDFConf *g_pFindConf = NULL;
 
 IMPLEMENT_DYNAMIC(CFindDupFileDlg, CDialog)
 CFindDupFileDlg::CFindDupFileDlg(CWnd* pParent /*=NULL*/)
-	:	CDialog(CFindDupFileDlg::IDD, pParent), m_bInit(false), m_bStop(false)
+	:	CDialog(CFindDupFileDlg::IDD, pParent), m_bInit(false), m_bStop(false), m_iThreadState(0)
 {
 }
 
@@ -29,95 +31,111 @@ CFindDupFileDlg::~CFindDupFileDlg()
 DWORD CFindDupFileDlg::ThreadProc()
 {
 	m_bStop = false;
-	bool bFindSameFile = false;
-	CFindDupFileProc *pImg;
-	CString sPath;
-	CFileFind finder;
 
-	clock_t clockStart = clock();
+	switch (m_iThreadState) {
+	case KDSTATE_FINDDUP:
+		{
+		bool bFindSameFile = false;
+		CFindDupFileProc *pImg;
+		CString sPath;
+		CFileFind finder;
 
-	m_progress_FindDF.SetRange32(0, 10000);
-	m_progress_FindDF.SetPos(0);
-	SetNowPicPath(NULL);
-	m_aDupFile.RemoveAll();
-	m_tree_FindResult.SelectItem(NULL);
-	m_tree_FindResult.SetRedraw(FALSE);
-	m_tree_FindResult.DeleteAllItems();
-	m_tree_FindResult.SetRedraw(TRUE);
-	m_progress_FindDF.SetPos(500);
+		clock_t clockStart = clock();
 
-	int i, iCount = m_list_FindDupFileList.GetItemCount();
-	for (i=0 ; i<iCount ; i++) {
+		m_progress_FindDF.SetRange32(0, 10000);
+		m_progress_FindDF.SetPos(0);
+		SetNowPicPath(NULL);
+		m_aDupFile.RemoveAll();
+		m_tree_FindResult.SelectItem(NULL);
+		m_tree_FindResult.SetRedraw(FALSE);
+		m_tree_FindResult.DeleteAllItems();
+		m_tree_FindResult.SetRedraw(TRUE);
+		m_progress_FindDF.SetPos(500);
+
+		int i, iCount = m_list_FindDupFileList.GetItemCount();
+		for (i=0 ; i<iCount ; i++) {
+			if (!IsCanThread() || m_bStop)
+				goto Lable_ExitFindDupFileThread;
+
+			sPath = m_list_FindDupFileList.GetItemText(i, 0);
+			_FindAllFileAndAddToArray(&m_aDupFile, sPath);
+		}
+		m_progress_FindDF.SetPos(2000);
+
 		if (!IsCanThread() || m_bStop)
 			goto Lable_ExitFindDupFileThread;
+		SetTimer(KDT_SORTTING, 1000, NULL);
 
-		sPath = m_list_FindDupFileList.GetItemText(i, 0);
-		_FindAllFileAndAddToArray(&m_aDupFile, sPath);
-	}
-	m_progress_FindDF.SetPos(2000);
+		// Use another Quick Sort algorithm
+		m_aDupFile.QuickSort(true, &m_bStop);
+//		qsort(m_aDupFile.GetData(), m_aDupFile.GetCount(), sizeof(CFindDupFileProc *), FileCmpCB);
 
-	if (!IsCanThread() || m_bStop)
-		goto Lable_ExitFindDupFileThread;
-	SetTimer(KDT_SORTTING, 1000, NULL);
+		KillTimer(KDT_SORTTING);
+		m_progress_FindDF.SetPos(8000);
 
-	// Use another Quick Sort algorithm
-	m_aDupFile.QuickSort(true, &m_bStop);
-//	qsort(m_aDupFile.GetData(), m_aDupFile.GetCount(), sizeof(CFindDupFileProc *), FileCmpCB);
+		POSITION pos;
+		HTREEITEM hTreeItem;
+		HTREEITEM hTreeChildItem;
+		CListFindDupFileProc *pListSameFile;
+		iCount = m_aDupFile.GetCount();
+		for (i=0 ; i<iCount ; i++) {
+			if (!IsCanThread())
+				goto Lable_ExitFindDupFileThread;
 
-	KillTimer(KDT_SORTTING);
-	m_progress_FindDF.SetPos(8000);
+			m_progress_FindDF.OffsetPos(1000 / iCount);
+			pImg = m_aDupFile[i];
+			pListSameFile = pImg->m_pListSameFile;
+			if (pListSameFile) {
+				bFindSameFile = true;
+				hTreeItem = m_tree_FindResult.InsertItem(pImg->m_sFilePath);
+				pos = pListSameFile->GetHeadPosition();
+				while (pos) {
+					if (!IsCanThread())
+						goto Lable_ExitFindDupFileThread;
 
-	POSITION pos;
-	HTREEITEM hTreeItem;
-	HTREEITEM hTreeChildItem;
-	CListFindDupFileProc *pListSameFile;
-	iCount = m_aDupFile.GetCount();
-	for (i=0 ; i<iCount ; i++) {
-		if (!IsCanThread())
-			goto Lable_ExitFindDupFileThread;
-
-		m_progress_FindDF.OffsetPos(1000 / iCount);
-		pImg = m_aDupFile[i];
-		pListSameFile = pImg->m_pListSameFile;
-		if (pListSameFile) {
-			bFindSameFile = true;
-			hTreeItem = m_tree_FindResult.InsertItem(pImg->m_sFilePath);
-			pos = pListSameFile->GetHeadPosition();
-			while (pos) {
-				if (!IsCanThread())
-					goto Lable_ExitFindDupFileThread;
-
-				pImg = pListSameFile->GetNext(pos);
-				hTreeChildItem = m_tree_FindResult.InsertItem(pImg->m_sFilePath, hTreeItem);
-				m_tree_FindResult.SetCheck(hTreeChildItem);
+					pImg = pListSameFile->GetNext(pos);
+					hTreeChildItem = m_tree_FindResult.InsertItem(pImg->m_sFilePath, hTreeItem);
+					m_tree_FindResult.SetCheck(hTreeChildItem);
+				}
 			}
 		}
-	}
-	m_progress_FindDF.SetPos(9000);
+		m_progress_FindDF.SetPos(9000);
 
 Lable_ExitFindDupFileThread:
-	iCount = m_aDupFile.GetCount();
-	for (i=0 ; i<iCount ; i++)
-		delete m_aDupFile[i];
-	m_aDupFile.RemoveAll();
-	m_progress_FindDF.SetPos(10000);
+		iCount = m_aDupFile.GetCount();
+		for (i=0 ; i<iCount ; i++)
+			delete m_aDupFile[i];
+		m_aDupFile.RemoveAll();
+		m_progress_FindDF.SetPos(10000);
 
-	if (IsCanThread()) {
-		double dExecTime = (double)(clock() - clockStart) / CLOCKS_PER_SEC;
-		CString sMsg;
-		sMsg.Format(_T("%s%.3f"), CResString(IDS_FIND_MSG_FINDTIME), dExecTime);
-		if (!bFindSameFile)
-			sMsg.AppendFormat(_T("\n%s"), CResString(IDS_FIND_MSG_NOSAMEFILE));
-		MessageBox(sMsg, NULL, MB_OK | MB_ICONINFORMATION);
+		if (IsCanThread()) {
+			double dExecTime = (double)(clock() - clockStart) / CLOCKS_PER_SEC;
+			CString sMsg;
+			if (dExecTime < 60) {
+				sMsg.Format(_T("%s%.3f (s)"), CResString(IDS_FIND_MSG_FINDTIME), dExecTime);
+			} else {
+				sMsg.Format(_T("%s%.0f:%02d (s)"), CResString(IDS_FIND_MSG_FINDTIME), dExecTime/60, (ULONGLONG)dExecTime%60);
+			}
+			if (!bFindSameFile)
+				sMsg.AppendFormat(_T("\n%s"), CResString(IDS_FIND_MSG_NOSAMEFILE));
+			g_pKDWinMsgBox->Add(GetSafeHwnd(), sMsg, NULL, MB_OK | MB_ICONINFORMATION);
 
-		m_tree_FindResult.Invalidate();
-		_EW_Finding(false);
+			m_tree_FindResult.Invalidate();
+			_EW_Finding(false);
 
-		if (m_tree_FindResult.GetCount())
-			_EW_FindOver(true);
-		else
-			_EW_FindOver(false);
+			if (m_tree_FindResult.GetCount())
+				_EW_FindOver(true);
+			else
+				_EW_FindOver(false);
+		}
+		}
+		break;
+	case KDSTATE_DELDUP:
+		_DeleteDupFile();
+		break;
 	}
+
+	m_iThreadState = KDSTATE_NULL;
 	return 0;
 }
 
@@ -329,19 +347,73 @@ void CFindDupFileDlg::_FindAllFileAndAddToArray(void *pArray, LPCTSTR sPath)
 	}
 }
 
+void CFindDupFileDlg::_DeleteDupFile()
+{
+	CString sPath;
+	HTREEITEM hTreeItem = m_tree_FindResult.GetRootItem();
+	HTREEITEM hTreeChildItem;
+
+	if (!hTreeItem) {
+		MessageBox(CResString(IDS_FIND_MSG_DOFINDFIRST), NULL, MB_OK | MB_ICONERROR);
+		GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow();
+		return;
+	}
+
+	if (IDOK != MessageBox(CResString(IDS_FIND_MSG_DELETEDUP), NULL, MB_OKCANCEL | MB_ICONQUESTION)) {
+		GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow();
+		return;
+	}
+
+	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow(FALSE);
+	m_tree_FindResult.EnableWindow(FALSE);
+	m_tree_FindResult.SetRedraw(FALSE);
+	m_static_ShowPic.SetRedraw(FALSE);
+
+	while (hTreeItem && IsCanThread()) {
+		if (m_tree_FindResult.GetCheck(hTreeItem)) {
+			sPath = m_tree_FindResult.GetItemText(hTreeItem);
+			if (PathFileExists(sPath))
+				DeleteFile(sPath);
+		}
+
+		hTreeChildItem = m_tree_FindResult.GetChildItem(hTreeItem);
+
+		while (hTreeChildItem) {
+			if (m_tree_FindResult.GetCheck(hTreeChildItem)) {
+				sPath = m_tree_FindResult.GetItemText(hTreeChildItem);
+				if (PathFileExists(sPath))
+					DeleteFile(sPath);
+			}
+
+			hTreeChildItem = m_tree_FindResult.GetNextSiblingItem(hTreeChildItem);
+		}
+
+		hTreeItem = m_tree_FindResult.GetNextSiblingItem(hTreeItem);
+	}
+
+	m_tree_FindResult.DeleteAllItems();
+	m_static_ShowPic.SetPicPath(NULL);
+	m_tree_FindResult.SetRedraw(TRUE);
+	m_static_ShowPic.SetRedraw(TRUE);
+	m_tree_FindResult.Invalidate();
+	m_static_ShowPic.Invalidate();
+	m_tree_FindResult.EnableWindow();
+	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow();
+}
+
 BEGIN_MESSAGE_MAP(CFindDupFileDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_WM_TIMER()
+	ON_NOTIFY(TVN_SELCHANGED, IDC_FIND_TREE_FINDRESULT, OnTvnSelchangedFindTreeFindresult)
 	ON_BN_CLICKED(IDC_FIND_BTN_ENABLETOOLTIP, OnBnClickedFindBtnEnabletooltip)
 	ON_BN_CLICKED(IDC_FIND_BTN_STARTFIND, OnBnClickedFindBtnStartfind)
-	ON_NOTIFY(TVN_SELCHANGED, IDC_FIND_TREE_FINDRESULT, OnTvnSelchangedFindTreeFindresult)
 	ON_BN_CLICKED(IDC_FIND_BTN_SELECTDUP, OnBnClickedFindBtnSelectdup)
 	ON_BN_CLICKED(IDC_FIND_BTN_SELECTNONE, OnBnClickedFindBtnSelectnone)
 	ON_BN_CLICKED(IDC_FIND_BTN_DELETEDUP, OnBnClickedFindBtnDeletedup)
 	ON_BN_CLICKED(IDC_FIND_BTN_STOPFIND, OnBnClickedFindBtnStopfind)
 	ON_BN_CLICKED(IDC_FIND_BTN_EXPANDALL, OnBnClickedFindBtnExpandall)
 	ON_BN_CLICKED(IDC_FIND_BTN_COLLAPSEALL, OnBnClickedFindBtnCollapseall)
-	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 void CFindDupFileDlg::DoDataExchange(CDataExchange* pDX)
@@ -404,6 +476,7 @@ void CFindDupFileDlg::OnBnClickedFindBtnEnabletooltip()
 void CFindDupFileDlg::OnBnClickedFindBtnStartfind()
 {
 	_EW_Finding(true);
+	m_iThreadState = KDSTATE_FINDDUP;
 	CreateThread(THREAD_PRIORITY_LOWEST);
 	SetFocus();
 }
@@ -441,53 +514,9 @@ void CFindDupFileDlg::OnBnClickedFindBtnSelectnone()
 
 void CFindDupFileDlg::OnBnClickedFindBtnDeletedup()
 {
-	CString sPath;
-	HTREEITEM hTreeItem = m_tree_FindResult.GetRootItem();
-	HTREEITEM hTreeChildItem;
-
-	if (!hTreeItem) {
-		MessageBox(CResString(IDS_FIND_MSG_DOFINDFIRST), NULL, MB_OK | MB_ICONERROR);
-		return;
-	}
-
-	if (IDOK != MessageBox(CResString(IDS_FIND_MSG_DELETEDUP), NULL, MB_OKCANCEL | MB_ICONQUESTION))
-		return;
-
 	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow(FALSE);
-	m_tree_FindResult.EnableWindow(FALSE);
-	m_tree_FindResult.SetRedraw(FALSE);
-	m_static_ShowPic.SetRedraw(FALSE);
-
-	while (hTreeItem) {
-		if (m_tree_FindResult.GetCheck(hTreeItem)) {
-			sPath = m_tree_FindResult.GetItemText(hTreeItem);
-			if (PathFileExists(sPath))
-				DeleteFile(sPath);
-		}
-
-		hTreeChildItem = m_tree_FindResult.GetChildItem(hTreeItem);
-
-		while (hTreeChildItem) {
-			if (m_tree_FindResult.GetCheck(hTreeChildItem)) {
-				sPath = m_tree_FindResult.GetItemText(hTreeChildItem);
-				if (PathFileExists(sPath))
-					DeleteFile(sPath);
-			}
-
-			hTreeChildItem = m_tree_FindResult.GetNextSiblingItem(hTreeChildItem);
-		}
-
-		hTreeItem = m_tree_FindResult.GetNextSiblingItem(hTreeItem);
-	}
-
-	m_tree_FindResult.DeleteAllItems();
-	m_static_ShowPic.SetPicPath(NULL);
-	m_tree_FindResult.SetRedraw(TRUE);
-	m_static_ShowPic.SetRedraw(TRUE);
-	m_tree_FindResult.Invalidate();
-	m_static_ShowPic.Invalidate();
-	m_tree_FindResult.EnableWindow();
-	GetDlgItem(IDC_FIND_BTN_DELETEDUP)->EnableWindow();
+	m_iThreadState = KDSTATE_DELDUP;
+	CreateThread(THREAD_PRIORITY_LOWEST);
 }
 
 void CFindDupFileDlg::OnTvnSelchangedFindTreeFindresult(NMHDR *pNMHDR, LRESULT *pResult)
