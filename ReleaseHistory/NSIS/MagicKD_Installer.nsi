@@ -6,6 +6,10 @@
 Name "${INSTNAME}"
 OutFile "${INSTNAME}.exe"
 InstallDir "$PROGRAMFILES\${APPNAME}"
+VIAddVersionKey "LegalCopyright" "KD"
+VIAddVersionKey "FileDescription" "${APPNAME} installer"
+VIAddVersionKey "FileVersion" ${APPVER}
+VIProductVersion ${APPVER}
 
 XPStyle on
 
