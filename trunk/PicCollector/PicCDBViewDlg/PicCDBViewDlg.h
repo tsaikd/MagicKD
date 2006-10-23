@@ -58,5 +58,7 @@ public:
 	afx_msg void OnBnClickedPiccDbvBtnDelrecode();
 	afx_msg void OnBnClickedPiccDbvBtnLpage();
 	afx_msg void OnBnClickedPiccDbvBtnRpage();
+	afx_msg void OnBnClickedPiccDbvBtnLLpage();
+	afx_msg void OnBnClickedPiccDbvBtnRRpage();
 	afx_msg void OnBnClickedPiccDbvBtnExport();
 };

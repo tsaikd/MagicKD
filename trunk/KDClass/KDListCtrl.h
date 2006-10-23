@@ -42,13 +42,13 @@ private:
 
 public:
 	void DeleteSelectItem();
-	void CancleAllSelected();
 	LPARAM GetFirstSelectedItemLParam();
 	int GetFirstSelectedItemNum();
 	void SetSelectItemCheckState(bool bCheck);
 
 	int FindItemByText(LPCTSTR sText);
-	bool SetItemSelected(int nItem);
+	bool SetItemSelected(int nItem, bool bSelected = true);
+	void SetItemAllSelected(bool bSelected = true);
 
 	bool EnableToolTips(LPCTSTR sToolTip = NULL, bool bEnable = true);
 	bool IsEnableToolTips();

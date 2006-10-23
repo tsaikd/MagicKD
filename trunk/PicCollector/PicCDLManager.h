@@ -11,7 +11,7 @@ public:
 	void Init(CPicCFeed *pFeed);
 	void Destroy();
 
-	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
+	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath, bool bTail = true);
 	void SetDBSync(bool bSync = true);
 
 	void DelayDownload();

@@ -44,7 +44,7 @@ void CPicCDLManager::Destroy()
 	SetDBSync(true);
 }
 
-bool CPicCDLManager::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
+bool CPicCDLManager::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath, bool bTail/* = true*/)
 {
 	if (!m_pFeed)
 		return false;
@@ -54,7 +54,7 @@ bool CPicCDLManager::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
 		m_pFeed->EscapeQuote(lpURL),
 		m_pFeed->EscapeQuote(lpLocalPath));
 	m_pFeed->ExecSQL(strSQL);
-	return CKDGetHttpFile::AddFileList(lpURL, lpLocalPath);
+	return CKDGetHttpFile::AddFileList(lpURL, lpLocalPath, bTail);
 }
 
 void CPicCDLManager::SetDBSync(bool bSync/* = true*/)
@@ -96,7 +96,7 @@ void CPicCDLManager::OnDownloadFileOver()
 {
 	CString strSQL;
 
-	m_muxNowDLURL.Lock();
+	VERIFY(m_muxNowDLURL.Lock());
 	strSQL.Format(_T("INSERT INTO PicDownloadOver (Url, Localpath) VALUES ('%s', '%s')"),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLLocalPath));
@@ -111,7 +111,7 @@ void CPicCDLManager::OnDownloadFileDiscard()
 {
 	CString strSQL;
 
-	m_muxNowDLURL.Lock();
+	VERIFY(m_muxNowDLURL.Lock());
 	DeleteFile(m_sNowDLLocalPath);
 	if (m_bDelay) {
 		SaveNowDLToList(false);
@@ -132,7 +132,7 @@ void CPicCDLManager::OnDownloadFileRetryFailed()
 {
 	CString strSQL;
 
-	m_muxNowDLURL.Lock();
+	VERIFY(m_muxNowDLURL.Lock());
 	DeleteFile(m_sNowDLLocalPath);
 	strSQL.Format(_T("INSERT INTO PicDownloadFailed (Url, Localpath, MaxDLPercent) VALUES ('%s', '%s', '%f')"),
 		g_pPicCollectorDlg->m_Feed.EscapeQuote(m_sNowDLURL),
@@ -147,7 +147,7 @@ void CPicCDLManager::OnDownloadFileRetryFailed()
 
 void CPicCDLManager::OnWriteFileError()
 {
-	m_muxNowDLURL.Lock();
+	VERIFY(m_muxNowDLURL.Lock());
 	DeleteFile(m_sNowDLLocalPath);
 	m_muxNowDLURL.Unlock();
 	if (IsCanThread()) {

@@ -180,23 +180,25 @@ BEGIN
     PUSHBUTTON      "Del",IDC_PICC_BTN_DELNOWDL,100,200,12,12,BS_CENTER | BS_VCENTER | NOT WS_TABSTOP
 END
 
-IDD_MAGICKD_PICCDBVIEW DIALOGEX 0, 0, 405, 201
+IDD_MAGICKD_PICCDBVIEW DIALOGEX 0, 0, 405, 195
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PicCollector Database Viewer"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,348,147,50,14,NOT WS_VISIBLE
+    DEFPUSHBUTTON   "OK",IDOK,348,140,50,14,NOT WS_VISIBLE
     PUSHBUTTON      "Exit",IDCANCEL,348,25,50,14
-    CONTROL         "",IDC_PICC_DBV_LIST_ITEM,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,24,337,136
-    EDITTEXT        IDC_PICC_DBV_EDIT_URL,7,163,391,14,ES_AUTOHSCROLL | ES_READONLY
-    EDITTEXT        IDC_PICC_DBV_EDIT_LOCALPATH,7,180,391,14,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "",IDC_PICC_DBV_LIST_ITEM,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,24,337,129
+    EDITTEXT        IDC_PICC_DBV_EDIT_URL,7,157,391,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_PICC_DBV_EDIT_LOCALPATH,7,174,391,14,ES_AUTOHSCROLL | ES_READONLY
     PUSHBUTTON      "Reload",IDC_PICC_DBV_BTN_RELOAD,348,7,50,14
     COMBOBOX        IDC_PICC_DBV_COMBO_TBNAME,7,7,136,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Delete",IDC_PICC_DBV_BTN_DELRECODE,348,55,50,14
-    CTEXT           "1 ~ 1 (1)",IDC_PICC_DBV_STATIC_PAGENUM,170,9,80,8
-    PUSHBUTTON      "<",IDC_PICC_DBV_BTN_LPAGE,150,7,15,14
-    PUSHBUTTON      ">",IDC_PICC_DBV_BTN_RPAGE,255,7,15,14
+    CTEXT           "1 ~ 1 (1)",IDC_PICC_DBV_STATIC_PAGENUM,185,9,105,8
+    PUSHBUTTON      "<",IDC_PICC_DBV_BTN_LPAGE,165,7,15,14
+    PUSHBUTTON      ">",IDC_PICC_DBV_BTN_RPAGE,295,7,15,14
     PUSHBUTTON      "Export",IDC_PICC_DBV_BTN_EXPORT,348,73,50,14
+    PUSHBUTTON      "<<",IDC_PICC_DBV_BTN_LLPAGE,150,7,15,14
+    PUSHBUTTON      ">>",IDC_PICC_DBV_BTN_RRPAGE,310,7,15,14
 END
 
 
@@ -206,8 +208,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,9
- PRODUCTVERSION 1,0,3,9
+ FILEVERSION 1,0,4,0
+ PRODUCTVERSION 1,0,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -223,11 +225,11 @@ BEGIN
         BLOCK "040403b6"
         BEGIN
             VALUE "FileDescription", "MagicKD"
-            VALUE "FileVersion", "1, 0, 3, 9"
+            VALUE "FileVersion", "1, 0, 4, 0"
             VALUE "InternalName", "MagicKD.exe"
             VALUE "OriginalFilename", "MagicKD.exe"
             VALUE "ProductName", "MagicKD"
-            VALUE "ProductVersion", "1, 0, 3, 9"
+            VALUE "ProductVersion", "1, 0, 4, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -298,7 +300,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 398
         TOPMARGIN, 7
-        BOTTOMMARGIN, 194
+        BOTTOMMARGIN, 188
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -322,6 +324,23 @@ BEGIN
     IDS_CONF_STATIC_TRANSPARENCY "Transparency"
     IDS_CONF_BTN_RESTART    "Restart"
     IDS_CONF_BTN_CHECKUPDATE "Check Update"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_DBV_COMBO_DLOVER "Download Over"
+    IDS_PICC_DBV_COMBO_UNDL "UnDownload"
+    IDS_PICC_DBV_MSG_EXPORT "Export to\n%s"
+    IDS_PICC_DBV_MSG_DATAREADING "Reading Data ...\nPlease wait for a while!"
+    IDS_PICC_DBV_MSG_DATADELING "Deleting Data ...\nPlease wait for a while!"
+    IDS_PICC_DBV_MENU_REDOWNLOAD "Download again"
+    IDS_PICC_TT_STATIC_PLAY "Start to download the files in found list"
+    IDS_PICC_TT_STATIC_PAUSE "Pause the downloader"
+    IDS_PICC_TT_STATIC_STOP "Stop the downloader\r\n(forbid operation by user)"
+    IDS_PICC_TT_BTN_DELNOWDL 
+                            "Delete downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
+    IDS_PICC_TT_BTN_DELAY_DL 
+                            "Delay current downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
 END
 
 STRINGTABLE 
@@ -466,22 +485,6 @@ BEGIN
     IDS_PICC_DBV_LIST_URL   "URL"
     IDS_PICC_DBV_LIST_LOCALPATH "Local Path"
     IDS_PICC_DBV_COMBO_DLFAILED "Download Failed"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_PICC_DBV_COMBO_DLOVER "Download Over"
-    IDS_PICC_DBV_COMBO_UNDL "UnDownload"
-    IDS_PICC_DBV_MSG_EXPORT "Export to\n%s"
-    IDS_PICC_DBV_MSG_DATAREADING "Reading Data ...\nPlease wait for a while!"
-    IDS_PICC_DBV_MSG_DATADELING "Deleting Data ...\nPlease wait for a while!"
-    IDS_PICC_TT_STATIC_PLAY "Start to download the files in found list"
-    IDS_PICC_TT_STATIC_PAUSE "Pause the downloader"
-    IDS_PICC_TT_STATIC_STOP "Stop the downloader\r\n(forbid operation by user)"
-    IDS_PICC_TT_BTN_DELNOWDL 
-                            "Delete downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
-    IDS_PICC_TT_BTN_DELAY_DL 
-                            "Delay current downloading file\r\nAffect at the next downloading session,\r\nif the downloader is paused"
 END
 
 #endif    // Chinese (Taiwan) resources

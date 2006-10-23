@@ -1,3 +1,5 @@
+bug report 機制
+
 PicCollector(rss):
 ViewDB reDownload
 圖片黑名單

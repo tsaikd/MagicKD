@@ -51,7 +51,7 @@ BOOL CPicCollectorDlg::OnInitDialog()
 	g_pPicCConf = new CPicCConf;
 	g_pPicCConf->Init(&m_Ini);
 	sPath.Format(_T("%sPicCollector.db"), theApp.GetAppConfDir());
-	m_Feed.OpenDB(sPath);
+	VERIFY(m_Feed.OpenDB(sPath));
 	m_list_Feed.Init();
 	m_ttc.Create(this, TTS_ALWAYSTIP);
 	m_ttc.SetMaxTipWidth(600);
@@ -342,7 +342,7 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 			m_pDownLoader->SetDBSync(false);
 			while (!m_HTMLEventHandler.m_slParsedPic.IsEmpty()) {
 				strLocalPath.Format(_T("%s\\%05d.jpg"), strLocalDir, uPicNum++);
-				m_pDownLoader->AddFileList(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath);
+				VERIFY(m_pDownLoader->AddFileList(m_HTMLEventHandler.m_slParsedPic.RemoveHead(), strLocalPath));
 
 				if (!IsCanThread())
 					break;

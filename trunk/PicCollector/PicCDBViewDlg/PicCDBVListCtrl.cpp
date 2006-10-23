@@ -7,6 +7,8 @@
 
 #include "PicCDBVListCtrl.h"
 
+#define DEFAULT_COUNT_PER_PAGE 1000
+
 CPicCDBVListCtrl::CPicCDBVListCtrl()
 	: m_iPage(1)
 {
@@ -51,12 +53,16 @@ void CPicCDBVListCtrl::Localize()
 void CPicCDBVListCtrl::ReloadItem(int nID, int iPage/* = 1*/)
 {
 	SetRedraw(FALSE);
+	SetItemAllSelected(false);
 	DeleteAllItems();
 	GetParent()->GetDlgItem(IDC_PICC_DBV_EDIT_URL)->SetWindowText(_T(""));
 	GetParent()->GetDlgItem(IDC_PICC_DBV_EDIT_LOCALPATH)->SetWindowText(_T(""));
 	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_DELRECODE)->EnableWindow(FALSE);
+	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LPAGE)->EnableWindow(FALSE);
+	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RPAGE)->EnableWindow(FALSE);
+	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LLPAGE)->EnableWindow(FALSE);
+	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RRPAGE)->EnableWindow(FALSE);
 
-	const int PAGESIZE = 1000;
 	int iDataCount = 0;
 	CString sTableName = ((CPicCDBViewDlg *)GetParent())->GetTableNameFromID(nID);
 	if (!sTableName.IsEmpty()) {
@@ -64,12 +70,13 @@ void CPicCDBVListCtrl::ReloadItem(int nID, int iPage/* = 1*/)
 		CString strSQL;
 		strSQL.Format(_T("SELECT Url,Localpath FROM %s"), sTableName);
 		iDataCount = g_pPicCollectorDlg->m_Feed.GetDataCount(strSQL);
-		if (iDataCount > PAGESIZE) {
-			iPage--;
-			if ((iPage < 0) || (iPage*PAGESIZE > iDataCount))
-				iPage = 0;
-			m_iPage = iPage + 1;
-			strSQL.AppendFormat(_T(" LIMIT %d,%d"), iPage * PAGESIZE, PAGESIZE);
+		if (iDataCount > DEFAULT_COUNT_PER_PAGE) {
+			if (iPage < 1)
+				iPage = 1;
+			else if (iPage*DEFAULT_COUNT_PER_PAGE > iDataCount)
+				iPage = iDataCount / DEFAULT_COUNT_PER_PAGE + 1;
+			m_iPage = iPage;
+			strSQL.AppendFormat(_T(" LIMIT %d,%d"), (m_iPage-1) * DEFAULT_COUNT_PER_PAGE, DEFAULT_COUNT_PER_PAGE);
 		} else {
 			m_iPage = 1;
 		}
@@ -90,20 +97,22 @@ void CPicCDBVListCtrl::ReloadItem(int nID, int iPage/* = 1*/)
 	SetRedraw(TRUE);
 	Invalidate();
 
-	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LPAGE)->EnableWindow(FALSE);
-	GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RPAGE)->EnableWindow(FALSE);
-	if (iDataCount > PAGESIZE) {
-		if (m_iPage > 1)
+	if (iDataCount > DEFAULT_COUNT_PER_PAGE) {
+		if (m_iPage > 1) {
 			GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LPAGE)->EnableWindow(TRUE);
-		if (m_iPage*PAGESIZE < iDataCount)
+			GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_LLPAGE)->EnableWindow(TRUE);
+		}
+		if (m_iPage*DEFAULT_COUNT_PER_PAGE < iDataCount) {
 			GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RPAGE)->EnableWindow(TRUE);
+			GetParent()->GetDlgItem(IDC_PICC_DBV_BTN_RRPAGE)->EnableWindow(TRUE);
+		}
 	}
 
 	CString sBuf;
 	if (iDataCount) {
 		sBuf.Format(_T("%d ~ %d (%d)"),
-			(m_iPage-1)*PAGESIZE+1,
-			min(m_iPage*PAGESIZE, iDataCount),
+			(m_iPage-1)*DEFAULT_COUNT_PER_PAGE+1,
+			min(m_iPage*DEFAULT_COUNT_PER_PAGE, iDataCount),
 			iDataCount);
 	} else {
 		sBuf.Format(_T("0 ~ 0 (0)"));
@@ -119,6 +128,7 @@ void CPicCDBVListCtrl::AddItem(CPicCDBVListItem *pItem)
 BEGIN_MESSAGE_MAP(CPicCDBVListCtrl, CKDListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, &CPicCDBVListCtrl::OnLvnDeleteitem)
 	ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, &CPicCDBVListCtrl::OnLvnItemchanged)
+	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 void CPicCDBVListCtrl::OnLvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
@@ -147,4 +157,62 @@ void CPicCDBVListCtrl::OnLvnItemchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	*pResult = 0;
+}
+
+void CPicCDBVListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
+{
+	CComboBox *pBox = (CComboBox *)GetParent()->GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME);
+	VERIFY(pBox);
+
+	m_mContextMenu.CreatePopupMenu();
+	POSITION pos = GetFirstSelectedItemPosition();
+
+	if (pos) {
+		m_mContextMenu.AppendMenu(MF_STRING, IDS_PICC_DBV_MENU_REDOWNLOAD, CResString(IDS_PICC_DBV_MENU_REDOWNLOAD));
+	}
+
+	if (m_mContextMenu.GetMenuItemCount()) {
+		CPoint cpPopMenu;
+		GetCursorPos(&cpPopMenu);
+		m_mContextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, cpPopMenu.x, cpPopMenu.y, this);
+	}
+	m_mContextMenu.DestroyMenu();
+	Invalidate();
+}
+
+LRESULT CPicCDBVListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message) {
+	case WM_COMMAND:
+		switch (wParam) {
+		case IDS_PICC_DBV_MENU_REDOWNLOAD:
+			{
+				CComboBox *pBox = (CComboBox *)GetParent()->GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME);
+				VERIFY(pBox);
+				int nComboCurSel = pBox->GetItemData(pBox->GetCurSel());
+				CString sTableName = ((CPicCDBViewDlg *)GetParent())->GetTableNameFromID(nComboCurSel);
+				CPicCDBVListItem *pItem = NULL;
+				int nItem = -1;
+				POSITION pos = GetFirstSelectedItemPosition();
+
+				while (pos) {
+					nItem = GetNextSelectedItem(pos);
+					pItem = (CPicCDBVListItem *)GetItemData(nItem);
+					if (!pItem)
+						continue;
+
+					CString strSQL;
+					strSQL.AppendFormat(_T("DELETE FROM %s WHERE Url = '%s'"), sTableName,
+						g_pPicCollectorDlg->m_Feed.EscapeQuote(pItem->GetUrl()));
+					g_pPicCollectorDlg->m_Feed.ExecSQL(strSQL);
+					VERIFY(g_pPicCollectorDlg->m_pDownLoader->AddFileList(pItem->GetUrl(), pItem->GetLocalpath(), false));
+				}
+				ReloadItem(nComboCurSel, m_iPage);
+			}
+			break;
+		}
+		break;
+	}
+
+	return CKDListCtrl::DefWindowProc(message, wParam, lParam);
 }

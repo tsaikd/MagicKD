@@ -236,15 +236,27 @@ DWORD CKDGetHttpFile::ThreadProc()
 #undef GO3
 #undef GO4
 
-bool CKDGetHttpFile::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath)
+bool CKDGetHttpFile::AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath, bool bTail/* = true*/)
 {
 	if (_tcslen(lpURL) < 1)
 		return false;
 	if (_tcslen(lpLocalPath) < 1)
 		return false;
 
-	m_slURL.AddTail(lpURL);
-	m_slLocalPath.AddTail(lpLocalPath);
+	VERIFY(m_muxNowDLURL.Lock());
+	if (bTail) {
+		m_slURL.AddTail(lpURL);
+		m_slLocalPath.AddTail(lpLocalPath);
+	} else {
+		if (m_slURL.GetHeadPosition() && m_slLocalPath.GetHeadPosition()) {
+			m_slURL.InsertAfter(m_slURL.GetHeadPosition(), lpURL);
+			m_slLocalPath.InsertAfter(m_slLocalPath.GetHeadPosition(), lpLocalPath);
+		} else {
+			m_slURL.AddTail(lpURL);
+			m_slLocalPath.AddTail(lpLocalPath);
+		}
+	}
+	m_muxNowDLURL.Unlock();
 
 	return true;
 }
@@ -255,7 +267,7 @@ double CKDGetHttpFile::GetPercentOfNowDL()
 		return 0;
 
 	double fRes = 0.0;
-	m_muxNowDLURL.Lock();
+	VERIFY(m_muxNowDLURL.Lock());
 
 	fRes = (double)m_ulNowDLSize / m_ulNowDLMaxSize;
 

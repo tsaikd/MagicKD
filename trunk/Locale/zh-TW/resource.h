@@ -9,12 +9,12 @@
 #define IDS_ALL_BTN_DISABLETIP          125
 #define IDS_TRAY_OPENWINDOW             131
 #define IDS_TRAY_CLOSEWINDOW            132
-#define IDS_TRAY_RANDPIC                134
-#define IDS_TRAY_DELNOWPIC              135
-#define IDS_TRAY_MOVEPIC                136
-#define IDS_TRAY_RESTART                137
-#define IDS_TRAY_EXPLOREPIC             138
-#define IDS_TRAY_PAUSEWALLCHANGER       139
+#define IDS_TRAY_RANDPIC                133
+#define IDS_TRAY_DELNOWPIC              134
+#define IDS_TRAY_MOVEPIC                135
+#define IDS_TRAY_RESTART                136
+#define IDS_TRAY_EXPLOREPIC             137
+#define IDS_TRAY_PAUSEWALLCHANGER       138
 #define IDS_CONF_STATIC_TRANSPARENCY    141
 #define IDS_CONF_BTN_RESTART            142
 #define IDS_CONF_BTN_CHECKUPDATE        143
@@ -112,11 +112,12 @@
 #define IDS_PICC_DBV_MSG_EXPORT         290
 #define IDS_PICC_DBV_MSG_DATAREADING    291
 #define IDS_PICC_DBV_MSG_DATADELING     292
-#define IDS_PICC_TT_STATIC_PLAY         293
-#define IDS_PICC_TT_STATIC_PAUSE        294
-#define IDS_PICC_TT_STATIC_STOP         295
-#define IDS_PICC_TT_BTN_DELNOWDL        296
-#define IDS_PICC_TT_BTN_DELAY_DL        297
+#define IDS_PICC_DBV_MENU_REDOWNLOAD    293
+#define IDS_PICC_TT_STATIC_PLAY         294
+#define IDS_PICC_TT_STATIC_PAUSE        295
+#define IDS_PICC_TT_STATIC_STOP         296
+#define IDS_PICC_TT_BTN_DELNOWDL        297
+#define IDS_PICC_TT_BTN_DELAY_DL        298
 
 // Next default values for new objects
 // 

@@ -160,20 +160,6 @@ void CKDListCtrl::DeleteSelectItem()
 	while (pos) {
 		nItem = GetNextSelectedItem(pos);
 		DeleteItem(nItem);
-
-		pos = GetFirstSelectedItemPosition();
-	}
-}
-
-void CKDListCtrl::CancleAllSelected()
-{
-	int nItem;
-	POSITION pos = GetFirstSelectedItemPosition();
-	while (pos) {
-		nItem = GetNextSelectedItem(pos);
-		SetItemState(nItem, 0, LVIS_SELECTED);
-
-		pos = GetFirstSelectedItemPosition();
 	}
 }
 
@@ -212,9 +198,29 @@ int CKDListCtrl::FindItemByText(LPCTSTR sText)
 	return FindItem(&itemInfo);
 }
 
-bool CKDListCtrl::SetItemSelected(int nItem)
+bool CKDListCtrl::SetItemSelected(int nItem, bool bSelected/* = true*/)
 {
-	return SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED) != FALSE;
+	if (bSelected)
+		return SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED) != FALSE;
+	else
+		return SetItemState(nItem, 0, LVIS_SELECTED) != FALSE;
+}
+
+void CKDListCtrl::SetItemAllSelected(bool bSelected/* = true*/)
+{
+
+	if (bSelected) {
+		int i, iCount = GetItemCount();
+		for (i=0 ; i<iCount ; i++)
+			SetItemSelected(i, true);
+	} else {
+		int nItem;
+		POSITION pos = GetFirstSelectedItemPosition();
+		while (pos) {
+			nItem = GetNextSelectedItem(pos);
+			SetItemSelected(nItem, false);
+		}
+	}
 }
 
 bool CKDListCtrl::EnableToolTips(LPCTSTR sToolTip/* = NULL*/, bool bEnable/* = true*/)
@@ -307,6 +313,14 @@ void CKDListCtrl::OnLvnBegindrag(NMHDR *pNMHDR, LRESULT *pResult)
 LRESULT CKDListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
+	case WM_KEYUP:
+		switch (wParam) {
+		case 'A':
+			if (IsCtrlPressed())
+				SetItemAllSelected(true);
+			break;
+		}
+		break;
 	case WM_MOUSEMOVE:
 		if (m_bEnableDrag && m_bOnDraging && m_pImageList) {
 			CPoint pt(lParam);

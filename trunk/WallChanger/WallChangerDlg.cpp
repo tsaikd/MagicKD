@@ -681,7 +681,7 @@ void CWallChangerDlg::OnLvnItemchangedListClass(NMHDR *pNMHDR, LRESULT *pResult)
 	} else if (m_bInit && (pNMLV->uOldState==INDEXTOSTATEIMAGEMASK(2)) && (pNMLV->uNewState==INDEXTOSTATEIMAGEMASK(1))) {
 		// UnCheck this Item
 		m_listClass.SetItemEnable(pNMLV->iItem, false);
-		if (::g_pWallEnablePicList->GetCount() == 0)
+		if (g_pWallEnablePicList->GetCount() == 0)
 			StopTimer();
 		m_listClass.SetIniModify();
 	} else {
@@ -773,9 +773,7 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 			StartTimer();
 		break;
 	case WM_COMMAND:
-		{
-		UINT nID = LOWORD(wParam);
-		switch (nID) {
+		switch (wParam) {
 		// Tray Menu
 		case IDS_TRAY_RANDPIC:
 			OnBnClickedButtonRandpic();
@@ -838,7 +836,6 @@ LRESULT CWallChangerDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 			m_pCurListDirPath->SetIniModify();
 			m_listClass.SetIniModify();
 			break;
-		}
 		}
 		break;
 	}

@@ -19,7 +19,12 @@ class CKDWinMsgBoxProc
 public:
 	CKDWinMsgBoxProc() : m_hWnd(NULL), m_uType(0) {}
 	CKDWinMsgBoxProc(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
-		:	m_hWnd(hWnd), m_sText(lpText), m_sCaption(lpCaption), m_uType(uType) {}
+		:	m_hWnd(hWnd), m_sText(lpText), m_sCaption(lpCaption), m_uType(uType) {
+		if (!lpCaption && IsWindow(hWnd)) {
+			GetWindowText(hWnd, m_sCaption.GetBuffer(MAX_PATH), MAX_PATH);
+			m_sCaption.ReleaseBuffer();
+		}
+	}
 
 	HWND m_hWnd;
 	CString m_sText;

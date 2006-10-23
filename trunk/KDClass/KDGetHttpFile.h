@@ -12,7 +12,7 @@ public:
 	virtual void Destroy();
 	virtual DWORD ThreadProc();
 
-	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath);
+	bool AddFileList(LPCTSTR lpURL, LPCTSTR lpLocalPath, bool bTail = true);
 
 	inline bool IsDownloadAllOver() { return (m_slURL.IsEmpty() && m_slLocalPath.IsEmpty()); }
 	CString GetNowDLURL() { m_muxNowDLURL.Lock(); CString sRes = m_sNowDLURL; m_muxNowDLURL.Unlock(); return sRes; }

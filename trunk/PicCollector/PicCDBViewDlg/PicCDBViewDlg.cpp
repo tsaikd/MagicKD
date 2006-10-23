@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Language.h"
 #include "Resource.h"
+#include "Others.h"
 #include "MagicKD.h"
 #include "PicCollectorDlg.h"
 
@@ -97,6 +98,7 @@ void CPicCDBViewDlg::_ComboChanged()
 	OnBnClickedPiccDbvBtnReload();
 	m_bStopWait = true;
 	EnableWindow(TRUE);
+	Invalidate();
 }
 
 void CPicCDBViewDlg::_DeleteRecode()
@@ -134,6 +136,8 @@ BEGIN_MESSAGE_MAP(CPicCDBViewDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_DBV_BTN_DELRECODE, &CPicCDBViewDlg::OnBnClickedPiccDbvBtnDelrecode)
 	ON_BN_CLICKED(IDC_PICC_DBV_BTN_LPAGE, &CPicCDBViewDlg::OnBnClickedPiccDbvBtnLpage)
 	ON_BN_CLICKED(IDC_PICC_DBV_BTN_RPAGE, &CPicCDBViewDlg::OnBnClickedPiccDbvBtnRpage)
+	ON_BN_CLICKED(IDC_PICC_DBV_BTN_LLPAGE, &CPicCDBViewDlg::OnBnClickedPiccDbvBtnLLpage)
+	ON_BN_CLICKED(IDC_PICC_DBV_BTN_RRPAGE, &CPicCDBViewDlg::OnBnClickedPiccDbvBtnRRpage)
 	ON_BN_CLICKED(IDC_PICC_DBV_BTN_EXPORT, &CPicCDBViewDlg::OnBnClickedPiccDbvBtnExport)
 END_MESSAGE_MAP()
 
@@ -146,7 +150,7 @@ void CPicCDBViewDlg::DoDataExchange(CDataExchange* pDX)
 void CPicCDBViewDlg::OnCbnSelchangePiccDbvComboTbname()
 {
 	EnableWindow(FALSE);
-	m_iThreadFunc = THREAD_FUNC_DELRECODE;
+	m_iThreadFunc = THREAD_FUNC_COMBOCHANGE;
 	CreateThread(THREAD_PRIORITY_LOWEST);
 	m_bStopWait = false;
 	m_dlgWait.Display(CResString(IDS_PICC_DBV_MSG_DATAREADING), &m_bStopWait);
@@ -167,8 +171,12 @@ void CPicCDBViewDlg::OnBnClickedPiccDbvBtnLpage()
 	int nCurSel = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetCurSel();
 	int nID = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetItemData(nCurSel);
 
-	m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()-1);
+	if (IsCtrlPressed())
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()-5);
+	else
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()-1);
 	m_list_Item.SetFocus();
+	Invalidate();
 }
 
 void CPicCDBViewDlg::OnBnClickedPiccDbvBtnRpage()
@@ -176,8 +184,38 @@ void CPicCDBViewDlg::OnBnClickedPiccDbvBtnRpage()
 	int nCurSel = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetCurSel();
 	int nID = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetItemData(nCurSel);
 
-	m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()+1);
+	if (IsCtrlPressed())
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()+5);
+	else
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()+1);
 	m_list_Item.SetFocus();
+	Invalidate();
+}
+
+void CPicCDBViewDlg::OnBnClickedPiccDbvBtnLLpage()
+{
+	int nCurSel = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetCurSel();
+	int nID = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetItemData(nCurSel);
+
+	if (IsCtrlPressed())
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()-50);
+	else
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()-10);
+	m_list_Item.SetFocus();
+	Invalidate();
+}
+
+void CPicCDBViewDlg::OnBnClickedPiccDbvBtnRRpage()
+{
+	int nCurSel = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetCurSel();
+	int nID = ((CComboBox *)GetDlgItem(IDC_PICC_DBV_COMBO_TBNAME))->GetItemData(nCurSel);
+
+	if (IsCtrlPressed())
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()+50);
+	else
+		m_list_Item.ReloadItem(nID, m_list_Item.GetCurPage()+10);
+	m_list_Item.SetFocus();
+	Invalidate();
 }
 
 void CPicCDBViewDlg::OnBnClickedPiccDbvBtnDelrecode()
