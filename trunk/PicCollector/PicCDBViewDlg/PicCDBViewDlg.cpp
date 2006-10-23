@@ -45,6 +45,7 @@ BOOL CPicCDBViewDlg::OnInitDialog()
 	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_RPAGE));
 	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_LLPAGE));
 	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_RRPAGE));
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_EDIT_FILTER));
 
 	Localize();
 	Invalidate();
@@ -84,10 +85,13 @@ void CPicCDBViewDlg::Localize()
 	m_ttc.UpdateTipText(sBuf, GetDlgItem(IDC_PICC_DBV_BTN_LLPAGE));
 	m_ttc.UpdateTipText(sBuf, GetDlgItem(IDC_PICC_DBV_BTN_RRPAGE));
 
+	m_ttc.UpdateTipText(CResString(IDS_PICC_DBV_TT_EDIT_FILTER), GetDlgItem(IDC_PICC_DBV_EDIT_FILTER));
+
 	GetDlgItem(IDCANCEL)->SetWindowText(CResString(IDS_PICC_DBV_BTN_EXIT));
 	GetDlgItem(IDC_PICC_DBV_BTN_RELOAD)->SetWindowText(CResString(IDS_PICC_DBV_BTN_RELOAD));
 	GetDlgItem(IDC_PICC_DBV_BTN_DELRECODE)->SetWindowText(CResString(IDS_PICC_DBV_BTN_DELETE));
 	GetDlgItem(IDC_PICC_DBV_BTN_EXPORT)->SetWindowText(CResString(IDS_PICC_DBV_BTN_EXPORT));
+	GetDlgItem(IDC_PICC_DBV_STATIC_FILTER)->SetWindowText(CResString(IDS_PICC_DBV_STATIC_FILTER));
 }
 
 CString CPicCDBViewDlg::GetTableNameFromID(int nID)
@@ -168,6 +172,16 @@ BOOL CPicCDBViewDlg::PreTranslateMessage(MSG* pMsg)
 	m_ttc.RelayEvent(pMsg);
 
 	return __super::PreTranslateMessage(pMsg);
+}
+
+void CPicCDBViewDlg::OnOK()
+{
+	if (GetFocus() == GetDlgItem(IDC_PICC_DBV_EDIT_FILTER)) {
+		OnBnClickedPiccDbvBtnReload();
+		return;
+	}
+
+	__super::OnOK();
 }
 
 void CPicCDBViewDlg::OnCbnSelchangePiccDbvComboTbname()

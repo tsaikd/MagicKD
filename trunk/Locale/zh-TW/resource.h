@@ -119,6 +119,8 @@
 #define IDS_PICC_DBV_MSG_DATADELING     292
 #define IDS_PICC_DBV_MENU_REDOWNLOAD    293
 #define IDS_PICC_DBV_TT_BTN_PAGE        294
+#define IDS_PICC_DBV_TT_EDIT_FILTER     295
+#define IDS_PICC_DBV_STATIC_FILTER      296
 
 // Next default values for new objects
 // 

@@ -69,6 +69,12 @@ void CPicCDBVListCtrl::ReloadItem(int nID, int iPage/* = 1*/)
 		CStringArray saTable;
 		CString strSQL;
 		strSQL.Format(_T("SELECT Url,Localpath FROM %s"), sTableName);
+
+		CString sFilter;
+		GetParent()->GetDlgItem(IDC_PICC_DBV_EDIT_FILTER)->GetWindowText(sFilter);
+		if (!sFilter.IsEmpty())
+			strSQL.AppendFormat(_T(" WHERE Localpath LIKE '%%%s%%'"), sFilter);
+
 		iDataCount = g_pPicCollectorDlg->m_Feed.GetDataCount(strSQL);
 		if (iDataCount > DEFAULT_COUNT_PER_PAGE) {
 			if (iPage < 1)

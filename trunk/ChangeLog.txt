@@ -1,5 +1,6 @@
 	PicCollector: Fix a stupid bug in DBViewer
 	PicCollector: DBViewer allows redownloading
+	PicCollector: DBViewer allows filter searching
 
 Version: 1.0.3.9	(2006-10-15)
 	WallChanger: Change Icon at full screen
