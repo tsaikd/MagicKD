@@ -94,16 +94,31 @@ STRINGTABLE
 BEGIN
     IDS_TRAY_OPENWINDOW     "開啟 MagicKD\t(&O)"
     IDS_TRAY_CLOSEWINDOW    "關閉 MagicKD\t(&C)"
-    IDS_PICC_DBV_MENU_REDOWNLOAD "重新下載"
     IDS_TRAY_RANDPIC        "立即更換隨機桌布\t(Space)& "
     IDS_TRAY_DELNOWPIC      "刪除目前桌布檔案\t(&D)"
     IDS_TRAY_MOVEPIC        "移動目前桌布 ...\t(&M)"
     IDS_TRAY_RESTART        "重新啟動 MagicKD\t(&R)"
     IDS_TRAY_EXPLOREPIC     "瀏覽目前桌布檔案\t(&E)"
     IDS_TRAY_PAUSEWALLCHANGER "暫停 WallChanger\t(&P)"
+    IDS_PICC_DBV_TT_BTN_PAGE "前進(後退) %d 頁\r\n按著 Ctrl 鍵可跳 %d 頁"
     IDS_CONF_STATIC_TRANSPARENCY "透明度"
     IDS_CONF_BTN_RESTART    "重新啟動"
     IDS_CONF_BTN_CHECKUPDATE "檢查更新"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICC_DBV_COMBO_DLOVER "下載完成"
+    IDS_PICC_DBV_COMBO_UNDL "尚未下載"
+    IDS_PICC_DBV_MSG_EXPORT "匯出到\n%s"
+    IDS_PICC_DBV_MSG_DATAREADING "資 料 讀 取 中 ...\n請 稍 後!"
+    IDS_PICC_DBV_MSG_DATADELING "資 料 刪 除 中 ...\n請 稍 後!"
+    IDS_PICC_DBV_MENU_REDOWNLOAD "重新下載"
+    IDS_PICC_TT_STATIC_PLAY "開始下載檔案列表中的檔案"
+    IDS_PICC_TT_STATIC_PAUSE "暫停下載"
+    IDS_PICC_TT_STATIC_STOP "停止下載程式\r\n(使用者不能進行此操作)"
+    IDS_PICC_TT_BTN_DELNOWDL "刪除下載中的檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
+    IDS_PICC_TT_BTN_DELAY_DL "稍後下載目前檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
 END
 
 STRINGTABLE 
@@ -235,20 +250,6 @@ BEGIN
     IDS_PICC_DBV_LIST_URL   "網址"
     IDS_PICC_DBV_LIST_LOCALPATH "本機檔案路徑"
     IDS_PICC_DBV_COMBO_DLFAILED "下載失敗"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_PICC_DBV_COMBO_DLOVER "下載完成"
-    IDS_PICC_DBV_COMBO_UNDL "尚未下載"
-    IDS_PICC_DBV_MSG_EXPORT "匯出到\n%s"
-    IDS_PICC_DBV_MSG_DATAREADING "資 料 讀 取 中 ...\n請 稍 後!"
-    IDS_PICC_DBV_MSG_DATADELING "資 料 刪 除 中 ...\n請 稍 後!"
-    IDS_PICC_TT_STATIC_PLAY "開始下載檔案列表中的檔案"
-    IDS_PICC_TT_STATIC_PAUSE "暫停下載"
-    IDS_PICC_TT_STATIC_STOP "停止下載程式\r\n(使用者不能進行此操作)"
-    IDS_PICC_TT_BTN_DELNOWDL "刪除下載中的檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
-    IDS_PICC_TT_BTN_DELAY_DL "稍後下載目前檔案\r\n如果目前是暫停狀態時\r\n會在下次開始時做用"
 END
 
 #endif    // Chinese (Taiwan) resources

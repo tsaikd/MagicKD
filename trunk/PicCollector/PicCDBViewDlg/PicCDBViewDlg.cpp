@@ -7,6 +7,8 @@
 
 #include "PicCDBViewDlg.h"
 
+#define TTC_MAX_WIDTH 600
+
 IMPLEMENT_DYNAMIC(CPicCDBViewDlg, CDialog)
 CPicCDBViewDlg::CPicCDBViewDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPicCDBViewDlg::IDD, pParent), m_bStopWait(true), m_iThreadFunc(THREAD_FUNC_NULL), m_dlgWait(this)
@@ -36,6 +38,13 @@ BOOL CPicCDBViewDlg::OnInitDialog()
 
 	m_dlgWait.Create(this);
 	m_dlgWait.ShowWindow(SW_HIDE);
+
+	m_ttc.Create(this, TTS_ALWAYSTIP);
+	m_ttc.SetMaxTipWidth(TTC_MAX_WIDTH);
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_LPAGE));
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_RPAGE));
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_LLPAGE));
+	m_ttc.AddTool(GetDlgItem(IDC_PICC_DBV_BTN_RRPAGE));
 
 	Localize();
 	Invalidate();
@@ -67,6 +76,13 @@ void CPicCDBViewDlg::Localize()
 	}
 
 	m_list_Item.Localize();
+	CString sBuf;
+	sBuf.Format(CResString(IDS_PICC_DBV_TT_BTN_PAGE), 1, 5);
+	m_ttc.UpdateTipText(sBuf, GetDlgItem(IDC_PICC_DBV_BTN_LPAGE));
+	m_ttc.UpdateTipText(sBuf, GetDlgItem(IDC_PICC_DBV_BTN_RPAGE));
+	sBuf.Format(CResString(IDS_PICC_DBV_TT_BTN_PAGE), 10, 50);
+	m_ttc.UpdateTipText(sBuf, GetDlgItem(IDC_PICC_DBV_BTN_LLPAGE));
+	m_ttc.UpdateTipText(sBuf, GetDlgItem(IDC_PICC_DBV_BTN_RRPAGE));
 
 	GetDlgItem(IDCANCEL)->SetWindowText(CResString(IDS_PICC_DBV_BTN_EXIT));
 	GetDlgItem(IDC_PICC_DBV_BTN_RELOAD)->SetWindowText(CResString(IDS_PICC_DBV_BTN_RELOAD));
@@ -145,6 +161,13 @@ void CPicCDBViewDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PICC_DBV_LIST_ITEM, m_list_Item);
+}
+
+BOOL CPicCDBViewDlg::PreTranslateMessage(MSG* pMsg)
+{
+	m_ttc.RelayEvent(pMsg);
+
+	return __super::PreTranslateMessage(pMsg);
 }
 
 void CPicCDBViewDlg::OnCbnSelchangePiccDbvComboTbname()

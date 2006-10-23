@@ -105,6 +105,11 @@
 #define IDS_PICC_BTN_DEL_FEED           271
 #define IDS_PICC_BTN_VIEW_DLDIR         272
 #define IDS_PICC_BTN_VIEWDB             273
+#define IDS_PICC_TT_STATIC_PLAY         274
+#define IDS_PICC_TT_STATIC_PAUSE        275
+#define IDS_PICC_TT_STATIC_STOP         276
+#define IDS_PICC_TT_BTN_DELNOWDL        277
+#define IDS_PICC_TT_BTN_DELAY_DL        278
 #define IDS_PICC_DBV_BTN_RELOAD         281
 #define IDS_PICC_DBV_BTN_EXIT           282
 #define IDS_PICC_DBV_BTN_DELETE         283
@@ -118,11 +123,7 @@
 #define IDS_PICC_DBV_MSG_DATAREADING    291
 #define IDS_PICC_DBV_MSG_DATADELING     292
 #define IDS_PICC_DBV_MENU_REDOWNLOAD    293
-#define IDS_PICC_TT_STATIC_PLAY         294
-#define IDS_PICC_TT_STATIC_PAUSE        295
-#define IDS_PICC_TT_STATIC_STOP         296
-#define IDS_PICC_TT_BTN_DELNOWDL        297
-#define IDS_PICC_TT_BTN_DELAY_DL        298
+#define IDS_PICC_DBV_TT_BTN_PAGE        294
 #define IDC_TAB_MAIN                    1000
 #define IDC_PROGRESS_END                1001
 #define IDC_MAGICKDEND_EDIT_TEXT        1002

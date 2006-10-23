@@ -23,6 +23,7 @@ public:
 	CString GetTableNameFromID(int nID);
 
 	CPicCDBVListCtrl m_list_Item;
+	CToolTipCtrl m_ttc;
 
 private:
 	enum {
@@ -51,6 +52,7 @@ private:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnCbnSelchangePiccDbvComboTbname();
 	afx_msg void OnEnSetfocusPiccDbvEditUrl();
 	afx_msg void OnEnSetfocusPiccDbvEditLocalpath();

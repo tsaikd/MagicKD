@@ -321,6 +321,8 @@ BEGIN
     IDS_TRAY_RESTART        "Restart MagicKD\t(&R)"
     IDS_TRAY_EXPLOREPIC     "Explore now picture\t(&E)"
     IDS_TRAY_PAUSEWALLCHANGER "Pause WallChanger\t(&P)"
+    IDS_PICC_DBV_TT_BTN_PAGE 
+                            "Go forward(back) %d page(s)\r\nPress Ctrl to %d page(s)"
     IDS_CONF_STATIC_TRANSPARENCY "Transparency"
     IDS_CONF_BTN_RESTART    "Restart"
     IDS_CONF_BTN_CHECKUPDATE "Check Update"
