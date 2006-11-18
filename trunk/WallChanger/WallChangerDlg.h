@@ -38,7 +38,7 @@ public:
 
 	void	SetHistoryNum(UINT uNum);
 	void	SetWaitTime(UINT uWaitTime);
-	bool	SetRandWallPager();
+	bool	SetRandWallPager(LPCTSTR lpPicPath = NULL);
 	LPCTSTR	GetRandPicPath();
 	bool	DeletePicFile(LPCTSTR sFilePath, bool bAskForSure = true);
 	bool	AddWatchDir(const CString &sDirPath, CDirectoryChangeHandler *pHandle);
@@ -105,6 +105,8 @@ public:
 	afx_msg void OnBnClickedWallCheckShowdirloaderror();
 	afx_msg void OnBnClickedWallBtnMovepic();
 	afx_msg void OnBnClickedWallBtnExplore();
+public:
+	afx_msg void OnBnClickedWallBtnPrevpic();
 };
 
 extern CWallChangerDlg *g_pWallChangerDlg;

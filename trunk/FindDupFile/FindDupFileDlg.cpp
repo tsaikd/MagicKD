@@ -118,7 +118,7 @@ Lable_ExitFindDupFileThread:
 			}
 			if (!bFindSameFile)
 				sMsg.AppendFormat(_T("\n%s"), CResString(IDS_FIND_MSG_NOSAMEFILE));
-			g_pKDWinMsgBox->Add(GetSafeHwnd(), sMsg, NULL, MB_OK | MB_ICONINFORMATION);
+			KDMessageBox(GetSafeHwnd(), sMsg, _T("FindDupFile"), MB_OK | MB_ICONINFORMATION);
 
 			m_tree_FindResult.Invalidate();
 			_EW_Finding(false);

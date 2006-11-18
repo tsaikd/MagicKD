@@ -73,7 +73,7 @@ CString CWallEnablePicList::GetRandPic()
 
 		pItem = m_lEnableItem.GetAt(m_posNowList);
 		if (pItem->IsOnFindPic()) {
-			WaitForSingleObject(::g_pWallThreadFindPic->GetThreadHandle(), 100);
+			WaitForSingleObject(g_pWallThreadFindPic->GetThreadHandle(), 100);
 			m_lEnableItem.GetNext(m_posNowList);
 			continue;
 		}

@@ -175,6 +175,8 @@ DWORD CPicCollectorDlg::ThreadProc()
 {
 	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->EnableWindow(FALSE);
 	RefreshAllFeed();
+	if (!m_uTimerShowDownload)
+		m_uTimerShowDownload = SetTimer(KDT_SHOWDOWNLOAD, 1000, NULL);
 	GetDlgItem(IDC_PICC_BTN_REFRESHFEED)->EnableWindow(TRUE);
 
 	return 0;
@@ -263,13 +265,9 @@ void CPicCollectorDlg::DoSize()
 
 void CPicCollectorDlg::AddNewFeed(LPCTSTR lpURL, LPCTSTR lpLocalName)
 {
-	CString strSQL;
-	strSQL.Format(_T("INSERT INTO PicFeed (FeedLink, name) values ('%s', '%s');"),
-		m_Feed.EscapeQuote(lpURL),
-		m_Feed.EscapeQuote(lpLocalName));
-	m_Feed.ExecSQL(strSQL);
 	m_Feed.BuildFromFile(lpURL);
 	m_Feed.Save();
+	m_Feed.SetFeedName(lpURL, lpLocalName);
 	m_list_Feed.ReloadItems();
 	CreateThread();
 }
@@ -285,8 +283,8 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 
 	if (!m_Feed.BuildFromFile(lpURL)) {
 		if (0 == GetOnInternet()) {
-			g_pKDWinMsgBox->Add(GetSafeHwnd(), _T("Failed to download ") + CString(lpURL),
-				NULL, MB_OK|MB_ICONERROR);
+			KDMessageBox(GetSafeHwnd(), _T("Failed to download ") + CString(lpURL),
+				_T("PicCollector"), MB_OK|MB_ICONERROR);
 		}
 		return;
 	}
@@ -309,7 +307,7 @@ void CPicCollectorDlg::RefreshFeed(LPCTSTR lpURL)
 		if (!m_Feed.IsItemRead(strLink)) {
 			strName = m_Feed.GetFeedName(lpURL);
 			if (strName.IsEmpty())
-				return;
+				continue;
 
 			// Parse HTML statement
 			m_HTMLReader.Read(m_Feed.m_item[i].m_strDescription);
@@ -417,13 +415,13 @@ BEGIN_MESSAGE_MAP(CPicCollectorDlg, CDialog)
 	ON_BN_CLICKED(IDC_PICC_BTN_DELAYDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelaydl)
 	ON_BN_CLICKED(IDC_PICC_BTN_VIEW_DLDIR, &CPicCollectorDlg::OnBnClickedPiccBtnViewDldir)
 	ON_BN_CLICKED(IDC_PICC_BTN_DBVIEW, &CPicCollectorDlg::OnBnClickedPiccBtnDbview)
+	ON_BN_CLICKED(IDC_PICC_BTN_DELNOWDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelnowdl)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DLDIR, &CPicCollectorDlg::OnStnClickedPiccStaticDldir)
 	ON_STN_CLICKED(IDC_PICC_STATIC_PLAY, &CPicCollectorDlg::OnStnClickedPiccStaticPlay)
 	ON_STN_CLICKED(IDC_PICC_STATIC_PAUSE, &CPicCollectorDlg::OnStnClickedPiccStaticPause)
 	ON_STN_CLICKED(IDC_PICC_STATIC_STOP, &CPicCollectorDlg::OnStnClickedPiccStaticStop)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DLLOCALPATH, &CPicCollectorDlg::OnStnClickedPiccStaticDllocalpath)
 	ON_STN_CLICKED(IDC_PICC_STATIC_DOWNLOAD, &CPicCollectorDlg::OnStnClickedPiccStaticDownload)
-	ON_BN_CLICKED(IDC_PICC_BTN_DELNOWDL, &CPicCollectorDlg::OnBnClickedPiccBtnDelnowdl)
 END_MESSAGE_MAP()
 
 void CPicCollectorDlg::DoDataExchange(CDataExchange* pDX)
@@ -570,8 +568,6 @@ void CPicCollectorDlg::OnBnClickedPiccBtnRemovefeed()
 			strSQL.Format(_T("DELETE FROM FeedItem WHERE FeedLink = '%s'"), m_Feed.EscapeQuote(strURL));
 			m_Feed.ExecSQL(strSQL);
 			strSQL.Format(_T("DELETE FROM FeedSource WHERE FeedLink = '%s'"), m_Feed.EscapeQuote(strURL));
-			m_Feed.ExecSQL(strSQL);
-			strSQL.Format(_T("DELETE FROM PicFeed WHERE FeedLink = '%s'"), m_Feed.EscapeQuote(strURL));
 			m_Feed.ExecSQL(strSQL);
 
 			m_list_Feed.ReloadItems();

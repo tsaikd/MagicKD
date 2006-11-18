@@ -56,7 +56,7 @@ public:
 };
 
 
-class CFeed : protected CKDSQLiteAPI
+class CFeed : public CKDSQLiteAPI
 {
 public:
 	CFeed();
@@ -74,13 +74,13 @@ public:
 	void	MarkItemRead(LPCTSTR strLink);
 	bool	IsItemRead(LPCTSTR strLink);
 
+	CString EscapeQuote(CString strValue);
+
 	CFeedSource						m_source;		// Feed Source
 	CArray<CFeedItem,CFeedItem>		m_item;			// Feed Item
 	BOOL							m_bAdded;
 
 protected:
-	CString EscapeQuote(CString strValue);
-
 	CMutex							m_muxDLInet;
 
 private:

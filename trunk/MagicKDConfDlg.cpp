@@ -327,10 +327,8 @@ LRESULT CMagicKDConfDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 {
 	switch (message) {
 	case WM_HSCROLL:
-		{
 		g_pTheConf->m_General_uTransparency = m_sliderTransparency.GetPos();
 		g_pMagicKDDlg->SetTransparency((BYTE)g_pTheConf->m_General_uTransparency);
-		}
 		break;
 	}
 

@@ -178,6 +178,10 @@ bool CKDSQLiteAPI::ExecSQL(LPCTSTR strSQL, CString *strErrMsg/* = NULL*/)
 	bRes = (SQLITE_OK == sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0));
 	if (strErrMsg)
 		*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
+#ifdef DEBUG
+	if (!bRes)
+		TRACE(CString((char *)sqlite3_errmsg(m_pDB)));
+#endif //DEBUG
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	m_muxDB.Unlock();
@@ -194,9 +198,10 @@ bool CKDSQLiteAPI::GetTableSQL(LPCTSTR strSQL, CStringArray &saTable, CString *s
 	int nCol;
 	sqlite3_stmt *stmt = NULL;
 	if (SQLITE_OK != sqlite3_prepare16(m_pDB, strSQL, -1, &stmt, 0)) {
-#ifdef DEBUG
 		if (strErrMsg)
 			*strErrMsg = CString((char *)sqlite3_errmsg(m_pDB));
+#ifdef DEBUG
+		TRACE(CString((char *)sqlite3_errmsg(m_pDB)));
 #endif //DEBUG
 		if (!stmt) {
 			m_muxDB.Unlock();

@@ -14,6 +14,12 @@
 
 */
 
+#define KDMessageBox(hWnd, lpText, lpCaption, uType)			\
+	if (g_pKDWinMsgBox)											\
+		g_pKDWinMsgBox->Add(hWnd, lpText, lpCaption, uType);	\
+	else														\
+		::MessageBox(hWnd, lpText, lpCaption, uType);
+
 class CKDWinMsgBoxProc
 {
 public:

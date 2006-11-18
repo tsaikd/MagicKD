@@ -44,8 +44,7 @@ BOOL CWallChangerDlg::OnInitDialog()
 	g_pTheLog->Log(_T("Init WallChangerDlg"), CKDLog::LOGLV_INFO);
 	CDialog::OnInitDialog();
 
-	if (!g_pWallChangerDlg)
-		g_pWallChangerDlg = this;
+	g_pWallChangerDlg = this;
 	if (!g_pWallEnablePicList)
 		g_pWallEnablePicList = new CWallEnablePicList;
 	if (!g_pWallThreadFindPic)
@@ -213,7 +212,8 @@ void CWallChangerDlg::Localize()
 	GetDlgItem(IDC_WALL_BTN_MOVEPIC)->SetWindowText(CResString(IDS_WALL_BTN_MOVEPIC));
 	GetDlgItem(IDC_WALL_BTN_ADDCLASS)->SetWindowText(CResString(IDS_WALL_BTN_ADDCLASS));
 	GetDlgItem(IDC_WALL_BTN_EXPLORE)->SetWindowText(CResString(IDS_WALL_BTN_EXPLORE));
-	m_btn_EnableToolTip.SetWindowText(CResString(::g_pWallConf->m_General_bEnableTip ? IDS_ALL_BTN_DISABLETIP : IDS_ALL_BTN_ENABLETIP));
+	GetDlgItem(IDC_WALL_BTN_PREVPIC)->SetWindowText(CResString(IDS_WALL_BTN_PREVPIC));
+	m_btn_EnableToolTip.SetWindowText(CResString(g_pWallConf->m_General_bEnableTip ? IDS_ALL_BTN_DISABLETIP : IDS_ALL_BTN_ENABLETIP));
 	GetDlgItem(IDC_WALL_CHECK_SHOWDIRLOADERROR)->SetWindowText(CResString(IDS_WALL_CHECK_SHOWDIRLOADERROR));
 
 	CComboBox *pComboBox = (CComboBox *)GetDlgItem(IDC_WALL_COMBO_IMAGELOADERROR);
@@ -267,7 +267,7 @@ void CWallChangerDlg::SetWaitTime(UINT uWaitTime)
 	}
 }
 
-bool CWallChangerDlg::SetRandWallPager()
+bool CWallChangerDlg::SetRandWallPager(LPCTSTR lpPicPath/* = NULL*/)
 {
 	if (!m_muxSetRandWallPager.Lock(0))
 		return false;
@@ -298,7 +298,10 @@ bool CWallChangerDlg::SetRandWallPager()
 	g_pTheTray->SetTray(((CMagicKDDlg *)GetParent())->m_hIcon2);
 	m_staticNowPicPath.SetWindowText(CResString(IDS_WALL_SETTINGWALLPAGER));
 	g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() GetRandPicPath"), CKDLog::LOGLV_DEBUG);
-	m_sNowPicPath = GetRandPicPath();
+	if (lpPicPath && PathFileExists(lpPicPath))
+		m_sNowPicPath = lpPicPath;
+	else
+		m_sNowPicPath = GetRandPicPath();
 	g_pTheLog->Log(_T("CWallChangerDlg::SetRandWallPager() GetRandPicPath Over"), CKDLog::LOGLV_DEBUG);
 
 	if (m_sNowPicPath.IsEmpty())
@@ -379,7 +382,7 @@ LPCTSTR CWallChangerDlg::GetRandPicPath()
 	}
 
 	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic 3"), CKDLog::LOGLV_DEBUG);
-	if ((UINT)m_slPicPathHistory.GetCount() > (UINT)::g_pWallConf->m_General_uPicPathHistory)
+	if ((UINT)m_slPicPathHistory.GetCount() > (UINT)g_pWallConf->m_General_uPicPathHistory)
 		m_slPicPathHistory.RemoveHead();
 	g_pTheLog->Log(_T("CWallChangerDlg::GetRandPicPath() GetRandPic 4"), CKDLog::LOGLV_DEBUG);
 	m_slPicPathHistory.AddTail(sRandPicPath);
@@ -530,6 +533,7 @@ BEGIN_MESSAGE_MAP(CWallChangerDlg, CDialog)
 	ON_BN_CLICKED(IDC_WALL_CHECK_SHOWDIRLOADERROR	, OnBnClickedWallCheckShowdirloaderror)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_WALL_LIST_CLASS	, OnLvnItemchangedListClass)
 	ON_CBN_SELCHANGE(IDC_WALL_COMBO_IMAGELOADERROR	, OnCbnSelchangeComboImageloaderror)
+	ON_BN_CLICKED(IDC_WALL_BTN_PREVPIC, &CWallChangerDlg::OnBnClickedWallBtnPrevpic)
 END_MESSAGE_MAP()
 
 void CWallChangerDlg::OnOK()
@@ -602,7 +606,7 @@ void CWallChangerDlg::OnBnClickedButtonDelpic()
 	DeletePicFile(sFile, true);
 
 	if (!PathFileExists(sFile)) {
-		::g_pWallEnablePicList->RemoveFind(sFile);
+		g_pWallEnablePicList->RemoveFind(sFile);
 		if (sFile==m_sNowPicPath)
 			OnBnClickedButtonRandpic();
 	}
@@ -631,6 +635,18 @@ void CWallChangerDlg::OnBnClickedWallBtnExplore()
 	CString sPicPath = m_sNowPicPath;
 	if (PathFileExists(sPicPath))
 		ExplorerFile(sPicPath);
+}
+
+void CWallChangerDlg::OnBnClickedWallBtnPrevpic()
+{
+	if (m_slPicPathHistory.GetCount() < 2)
+		return;
+
+	POSITION pos = m_slPicPathHistory.GetTailPosition();
+	m_slPicPathHistory.GetPrev(pos);
+	CString sPicPath = m_slPicPathHistory.GetAt(pos);
+	m_slPicPathHistory.RemoveAt(pos);
+	SetRandWallPager(sPicPath);
 }
 
 void CWallChangerDlg::OnBnClickedButtonEnabletooltip()

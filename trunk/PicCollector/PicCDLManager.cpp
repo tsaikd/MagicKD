@@ -153,7 +153,7 @@ void CPicCDLManager::OnWriteFileError()
 	if (IsCanThread()) {
 		g_pPicCollectorDlg->DLIconSwitch(1);
 		Pause();
-		g_pKDWinMsgBox->Add(g_pPicCollectorDlg->GetSafeHwnd(), CResString(IDS_PICC_MSG_WRITE_FILE_ERROR),
-			NULL, MB_OK|MB_ICONERROR);
+		KDMessageBox(g_pPicCollectorDlg->GetSafeHwnd(), CResString(IDS_PICC_MSG_WRITE_FILE_ERROR),
+			_T("PicCollector"), MB_OK|MB_ICONERROR);
 	}
 }

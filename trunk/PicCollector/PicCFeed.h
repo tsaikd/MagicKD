@@ -8,14 +8,7 @@ public:
 	virtual ~CPicCFeed();
 
 	bool OpenDB(LPCTSTR sDBPath);
-	using CFeed::ReloadDB;
 
 	CString GetFeedName(LPCTSTR lpURL);
-
-	using CFeed::SetDBSync;
-	using CFeed::GetDataCount;
-
-	using CFeed::GetTableSQL;
-	using CFeed::ExecSQL;
-	using CFeed::EscapeQuote;
+	bool SetFeedName(LPCTSTR lpURL, LPCTSTR lpName);
 };
